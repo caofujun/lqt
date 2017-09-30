@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St006TwxxDao">
+
+	<sql id="commCols_mysql">
+		ID id,ZYID zyid,PATIENT_ID patientId,RECORDING_AT recordingAt,TW_VALUES twValues,TEMPRATURE_TYPE tempratureType,TEMPRATURE_TYPE_NAME tempratureTypeName,UPD_DATE updDate,TW_VALUES_KTL twValuesKtl,TW_ANAL_FLAG twAnalFlag,TW_ANAL_DT twAnalDt
+	</sql>
+
+	<select id="findSt006Twxx_mysql" parameterType="st006Twxx" resultType="st006Twxx">
+		select <include refid="commCols_mysql"/> from ST006_TWXX
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

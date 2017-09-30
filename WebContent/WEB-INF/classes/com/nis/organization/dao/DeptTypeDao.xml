@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DeptTypeDao">
+
+	<sql id="commCols">
+		OFFICEKINDID officekindid,OFFICEKIND officekind,REMARK remark,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,FLAG flag,LAST_AT lastAt
+	</sql>
+
+	<insert id="save" parameterType="deptType"  flushCache="true">
+		 insert into ZG023_STANDDEPT_TYPE(OFFICEKINDID,OFFICEKIND,REMARK,BH_CODE,SP_CODE,WB_CODE,FLAG,LAST_AT)
+		 values(#{officekindid},#{officekind},#{remark},#{bhCode},#{spCode},#{wbCode},#{flag},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG023_STANDDEPT_TYPE
+		<where>OFFICEKINDID=#{officekindid}</where>
+	</delete>
+	
+	<update id="update" parameterType="deptType" flushCache="true">
+		update ZG023_STANDDEPT_TYPE
+		<set>
+			OFFICEKINDID=#{officekindid},OFFICEKIND=#{officekind},REMARK=#{remark},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},FLAG=#{flag},LAST_AT=#{lastAt}
+		</set>
+		<where>OFFICEKINDID=#{officekindid}</where>
+	</update>
+	
+	<select id="get" resultType="deptType">
+		select <include refid="commCols"/> from ZG023_STANDDEPT_TYPE
+  		<where>OFFICEKINDID=#{officekindid}</where>
+	</select>
+	
+	
+	<select id="findDeptTypeCount" parameterType="deptType" resultType="int">
+		select count(*) from ZG023_STANDDEPT_TYPE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="deptType">
+		select <include refid="commCols"/> from ZG023_STANDDEPT_TYPE
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

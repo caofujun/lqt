@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbmasterDao">
+
+	<sql id="commCols_mysql">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,BED_NO bedNo,PATIENT_NAME patientName,PARENT_NAME parentName,SEXID sexid,SEXNAME sexname,BIRTYDAY birtyday,AGE age,AGEUNIT ageunit,IDCARD idcard,TELP telp,UNIT unit,PROFESSIONID professionid,PROFESSIONNAME professionname,AREATYPEID areatypeid,AREATYPENAME areatypename,ADDRCODE addrcode,ADDRCODEVALUE addrcodevalue,ADDR addr,VILLAGE village,HOUSENUMBER housenumber,DOCTORID doctorid,DOCTORNAME doctorname,OFFICEID officeid,OFFICENAME officename,DEADDATE deaddate,REPORTTYPEID reporttypeid,REPORTTYPENAME reporttypename,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,FILLDATE filldate,ISPRINT isprint,IDTYPE idtype,IDTYPEVALUE idtypevalue
+	</sql>
+
+	<select id="findCtgBk001Crbmaster_mysql" parameterType="ctgBk001Crbmaster" resultType="ctgBk001Crbmaster">
+		select <include refid="commCols_mysql"/> from CTG_BK001_CRBMASTER
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

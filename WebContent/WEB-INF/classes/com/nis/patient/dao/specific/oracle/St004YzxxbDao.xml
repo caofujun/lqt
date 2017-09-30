@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St004YzxxbDao">
+
+	<sql id="commCols_oracle">
+		order_detail orderDetail,frequency frequency,qty_day qtyDay,total_qty totalQty,execoffice_code execofficeCode,execoffice_name execofficeName,bdoc_id bdocId,bdoc_name bdocName,edoc_id edocId,edoc_name edocName,is_kjyw isKjyw,memo memo,firstday_dosage firstdayDosage,lastday_dosage lastdayDosage,flag_jr flagJr,upd_date updDate,execute_name executeName,execute_time executeTime,mrcs mrcs,xhsl xhsl,drug_line drugLine,id id,zyid zyid,patient_id patientId,visit_id visitId,patient_name patientName,order_type orderType,order_at orderAt,stop_at stopAt,usedrug_days usedrugDays,order_class orderClass,order_id orderId,order_name orderName,drug_speci drugSpeci,dosage dosage,dosage_unit dosageUnit,use_count useCount,sypc sypc,admin_route_id adminRouteId,admin_route_name adminRouteName,use_purpose usePurpose,ypdj ypdj,bnrs_id bnrsId,bnrs_name bnrsName,is_kjyw_ana isKjywAna,analysis_at analysisAt 
+	</sql>
+
+	<select id="findSt004Yzxxb_oracle" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from st004_yzxxb
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findDocAdvice_oracle" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select * from ( select a.*, rownum rn from (
+		select distinct 
+			s4.id id,s4.is_kjyw isKjyw,s4.flag_jr flagJr,s4.order_type orderType,s4.order_at orderAt,s4.stop_at stopAt,
+			s4.order_name orderName,s4.dosage dosage,s4.dosage_unit dosageUnit,s4.use_count useCount,s4.sypc sypc,
+			s4.admin_route_name adminRouteName,s4.bdoc_name bdocName,s4.edoc_name edocName,s4.memo memo,s4.order_id orderId,
+			(select max(d.class_code) from jk_dic_all d where s4.order_name = d.order_name and d.class_code in ('001','002','003')) classCode
+		from st004_yzxxb s4 left join jk_dic_all jda on s4.order_name = jda.order_name 
+		<where>
+			zyid=#{zyid}
+			<if test="classCode!=null and classCode!=''">
+				 <if test="classCode=='108'">
+					and (s4.order_name like (select order_name from jk_dic_all where jk_dic_all.class_code='108'  and order_name like '%a%%' escape 'a')
+ 					or s4.order_name in (select order_name from jk_dic_all where jk_dic_all.class_code='108' and order_name not like '%a%%' escape 'a'))
+			    </if>
+			    <if test="classCode!='108'">
+					and jda.class_code = #{classCode} 
+			    </if>
+		    </if>
+		    <if test="orderTypeIn!=null and orderTypeIn.size!=0">
+		    	and s4.order_type in 
+				<foreach collection="orderTypeIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		    <if test="queryStartDate != null">
+				and s4.order_at &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and s4.order_at &lt;= #{queryEndDate}
+			</if>
+			<if test="memo!=null and memo!=''">
+		    	and s4.memo = #{memo} 
+		    </if>
+			<if test="orderName!=null and orderName!=''">
+				and s4.order_Name like CONCAT(CONCAT('%', #{orderName}), '%')
+		    </if>
+		</where>
+		<if test="orderBy==0">
+		order by is_kjyw desc nulls last,flag_jr desc nulls last ,order_at desc,order_type asc
+		</if>
+		<if test="orderBy!=0">
+		order by is_kjyw desc nulls last,flag_jr desc nulls last ,order_at asc,order_type asc
+		</if>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findKjywWaitAnaly_oracle" resultType="st003Cryxxb">
+		select distinct st4.zyid zyid from st004_yzxxb st4 
+		<where>
+			st4.is_kjyw=1 and nvl(st4.is_kjyw_ana, '0') = '0' and rownum &lt;= #{orclEndNum}
+		</where>
+	</select>
+	
+	<select id="findKjywWaitCount_oracle" resultType="int">
+		select count(*) from st004_yzxxb st4 
+		<where>
+			st4.is_kjyw=1 and nvl(st4.is_kjyw_ana, '0') = '0'
+		</where>
+	</select>
+	
+	<update id="batchUpdAnalFlag_oracle" parameterType="java.util.List" flushCache="true">
+        <foreach collection="st004List" item="item" index="index" open="begin" close=";end;" separator=";">
+        	update st004_yzxxb
+			<set>
+				is_kjyw_ana=#{item.isKjywAna},analysis_at=#{item.analysisAt}
+			</set>
+			<where>id=#{item.id}</where>
+        </foreach>  
+    </update>
+    
+    <select id="getOrderAtNearStart_oracle" resultType="date">
+    	select * from (select st4.order_at from st004_yzxxb st4 
+    	<where>
+    		st4.order_at &gt; #{startDate} and st4.order_at &lt; #{endDate} and st4.is_kjyw=1 and st4.zyid=#{zyid}
+    		and st4.admin_route_name in (select dict_name from sys_dict where dict_type_code='drug_use_path_warn')
+    	</where>
+    	order by st4.order_at) where rownum=1
+    </select>
+</mapper>

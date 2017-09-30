@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw006CydsDao">
+
+	<sql id="commCols">
+		pos_id posId,pos_name posName,pos_value posValue,class_id classId,bh_code bhCode,sp_code spCode,wb_code wbCode,last_at lastAt,flag flag
+	</sql>
+
+	<insert id="save" parameterType="hw006Cyds" flushCache="true">
+		 insert into hw006_cyds(pos_id,pos_name,pos_value,class_id,bh_code,sp_code,wb_code,last_at,flag)
+		 values(#{posId},#{posName},#{posValue},#{classId},#{bhCode},#{spCode},#{wbCode},#{lastAt},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw006_cyds
+		<where>pos_id=#{posId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw006Cyds" flushCache="true">
+		update hw006_cyds
+		<set>
+			pos_id=#{posId},pos_name=#{posName},pos_value=#{posValue},class_id=#{classId},bh_code=#{bhCode},sp_code=#{spCode},wb_code=#{wbCode},last_at=#{lastAt},flag=#{flag}
+		</set>
+		<where>pos_id=#{posId}</where>
+	</update>
+	
+	<update id="updFlag" parameterType="hw006Cyds" flushCache="true">
+		update hw006_cyds
+		<set>
+			last_at=#{lastAt},flag=#{flag}
+		</set>
+		<where>pos_id=#{posId}</where>
+	</update>
+	
+	<select id="get" resultType="hw006Cyds">
+		select <include refid="commCols"/> from hw006_cyds
+  		<where>pos_id=#{posId}</where>
+	</select>
+	
+	
+	<select id="findHw006CydsCount" parameterType="hw006Cyds" resultType="int">
+		select count(*) from hw006_cyds
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw006Cyds">
+		select <include refid="commCols"/> from hw006_cyds
+		<where>
+		</where>
+	</select>
+	
+	<select id="queryList" parameterType="hw006Cyds" resultType="hw006Cyds">
+		select pos_id posId,pos_name posName,sp_code spCode from hw006_cyds 
+		<where>
+		  regexp_like(pos_id, '(^[+-]?\d{0,}\.?\d{0,}$)') and flag=1 
+		  and (class_id=#{classId} or class_id='00')
+		</where>
+		order by class_id
+	</select>
+	
+	<select id="findList" parameterType="hw006Cyds" resultType="hw006Cyds">
+		select h1.class_name className,h6.pos_id posId,h6.pos_name posName,h6.pos_value posValue,h6.class_id classId,h6.sp_code spCode,h6.flag flag,h6.last_at lastAt 
+		from hw006_cyds h6
+		left join hw001_jcxm h1 on h1.class_id=h6.class_id 
+		<where>
+			regexp_like(h6.pos_id,'(^[+-]?\d{0,}\.?\d{0,}$)')
+		</where>
+		order by h6.class_id
+	</select>
+	
+	<select id="findMaxPosId" resultType="string">
+		select max(to_number(pos_id)) posId from hw006_cyds
+	</select>
+</mapper>

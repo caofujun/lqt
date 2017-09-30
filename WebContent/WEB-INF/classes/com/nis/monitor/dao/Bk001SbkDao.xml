@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk001SbkDao">
+
+	<sql id="commCols">
+		report_dept_name reportDeptName,is_ok isOk,is_lb isLb,is_gr isGr,card_return_cause cardReturnCause,is_del isDel,is_cb isCb,weight weight,bed_no bedNo,report_dr_id reportDrId,jbzd_code jbzdCode,jbzd jbzd,card_source cardSource,del_reason delReason,gd_flag gdFlag,gd_userid gdUserid,gd_at gdAt,bk_type bkType,lastoper_name lastoperName,lastoper_date lastoperDate,bk_typename bkTypename,infect_dept_name_edit infectDeptNameEdit,relid relid,zyid zyid,patient_id patientId,visit_id visitId,report_visit reportVisit,patient_name patientName,in_hosp_at inHospAt,ryzd_code ryzdCode,ryzd ryzd,sex sex,age age,age_unit ageUnit,report_at reportAt,charge_dr_id chargeDrId,report_dr_name reportDrName,report_dept_id reportDeptId
+	</sql>
+
+	<insert id="save" parameterType="bk001Sbk" flushCache="true">
+		 insert into bk001_sbk(report_dept_name,is_ok,is_lb,is_gr,card_return_cause,is_del,is_cb,weight,bed_no,report_dr_id,jbzd_code,jbzd,card_source,del_reason,gd_flag,gd_userid,gd_at,bk_type,lastoper_name,lastoper_date,bk_typename,infect_dept_name_edit,relid,zyid,patient_id,visit_id,report_visit,patient_name,in_hosp_at,ryzd_code,ryzd,sex,age,age_unit,report_at,charge_dr_id,report_dr_name,report_dept_id)
+		 values(#{reportDeptName},#{isOk},#{isLb},#{isGr},#{cardReturnCause},#{isDel},#{isCb},#{weight},#{bedNo},#{reportDrId},#{jbzdCode},#{jbzd},#{cardSource},#{delReason},#{gdFlag},#{gdUserid},#{gdAt},#{bkType},#{lastoperName},#{lastoperDate},#{bkTypename},#{infectDeptNameEdit},#{relid},#{zyid},#{patientId},#{visitId},#{reportVisit},#{patientName},#{inHospAt},#{ryzdCode},#{ryzd},#{sex},#{age},#{ageUnit},#{reportAt},#{chargeDrId},#{reportDrName},#{reportDeptId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from bk001_sbk
+		<where>relid=#{relid}</where>
+	</delete>
+	
+	<update id="update" parameterType="bk001Sbk" flushCache="true">
+		update bk001_sbk
+		<set>
+			report_dept_name=#{reportDeptName},is_ok=#{isOk},is_lb=#{isLb},is_gr=#{isGr},card_return_cause=#{cardReturnCause},is_del=#{isDel},is_cb=#{isCb},weight=#{weight},bed_no=#{bedNo},report_dr_id=#{reportDrId},jbzd_code=#{jbzdCode},jbzd=#{jbzd},card_source=#{cardSource},del_reason=#{delReason},gd_flag=#{gdFlag},gd_userid=#{gdUserid},gd_at=#{gdAt},bk_type=#{bkType},lastoper_name=#{lastoperName},lastoper_date=#{lastoperDate},bk_typename=#{bkTypename},infect_dept_name_edit=#{infectDeptNameEdit},relid=#{relid},zyid=#{zyid},patient_id=#{patientId},visit_id=#{visitId},report_visit=#{reportVisit},patient_name=#{patientName},in_hosp_at=#{inHospAt},ryzd_code=#{ryzdCode},ryzd=#{ryzd},sex=#{sex},age=#{age},age_unit=#{ageUnit},report_at=#{reportAt},charge_dr_id=#{chargeDrId},report_dr_name=#{reportDrName},report_dept_id=#{reportDeptId}
+		</set>
+		<where>relid=#{relid}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update bk001_sbk
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='reportDeptName'">report_dept_name=#{bk001Sbk.reportDeptName},</when>
+					<when test="item=='isOk'">is_ok=#{bk001Sbk.isOk},</when>
+					<when test="item=='isLb'">is_lb=#{bk001Sbk.isLb},</when>
+					<when test="item=='isGr'">is_gr=#{bk001Sbk.isGr},</when>
+					<when test="item=='cardReturnCause'">card_return_cause=#{bk001Sbk.cardReturnCause},</when>
+					<when test="item=='isDel'">is_del=#{bk001Sbk.isDel},</when>
+					<when test="item=='isCb'">is_cb=#{bk001Sbk.isCb},</when>
+					<when test="item=='weight'">weight=#{bk001Sbk.weight},</when>
+					<when test="item=='bedNo'">bed_no=#{bk001Sbk.bedNo},</when>
+					<when test="item=='reportDrId'">report_dr_id=#{bk001Sbk.reportDrId},</when>
+					<when test="item=='jbzdCode'">jbzd_code=#{bk001Sbk.jbzdCode},</when>
+					<when test="item=='jbzd'">jbzd=#{bk001Sbk.jbzd},</when>
+					<when test="item=='cardSource'">card_source=#{bk001Sbk.cardSource},</when>
+					<when test="item=='delReason'">del_reason=#{bk001Sbk.delReason},</when>
+					<when test="item=='gdFlag'">gd_flag=#{bk001Sbk.gdFlag},</when>
+					<when test="item=='gdUserid'">gd_userid=#{bk001Sbk.gdUserid},</when>
+					<when test="item=='gdAt'">gd_at=#{bk001Sbk.gdAt},</when>
+					<when test="item=='bkType'">bk_type=#{bk001Sbk.bkType},</when>
+					<when test="item=='lastoperName'">lastoper_name=#{bk001Sbk.lastoperName},</when>
+					<when test="item=='lastoperDate'">lastoper_date=#{bk001Sbk.lastoperDate},</when>
+					<when test="item=='bkTypename'">bk_typename=#{bk001Sbk.bkTypename},</when>
+					<when test="item=='infectDeptNameEdit'">infect_dept_name_edit=#{bk001Sbk.infectDeptNameEdit},</when>
+					<when test="item=='zyid'">zyid=#{bk001Sbk.zyid},</when>
+					<when test="item=='patientId'">patient_id=#{bk001Sbk.patientId},</when>
+					<when test="item=='visitId'">visit_id=#{bk001Sbk.visitId},</when>
+					<when test="item=='reportVisit'">report_visit=#{bk001Sbk.reportVisit},</when>
+					<when test="item=='patientName'">patient_name=#{bk001Sbk.patientName},</when>
+					<when test="item=='inHospAt'">in_hosp_at=#{bk001Sbk.inHospAt},</when>
+					<when test="item=='ryzdCode'">ryzd_code=#{bk001Sbk.ryzdCode},</when>
+					<when test="item=='ryzd'">ryzd=#{bk001Sbk.ryzd},</when>
+					<when test="item=='sex'">sex=#{bk001Sbk.sex},</when>
+					<when test="item=='age'">age=#{bk001Sbk.age},</when>
+					<when test="item=='ageUnit'">age_unit=#{bk001Sbk.ageUnit},</when>
+					<when test="item=='reportAt'">report_at=#{bk001Sbk.reportAt},</when>
+					<when test="item=='chargeDrId'">charge_dr_id=#{bk001Sbk.chargeDrId},</when>
+					<when test="item=='reportDrName'">report_dr_name=#{bk001Sbk.reportDrName},</when>
+					<when test="item=='reportDeptId'">report_dept_id=#{bk001Sbk.reportDeptId},</when>
+				</choose>
+			</foreach>
+			relid=#{bk001Sbk.relid}
+		</set>
+		<where>relid=#{bk001Sbk.relid}</where>
+	</update>
+	
+	<select id="get" resultType="bk001Sbk">
+		select <include refid="commCols"/> from bk001_sbk
+  		<where>relid=#{relid}</where>
+	</select>
+	
+	
+	<select id="findBk001SbkCount" parameterType="bk001Sbk" resultType="int">
+		select count(*) from bk001_sbk
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="bk001Sbk">
+		select <include refid="commCols"/> from bk001_sbk
+		<where>
+		</where>
+	</select>
+	
+	
+	<select id="findByZyid" resultType="bk001Sbk">
+	select bk2.infect_diagn_name infectDiagnName,bk2.infect_type infectTypeId,bk2.infect_date infectDate,bk2.infect_dept_name infectDeptName,bk1.report_dr_name reportDrName,bk1.report_at reportAt,bk2.auth_username authUsername,bk2.auth_at authAt,bk2.relid bk2Relid from bk001_sbk bk1 left join bk002_grzd bk2 on bk1.relid=bk2.refid
+  		<where>bk1.zyid=#{zyid} and bk2.infect_type=1 and bk1.is_ok=1</where>
+	</select>
+	
+	<select id="findCardInfo" resultType="bk001Sbk">
+		select bk1.relid relid,bk1.zyid zyid,bk1.patient_id patientId,bk1.patient_name patientName,bk1.sex sex,bk1.age age,bk1.age_unit ageUnit,bk1.ryzd ryzd,bk1.in_hosp_at inHospAt,bk1.report_at reportAt,bk1.report_dept_id reportDeptId,ks.dept_name reportDeptName,bk1.report_dr_name reportDrName,
+		bk1.is_ok isOk,bk1.is_del isDel,bk1.charge_dr_id chargeDrId, bk1.jbzd_code jbzdCode, bk1.jbzd jbzd,d.employee_name chargeDrName
+		from bk001_sbk bk1 left join zg002_byks ks on bk1.report_dept_id = ks.dept_id left join zg003_yyzg d on bk1.charge_dr_id = d.employee_id 
+  		<where>relid=#{relid}</where>
+	</select>
+	
+	<select id="findReportNum" resultType="int">
+		select count(*) from bk001_sbk
+		<where>
+			zyid=#{zyid}
+		</where>
+	</select>
+	
+	<select id="getByTestNoAndPathoId" resultType="bk001Sbk" parameterType="String">
+		select <include refid="commCols"/> from bk001_sbk bk where bk.relid in ( select zd.refid from bk002_grzd zd where zd.relid in (select mx.refid from bk004_sjbb mx where mx.test_no=#{testno} and mx.patho_id=#{pathoid} ) and zd.auth_status>0 )
+	</select>
+	
+	<select id="getByTestNoAndPathoIdnew" resultType="bk001Sbk" parameterType="String">
+		select <include refid="commCols"/> from bk001_sbk bk where bk.relid in ( select zd.refid from bk002_grzd zd where zd.relid in (select mx.refid from bk004_sjbb mx where mx.test_no=#{testno} and mx.patho_id=#{pathoid} ) )
+	</select>
+	
+	<select id="isReportBefore" resultType="bk001Sbk" parameterType="String">
+		select z.relid,s.zyid from bk002_grzd z
+		left join bk001_sbk s
+		on z.refid = s.relid
+		where s.zyid=#{zyid} and z.infect_diagn_id=#{idi} and  z.auth_status in (0,1) and z.infect_type=#{ift}
+		and nvl(z.jbzg,'x') not in ('治愈','好转','其它')
+	</select>
+	
+	<select id="findByZyidAndCode" resultType="bk001Sbk" parameterType="String">
+		select z.relid,s.zyid,z.infect_date infectDate,z.infect_type infectTypeId from bk002_grzd z
+		left join bk001_sbk s
+		on z.refid = s.relid
+		where s.zyid=#{zyid} and z.infect_diagn_id=#{idi} and  z.auth_status=1
+	</select>
+	
+	<select id="findByZyidState" resultType="bk001Sbk">
+		select bk2.infect_diagn_name infectDiagnName,bk2.infect_type infectTypeId,bk2.infect_date infectDate,bk2.infect_dept_name infectDeptName,bk1.report_dr_name reportDrName,bk1.report_at reportAt,bk2.auth_username authUsername,bk2.auth_at authAt,bk2.relid bk2Relid from bk001_sbk bk1 left join bk002_grzd bk2 on bk1.relid=bk2.refid
+  		<where>bk1.zyid=#{zyid}  and (bk2.AUTH_STATUS=0 or bk2.AUTH_STATUS=1)</where>
+	</select>
+	
+	<update id="returnCard" parameterType="bk001Sbk" >
+		update bk001_sbk set lastoper_date=#{lastoperDate},lastoper_name=#{lastoperName},is_ok=0 where relid=#{relid}
+	</update>
+	
+	<select id="getReportHistoryDetailsByZyid" resultType="bk001Sbk">
+		select bk2.infect_type       infectTypeId,
+		       bk2.infect_date       startAt,
+		       bk2.infect_dept_name  infectDeptName,
+		       bk2.infect_diagn_name infectName,
+		       bk1.reportdrname,
+		       bk1.reportdeptname,
+		       bk2.ope_relid,
+		       bk2.ope_name opeName,
+		       bk1.relid,
+		       bk1.zyid,
+		       bk1.bk2Relid
+		  from (select distinct bk.relid            relid,
+		                        bk.zyid             zyid,
+		                        bk.report_dept_name reportDeptName,
+		                        bk.report_dr_name   reportDrName,
+		                        zd.relid            bk2Relid
+		          from bk001_sbk bk
+		          join bk002_grzd zd
+		            on bk.relid = zd.refid
+		         where bk.zyid =#{zyid} ) bk1
+		  left join bk002_grzd bk2
+		    on bk1.relid = bk2.refid
+	</select>
+	
+</mapper>

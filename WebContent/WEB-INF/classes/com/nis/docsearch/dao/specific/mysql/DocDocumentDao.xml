@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.docsearch.dao.DocDocumentDao">
+
+	<sql id="commCols_mysql">
+		DOC_SCOPE docScope,ID id,DOC_NAME docName,DOC_DESC docDesc,DOC_TYPE docType,DOC_FORMAT docFormat,DOC_PIC docPic,DOC_RECOMMENG docRecommeng,DOC_ANONYRNOUS docAnonyrnous,DOC_URL docUrl,DOC_SCORE docScore,DOC_LOOK docLook,DOC_DOWNLOAD docDownload,CREATE_USERID createUserid,CREATE_USERNAME createUsername,CREATE_TIME createTime,UPDATE_USERID updateUserid,UPDATE_USERNAME updateUsername,UPDATE_TIME updateTime,DOC_SIZE docSize,DOC_PREVIEW  docPreview
+	</sql>
+
+	<select id="findDocDocument_mysql" parameterType="docDocument" resultType="docDocument">
+		select <include refid="commCols_mysql"/> from DOC_DOCUMENT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

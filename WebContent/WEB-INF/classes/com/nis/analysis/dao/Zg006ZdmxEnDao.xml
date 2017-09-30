@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Zg006ZdmxEnDao">
+
+	<sql id="commCols">
+		MX_ID mxId,INFECT_CODE infectCode,STANDARD_NO standardNo,NODE_LEVEL nodeLevel,NODE_ID nodeId,NODE_BODY nodeBody,IF_BASE_ELEMENT ifBaseElement,ELEMENT_ID elementId,ELEMENT_NAME elementName,IF_MUST ifMust,LIST_COUNT listCount,NEED_COUNT needCount,WEIGHT_VALUE weightValue,P_NODE_ID pNodeId,WEIGHT_RATIO weightRatio,NODE_TYPE nodeType,NODE_TYPE2 nodeType2
+	</sql>
+
+	<insert id="save" parameterType="zg006ZdmxEn"  flushCache="true">
+		 insert into ZG006_ZDMX_EN(MX_ID,INFECT_CODE,STANDARD_NO,NODE_LEVEL,NODE_ID,NODE_BODY,IF_BASE_ELEMENT,ELEMENT_ID,ELEMENT_NAME,IF_MUST,LIST_COUNT,NEED_COUNT,WEIGHT_VALUE,P_NODE_ID,WEIGHT_RATIO,NODE_TYPE,NODE_TYPE2)
+		 values(#{mxId},#{infectCode},#{standardNo},#{nodeLevel},#{nodeId},#{nodeBody},#{ifBaseElement},#{elementId},#{elementName},#{ifMust},#{listCount},#{needCount},#{weightValue},#{pNodeId},#{weightRatio},#{nodeType},#{nodeType2})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG006_ZDMX_EN
+		<where>MX_ID=#{mxId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg006ZdmxEn" flushCache="true">
+		update ZG006_ZDMX_EN
+		<set>
+			MX_ID=#{mxId},INFECT_CODE=#{infectCode},STANDARD_NO=#{standardNo},NODE_LEVEL=#{nodeLevel},NODE_ID=#{nodeId},NODE_BODY=#{nodeBody},IF_BASE_ELEMENT=#{ifBaseElement},ELEMENT_ID=#{elementId},ELEMENT_NAME=#{elementName},IF_MUST=#{ifMust},LIST_COUNT=#{listCount},NEED_COUNT=#{needCount},WEIGHT_VALUE=#{weightValue},P_NODE_ID=#{pNodeId},WEIGHT_RATIO=#{weightRatio},NODE_TYPE=#{nodeType},NODE_TYPE2=#{nodeType2}
+		</set>
+		<where>MX_ID=#{mxId}</where>
+	</update>
+	
+	<select id="get" resultType="zg006ZdmxEn">
+		select <include refid="commCols"/> from ZG006_ZDMX_EN
+  		<where>MX_ID=#{mxId}</where>
+	</select>
+	
+	
+	<select id="findZg006ZdmxEnCount" parameterType="zg006ZdmxEn" resultType="int">
+		select count(*) from ZG006_ZDMX_EN
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg006ZdmxEn">
+		select <include refid="commCols"/> from ZG006_ZDMX_EN
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

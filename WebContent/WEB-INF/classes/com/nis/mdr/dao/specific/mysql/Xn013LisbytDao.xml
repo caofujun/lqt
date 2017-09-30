@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn013LisbytDao">
+
+	<sql id="commCols_mysql">
+		LIS_BYTID lisBytid,LIS_BYTNAME lisBytname,PYCODE pycode,WBCODE wbcode,BHCODE bhcode,COUNTER_BYTID counterBytid
+	</sql>
+
+	<select id="findXn013Lisbyt_mysql" parameterType="xn013Lisbyt" resultType="xn013Lisbyt">
+		select <include refid="commCols_mysql"/> from XN013_LISBYT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

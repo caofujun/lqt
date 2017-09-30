@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicDiseaseDao">
+
+	<sql id="commCols">
+		ID id,ICD_CODE icdCode,DISEASE_CODE
+		diseaseCode,DISEASE_NAME diseaseName,ICD_VER icdVer,CAT_ID catId,STATE
+		state,DETAIL detail,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkDicDisease" flushCache="true">
+		insert into
+		JK_DIC_DISEASE(ID,ICD_CODE,DISEASE_CODE,DISEASE_NAME,ICD_VER,CAT_ID,STATE,DETAIL,UPD_TIME,UPD_FLAG)
+		values(#{id},#{icdCode},#{diseaseCode},#{diseaseName},#{icdVer},#{catId},#{state},#{detail},#{updTime},#{updFlag})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from JK_DIC_DISEASE
+		<where>ID=#{id}</where>
+	</delete>
+
+	<update id="update" parameterType="jkDicDisease" flushCache="true">
+		update JK_DIC_DISEASE
+		<set>
+			ID=#{id},ICD_CODE=#{icdCode},DISEASE_CODE=#{diseaseCode},DISEASE_NAME=#{diseaseName},ICD_VER=#{icdVer},CAT_ID=#{catId},STATE=#{state},DETAIL=#{detail},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<update id="updateFlag" parameterType="jkDicDisease" flushCache="true">
+		update JK_DIC_DISEASE
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<select id="get" resultType="jkDicDisease">
+		select
+		<include refid="commCols" />
+		from JK_DIC_DISEASE
+		<where>ID=#{id}</where>
+	</select>
+
+
+	<select id="findJkDicDiseaseCount" parameterType="jkDicDisease"
+		resultType="int">
+		select count(*) from JK_DIC_DISEASE
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="jkDicDisease">
+		select
+		<include refid="commCols" />
+		from JK_DIC_DISEASE
+		<where>
+		</where>
+	</select>
+</mapper>

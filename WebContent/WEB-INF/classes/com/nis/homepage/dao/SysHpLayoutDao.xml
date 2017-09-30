@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.homepage.dao.SysHpLayoutDao">
+
+	<sql id="commCols">
+		ID id,LAYOUT_CODE layoutCode,LAYOUT_NAME layoutName,LAYOUT_URL layoutUrl,LAYOUT_STATUS layoutStatus,IMG_URL imgUrl,REMARK remark
+	</sql>
+
+	<insert id="save" parameterType="sysHpLayout" flushCache="true">
+		 insert into SYS_HP_LAYOUT(ID,LAYOUT_CODE,LAYOUT_NAME,LAYOUT_URL,LAYOUT_STATUS,IMG_URL,REMARK)
+		 values(#{id},#{layoutCode},#{layoutName},#{layoutUrl},#{layoutStatus},#{imgUrl},#{remark})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from SYS_HP_LAYOUT
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysHpLayout" flushCache="true">
+		update SYS_HP_LAYOUT
+		<set>
+			LAYOUT_CODE=#{layoutCode},LAYOUT_NAME=#{layoutName},LAYOUT_URL=#{layoutUrl},IMG_URL=#{imgUrl},REMARK=#{remark}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateStatus" flushCache="true">
+		update SYS_HP_LAYOUT
+		<set>
+			LAYOUT_STATUS=#{status}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="sysHpLayout">
+		select <include refid="commCols"/> from SYS_HP_LAYOUT
+  		<where>ID=#{id}</where>
+	</select>
+	
+	<select id="getLayoutCode" resultType="sysHpLayout">
+		select <include refid="commCols"/> from SYS_HP_LAYOUT
+  		<where>LAYOUT_CODE=#{layoutCode}</where>
+	</select>
+	
+	<select id="findSysHpLayoutCount" parameterType="sysHpLayout" resultType="int">
+		select count(*) from SYS_HP_LAYOUT
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="sysHpLayout">
+		select <include refid="commCols"/> from SYS_HP_LAYOUT
+		<where>
+		</where>
+	</select>
+	
+	<select id="find" parameterType="sysHpLayout" resultType="sysHpLayout">
+		select <include refid="commCols"/> from SYS_HP_LAYOUT
+		<where>
+			<if test="layoutStatus!=null">
+				LAYOUT_STATUS=#{layoutStatus}
+			</if>
+		</where>
+		ORDER BY LAYOUT_STATUS DESC
+	</select>
+</mapper>

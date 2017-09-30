@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St006TwxxDao">
+
+	<sql id="commCols_oracle">
+		ID id,ZYID zyid,PATIENT_ID patientId,RECORDING_AT recordingAt,TW_VALUES twValues,TEMPRATURE_TYPE tempratureType,TEMPRATURE_TYPE_NAME tempratureTypeName,UPD_DATE updDate,TW_VALUES_KTL twValuesKtl,TW_ANAL_FLAG twAnalFlag,TW_ANAL_DT twAnalDt
+	</sql>
+
+	
+	<select id="findSt006Twxx_oracle" parameterType="st006Twxx" resultType="st006Twxx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ST006_TWXX
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findMainFever_oracle" resultType="map">
+		select t.datetime "datetime",nvl(t1.fever, 0) "fever",nvl(t2.fever48, 0) "fever48",nvl(t3.feveryw, 0) "feveryw" from 
+		       (select trunc(#{startDate}) + level - 1 as datetime from dual
+		connect by level &lt;
+		=(ceil((trunc(#{endDate}) - trunc(#{startDate}) + 1)))) t left join 
+		       (select trunc(b.recording_at) datetime,count(distinct b.zyid) fever from gm004_jcmx a left join (select distinct zyid, recording_at
+	          from st006_twxx where tw_values >= #{tw}
+	          and trunc(recording_at) between #{startDate} and #{endDate}) b on a.zyid = b.zyid and to_char(a.creationdate, 'yyyy-MM-dd')=to_char(b.recording_at, 'yyyy-MM-dd')
+            where a.typeid = '02' and a.creationdate between #{startDate} and #{endDate}
+		          group by trunc(b.recording_at)) t1 on t.datetime=t1.datetime
+		left join (select trunc(t.recording_at) datetime, count(distinct t.patient_id) fever48
+		          from st006_twxx t
+		          left join st003_cryxxb s
+		            on s.zyid = t.zyid
+		         where t.tw_values &gt;= #{tw}
+		           and ceil((t.recording_at - s.in_hosp_at) * 24) &gt; 48
+		           and trunc(t.recording_at) between #{startDate} and #{endDate} group by trunc(t.recording_at)) t2 on t1.datetime=t2.datetime
+		 left join (select  trunc(a.creationdate) datetime, sum(a.survey_count) feveryw from gm003_ybsj a where a.type_id ='17' and  a.creationdate between #{startDate} and #{endDate} and a.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1') group by a.creationdate) t3 on t.datetime=t3.datetime           
+		order by t.datetime asc
+	</select>
+</mapper>

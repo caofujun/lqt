@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm004JcmxDao">
+
+	<sql id="commCols_mysql">
+		IN_DEPT_DT inDeptDt,CREATIONDATE creationdate,TYPEID typeid,ZYID zyid,ISNEWBORN isnewborn,NEONATEBW neonatebw,DEPTID deptid,ISADD isadd,INTERVENTIONMARKS interventionmarks,OPERATOR_NAME operatorName,OPERATOR_DT operatorDt
+	</sql>
+
+	<select id="findGm004Jcmx_mysql" parameterType="gm004Jcmx" resultType="gm004Jcmx">
+		select <include refid="commCols_mysql"/> from GM004_JCMX
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

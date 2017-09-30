@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk003FrbkDao">
+
+	<sql id="commCols_mysql">
+		NOWADDRTYPENAME nowaddrtypename,NOWADDRCODE nowaddrcode,NOWADDRCODEVALUE nowaddrcodevalue,NOWADDR nowaddr,CARDINALSYMPTOMS cardinalsymptoms,STARTDATE startdate,DIAGNOSEDATE diagnosedate,FIRSTVISIT firstvisit,PRIMARYDIAGNOSIS primarydiagnosis,SAMPLEDATE sampledate,SENDDATE senddate,LISITEMID lisitemid,LISITEMVALUE lisitemvalue,LISTRESULT listresult,DOCTORID doctorid,DOCTORNAME doctorname,OFFICEID officeid,OFFICENAME officename,FLAG flag,FILLDATE filldate,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,DELREASON delreason,AUDITDATE auditdate,AUDITOR auditor,ISPRINT isprint,MASTERID masterid,CARDID cardid,PATIENT_ID patientId,MZID mzid,ZYID zyid,VISIT_ID visitId,PATIENT_NAME patientName,PARENT_NAME parentName,SEXID sexid,SEXNAME sexname,BIRTYDAY birtyday,AGE age,AGEUNIT ageunit,ID id,PROFESSIONID professionid,PROFESSIONNAME professionname,TELP telp,WORKUNIT workunit,NOWADDRTYPEID nowaddrtypeid
+	</sql>
+
+	<select id="findCtgBk003Frbk_mysql" parameterType="ctgBk003Frbk" resultType="ctgBk003Frbk">
+		select <include refid="commCols_mysql"/> from CTG_BK003_FRBK
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

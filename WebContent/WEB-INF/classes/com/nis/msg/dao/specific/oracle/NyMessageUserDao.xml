@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageUserDao">
+
+	<sql id="commCols_oracle">
+		MSG_USER_ID msgUserId,THEME_ID themeId,DEPT_ID deptId,USER_ID userId
+	</sql>
+
+	
+	<select id="findNyMessageUser_oracle" parameterType="nyMessageUser" resultType="nyMessageUser">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from NY_MESSAGE_USER
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getByDeptIdAndMid_oracle"  resultType="nyMessageUser">
+		select <include refid="commCols"/> from NY_MESSAGE_USER  
+		<where>
+		 	THEME_ID=#{themeId}
+			<if test="deptId!=null and deptId!=''"> and DEPT_ID=#{deptId}</if>
+			<if test="userId!=null and userId!=''"> and USER_ID=#{userId}</if>
+			and rownum = 1
+		</where>
+		
+	</select>
+</mapper>

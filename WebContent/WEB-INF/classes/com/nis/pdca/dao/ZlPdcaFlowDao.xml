@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.pdca.dao.ZlPdcaFlowDao">
+
+	<sql id="commCols">
+		F_UID fuid,FLOW_NO flowNo,FLOW_NAME flowName,FLOW_STEPS flowSteps,FLOW_CREATETIME flowCreatetime,STATUS status
+	</sql>
+
+	<insert id="save" parameterType="zlPdcaFlow"  flushCache="true">
+		 insert into ZL_PDCA_FLOW(F_UID,FLOW_NO,FLOW_NAME,FLOW_STEPS,FLOW_CREATETIME,STATUS)
+		 values(#{fuid},#{flowNo},#{flowName},#{flowSteps},#{flowCreatetime},#{status})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZL_PDCA_FLOW
+		<where>F_UID=#{fuid}</where>
+	</delete>
+	
+	<update id="update" parameterType="zlPdcaFlow" flushCache="true">
+		update ZL_PDCA_FLOW
+		<set>
+			F_UID=#{fuid},FLOW_NO=#{flowNo},FLOW_NAME=#{flowName},FLOW_STEPS=#{flowSteps},STATUS=#{status}
+		</set>
+		<where>F_UID=#{fuid}</where>
+	</update>
+	
+	<select id="get" resultType="zlPdcaFlow">
+		select <include refid="commCols"/> from ZL_PDCA_FLOW
+  		<where>F_UID=#{fuid}</where>
+	</select>
+	
+	
+	<select id="findZlPdcaFlowCount" parameterType="zlPdcaFlow" resultType="int">
+		select count(*) from ZL_PDCA_FLOW
+		<where>
+			<if test="startDate!=null and startDate!=''"> <![CDATA[and FLOW_CREATETIME >= to_date(#{startDate},'yyyy-MM-dd hh24:mi:ss')]]></if>
+			<if test="endDate!=null and endDate!=''"> <![CDATA[and FLOW_CREATETIME <= to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')]]></if>
+			<if test="searchString!=null and searchString!=''"> and ( FLOW_NAME like CONCAT(CONCAT('%', #{searchString}), '%') or FLOW_NO like CONCAT(CONCAT('%', #{searchString}), '%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zlPdcaFlow">
+		select <include refid="commCols"/> from ZL_PDCA_FLOW
+		<where>
+			<if test="searchString!=null and searchString!=''">and (FLOW_NAME like CONCAT(CONCAT('%', #{searchString}), '%') or FLOW_STEPS like CONCAT(CONCAT('%', #{searchString}), '%'))</if>
+		</where>
+	</select>
+	
+	<select id="findZlPdcaFlowList" parameterType="zlPdcaFlow" resultType="zlPdcaFlow">
+		select <include refid="commCols_oracle"/> from ZL_PDCA_FLOW
+		<where>
+			<if test="startDate!=null and startDate!=''"> <![CDATA[and FLOW_CREATETIME >= to_date(#{startDate},'yyyy-MM-dd hh24:mi:ss')]]></if>
+			<if test="endDate!=null and endDate!=''"> <![CDATA[and FLOW_CREATETIME <= to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')]]></if>
+			<if test="searchString!=null and searchString!=''"> and ( FLOW_NAME like CONCAT(CONCAT('%', #{searchString}), '%') or FLOW_NO like CONCAT(CONCAT('%', #{searchString}), '%'))</if>
+		</where>
+	</select>
+</mapper>

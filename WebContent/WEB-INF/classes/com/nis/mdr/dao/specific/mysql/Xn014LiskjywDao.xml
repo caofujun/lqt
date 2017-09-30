@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn014LiskjywDao">
+
+	<sql id="commCols_mysql">
+		DRUGID drugid,DRUGNAME drugname,PYCODE pycode,WBCODE wbcode,BHCODE bhcode,COUNTER_DRUGID counterDrugid,DRUG_FX drugFx
+	</sql>
+
+	<select id="findXn014Liskjyw_mysql" parameterType="xn014Liskjyw" resultType="xn014Liskjyw">
+		select <include refid="commCols_mysql"/> from XN014_LISKJYW
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

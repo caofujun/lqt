@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questions.dao.QsRepoTopicDao">
+
+	<sql id="commCols_oracle">
+		TID tid,TITLE title,TTYPE ttype,TLEVEL tlevel,ALLOW_NULL allowNull,NOTE note,CAT_ID catId,CAT_NAME catName,UNIT_ID unitId,DEP_NO depNo,DOC_NO docNo,ATTR attr,STATE state,UPD_TIME updTime,UPD_USER updUser,MAX_VALUE maxValue,FEED_TYPE feedType,CREATE_USER createUser
+	</sql>
+
+	<select id="findQsRepoTopic_oracle" parameterType="qsRepoTopic" resultType="qsRepoTopic">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from QS_REPO_TOPIC
+		<where> 1 = 1 
+			<if test="title!=null and title!=''">and title LIKE CONCAT(CONCAT('%', #{title}), '%')</if>
+			and state=0
+			<if test="tlevel==9"><!-- 平台级 -->
+			and TLEVEL=#{tlevel}
+			</if>
+			<if test="tlevel==6"><!-- 本院级 -->
+			and ((TLEVEL=#{tlevel} and UNIT_ID=#{unitId}) or TLEVEL=9)
+			</if>
+			<if test="tlevel==3"><!-- 科室级 -->
+			and ((TLEVEL=#{tlevel} and UNIT_ID=#{unitId} and DEP_NO=#{depNo}) or (TLEVEL='6' and UNIT_ID=#{unitId}) or TLEVEL='9')
+			</if>
+			<if test="tlevel==0"><!-- 本人级 -->
+			and ((TLEVEL=#{tlevel} and UNIT_ID=#{unitId} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (TLEVEL='3' and UNIT_ID=#{unitId} and DEP_NO=#{depNo}) or (TLEVEL='6' and UNIT_ID=#{unitId}) or TLEVEL='9')
+			</if>
+		</where> order by upd_time desc
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

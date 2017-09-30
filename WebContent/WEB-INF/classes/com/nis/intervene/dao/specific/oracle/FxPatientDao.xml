@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxPatientDao">
+
+	<sql id="commCols_oracle">
+		FX_ID fxId,FX_PATIENT.PATIENT_ID patientId,ZY_ID zyId,SCORE score,UP_DATE updateTime
+	</sql>
+
+	
+	<select id="findFxPatient_oracle" parameterType="fxPatient" resultType="fxPatient">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>,st001_jbxxb.patient_name patientName,st001_jbxxb.sex sex,st001_jbxxb.birth_date birthDate from FX_PATIENT left join st001_jbxxb on FX_PATIENT.patient_id=st001_jbxxb.patient_id
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	
+	<select id="findDepFx_oracle" parameterType="fxPatient" resultType="fxPatientIndex">
+		select * from ( select a.*, rownum rn from (
+		 select 	st003_cryxxb.dept_name deptName,st003_cryxxb.dept_code deptCode, count(zyid) fxCount,sum(case when (gy_status='0' or gy_status is null) then 1 else 0 end) wgyCount,sum(case when (gy_status='1' or gy_status='2') then 1 else 0 end) ygyCount from FX_PATIENT
+	  	 left join st003_cryxxb
+		  on FX_PATIENT.Zy_Id = st003_cryxxb.zyid
+		 <where>
+		 	<if test="dgsType==0">
+		 		(<![CDATA[out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>)
+				or (<![CDATA[out_at is null and in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) ]]>)
+				or (<![CDATA[in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]>)
+		 	</if>
+		 	<if test="dgsType==1">
+			 	<if test="startDate!=null and startDate!=''"> <![CDATA[and OUT_AT >= to_date(#{startDate},'yyyy-MM-dd')]]></if>
+				<if test="endDate!=null and endDate!=''"> <![CDATA[and OUT_AT < (to_date(#{endDate},'yyyy-MM-dd')+1)]]></if>
+			</if>
+		</where>
+		 group by dept_name,dept_code
+		 order by fxCount desc	
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+
+</mapper>

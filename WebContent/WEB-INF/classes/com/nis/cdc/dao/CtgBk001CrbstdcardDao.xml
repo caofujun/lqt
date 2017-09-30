@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbstdcardDao">
+
+	<sql id="commCols">
+		CTINFECTIONNAME ctinfectionname,CONTACTFLAG contactflag,SUBREMARK subremark,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDATE reportdate,MASTERID masterid,SUBID subid,MARRIAGEID marriageid,MARRIAGEVALUE marriagevalue,NATIONID nationid,NATIONNAME nationname,EDUCATIONID educationid,EDUCATIONNAME educationname,REGADDRTYPEID regaddrtypeid,REGADDRTYPENAME regaddrtypename,REGADDRCODE regaddrcode,REGADDRCODEVALUE regaddrcodevalue,REGVILLAGE regvillage,REGHOUSENUMBER reghousenumber,REGADDR regaddr,CONTACTHISTORYID contacthistoryid,CONTACTHISTORYNAME contacthistoryname,CONTACTHISTORYOTHER contacthistoryother,INJECTCOUNT injectcount,OPPOSITESEXCOUNT oppositesexcount,URNINGCOUNT urningcount,STDHISTORYID stdhistoryid,STDHISTORYNAME stdhistoryname,INFECTIONID infectionid,INFECTIONNAME infectionname,INFECTIONOTHER infectionother,SAMPLESOURCEID samplesourceid,SAMPLESOURCENAME samplesourcename,SAMPLESOURCEOTHER samplesourceother,LABCONCLUSIONID labconclusionid,LABCONCLUSIONNAME labconclusionname,AFFIRMDATE affirmdate,AFFIRMUNIT affirmunit,DIAGNOSEDT diagnosedt,CTINFECTIONID ctinfectionid,BUSINESS business, SINFECT sinfect </sql>
+
+	<insert id="save" parameterType="ctgBk001Crbstdcard"  flushCache="true">
+		 insert into CTG_BK001_CRBSTDCARD(CTINFECTIONNAME,CONTACTFLAG,SUBREMARK,REPORTDOCTORID,REPORTDOCTORNAME,REPORTDATE,MASTERID,SUBID,MARRIAGEID,MARRIAGEVALUE,NATIONID,NATIONNAME,EDUCATIONID,EDUCATIONNAME,REGADDRTYPEID,REGADDRTYPENAME,REGADDRCODE,REGADDRCODEVALUE,REGADDR,CONTACTHISTORYID,CONTACTHISTORYNAME,CONTACTHISTORYOTHER,INJECTCOUNT,OPPOSITESEXCOUNT,URNINGCOUNT,STDHISTORYID,STDHISTORYNAME,INFECTIONID,INFECTIONNAME,INFECTIONOTHER,SAMPLESOURCEID,SAMPLESOURCENAME,SAMPLESOURCEOTHER,LABCONCLUSIONID,LABCONCLUSIONNAME,AFFIRMDATE,AFFIRMUNIT,DIAGNOSEDT,CTINFECTIONID,BUSINESS,SINFECT,REGVILLAGE,REGHOUSENUMBER)
+		 values(#{ctinfectionname},#{contactflag},#{subremark},#{reportdoctorid},#{reportdoctorname},#{reportdate},#{masterid},#{subid},#{marriageid},#{marriagevalue},#{nationid},#{nationname},#{educationid},#{educationname},#{regaddrtypeid},#{regaddrtypename},#{regaddrcode},#{regaddrcodevalue},#{regaddr},#{contacthistoryid},#{contacthistoryname},#{contacthistoryother},#{injectcount},#{oppositesexcount},#{urningcount},#{stdhistoryid},#{stdhistoryname},#{infectionid},#{infectionname},#{infectionother},#{samplesourceid},#{samplesourcename},#{samplesourceother},#{labconclusionid},#{labconclusionname},#{affirmdate},#{affirmunit},#{diagnosedt},#{ctinfectionid},#{business},#{sinfect},#{regvillage},#{reghousenumber})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK001_CRBSTDCARD
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk001Crbstdcard" flushCache="true">
+		update CTG_BK001_CRBSTDCARD
+		<set>
+			CTINFECTIONNAME=#{ctinfectionname},CONTACTFLAG=#{contactflag},SUBREMARK=#{subremark},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},REPORTDATE=#{reportdate},MASTERID=#{masterid},SUBID=#{subid},MARRIAGEID=#{marriageid},MARRIAGEVALUE=#{marriagevalue},NATIONID=#{nationid},NATIONNAME=#{nationname},EDUCATIONID=#{educationid},EDUCATIONNAME=#{educationname},REGADDRTYPEID=#{regaddrtypeid},REGADDRTYPENAME=#{regaddrtypename},REGADDRCODE=#{regaddrcode},REGADDRCODEVALUE=#{regaddrcodevalue},REGADDR=#{regaddr},CONTACTHISTORYID=#{contacthistoryid},CONTACTHISTORYNAME=#{contacthistoryname},CONTACTHISTORYOTHER=#{contacthistoryother},INJECTCOUNT=#{injectcount},OPPOSITESEXCOUNT=#{oppositesexcount},URNINGCOUNT=#{urningcount},STDHISTORYID=#{stdhistoryid},STDHISTORYNAME=#{stdhistoryname},INFECTIONID=#{infectionid},INFECTIONNAME=#{infectionname},INFECTIONOTHER=#{infectionother},SAMPLESOURCEID=#{samplesourceid},SAMPLESOURCENAME=#{samplesourcename},SAMPLESOURCEOTHER=#{samplesourceother},LABCONCLUSIONID=#{labconclusionid},LABCONCLUSIONNAME=#{labconclusionname},AFFIRMDATE=#{affirmdate},AFFIRMUNIT=#{affirmunit},DIAGNOSEDT=#{diagnosedt},CTINFECTIONID=#{ctinfectionid},BUSINESS=#{business},SINFECT=#{sinfect},REGVILLAGE=#{regvillage},REGHOUSENUMBER=#{reghousenumber} 
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk001Crbstdcard">
+		select <include refid="commCols"/> from CTG_BK001_CRBSTDCARD
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk001CrbstdcardCount" parameterType="ctgBk001Crbstdcard" resultType="int">
+		select count(*) from CTG_BK001_CRBSTDCARD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk001Crbstdcard">
+		select <include refid="commCols"/> from CTG_BK001_CRBSTDCARD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="isHIVExist"  resultType="int">
+		select count(*) from ctg_sys007_dictcontagion n where n.sexcard=1 and n.diseaseid in (
+			select diseaseid from CTG_BK001_CRBDISEASE t <where>
+			t.MASTERID=#{masterid}
+		</where> )		
+	</select>
+	
+</mapper>

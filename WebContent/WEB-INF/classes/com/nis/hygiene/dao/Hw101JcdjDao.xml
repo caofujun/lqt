@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw101JcdjDao">
+
+	<sql id="commCols">
+		dj_id djId,dept_id deptId,dept_name deptName,take_by takeBy,take_at takeAt,create_by createBy,create_at createAt,report_by reportBy,report_at reportAt,memo memo,type type,isprint isprint
+	</sql>
+
+	<insert id="save" parameterType="hw101Jcdj" flushCache="true">
+		 insert into hw101_jcdj(dj_id,dept_id,dept_name,take_by,take_at,create_by,create_at,report_by,report_at,memo,type,isprint)
+		 values(#{djId},#{deptId},#{deptName},#{takeBy},#{takeAt},#{createBy},#{createAt},#{reportBy},#{reportAt},#{memo},#{type},#{isprint})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw101_jcdj
+		<where>dj_id=#{djId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw101Jcdj" flushCache="true">
+		update hw101_jcdj
+		<set>
+			dj_id=#{djId},dept_id=#{deptId},dept_name=#{deptName},take_by=#{takeBy},take_at=#{takeAt},create_by=#{createBy},create_at=#{createAt},report_by=#{reportBy},report_at=#{reportAt},memo=#{memo},type=#{type},isprint=#{isprint}
+		</set>
+		<where>dj_id=#{djId}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update hw101_jcdj
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='deptId'">dept_id=#{hw101Jcdj.deptId},</when>
+					<when test="item=='deptName'">dept_name=#{hw101Jcdj.deptName},</when>
+					<when test="item=='takeBy'">take_by=#{hw101Jcdj.takeBy},</when>
+					<when test="item=='takeAt'">take_at=#{hw101Jcdj.takeAt},</when>
+					<when test="item=='createBy'">create_by=#{hw101Jcdj.createBy},</when>
+					<when test="item=='createAt'">create_at=#{hw101Jcdj.createAt},</when>
+					<when test="item=='reportBy'">report_by=#{hw101Jcdj.reportBy},</when>
+					<when test="item=='reportAt'">report_at=#{hw101Jcdj.reportAt},</when>
+					<when test="item=='memo'">memo=#{hw101Jcdj.memo},</when>
+					<when test="item=='type'">type=#{hw101Jcdj.type},</when>
+				</choose>
+			</foreach>
+			dj_id=#{hw101Jcdj.djId}
+		</set>
+		<where>dj_id=#{hw101Jcdj.djId}</where>
+	</update>
+	
+	<select id="get" resultType="hw101Jcdj">
+		select <include refid="commCols"/> from hw101_jcdj
+  		<where>dj_id=#{djId}</where>
+	</select>
+	
+	
+	<select id="findHw101JcdjCount" parameterType="hw101Jcdj" resultType="int">
+		select count(*) from hw101_jcdj
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw101Jcdj">
+		select <include refid="commCols"/> from hw101_jcdj
+		<where>
+		</where>
+	</select>
+	
+	<select id="findHw101ListCount" parameterType="hw102Jcdmx" resultType="int">
+		select count(*) from (
+		select distinct hw101.dj_id djId
+		from hw101_jcdj hw101 
+		left join hw102_jcdmx hw102 on hw101.dj_id = hw102.dj_id
+		left join hw103_jcdjg hw103 on hw103.report_id = hw102.report_id
+		<where>
+			and hw101.dept_id in (select * from (select h9.dept_id from hw009_kssq h9 where user_id=#{userId}))
+			<if test="type!=null and type!=''">
+				and hw101.type=#{type}
+			</if>
+			<if test="djId!=null and djId!=''">
+				and hw101.dj_id LIKE CONCAT(CONCAT('%', #{djId}), '%')
+			</if>
+			<if test="result!=null and result!=''">
+				and hw103.result like CONCAT(CONCAT('%', #{result}), '%')
+			</if>
+			<if test="status!=null and status!=''">
+				and hw102.status=#{status}
+			</if>
+			<if test="dataStatus!=null and dataStatus!=''">
+				<choose>
+					<when test="dataStatus==1">
+						and hw102.result_flag!=-1
+					</when>
+					<when test="dataStatus==2">
+						and (hw102.result_flag=-1 or hw102.result_flag is null)
+					</when>
+					<when test="dataStatus==3">
+						and hw102.status=1
+					</when>
+					<when test="dataStatus==4">
+						and (hw102.status=0 or hw102.status is null)
+					</when>
+				</choose>
+			</if>
+			<if test="dateField!=null">
+				<if test="queryStartDate!=null and dateField=='report_at'">
+					and hw101.report_at &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate!=null and dateField=='report_at'">
+					and hw101.report_at &lt;= #{queryEndDate}
+				</if>
+				<if test="queryStartDate!=null and dateField=='test_at'">
+					and hw102.test_at &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate!=null and dateField=='test_at'">
+					and hw102.test_at &lt;= #{queryEndDate}
+				</if>
+			</if>
+			<if test="placeId!=null and placeId!=''">
+				and hw102.place_id = #{placeId}
+			</if>
+			<if test="classId!=null and classId!=''">
+				and hw102.class_id in (select class_id from hw001_jcxm start with class_id=#{classId} connect by prior class_id = pclass_id)
+			</if>
+			<if test="resultFlag!=null">
+				and hw102.result_flag = #{resultFlag}
+			</if>
+			<if test="recheck!=null and recheck!=''">
+				and hw102.recheck = #{recheck}
+			</if>
+			<if test="notPass!=null and notPass!=''">
+				and hw102.result_flag='1'
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and hw101.dept_id = #{deptId}
+			</if>
+			<if test="deptIds!=null and deptIds!=''">
+				and hw101.dept_id  in
+				<foreach collection="deptIds" open="(" close=")" item="deptId" separator=",">
+						#{deptId}
+				</foreach>
+			</if> 
+		</where>
+		)
+	</select>
+	
+	<update id="updatePrintFlag" parameterType="String" flushCache="true">
+	      update hw101_jcdj hw101 set hw101.isprint=1 
+	      <where>
+	       	hw101.dj_id=#{djId}
+	      </where>
+	</update>
+	
+</mapper>

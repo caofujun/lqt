@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl005KjywzlDao">
+
+	<sql id="commCols">
+		ywzlid ywzlid,brid brid,drug_kind_id drugKindId,drug_kind_name drugKindName,last_at lastAt
+	</sql>
+
+	<insert id="save" parameterType="xl005Kjywzl" flushCache="true">
+		 insert into xl005_kjywzl(ywzlid,brid,drug_kind_id,drug_kind_name,last_at)
+		 values(#{ywzlid},#{brid},#{drugKindId},#{drugKindName},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl005_kjywzl
+		<where>ywzlid=#{ywzlid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl005Kjywzl" flushCache="true">
+		update xl005_kjywzl
+		<set>
+			ywzlid=#{ywzlid},brid=#{brid},drug_kind_id=#{drugKindId},drug_kind_name=#{drugKindName},last_at=#{lastAt}
+		</set>
+		<where>ywzlid=#{ywzlid}</where>
+	</update>
+	
+	<select id="get" resultType="xl005Kjywzl">
+		select <include refid="commCols"/> from xl005_kjywzl
+  		<where>ywzlid=#{ywzlid}</where>
+	</select>
+	
+	
+	<select id="findXl005KjywzlCount" parameterType="xl005Kjywzl" resultType="int">
+		select count(*) from xl005_kjywzl
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl005Kjywzl">
+		select <include refid="commCols"/> from xl005_kjywzl
+		<where>
+		</where>
+	</select>
+</mapper>

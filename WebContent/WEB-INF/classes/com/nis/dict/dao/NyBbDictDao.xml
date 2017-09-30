@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.NyBbDictDao">
+
+	<sql id="commCols">
+		GRTYPE grtype,ZDYJ zdyj,PCQK pcqk,VCMEMO vcmemo,INFECT_CODE infectCode,INFECT_NAME infectName,ELEMENT_ID elementId,TYPE_ID typeId,BBID bbid,BBMC bbmc,DYBW dybw
+	</sql>
+
+	<insert id="save" parameterType="nyBbDict"  flushCache="true">
+		 insert into NY_BB_DICT(GRTYPE,ZDYJ,PCQK,VCMEMO,INFECT_CODE,INFECT_NAME,ELEMENT_ID,TYPE_ID,BBID,BBMC,DYBW)
+		 values(#{grtype},#{zdyj},#{pcqk},#{vcmemo},#{infectCode},#{infectName},#{elementId},#{typeId},#{bbid},#{bbmc},#{dybw})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  NY_BB_DICT
+		<where>BBID=#{bbid}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyBbDict" flushCache="true">
+		update NY_BB_DICT
+		<set>
+			GRTYPE=#{grtype},ZDYJ=#{zdyj},PCQK=#{pcqk},VCMEMO=#{vcmemo},INFECT_CODE=#{infectCode},INFECT_NAME=#{infectName},ELEMENT_ID=#{elementId},TYPE_ID=#{typeId},BBID=#{bbid},BBMC=#{bbmc},DYBW=#{dybw}
+		</set>
+		<where>BBID=#{bbid}</where>
+	</update>
+	
+	<select id="get" resultType="nyBbDict">
+		select <include refid="commCols"/> from NY_BB_DICT
+  		<where>BBID=#{bbid}</where>
+	</select>
+	
+	
+	<select id="findNyBbDictCount" parameterType="nyBbDict" resultType="int">
+		select count(*) from NY_BB_DICT
+		<where>
+			<!-- BBID in (select distinct t.item_code from view_mdr t) -->
+			<if test="searchString!=null and searchString!=''"> and (BBID like CONCAT( CONCAT('%',#{searchString}),'%') or BBMC like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="nyBbDict">
+		select <include refid="commCols"/> from NY_BB_DICT
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

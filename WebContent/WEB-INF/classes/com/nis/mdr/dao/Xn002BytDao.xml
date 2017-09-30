@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn002BytDao">
+
+	<sql id="commCols">
+		PATHOGEN_ID pathogenId,PATHOGEN_NAME pathogenName,PATHOGEN_EN_NAME pathogenEnName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,KIND_ID kindId,RS_ID rsId,BACT_GENUS_ID bactGenusId,CN_ID cnId,FLAG flag,IF_COMMON ifCommon,LAST_AT lastAt,IS_FUNGUS isFungus
+	</sql>
+
+	<insert id="save" parameterType="xn002Byt"  flushCache="true">
+		 insert into XN002_BYT(PATHOGEN_ID,PATHOGEN_NAME,PATHOGEN_EN_NAME,BH_CODE,SP_CODE,WB_CODE,KIND_ID,RS_ID,BACT_GENUS_ID,CN_ID,FLAG,IF_COMMON,LAST_AT,IS_FUNGUS)
+		 values(#{pathogenId},#{pathogenName},#{pathogenEnName},#{bhCode},#{spCode},#{wbCode},#{kindId},#{rsId},#{bactGenusId},#{cnId},#{flag},#{ifCommon},#{lastAt},#{isFungus})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  XN002_BYT
+		<where>PATHOGEN_ID=#{pathogenId}</where>
+	</delete>
+	
+	<update id="update" parameterType="xn002Byt" flushCache="true">
+		update XN002_BYT
+		<set>
+			PATHOGEN_ID=#{pathogenId},PATHOGEN_NAME=#{pathogenName},PATHOGEN_EN_NAME=#{pathogenEnName},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},KIND_ID=#{kindId},RS_ID=#{rsId},BACT_GENUS_ID=#{bactGenusId},CN_ID=#{cnId},FLAG=#{flag},IF_COMMON=#{ifCommon},LAST_AT=#{lastAt},IS_FUNGUS=#{isFungus}
+		</set>
+		<where>PATHOGEN_ID=#{pathogenId}</where>
+	</update>
+	
+	<select id="get" resultType="xn002Byt">
+		select <include refid="commCols"/> from XN002_BYT
+  		<where>PATHOGEN_ID=#{pathogenId}</where>
+	</select>
+	
+	
+	<select id="findXn002BytCount" parameterType="xn002Byt" resultType="int">
+		select count(*) from XN002_BYT
+		<if test='isByt=="1"'>
+			left join XN013_LISBYT on pathogen_id = counter_bytid
+		</if>
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (PATHOGEN_ID like CONCAT( CONCAT('%',#{searchString}),'%') or PATHOGEN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or PATHOGEN_EN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or BH_CODE like CONCAT( CONCAT('%',#{searchString}),'%') 
+			or lower(SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') 
+			  or lower(WB_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') )</if>
+			<if test='isByt=="1"'>
+			   and counter_bytid is not null
+			</if>
+		</where>
+	</select>
+	
+	<select id="getGlsfl"  resultType="java.util.HashMap"> 
+		  select d.dict_id dictId,d.item_id itemId,d.item_name itemName from  ny_sys_dddd d
+	    where  d.dict_id = 'DD0017'
+	</select>
+	
+	<select id="findXn002BytIndexCount" parameterType="xn002Byt" resultType="int">
+		select count(*) from XN002_BYT t
+		 left join xn005_jszd x5
+	    on x5.bact_genus_id = t.bact_genus_id
+	  left join ny_sys_dddd d
+	    on d.dict_id = 'DD0017'
+	   and d.item_id = t.rs_id
+		<where>
+			1=1
+			 <if test="jszd!=null and jszd!=''">
+		 		and x5.BACT_GENUS_ID=#{jszd}
+			 </if>
+			 <if test="rsId=='G+'.toString()">
+			 	and t.rs_id in ('1','3','5','7')
+			 </if>
+			  <if test="rsId=='G-'.toString()">
+			 	and t.rs_id in ('2','4','6','8')
+			 </if>
+			<if test="searchString!=null and searchString!=''"> and (t.PATHOGEN_ID like CONCAT( CONCAT('%',#{searchString}),'%') or t.PATHOGEN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or t.PATHOGEN_EN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or t.BH_CODE like CONCAT( CONCAT('%',#{searchString}),'%') 
+			or lower(t.SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') 
+			  or lower(t.WB_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') )
+			  </if>
+		</where>
+	</select>
+	
+	<select id="findXn002BytCountTemp" parameterType="xn002Byt" resultType="int">
+		select count(*) from XN002_BYT a,XN013_LISBYT t,view_mdr v
+		<where>
+			1=1 and  t.counter_bytid=a.pathogen_id and t.counter_bytid  is not null and v.LISPATHO_CODE=t.lis_bytid and v.DT between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+			<if test="searchString!=null and searchString!=''"> and (a.PATHOGEN_ID like CONCAT( CONCAT('%',#{searchString}),'%') or a.PATHOGEN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or a.PATHOGEN_EN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or a.BH_CODE like CONCAT( CONCAT('%',#{searchString}),'%') 
+			or lower(a.SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%')
+			or lower(a.WB_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xn002Byt">
+		select <include refid="commCols"/> from XN002_BYT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+</mapper>

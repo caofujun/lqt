@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St020ClinicPatientsDao">
+
+	<sql id="commCols_mysql">
+		ID id,HOSP_ID hospId,MZID mzid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,IDNUMBER idnumber,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,PARENT_NAME parentName,TEL tel,MARRIAGE marriage,NATION nation,WORK_UNIT workUnit,EDUCATION education,REGISTERADDR registeraddr,PRESENTADDR presentaddr,DIAGNOSIS_NAME diagnosisName,DEPT_ID deptId,DEPT_NAME deptName,DOCTOR_ID doctorId,DOCTOR_NAME doctorName,DIAGNOSIS_DT diagnosisDt,START_DT startDt,DEATH_DT deathDt,ISRETURNVISIT isreturnvisit,CREATE_AT createAt,UPD_DATE updDate
+	</sql>
+
+	<select id="findSt020ClinicPatients_mysql" parameterType="st020ClinicPatients" resultType="st020ClinicPatients">
+		select <include refid="commCols_mysql"/> from ST020_CLINIC_PATIENTS
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

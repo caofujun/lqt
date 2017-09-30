@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Xn020GadcDao">
+
+	<sql id="commCols">
+		id id,zyid zyid,item_code itemCode,patho_code pathoCode,patient_from patientFrom,diagnosis_name diagnosisName,is_infect isInfect,infect_type_name infectTypeName,infect_part_name infectPartName,instru_infect instruInfect,infect_dept infectDept,infect_dt infectDt,jbyh jbyh,gryh gryh,last_at lastAt,last_by lastBy,last_name lastName,item_name itemName,patho_name pathoName,res_prop_name resPropName,test_order_no testOrderNo,spec_describes specDescribes,survey_dept_id surveyDeptId,survey_dept_name surveyDeptName,submi_at submiAt,ref_rowid refRowid,dt dt,ref_id refId
+	</sql>
+
+	<insert id="save" parameterType="xn020Gadc" flushCache="true">
+		 insert into xn020_gadc(id,zyid,item_code,patho_code,patient_from,diagnosis_name,is_infect,infect_type_name,infect_part_name,instru_infect,infect_dept,infect_dt,jbyh,gryh,last_at,last_by,last_name,item_name,patho_name,res_prop_name,test_order_no,spec_describes,survey_dept_id,survey_dept_name,submi_at,ref_rowid,dt,ref_id)
+		 values(#{id},#{zyid},#{itemCode},#{pathoCode},#{patientFrom},#{diagnosisName},#{isInfect},#{infectTypeName},#{infectPartName},#{instruInfect},#{infectDept},#{infectDt},#{jbyh},#{gryh},#{lastAt},#{lastBy},#{lastName},#{itemName},#{pathoName},#{resPropName},#{testOrderNo},#{specDescribes},#{surveyDeptId},#{surveyDeptName},#{submiAt},#{refRowid},#{dt},#{refId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xn020_gadc
+		<where>=#{}</where>
+	</delete>
+	
+	<update id="update" parameterType="xn020Gadc" flushCache="true">
+		update xn020_gadc
+		<set>
+			id=#{id},zyid=#{zyid},item_code=#{itemCode},patho_code=#{pathoCode},patient_from=#{patientFrom},diagnosis_name=#{diagnosisName},is_infect=#{isInfect},infect_type_name=#{infectTypeName},infect_part_name=#{infectPartName},instru_infect=#{instruInfect},infect_dept=#{infectDept},infect_dt=#{infectDt},jbyh=#{jbyh},gryh=#{gryh},last_at=#{lastAt},last_by=#{lastBy},last_name=#{lastName},item_name=#{itemName},patho_name=#{pathoName},res_prop_name=#{resPropName},test_order_no=#{testOrderNo},spec_describes=#{specDescribes},survey_dept_id=#{surveyDeptId},survey_dept_name=#{surveyDeptName},submi_at=#{submiAt},ref_rowid=#{refRowid},dt=#{dt},ref_id=#{refId}
+		</set>
+		<where>=#{}</where>
+	</update>
+	
+	<select id="get" resultType="xn020Gadc">
+		select <include refid="commCols"/> from xn020_gadc
+  		<where>=#{}</where>
+	</select>
+	
+	
+	<select id="findXn020GadcCount" parameterType="xn020Gadc" resultType="int">
+		select count(*) from xn020_gadc
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xn020Gadc">
+		select <include refid="commCols"/> from xn020_gadc
+		<where>
+		</where>
+	</select>
+</mapper>

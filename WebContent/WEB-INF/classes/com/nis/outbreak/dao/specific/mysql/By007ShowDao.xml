@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007ShowDao">
+
+	<sql id="commCols_mysql">
+		type_id typeId,extra_id extraId,name name,id id,order_by orderBy
+	</sql>
+
+	<select id="findBy007Show_mysql" parameterType="by007Show" resultType="by007Show">
+		select <include refid="commCols_mysql"/> from by007_show
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

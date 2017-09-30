@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg006ZdmxFaDao">
+
+	<sql id="commCols">
+		id id,fa_name faName,jyxx_weight jyxxWeight,bcyx_weight bcyxWeight,xjpp_weight xjppWeight,kjyy_weight kjyyWeight,state state,create_user createUser,create_time createTime,fa_describe faDescribe,tyxzb_weight tyxzbWeight,JYXX_DAY jyxxDay,BCYX_DAY bcyxDay,XJPP_DAY xjppDay,KJYY_DAY kjyyDay,TYXZB_DAY tyxzbDay
+	</sql>
+
+	<insert id="save" parameterType="zg006ZdmxFa" flushCache="true">
+		 insert into zg006_zdmx_fa(id,fa_name,jyxx_weight,bcyx_weight,xjpp_weight,kjyy_weight,state,create_user,create_time,fa_describe,tyxzb_weight,JYXX_DAY,BCYX_DAY,XJPP_DAY,KJYY_DAY,TYXZB_DAY)
+		 values(#{id},#{faName},#{jyxxWeight},#{bcyxWeight},#{xjppWeight},#{kjyyWeight},#{state},#{createUser},#{createTime},#{faDescribe},#{tyxzbWeight},#{jyxxDay},#{bcyxDay},#{xjppDay},#{kjyyDay},#{tyxzbDay})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from zg006_zdmx_fa
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg006ZdmxFa" flushCache="true">
+		update zg006_zdmx_fa
+		<set>
+			id=#{id},fa_name=#{faName},jyxx_weight=#{jyxxWeight},bcyx_weight=#{bcyxWeight},xjpp_weight=#{xjppWeight},kjyy_weight=#{kjyyWeight},state=#{state},create_user=#{createUser},create_time=#{createTime},fa_describe=#{faDescribe},tyxzb_weight=#{tyxzbWeight},JYXX_DAY=#{jyxxDay},BCYX_DAY=#{bcyxDay},XJPP_DAY=#{xjppDay},KJYY_DAY=#{kjyyDay},TYXZB_DAY=#{tyxzbDay}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="start" flushCache="true">
+		update zg006_zdmx_fa
+		<set>
+			state='1'
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="stop" flushCache="true">
+		update zg006_zdmx_fa
+		<set>
+			state='0'
+		</set>
+		<where>id!=#{id}</where>
+	</update>
+	
+	<update id="adjustWeight" flushCache="true">
+		update zg006_zdmx_fa
+		<set>
+			${field}=#{weight},create_user=#{createUser},create_time=#{createTime}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updDescribe" flushCache="true">
+		update zg006_zdmx_fa
+		<set>
+			fa_describe=#{faDescribe},create_user=#{createUser},create_time=#{createTime}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="zg006ZdmxFa">
+		select <include refid="commCols"/> from zg006_zdmx_fa
+  		<where>id=#{id}</where>
+	</select>
+	
+	<select id="findZg006ZdmxFaCount" parameterType="zg006ZdmxFa" resultType="int">
+		select count(*) from zg006_zdmx_fa
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="zg006ZdmxFa">
+		select <include refid="commCols"/> from zg006_zdmx_fa
+		<where>
+		</where>
+	</select>
+	
+	<select id="getState" resultType="zg006ZdmxFa">
+		select <include refid="commCols"/> from zg006_zdmx_fa
+		<where>
+			state=1 and rownum &lt;=1
+		</where>
+	</select>
+</mapper>

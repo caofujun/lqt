@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxPatientZbDao">
+
+	<sql id="commCols">
+		UP_DATE updateTime,PZ_ID pzId,PATIENT_ID patientId,ZY_ID zyId,FX_PATIENT_ZB.ZB_ID zbId,FX_PATIENT_ZB.ZB_SCORE zbScore,START_DATE startDate,END_DATE endDate,FX_PATIENT_ZB.ZB_NAME zbName,PZ_STATUS pzStatus,CASE_ID caseId
+	</sql>
+
+	<insert id="save" parameterType="fxPatientZb"  flushCache="true">
+		 insert into FX_PATIENT_ZB(UP_DATE,PZ_ID,PATIENT_ID,ZY_ID,ZB_ID,ZB_SCORE,START_DATE,END_DATE,ZB_NAME,PZ_STATUS,CASE_ID)
+		 values(#{updateTime},#{pzId},#{patientId},#{zyId},#{zbId},#{zbScore},#{startDate},#{endDate},#{zbName},#{pzStatus},#{caseId})
+	</insert>
+	
+	<insert id="saveList" parameterType="fxPatientZb"  flushCache="true">
+		 insert into FX_PATIENT_ZB(UP_DATE,PZ_ID,PATIENT_ID,ZY_ID,ZB_ID,ZB_SCORE,START_DATE,END_DATE,ZB_NAME,PZ_STATUS,CASE_ID)
+		 <foreach collection="fxPatientList" item="item" index="index" separator="union all" > 
+		(select #{item.updateTime},#{item.pzId},#{item.patientId},#{item.zyId},#{item.zbId},#{item.zbScore},#{item.startDate},#{item.endDate},#{item.zbName},#{item.pzStatus},#{item.caseId} from dual)
+	    </foreach>
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  FX_PATIENT_ZB
+		<where>PZ_ID=#{pzId}</where>
+	</delete>
+	
+	<update id="update" parameterType="fxPatientZb" flushCache="true">
+		update FX_PATIENT_ZB
+		<set>
+			UP_DATE=#{updateTime},PZ_ID=#{pzId},PATIENT_ID=#{patientId},ZY_ID=#{zyId},ZB_ID=#{zbId},ZB_SCORE=#{zbScore},START_DATE=#{startDate},END_DATE=#{endDate},ZB_NAME=#{zbName},PZ_STATUS=#{pzStatus},CASE_ID=#{caseId}
+		</set>
+		<where>PZ_ID=#{pzId}</where>
+	</update>
+	
+	<select id="get" resultType="fxPatientZb">
+		select <include refid="commCols"/>,FX_ZHIBIAO.zb_type zbType,FX_ZHIBIAO.QID qid from FX_PATIENT_ZB left join FX_ZHIBIAO on FX_PATIENT_ZB.zb_id=FX_ZHIBIAO.zb_id
+  		<where>PZ_ID=#{pzId}</where>
+	</select>
+	
+	
+	<select id="findFxPatientZbCount" parameterType="fxPatientZb" resultType="int">
+		select count(*) from FX_PATIENT_ZB
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="fxPatientZb">
+		select <include refid="commCols"/> from FX_PATIENT_ZB
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findByZyidAndZbId"  resultType="fxPatientZb">
+		select <include refid="commCols"/> from FX_PATIENT_ZB
+		<where>
+			ZY_ID=#{zyid} and ZB_ID=#{zbId} and START_DATE=#{startDate}
+		</where>
+	</select>
+	
+		<select id="findByZyidAndZbIdAndDate"  resultType="fxPatientZb">
+		select <include refid="commCols"/> from FX_PATIENT_ZB
+		<where>
+			ZY_ID=#{zyid} and ZB_ID=#{zbId} and (to_char(START_DATE,'yyyy-MM-dd')=#{startDate} or to_char(END_DATE,'yyyy-MM-dd')=#{startDate})
+		</where>
+	</select>
+	
+	<select id="findByzyid"  resultType="fxPatientZb">
+		select to_char(START_DATE, 'yyyy-MM-dd') charDate,
+       wm_concat(distinct FX_PATIENT_ZB.PZ_ID || '!' || FX_PATIENT_ZB.ZB_name || '!' ||
+         FX_PATIENT_ZB.PZ_STATUS || '!' || case when ZL_PDCA_PLANS.P_UID is not null then 1 else 0 end || '!' || case when Qs_Survey_Record.Rid is not null then 1 else 0 end|| '!' ||Qs_Survey_Record.FX_COLOR) zbNames
+	  from FX_PATIENT_ZB
+	  left join fx_zhibiao
+	    on FX_PATIENT_ZB.Zb_Id = fx_zhibiao.zb_id
+	  left join ZL_PDCA_PLANS
+	    on ZL_PDCA_PLANS.PZ_ID = FX_PATIENT_ZB.PZ_ID
+	  left join Qs_Survey_Record
+	    on to_char(Qs_Survey_Record.Survey_Time, 'yyyy-MM-dd') =
+	       to_char(FX_PATIENT_ZB.START_DATE, 'yyyy-MM-dd') and Qs_Survey_Record.ZYID=FX_PATIENT_ZB.ZY_ID
+	       and Qs_Survey_Record.Qid=fx_zhibiao.qid
+	      <where>
+	           ZY_ID=#{zyid}
+	      </where>
+    	group by to_char(START_DATE,'yyyy-MM-dd') order by charDate desc 
+	</select>
+	
+	<select id="findGrTgByzyid"  resultType="fxPatientZb">
+		select to_char(bk002_grzd.infect_date,'yyyy-MM-dd') charDate,
+		wm_concat(bk002_grzd.relid||'!'||bk002_grzd.infect_diagn_name||'!3') zbNames
+		  from bk001_sbk
+		  left join bk002_grzd
+		    on bk002_grzd.refid = bk001_sbk.relid
+		where bk002_grzd.auth_status = 1
+  	 	and bk001_sbk.zyid = #{zyid}
+  		 group by to_char(bk002_grzd.infect_date,'yyyy-MM-dd') order by charDate desc 
+	</select>
+	
+	<select id="findGrYjByzyid"  resultType="fxPatientZb">
+		select to_char(gr002_ysgr_mx.start_at,'yyyy-MM-dd') charDate,
+		wm_concat(gr002_ysgr_mx.reg_id||'!'||zg005_yygrzd.infect_name||'!4') zbNames
+		 from gr002_ysgr_mx left join zg005_yygrzd on gr002_ysgr_mx.infect_code=zg005_yygrzd.infect_code 
+		 where zyid = #{zyid} and (gr002_ysgr_mx.state=1 or gr002_ysgr_mx.state=2) and gr002_ysgr_mx.infect_type_id=1
+		 group by to_char(gr002_ysgr_mx.start_at,'yyyy-MM-dd') order by charDate desc 
+	</select>
+	
+	<select id="findQsByzyid"  resultType="fxPatientZb">
+		select to_char(qs.survey_time, 'yyyy-MM-dd') charDate,
+		wm_concat(qs.rid||'!'||qq.title||'!5') zbNames
+		  from qs_survey_record qs left join qs_questionnaire qq on qq.qid=qs.qid 
+		 where to_char(qs.survey_time, 'yyyy-MM-dd') not in
+		       (select to_char(zb.start_date, 'yyyy-MM-dd')
+		          from fx_patient_zb zb
+		         where zb.zy_id = #{zyid})
+		  and zyid = #{zyid}
+    	group by to_char(qs.survey_time,'yyyy-MM-dd') order by charDate desc 
+	</select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DepDao">
+
+	<sql id="commCols_mysql">
+		ID id,DEPT_ID deptId,DEPT_NAME deptName,DEPT_TYPEID deptTypeId,DEPT_TYPENAME deptTypeName,STAND_DEPT_ID standDeptId,
+		HOSP_ID hospId,ZJ_CODE zjCode,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,IFCASEOFFICE ifcaseoffice,SHOW_ORDER showOrder,
+		IFENVOFFICE ifenvoffice,IFICU ificu,IFBEDICU ifbedicu,IFCHILDOFFICE ifchildoffice,IFOPEROFFICE ifoperoffice,IF_HOSPDEPT ifhospdept,
+		IFMZOFFICE ifmzoffice,IFFOCUS iffocus,FLAG flag,LAST_AT lastAt,TEL tel,HOSINFECT_BASEPER hosinfectBaseper,OUTHOSINFECT_BASEPER outhosinfectBaseper,baseInfect baseInfect
+	</sql>
+
+	<select id="findDep_mysql" parameterType="dep" resultType="dep">
+		select <include refid="commCols_mysql"/> from ZG002_BYKS
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

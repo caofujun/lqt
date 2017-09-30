@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg013BczdDao">
+
+	<sql id="commCols">
+		ITEM_NAME itemName,ITEM_CLASS itemClass,SP_CODE spCode,FLAG flag,EX_TYPE exType,LAST_AT lastAt
+	</sql>
+
+	<insert id="save" parameterType="zg013Bczd"  flushCache="true">
+		 insert into ZG013_BCZD(ITEM_NAME,ITEM_CLASS,SP_CODE,FLAG,EX_TYPE,LAST_AT)
+		 values(#{itemName},#{itemClass},#{spCode},#{flag},#{exType},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG013_BCZD
+		<where>ITEM_NAME=#{itemName}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg013Bczd" flushCache="true">
+		update ZG013_BCZD
+		<set>
+			ITEM_NAME=#{itemName},ITEM_CLASS=#{itemClass},SP_CODE=#{spCode},FLAG=#{flag},EX_TYPE=#{exType},LAST_AT=#{lastAt}
+		</set>
+		<where>ITEM_NAME=#{itemName}</where>
+	</update>
+	
+	<select id="get" resultType="zg013Bczd">
+		select <include refid="commCols"/> from ZG013_BCZD
+  		<where>ITEM_NAME=#{itemName}</where>
+	</select>
+	
+	
+	<select id="findZg013BczdCount" parameterType="zg013Bczd" resultType="int">
+		select count(*) from ZG013_BCZD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg013Bczd">
+		select <include refid="commCols"/> from ZG013_BCZD
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

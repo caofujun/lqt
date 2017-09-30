@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007ConfigDao">
+
+	<sql id="commCols_mysql">
+		absolute_contrast absoluteContrast,absolute_p absoluteP,relative_p relativeP,show_tab showTab,type_id typeId,type_name typeName,relative_days relativeDays,relative_appear relativeAppear,relative_contrast relativeContrast,relative_threshold relativeThreshold,absolute_days absoluteDays,absolute_appear absoluteAppear,relative_people relativePeople,relative_probability relativeProbability,relative_all relativeAll,absolute_people absolutePeople,relative_master_name relativeMasterName,relative_detail_name relativeDetailName,absolute_master_name absoluteMasterName,absolute_detail_name absoluteDetailName,extra_sql extraSql,order_by orderBy,collect_proc collectProc,show_type showType
+	</sql>
+
+	<select id="findBy007Config_mysql" parameterType="by007Config" resultType="by007Config">
+		select <include refid="commCols_mysql"/> from by007_config
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Xk001ScqyDao">
+
+	<sql id="commCols">
+		QY_NO qyNo,QY_TYPE qyType,QY_NAME qyName,ADDRESS address,QY_FR qyFr,TEL tel,YYZZ yyzz,YYZZ_DATE yyzzDate,WS_XK wsXk,WSXK_DATE wsxkDate,WS_XKPJ wsXkpj,WSPJ_DATE wspjDate,YLSC_XK ylscXk,YLSC_DATE ylscDate,YL_ZC ylZc,YLZC_DATE ylzcDate,CDC_BG cdcBg,XK_FJ xkFj,SAVE_DATE saveDate,REMARK remark,USE_FLAG useFlag,YLJY_XKZ yljyXkz,JYXK_DATE jyxkDate,SALE_MEN saleMen,SM_ID smId
+	</sql>
+
+	<insert id="save" parameterType="xk001Scqy"  flushCache="true">
+		 insert into XK001_SCQY(QY_NO,QY_TYPE,QY_NAME,ADDRESS,QY_FR,TEL,YYZZ,YYZZ_DATE,WS_XK,WSXK_DATE,WS_XKPJ,WSPJ_DATE,YLSC_XK,YLSC_DATE,YL_ZC,YLZC_DATE,CDC_BG,XK_FJ,SAVE_DATE,REMARK,USE_FLAG,YLJY_XKZ,JYXK_DATE,SALE_MEN,SM_ID)
+		 values(#{qyNo},#{qyType},#{qyName},#{address},#{qyFr},#{tel},#{yyzz},#{yyzzDate},#{wsXk},#{wsxkDate},#{wsXkpj},#{wspjDate},#{ylscXk},#{ylscDate},#{ylZc},#{ylzcDate},#{cdcBg},#{xkFj},#{saveDate},#{remark},#{useFlag},#{yljyXkz},#{jyxkDate},#{saleMen},#{smId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  XK001_SCQY
+		<where>QY_NO=#{qyNo}</where>
+	</delete>
+	
+	<update id="update" parameterType="xk001Scqy" flushCache="true">
+		update XK001_SCQY
+		<set>
+			QY_NO=#{qyNo},QY_TYPE=#{qyType},QY_NAME=#{qyName},ADDRESS=#{address},QY_FR=#{qyFr},TEL=#{tel},YYZZ=#{yyzz},YYZZ_DATE=#{yyzzDate},WS_XK=#{wsXk},WSXK_DATE=#{wsxkDate},WS_XKPJ=#{wsXkpj},WSPJ_DATE=#{wspjDate},YLSC_XK=#{ylscXk},YLSC_DATE=#{ylscDate},YL_ZC=#{ylZc},YLZC_DATE=#{ylzcDate},CDC_BG=#{cdcBg},XK_FJ=#{xkFj},SAVE_DATE=#{saveDate},REMARK=#{remark},USE_FLAG=#{useFlag},YLJY_XKZ=#{yljyXkz},JYXK_DATE=#{jyxkDate},SALE_MEN=#{saleMen},SM_ID=#{smId}
+		</set>
+		<where>QY_NO=#{orgQyNo}</where>
+	</update>
+	
+	<select id="get" resultType="xk001Scqy">
+		select <include refid="commCols"/> from XK001_SCQY
+  		<where>QY_NO=#{qyNo}</where>
+	</select>
+	
+	
+	<select id="findXk001ScqyCount" parameterType="xk001Scqy" resultType="int">
+		select count(*) from XK001_SCQY
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xk001Scqy">
+		select <include refid="commCols"/> from XK001_SCQY
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and ( QY_NO like CONCAT(CONCAT('%',#{searchString}),'%') or QY_NAME like CONCAT(CONCAT('%',#{searchString}),'%') or QY_FR like CONCAT(CONCAT('%',#{searchString}),'%') or TEL like CONCAT(CONCAT('%',#{searchString}),'%') )
+			</if>
+		</where>
+	</select>
+	
+	<update id="setStatus" flushCache="true">
+		update XK001_SCQY
+		<set>
+			USE_FLAG=#{useFlag}
+		</set>
+		<where>QY_NO=#{qyNo}</where>
+	</update>
+	
+	<select id="queryQyList"  resultType="xk001Scqy">
+		select <include refid="commCols"/> from XK001_SCQY
+		<where>
+			1=1
+			<if test="qyType!=null and qyType!=''">
+				and QY_TYPE=#{qyType}
+			</if>
+		</where>
+	</select>
+</mapper>

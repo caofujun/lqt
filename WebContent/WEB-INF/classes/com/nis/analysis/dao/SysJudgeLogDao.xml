@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.SysJudgeLogDao">
+
+	<sql id="commCols">
+		ID id,JUDGE_CODE judgeCode,START_TIME startTime,SUCCESS_COUNT successCount,FAIL_COUNT failCount,TOTAL_COUNT totalCount,END_TIME endTime,STATUS status
+	</sql>
+
+	<insert id="save" parameterType="sysJudgeLog"  flushCache="true">
+		 insert into SYS_JUDGE_LOG(ID,JUDGE_CODE,START_TIME,SUCCESS_COUNT,FAIL_COUNT,TOTAL_COUNT,END_TIME,STATUS)
+		 values(#{id},#{judgeCode},#{startTime},#{successCount},#{failCount},#{totalCount},#{endTime},#{status})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  SYS_JUDGE_LOG
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysJudgeLog" flushCache="true">
+		update SYS_JUDGE_LOG
+		<set>
+			ID=#{id},JUDGE_CODE=#{judgeCode},START_TIME=#{startTime},SUCCESS_COUNT=#{successCount},FAIL_COUNT=#{failCount},TOTAL_COUNT=#{totalCount},END_TIME=#{endTime},STATUS=#{status}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateStatus" parameterType="sysJudgeLog">
+		update sys_judge_log
+		<set>
+			end_time=#{endTime},status=#{status}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updInExecToFinish">
+		update sys_judge_log
+		<set>
+			end_time=#{endTime},status='1'
+		</set>
+		<where>status='0'</where>
+	</update>
+	
+	<select id="get" resultType="sysJudgeLog">
+		select <include refid="commCols"/> from SYS_JUDGE_LOG
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findSysJudgeLogCount" parameterType="sysJudgeLog" resultType="int">
+		select count(*) from SYS_JUDGE_LOG
+		<where>
+			1=1
+			<if test="judgeCode!=null and judgeCode!=''">
+			and JUDGE_CODE=#{judgeCode}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="sysJudgeLog">
+		select <include refid="commCols"/> from SYS_JUDGE_LOG
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findList" resultType="sysJudgeLog">
+		select <include refid="commCols"/> from SYS_JUDGE_LOG
+		<where>
+			id in
+			<foreach collection="ids" index="index" item="item" open="(" separator="," close=")" >
+				#{item} 
+			</foreach>
+		</where>
+	</select>
+	
+	<select id="getByJudeTypeAndStart"  resultType="sysJudgeLog">
+		select <include refid="commCols"/> from SYS_JUDGE_LOG
+		<where>START_TIME=#{startTime} and JUDGE_CODE=#{judgeCode} rownum&lt;1</where>
+	</select>
+	
+	<select id="findInExecRecore" resultType="sysJudgeLog">
+		select <include refid="commCols"/> from sys_judge_log
+		<where>
+			status = '0'
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn018TsnymxDao">
+
+	<sql id="commCols_mysql">
+		test_order_no testOrderNo,pathogen_sn pathogenSn,pathogen_id pathogenId,drug_id drugId,spec_describe specDescribe
+	</sql>
+
+	<select id="findXn018Tsnymx_mysql" parameterType="xn018Tsnymx" resultType="xn018Tsnymx">
+		select <include refid="commCols_mysql"/> from xn018_tsnymx
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

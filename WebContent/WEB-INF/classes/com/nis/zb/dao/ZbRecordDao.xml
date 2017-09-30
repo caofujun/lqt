@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zb.dao.ZbRecordDao">
+
+	<sql id="commCols">
+		ID id,REPORT_YEAR reportYear,REPORT_MONTH reportMonth,ITEM_CODE itemCode,ITEM_NAME itemName,USER_ID userId,USER_NAME userName,REPORT_DATE reportDate,REPORT_RESULT reportResult,REPORT_STATUS reportStatus
+	</sql>
+	
+	<update id="updateSt003CryxxbZBFlag">
+		update st003_cryxxb
+		<set>
+			TRANFLAG=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>zyid = #{zyid}</where>
+	</update>
+	
+	<update id="updateBk002GrzdZBFlag">
+		update bk002_grzd
+		<set>
+			TRANFLAG=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>relid = #{relid}</where>
+	</update>
+	
+	<update id="updateBk003YgysZBFlag">
+		update bk003_ygys
+		<set>
+			TRANFLAG=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateOuthospitalinputZBFlag">
+		update outhospitalinput
+		<set>
+			TRANFLAG=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateSt005SsxxbZBFlag">
+		update st005_ssxxb
+		<set>
+			TRANFLAG=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>relid = #{relid}</where>
+	</update>
+	
+	<update id="updateSt005SsxxbDetailZBFlag">
+		update st005_ssxxb
+		<set>
+			Tran1Flag =#{tranFlag},tran1Date=#{tranDate}
+		</set>
+		<where>relid = #{relid}</where>
+	</update>
+	 
+	
+	<update id="updateBl002SjdjZBFlag">
+		update bl002_sjdj
+		<set>
+			TRANFLAG=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>bl_id=#{blId}</where>
+	</update>
+	
+	<update id="updateBl002SjdjZBFlag1">
+		update bl002_sjdj
+		<set>
+			TRAN1FLAG=#{tranFlag},tran1Date=#{tranDate}
+		</set>
+		<where>bl_id=#{blId}</where>
+	</update>
+	
+	<update id="updateBl002SjdjZBFlag2">
+		update bl002_sjdj
+		<set>
+			TRAN2FLAG=#{tranFlag},tran2Date=#{tranDate}
+		</set>
+		<where>bl_id=#{blId}</where>
+	</update>
+	
+	<update id="updateBk002GrzdICUZBResult">
+		update bk002_grzd
+		<set>
+			Tran1Flag=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>relid=#{relid}</where>
+	</update>
+	
+
+	<update id="updateBk002GrzdNICUZBResult">
+		update bk002_grzd
+		<set>
+			Tran2Flag=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>relid=#{relid}</where>
+	</update>
+	
+	<update id="updateJkYzLhyyZBFlag">
+		update jk_yz_lhyy
+		<set>
+			tranFlag=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>zyid=#{zyid}</where>
+	</update>
+	
+	
+	<update id="updateHw101JcdjZBFlag">
+		update hw101_jcdj
+		<set>
+			tranFlag=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>DJ_ID=#{djid}</where>
+	</update>
+	
+	<update id="updateHw102JcdmxZBFlag">
+		update hw102_jcdmx 
+		<set>
+			tranFlag=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>DJ_ID=#{djid}</where>
+	</update>
+	
+	<update id="updateBk004SjbbZBFlag">
+		update bk004_sjbb 
+		<set>
+			TranFlag =#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateBk004Sjbb1ZBFlag">
+		update bk004_sjbb 
+		<set>
+			Tran1Flag =#{tranFlag},tran1Date=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateBk004Sjbb3ICUZBFlag">
+		update bk004_sjbb 
+		<set>
+			Tran3Flag =#{tranFlag},tran3Date=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateBk004Sjbb4ICUZBFlag">
+		update bk004_sjbb 
+		<set>
+			Tran4Flag =#{tranFlag},tran4Date=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateBk004Sjbb5ICUZBFlag">
+		update bk004_sjbb 
+		<set>
+			Tran5Flag =#{tranFlag},tran5Date=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateGm003YbsjICUZBFlag">
+		update gm003_ybsj  
+		<set>
+			TranFlag  =#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where> trunc(creationdate) between #{startDate} and #{endDate}</where>
+	</update>
+	
+	<update id="updateGm001DjpdmICUZBFlag">
+		update gm001_djpdm   
+		<set>
+			TranFlag=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where> trunc(evaluatedt) between #{startDate} and #{endDate}</where>
+	</update>
+	
+	<update id="updateBk004Sjbb6NICUZBFlag">
+		update bk004_sjbb 
+		<set>
+			Tran6Flag =#{tranFlag},tran6Date=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateBk004Sjbb7NICUZBFlag">
+		update bk004_sjbb 
+		<set>
+			Tran7Flag =#{tranFlag},tran7Date=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateBk004Sjbb8NICUZBFlag">
+		update bk004_sjbb 
+		<set>
+			Tran8Flag =#{tranFlag},tran8Date=#{tranDate}
+		</set>
+		<where>refid=#{relid}</where>
+	</update>
+	
+	<update id="updateGm004JcmxNICUZBFlag">
+		update gm004_jcmx 
+		<set>
+			TranFlag =#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where> trunc(creationdate) between #{startDate} and #{endDate} </where>
+	</update>
+	
+	<update id="updateSt015YzxxbKjywZBFlag">
+		update st015_yzxxb_kjyw  
+		<set>
+			TranFlag  =#{tranFlag},TranDate =#{tranDate}
+		</set>
+		<where>zyid =#{zyid}</where>
+	</update>
+	
+	<select id="findZbxhlList" resultType="zbRecord">
+		select '病原体对应的抗菌药物信息' as itemName, count(1) unReportAmount from XL004_KJYW x4 inner join xl003_byt x3
+    	on x3.bytid = x4.bytid inner join xl002_grxx x2 on x2.grid = x3.grid inner join XL001_BRXX x1 on x1.brid = x2.brid
+ 		where x1.votedate between #{startDate} and #{endDate}
+ 		union
+ 		select '病原体信息' as itemName ,count(1) unReportAmount from XL003_BYT x3 inner join xl002_grxx x2
+    	on x2.grid = x3.grid inner join XL001_BRXX x1  on x1.brid = x2.brid
+ 		where x1.votedate between #{startDate} and #{endDate} 
+ 		union
+ 		select '感染信息' as itemName, count(1) unReportAmount from XL002_GRXX x2 inner join XL001_BRXX x1
+    	on x1.brid = x2.brid where x1.votedate between #{startDate} and #{endDate} 
+    	union   
+		select '患者信息' as itemName, count(1) unReportAmount from XL001_BRXX x1 inner join zg002_byks z2
+   		 on z2.dept_id = x1.dept_id inner join ZG001_BZKS z1 on z1.dept_id = z2.stand_dept_id
+		where x1.votedate between #{startDate} and #{endDate} 
+	</select>
+	
+</mapper>

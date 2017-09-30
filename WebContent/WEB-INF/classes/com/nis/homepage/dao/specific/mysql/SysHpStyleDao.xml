@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.homepage.dao.SysHpStyleDao">
+
+	<sql id="commCols_mysql">
+		ID id,LAYOUT_CODE layoutCode,COMPONENT_CODES componentCodes,BUSINESS_CODE businessCode,SCOPE_LEVEL scopeLevel,UNIT_ID unitId,DEP_NO depNo,USER user
+	</sql>
+
+	<select id="findSysHpStyle_mysql" parameterType="sysHpStyle" resultType="sysHpStyle">
+		select <include refid="commCols_mysql"/> from SYS_HP_STYLE
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

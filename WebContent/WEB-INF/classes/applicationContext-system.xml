@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:cache="http://www.springframework.org/schema/cache"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+     http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.1.xsd">
+
+	<!-- define the SqlSessionFactory, notice that configLocation is not needed 
+		when you use MapperFactoryBean -->
+	<bean id="comm_sqlSessionFactory" class="com.nis.mybatis.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="dialectManager" ref="dialectManager" />
+		<property name="typeAliasesPackage"
+			value="com.nis.access.entity;com.nis.comm.entity;com.nis.dict.entity;com.nis.organization.entity;com.nis.homepage.entity;com.nis.param.entity;com.nis.user.entity;com.nis.zg.entity;com.nis.report.entity;com.nis.docsearch.entity" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:com/nis/access/dao/*.xml</value>
+				<value>classpath*:com/nis/access/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/access/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/dict/dao/*.xml</value>
+				<value>classpath*:com/nis/dict/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/dict/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/homepage/dao/*.xml</value>
+				<value>classpath*:com/nis/homepage/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/homepage/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/organization/dao/*.xml</value>
+				<value>classpath*:com/nis/organization/dao/specific/mysql/*.xml
+				</value>
+				<value>classpath*:com/nis/organization/dao/specific/oracle/*.xml
+				</value>
+				<value>classpath*:com/nis/param/dao/*.xml</value>
+				<value>classpath*:com/nis/param/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/param/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/zg/dao/*.xml</value>
+				<value>classpath*:com/nis/zg/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/zg/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/report/dao/*.xml</value>
+				<value>classpath*:com/nis/report/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/report/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/docsearch/dao/*.xml</value>
+				<value>classpath*:com/nis/docsearch/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/docsearch/dao/specific/oracle/*.xml</value>
+				<value>classpath*:ibatis/mapper/*Mapper.xml</value>
+			</list>
+		</property>
+		<property name="plugins">
+			<list>
+				<ref bean="sqlLogInterceptor" />
+			</list>
+		</property>
+		<!-- <property name="plugins"> <array> <ref bean="sqlLogInterceptor"/> 
+			</array> </property> -->
+	</bean>
+	
+	<!-- scan for mappers and let them be autowired -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.nis.access.dao;com.nis.comm.dao;com.nis.dict.dao;com.nis.organization.dao;com.nis.homepage.dao;com.nis.param.dao;com.nis.user.dao;com.nis.zg.dao;com.nis.report.dao;com.nis.docsearch.dao"></property>
+		<property name="sqlSessionFactory" ref="comm_sqlSessionFactory"></property>
+	</bean>
+	
+	<bean id="log_sqlSessionFactory" class="com.nis.mybatis.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="dialectManager" ref="dialectManager" />
+		<property name="typeAliasesPackage" value="com.nis.comm.entity;com.nis.log.entity" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:com/nis/log/dao/*.xml</value>
+				<value>classpath*:com/nis/log/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/log/dao/specific/oracle/*.xml</value>
+				<value>classpath*:ibatis/mapper/*Mapper.xml</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.nis.log.dao"></property>
+		<property name="sqlSessionFactory" ref="log_sqlSessionFactory"></property>
+	</bean>
+
+	<bean id="sqlLogInterceptor" class="com.nis.log.interceptor.SqlLogInterceptor"></bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref="dataSource" />
+	</bean>
+
+	<!-- 方言管理类 -->
+	<bean id="dialectManager" class="com.nis.mybatis.dialect.DefalutDialectManager"></bean>
+
+	<!-- transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 激活spring的注解. -->
+	<context:annotation-config />
+	<!-- 扫描注解组件并且自动的注入spring beans中. 例如,他会扫描@Controller 和@Service下的文件.所以确保此base-package设置正确. -->
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<context:component-scan base-package="com.*;com.nis.*" />
+	<!-- 配置注解驱动的Spring MVC Controller 的编程模型.注:此标签只在 Servlet MVC工作! -->
+	<mvc:annotation-driven />
+
+	<!-- 静态资源的处理 -->
+	<mvc:resources location="/resources/" mapping="/resources/**" />
+
+	<!-- 开启缓存对注解的支持 -->
+	<cache:annotation-driven cache-manager="cacheManager" />
+	<bean id="ehCacheManagerFactoryBean"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="configLocation" value="classpath:ehcache.xml"></property>
+	</bean>
+
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+		<property name="cacheManager" ref="ehCacheManagerFactoryBean" />
+	</bean>
+
+	<!-- json -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+
+	<!-- <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" 
+		lazy-init="false" autowire="no"> <property name="quartzProperties"> <props> 
+		<prop key="org.quartz.scheduler.skipUpdateCheck">true</prop> </props> </property> 
+		<property name="triggers"> <list></list> </property> </bean> -->
+
+	<!-- freemarker的配置 -->
+	<bean id="freeMarkerConfig"
+		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/WEB-INF/fm_view/" />
+		<property name="defaultEncoding" value="utf-8" />
+		<property name="freemarkerSettings">
+			<props>
+				<prop key="template_update_delay">10</prop>
+				<prop key="locale">zh_CN</prop>
+				<prop key="datetime_format">yyyy-MM-dd</prop>
+				<prop key="date_format">yyyy-MM-dd</prop>
+				<prop key="number_format">#.##</prop>
+			</props>
+		</property>
+	</bean>
+</beans>

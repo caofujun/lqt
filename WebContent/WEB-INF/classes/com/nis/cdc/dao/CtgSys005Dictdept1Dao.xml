@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys005Dictdept1Dao">
+
+	<sql id="commCols">
+		DEPTID deptid,DEPTNAME deptname,SPM spm
+	</sql>
+
+	<insert id="save" parameterType="ctgSys005Dictdept1"  flushCache="true">
+		 insert into CTG_SYS005_DICTDEPT1(DEPTID,DEPTNAME,SPM)
+		 values(#{deptid},#{deptname},#{spm})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS005_DICTDEPT1
+		<where>DEPTID=#{deptid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys005Dictdept1" flushCache="true">
+		update CTG_SYS005_DICTDEPT1
+		<set>
+			DEPTID=#{deptid},DEPTNAME=#{deptname},SPM=#{spm}
+		</set>
+		<where>DEPTID=#{deptid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys005Dictdept1">
+		select <include refid="commCols"/> from CTG_SYS005_DICTDEPT1
+  		<where>DEPTID=#{deptid}</where>
+	</select>
+	
+	
+	<select id="findCtgSys005Dictdept1Count" parameterType="ctgSys005Dictdept1" resultType="int">
+		select count(*) from CTG_SYS005_DICTDEPT1
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys005Dictdept1">
+		select <include refid="commCols"/> from CTG_SYS005_DICTDEPT1
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

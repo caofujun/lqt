@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbdiseaseDao">
+
+	<sql id="commCols">
+		DIAGNOSEDATE diagnosedate,CASETYPEID casetypeid,CASETYPENAME casetypename,CASETYPEID2 casetypeid2,CASETYPENAME2 casetypename2,CONTACTFLAG contactflag,DISEASENOTES diseasenotes,ACQUISITIONDATE acquisitiondate,SENDDOCTORNAME senddoctorname,SAMPLEPLACES sampleplaces,TREATMENTPROCESS treatmentprocess,CLINICALDIAGNOSIS1 clinicaldiagnosis1,CLINICALDIAGNOSIS2 clinicaldiagnosis2,MEMO memo,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,FILLDATE filldate,FLAG flag,AUDITDATE auditdate,AUDITOR auditor,AUDITORNAME auditorname,LABRESULTNO labresultno,LABRESULT labresult,MASTERID masterid,SUBID subid,DISEASEID diseaseid,DISEASENAME diseasename,STARTDATE startdate,RPR rpr,TRUST trust
+	</sql>
+
+	<insert id="save" parameterType="ctgBk001Crbdisease"  flushCache="true">
+		 insert into CTG_BK001_CRBDISEASE(DIAGNOSEDATE,CASETYPEID,CASETYPENAME,CASETYPEID2,CASETYPENAME2,CONTACTFLAG,DISEASENOTES,ACQUISITIONDATE,SENDDOCTORNAME,SAMPLEPLACES,TREATMENTPROCESS,CLINICALDIAGNOSIS1,CLINICALDIAGNOSIS2,MEMO,REPORTDEPTID,REPORTDEPTNAME,REPORTDOCTORID,REPORTDOCTORNAME,FILLDATE,FLAG,AUDITDATE,AUDITOR,AUDITORNAME,LABRESULTNO,LABRESULT,MASTERID,SUBID,DISEASEID,DISEASENAME,STARTDATE,RPR,TRUST)
+		 values(#{diagnosedate},#{casetypeid},#{casetypename},#{casetypeid2},#{casetypename2},#{contactflag},#{diseasenotes},#{acquisitiondate},#{senddoctorname},#{sampleplaces},#{treatmentprocess},#{clinicaldiagnosis1},#{clinicaldiagnosis2},#{memo},#{reportdeptid},#{reportdeptname},#{reportdoctorid},#{reportdoctorname},#{filldate},#{flag},#{auditdate},#{auditor},#{auditorname},#{labresultno},#{labresult},#{masterid},#{subid},#{diseaseid},#{diseasename},#{startdate},#{rpr},#{trust})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK001_CRBDISEASE
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk001Crbdisease" flushCache="true">
+		update CTG_BK001_CRBDISEASE
+		<set>
+			DIAGNOSEDATE=#{diagnosedate},CASETYPEID=#{casetypeid},CASETYPENAME=#{casetypename},CASETYPEID2=#{casetypeid2},CASETYPENAME2=#{casetypename2},CONTACTFLAG=#{contactflag},DISEASENOTES=#{diseasenotes},ACQUISITIONDATE=#{acquisitiondate},SENDDOCTORNAME=#{senddoctorname},SAMPLEPLACES=#{sampleplaces},TREATMENTPROCESS=#{treatmentprocess},CLINICALDIAGNOSIS1=#{clinicaldiagnosis1},CLINICALDIAGNOSIS2=#{clinicaldiagnosis2},MEMO=#{memo},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},FILLDATE=#{filldate},FLAG=#{flag},AUDITDATE=#{auditdate},AUDITOR=#{auditor},AUDITORNAME=#{auditorname},LABRESULTNO=#{labresultno},LABRESULT=#{labresult},MASTERID=#{masterid},SUBID=#{subid},DISEASEID=#{diseaseid},DISEASENAME=#{diseasename},STARTDATE=#{startdate},RPR=#{rpr},TRUST=#{trust}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<update id="audit" parameterType="ctgBk001Crbdisease" flushCache="true">
+		update Ctg_Bk001_Crbdisease c set c.flag=1,c.auditdate= #{auditdate}, c.auditor=#{auditor},c.auditorname=#{auditorname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="retreat" parameterType="ctgBk001Crbdisease" flushCache="true">
+		update Ctg_Bk001_Crbdisease c set c.flag=2,c.auditdate= #{auditdate}, c.auditor=#{auditor},c.auditorname=#{auditorname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="cancel" parameterType="ctgBk001Crbdisease" flushCache="true">
+		update Ctg_Bk001_Crbdisease c set c.flag=0,c.auditdate= #{auditdate}, c.auditor=#{auditor},c.auditorname=#{auditorname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="remove" parameterType="ctgBk001Crbdisease" flushCache="true">
+		update Ctg_Bk001_Crbdisease c set c.flag=3,c.auditdate= #{auditdate}, c.auditor=#{auditor},c.auditorname=#{auditorname} where c.masterid=#{masterid}
+	</update>
+	
+	<select id="get" resultType="ctgBk001Crbdisease">
+		select <include refid="commCols"/> from CTG_BK001_CRBDISEASE
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk001CrbdiseaseCount" parameterType="ctgBk001Crbdisease" resultType="int">
+		select count(*) from CTG_BK001_CRBDISEASE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk001Crbdisease">
+		select <include refid="commCols"/> from CTG_BK001_CRBDISEASE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<update id="updateDiseaseNotes" parameterType="String" flushCache="true">
+		update Ctg_Bk001_Crbdisease c set c.diseasenotes=#{diseasenotes} where c.subid=#{subid}
+	</update>
+	
+	<update id="batchAudit" parameterType="ctgBk001Crbdisease" flushCache="true">
+		update Ctg_Bk001_Crbdisease c set c.flag=1,c.auditdate= #{auditdate}, c.auditor=#{auditor}, c.auditorname=#{auditorname} where c.masterid in (${masterid})
+	</update>
+	
+	<update id="updateZBFlag" flushCache="true">
+		update Ctg_Bk001_Crbdisease c set c.zbflag=1 where c.subid in (${subids})
+	</update>
+	
+</mapper>

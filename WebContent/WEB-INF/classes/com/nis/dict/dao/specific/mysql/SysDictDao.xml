@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.SysDictDao">
+
+	<sql id="commCols_mysql">
+		id id,parent_code parentCode,dict_type_code dictTypeCode,dict_code dictCode,dict_name dictName,pinyin pinyin,dict_status dictStatus,sequence_number sequenceNumber,ext_param1 extParam1,ext_param2 extParam2,remark remark,scope_level scopeLevel,unit_id unitId,dep_no depNo,update_time updateTime
+	</sql>
+
+	<select id="findSysDict_mysql" parameterType="sysDict" resultType="sysDict">
+		select <include refid="commCols_mysql"/> from sys_dict
+		<where>
+			1=1
+			<if test="dictTypeCode!=null and dictTypeCode!=''">and dict_type_code=#{dictTypeCode}</if>
+		</where>
+  		limit #{firstPage}, #{size}
+	</select>
+	
+</mapper>

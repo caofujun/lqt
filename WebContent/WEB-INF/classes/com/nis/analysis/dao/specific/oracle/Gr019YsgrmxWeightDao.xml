@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Gr019YsgrmxWeightDao">
+
+	<sql id="commCols_oracle">
+		ZYID zyid,INFECT_CODE infectCode,BCYX_WEIGHT bcyxWeight,BCYX_DAY bcyxDay,TYX_WEIGHT tyxWeight,TYX_DAY tyxDay,JYJC_WEIGHT jyjcWeight,JYJC_DAY jyjcDay,XJPY_WEIGHT xjpyWeight,XJPY_DAY xjpyDay,KJYW_WEIGHT kjywWeight,KJYW_DAY kjywDay,GR_DATE grDate,CREATE_TIME createTime,MONITOR_AT monitorAt
+	</sql>
+
+	
+	<select id="findGr019YsgrmxWeight_oracle" parameterType="gr019YsgrmxWeight" resultType="gr019YsgrmxWeight">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from GR019_YSGRMX_WEIGHT
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

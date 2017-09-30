@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.docsearch.dao.DocDocumentDao">
+
+	<sql id="commCols">
+		doc.DOC_SCOPE docScope,doc.ID id,DOC_NAME docName,doc.DOC_DESC docDesc,doc.DOC_TYPE docType,doc.DOC_FORMAT docFormat,doc.DOC_PIC docPic,doc.DOC_RECOMMENG docRecommeng,doc.DOC_ANONYRNOUS docAnonyrnous,doc.DOC_URL docUrl,doc.DOC_SCORE docScore,doc.DOC_LOOK docLook,doc.DOC_DOWNLOAD docDownload,doc.CREATE_USERID createUserid,doc.CREATE_USERNAME createUsername,doc.CREATE_TIME createTime,doc.UPDATE_USERID updateUserid,doc.UPDATE_USERNAME updateUsername,doc.UPDATE_TIME updateTime,doc.DOC_SIZE docSize,doc.DOC_PREVIEW  docPreview, doc.DOC_FLAG docFlag,doc.DOC_COMPLAIN docComplain
+	</sql>
+	
+
+	<insert id="save" parameterType="docDocument"  flushCache="true">
+		 insert into DOC_DOCUMENT(DOC_SCOPE,ID,DOC_NAME,DOC_DESC,DOC_TYPE,DOC_FORMAT,DOC_PIC,DOC_RECOMMENG,DOC_ANONYRNOUS,DOC_URL,DOC_SCORE,DOC_LOOK,DOC_DOWNLOAD,CREATE_USERID,CREATE_USERNAME,CREATE_TIME,UPDATE_USERID,UPDATE_USERNAME,UPDATE_TIME,DOC_SIZE,DOC_PREVIEW,DOC_FLAG,DOC_COMPLAIN)
+		 values(#{docScope},#{id},#{docName},#{docDesc},#{docType},#{docFormat},#{docPic},#{docRecommeng},#{docAnonyrnous},#{docUrl},#{docScore},#{docLook},#{docDownload},#{createUserid},#{createUsername},#{createTime},#{updateUserid},#{updateUsername},#{updateTime},#{docSize},#{docPreview},#{docFlag},#{docComplain})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  DOC_DOCUMENT
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="docDocument" flushCache="true">
+		update DOC_DOCUMENT
+		<set>
+			DOC_SCOPE=#{docScope},ID=#{id},DOC_NAME=#{docName},DOC_DESC=#{docDesc},DOC_TYPE=#{docType},DOC_FORMAT=#{docFormat},DOC_PIC=#{docPic},DOC_RECOMMENG=#{docRecommeng},DOC_ANONYRNOUS=#{docAnonyrnous},DOC_URL=#{docUrl},DOC_SCORE=#{docScore},DOC_LOOK=#{docLook},DOC_DOWNLOAD=#{docDownload},CREATE_USERID=#{createUserid},CREATE_USERNAME=#{createUsername},CREATE_TIME=#{createTime},UPDATE_USERID=#{updateUserid},UPDATE_USERNAME=#{updateUsername},UPDATE_TIME=#{updateTime},DOC_SIZE=#{docSize},DOC_PREVIEW=#{docPreview},DOC_FLAG=#{docFlag},DOC_COMPLAIN=#{docComplain}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="docDocument">
+		select <include refid="commCols"/> from DOC_DOCUMENT doc
+  		<where>doc.ID=#{id}</where>
+	</select>
+	
+	<select id="getDocCountByDocName" resultType="int">
+		select count(*) docName from DOC_DOCUMENT d
+		<where>
+			d.doc_name=#{docName}
+		</where>
+	</select>
+	
+	<select id="findDocDocumentCount" parameterType="docDocument" resultType="int">
+		select count(*) from DOC_DOCUMENT doc 
+		left join ac_account account on doc.create_userid = account.user_id
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and doc.DOC_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') 
+			</if>	
+			<if test="docTypeList!=null and docTypeList.size!=0">
+				and doc.DOC_TYPE in
+				<foreach collection="docTypeList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="docFormatList!=null and docFormatList.size!=0">
+				and doc.DOC_FORMAT in
+				<foreach collection="docFormatList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<choose>
+				<when test="userId!=null and userId!=''">
+					<!-- 如果当前用户确定了所属医院 -->
+					<if test="unitId!=null and unitId!=''">
+						and (account.unit_id=#{unitId} or doc.create_userid=#{userId} or doc.doc_scope=9)
+					</if>
+					<!-- 如果当前用户没确定所属医院 -->
+					<if test="unitId==null or unitId==''">
+						and (doc.create_userid=#{userId} or doc.doc_scope=9)
+					</if>
+				</when>
+				<otherwise> <!-- 未登录只能查询公共的 -->
+					and doc.doc_scope='9'
+				</otherwise>
+			</choose>
+			and doc.DOC_FLAG &lt; &gt; '0'
+		</where>
+		order by doc.CREATE_TIME desc
+	</select>
+	
+	<select id="getAll"  resultType="docDocument">
+		select <include refid="commCols"/> from DOC_DOCUMENT doc
+		<where>
+			1=1
+		</where>
+	</select>
+
+	<select id="findDocDocumentCountNOPrivilege" parameterType="docDocument" resultType="int">
+		  select count(*) from DOC_DOCUMENT doc left join ac_account  account
+          on doc.create_userid=account.user_id
+          left join  (select dict_code,dict_name from  SYS_DICT where dict_type_code = 'docType') dicdocType
+          on doc.doc_type=dicdocType.dict_code
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and doc.DOC_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') 
+			</if>	
+			<if test="docTypeList!=null and docTypeList.size!=0">
+				and doc.DOC_TYPE in
+				<foreach collection="docTypeList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="docFormatList!=null and docFormatList.size!=0">
+				and doc.DOC_FORMAT in
+				<foreach collection="docFormatList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+
+		<if test="queryStartDate!=null and queryStartDate!=''"> 
+				and doc.CREATE_TIME &gt;= #{queryStartDate}
+		</if> 
+		<if test="queryEndDate!=null and queryEndDate!=''"> 
+				and doc.CREATE_TIME &lt;  #{queryEndDate}
+		</if> 
+		and doc.DOC_FLAG &lt; &gt; '0'
+		</where>
+		order by doc.DOC_FLAG  desc,doc.UPDATE_TIME desc 
+	</select>
+	
+	<update id="updateDocComplain" parameterType="docDocument" flushCache="true">
+		update DOC_DOCUMENT
+		<set>
+			DOC_COMPLAIN=#{docComplain}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="findDocDocumentCountNOPrivilegeForSuggest" parameterType="docDocument" resultType="int">
+		  select count(*) from DOC_DOCUMENT doc left join ac_account  account
+          on doc.create_userid=account.user_id
+          left join  (select dict_code,dict_name from  SYS_DICT where dict_type_code = 'docType') dicdocType
+          on doc.doc_type=dicdocType.dict_code
+          join SYS_SUGGEST suggest  on  doc.id =suggest.id
+		<where>
+			1=1
+		<if test="searchString!=null and searchString!=''">
+			and ( doc.DOC_NAME LIKE CONCAT(CONCAT('%', #{searchString}),
+			'%') or  doc.DOC_DESC LIKE CONCAT(CONCAT('%', #{searchString}),
+			'%') )
+		</if>
+		
+		<if test="docTypeList!=null and docTypeList.size!=0">
+		and doc.DOC_TYPE in
+		<foreach collection="docTypeList" index="index" item="item" open="(" separator="," close=")" >
+		  #{item} 
+		</foreach>
+		</if>
+		<if test="queryStartDate!=null and queryStartDate!=''"> 
+				and suggest.FB_TIME &gt;= #{queryStartDate}
+		</if> 
+		<if test="queryEndDate!=null and queryEndDate!=''"> 
+				and suggest.FB_TIME &lt;  #{queryEndDate}
+		</if> 
+		<!-- 未处理的文档状态  -->
+		<if test="status!=null and status!=''">
+		    and suggest.status=#{status}
+		</if>
+		</where>
+		ORDER BY doc.doc_complain desc,doc.UPDATE_TIME desc,suggest.status 
+	</select>
+	
+</mapper>

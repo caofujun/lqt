@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Zg032SjxmppDao">
+
+	<sql id="commCols">
+		id id,match_field matchField,match match,match_value matchValue,infect_factor infectFactor,group_code groupCode,sort_no sortNo 
+	</sql>
+
+	<insert id="save" parameterType="zg032Sjxmpp" flushCache="true">
+		 insert into zg032_sjxmpp(id,match_field,match,match_value,infect_factor,group_code,sort_no)
+		 values(#{id},#{matchField},#{match},#{matchValue},#{infectFactor},#{groupCode},#{sortNo})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from zg032_sjxmpp
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg032Sjxmpp" flushCache="true">
+		update zg032_sjxmpp
+		<set>
+			id=#{id},match_field=#{matchField},match=#{match},match_value=#{matchValue},infect_factor=#{infectFactor},group_code=#{groupCode},sort_no=#{sortNo}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="zg032Sjxmpp">
+		select <include refid="commCols"/> from zg032_sjxmpp
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findZg032SjxmppCount" parameterType="zg032Sjxmpp" resultType="int">
+		select count(*) from zg032_sjxmpp
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="zg032Sjxmpp">
+		select <include refid="commCols"/> from zg032_sjxmpp
+		<where>
+		</where>
+	</select>
+	
+	<resultMap type="com.nis.dict.entity.Zg032Sjxmpp" id="analysisMap">
+		<id column="sjId" property="id"/>  
+        <result column="matchField" property="matchField"/>
+        <result column="match" property="match" />
+        <result column="matchValue" property="matchValue" />
+        <result column="infectFactor" property="infectFactor" />
+        <result column="elementName" property="elementName" />
+        <result column="groupCode" property="groupCode" />
+        <collection property="jcxxppList" ofType="com.nis.dict.entity.Zg033Jcxxpp" >
+        	<id column="id" property="id"/>
+	        <result column="itemField" property="itemField"/>
+	        <result column="itemMatch" property="itemMatch"/>
+	        <result column="itemMatchValue" property="itemMatchValue"/>
+	        <result column="valueField" property="valueField"/>
+	        <result column="valueMatch" property="valueMatch"/>
+	        <result column="valueMatchValue" property="valueMatchValue"/>
+        </collection>
+	</resultMap>
+	
+	<select id="findJoinGrys" resultMap="analysisMap">
+		select zg32.id sjId,zg32.match_field matchField,zg32.match match,zg32.match_value matchValue,zg32.infect_factor infectFactor,zg7.element_name elementName,zg32.group_code groupCode,
+		zg33.id id,zg33.item_field itemField,zg33.item_match itemMatch,zg33.item_match_value itemMatchValue,zg33.value_field valueField,zg33.value_match valueMatch,zg33.value_match_value valueMatchValue 
+		from zg032_sjxmpp zg32 left join zg007_grys zg7 on zg32.infect_factor=zg7.element_id
+		left join zg033_jcxxpp zg33 on zg32.id = zg33.sj_id
+		<where>
+			
+		</where>
+		order by zg32.group_code,zg32.sort_no
+	</select>
+</mapper>

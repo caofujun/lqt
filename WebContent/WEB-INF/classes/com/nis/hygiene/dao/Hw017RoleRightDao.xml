@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw017RoleRightDao">
+
+	<sql id="commCols">
+		role_id roleId,class_id classId,self_view selfView,self_add selfAdd,self_result selfResult,other_view otherView,other_add otherAdd,other_result otherResult
+	</sql>
+
+	<insert id="save" parameterType="hw017RoleRight" flushCache="true">
+		 insert into hw017_role_right(role_id,class_id,self_view,self_add,self_result,other_view,other_add,other_result)
+		 values(#{roleId},#{classId},#{selfView},#{selfAdd},#{selfResult},#{otherView},#{otherAdd},#{otherResult})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw017_role_right
+		<where> role_id=#{roleId} and class_id=#{classId} </where>
+	</delete>
+	
+	<delete id="delByRoleId" flushCache="true">
+		delete from hw017_role_right
+		<where> role_id=#{roleId} </where>
+	</delete>
+	
+	<update id="update" parameterType="hw017RoleRight" flushCache="true">
+		update hw017_role_right
+		<set>
+			role_id=#{roleId},class_id=#{classId},self_view=#{selfView},self_add=#{selfAdd},self_result=#{selfResult},other_view=#{otherView},other_add=#{otherAdd},other_result=#{otherResult}
+		</set>
+		<where> role_id=#{roleId} and class_id=#{classId} </where>
+	</update>
+	
+	<select id="get" resultType="hw017RoleRight">
+		select <include refid="commCols"/> from hw017_role_right
+  		<where> role_id=#{roleId} and class_id=#{classId} </where>
+	</select>
+	
+	
+	<select id="findHw017RoleRightCount" parameterType="hw017RoleRight" resultType="int">
+		select count(*) from hw017_role_right
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw017RoleRight">
+		select <include refid="commCols"/> from hw017_role_right
+		<where>
+		</where>
+	</select>
+</mapper>

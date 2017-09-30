@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St012KjywDao">
+
+	<sql id="commCols">
+		sy_drug_id syDrugId,id id,drug_id drugId,drug_name drugName,class_id classId,class_name className,pycode pycode,wbcode wbcode,bhcode bhcode,last_at lastAt,upd_date updDate,drug_line drugLine
+	</sql>
+
+	<insert id="save" parameterType="st012Kjyw" flushCache="true">
+		 insert into st012_kjyw(sy_drug_id,id,drug_id,drug_name,class_id,class_name,pycode,wbcode,bhcode,last_at,upd_date,drug_line)
+		 values(#{syDrugId},#{id},#{drugId},#{drugName},#{classId},#{className},#{pycode},#{wbcode},#{bhcode},#{lastAt},#{updDate},#{drugLine})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st012_kjyw
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st012Kjyw" flushCache="true">
+		update st012_kjyw
+		<set>
+			sy_drug_id=#{syDrugId},id=#{id},drug_id=#{drugId},drug_name=#{drugName},class_id=#{classId},class_name=#{className},pycode=#{pycode},wbcode=#{wbcode},bhcode=#{bhcode},last_at=#{lastAt},upd_date=#{updDate},drug_line=#{drugLine}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="match" parameterType="st012Kjyw" flushCache="true">
+		update st012_kjyw t 
+		<set>
+		 t.sy_drug_id = (select b.drug_id from zg010_kjyw b,st012_kjyw a where b.drug_name=a.drug_name and a.id=t.id )
+		</set>
+		<where>t.sy_drug_id is null</where>
+	</update>
+	
+	<select id="queryMatched" resultType="map">
+		select (select count(*)  from st012_kjyw z where z.sy_drug_id is null) WPP,
+		(select count(*)  from st012_kjyw t ,zg010_kjyw z  where t.drug_name=z.drug_name and t.sy_drug_id is null) YPP from dual
+	</select>
+	
+	<update id="updDrugLine" flushCache="true">
+		update st012_kjyw
+		<set>
+			upd_date=#{updDate},drug_line=#{drugLine}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="st012Kjyw">
+		select <include refid="commCols"/> from st012_kjyw
+  		<where>id=#{id}</where>
+	</select>
+	
+	<select id="findKjywByDrugId" resultType="st012Kjyw">
+		select <include refid="commCols"/> from st012_kjyw
+  		<where>drug_id=#{drugId}</where>
+	</select>
+	
+	
+	<select id="findSt012KjywCount" parameterType="st012Kjyw" resultType="int">
+		select count(*) from st012_kjyw
+		<where>
+			1=1
+			<if test="isSys=='1'.toString()"> and sy_drug_id is not null</if>
+			<if test="isSys=='0'.toString()"> and sy_drug_id is null</if>
+			<if test="syDrugId!=null and syDrugId!=''"> and sy_drug_id=#{syDrugId}</if>
+			<if test="searchString!=null and searchString!=''"> and (drug_name like CONCAT( CONCAT('%',#{searchString}),'%') or drug_id like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st012Kjyw">
+		select <include refid="commCols"/> from st012_kjyw
+		<where>
+		</where>
+	</select>
+	
+	<select id="getByLevel" resultType="string">
+		select drug_name drugName from st012_kjyw
+		<where>
+			drug_line=#{drugLine}
+		</where>
+	</select>
+</mapper>

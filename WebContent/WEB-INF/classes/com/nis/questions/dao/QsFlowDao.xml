@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questions.dao.QsFlowDao">
+
+	<sql id="commCols">
+	   FID fid,OPT_ID optId,CREATE_USER createUser,CREATE_TIME createTime,UNIT_ID unitId,FNAME fname,FINFO fInfo,
+	   END_DATE endDate,PUBLISH publish,STATUS status,EXT1 ext1
+	</sql>
+
+	<insert id="save" parameterType="qsFlow" flushCache="true">
+		 INSERT INTO QS_FLOW(FID,OPT_ID,CREATE_USER,CREATE_TIME,UNIT_ID,FNAME,FINFO,END_DATE,PUBLISH,STATUS,EXT1)
+		 VALUES(#{fid},#{optId},#{createUser},#{createTime},#{unitId},#{fName},#{fInfo},#{endDate},#{publish},#{status},#{ext1})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+	   	delete QS_FLOW
+		<where>FID=#{fid}</where>
+	</delete>
+	
+	<select id="findQsFlowAll" parameterType="qsFlow" resultType="qsFlow">
+		select <include refid="commCols"/> from QS_FLOW
+		<where>
+			UNIT_ID=#{unitId}
+			<if test="fName!=null and fName!=''"><!-- 平台级 -->
+			and FNAME LIKE  CONCAT(CONCAT('%', #{fName}), '%')
+			</if>
+		   <if test="status!=null and status!=''"><!-- 平台级 -->
+			and STATUS=#{status}
+			</if>
+		   <if test="unitId!=null and unitId!=''"><!-- 平台级 -->
+			and UNIT_ID=#{unitId}
+			</if>
+			<if test="publish!=null and publish!=''"><!-- 平台级 -->
+			and PUBLISH=#{publish}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findQsFlowCount" parameterType="qsFlow" resultType="int">
+		select count(fid)  from QS_FLOW
+		<where>
+		   <if test="fName!=null and fName!=''"><!-- 平台级 -->
+			and FNAME LIKE  CONCAT(CONCAT('%', #{fName}), '%')
+		   </if>
+		   <if test="status!=null and status!=''"><!-- 平台级 -->
+			and STATUS=#{status}
+			</if>
+		   <if test="unitId!=null and unitId!=''"><!-- 平台级 -->
+			and UNIT_ID=#{unitId}
+			</if>
+		</where>
+	</select>
+	<select id="findQsFlow" parameterType="qsFlow" resultType="qsFlow">
+		select <include refid="commCols"/>from QS_FLOW
+		<where>
+		   <if test="fName!=null and fName!=''"><!-- 平台级 -->
+			and FNAME LIKE  CONCAT(CONCAT('%', #{fName}), '%')
+			</if>
+		   <if test="status!=null and status!=''"><!-- 平台级 -->
+			and STATUS=#{status}
+			</if>
+		   <if test="unitId!=null and unitId!=''"><!-- 平台级 -->
+			and UNIT_ID=#{unitId}
+			</if>
+			<if test="publish!=null and publish!=''"><!-- 平台级 -->
+			and PUBLISH=#{publish}
+			</if>
+		</where>
+	</select>
+	
+	<update id="update" parameterType="qsFlow" flushCache="true">
+		update QS_FLOW
+		<set>
+			FID=#{fid}
+			<if test="ext1!=null and ext1!=''">
+			 ,EXT1=#{ext1}
+			</if>
+			<if test="status!=null and status1!=''">
+			 ,STATUS=#{status}
+			</if>
+			<if test="publish!=null and publish!=''">
+			 ,PUBLISH=#{publish}
+			</if>
+			<if test="fInfo!=null and fInfo!=''">
+			 ,FINFO=#{fInfo}
+			</if>
+			<if test="endDate!=null and endDate!=''">
+			 ,END_DATE=#{endDate}
+			</if>
+			<if test="fName!=null and fName!=''">
+			 ,FNAME=#{fName}
+			</if>
+		</set>
+		<where>FID=#{fid}</where>
+	</update>
+	
+	<select id="get" resultType="qsFlow">
+		select <include refid="commCols"/> from QS_FLOW
+  		<where>FID=#{fid}</where>
+	</select>
+	
+	<select id="getAll" resultType="qsFlow">
+		select <include refid="commCols"/> from QS_FLOW
+		<where>
+		</where>
+	</select>
+</mapper>

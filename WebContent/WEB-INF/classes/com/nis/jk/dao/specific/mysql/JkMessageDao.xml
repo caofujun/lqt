@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkMessageDao">
+
+	<sql id="commCols_mysql">
+		ID id,MSG_TYPE msgType,MSG_CONTENT msgContent,FLAG flag,CREATE_TIME createTime,MSG_RETURN msgReturn
+	</sql>
+
+	<select id="findJkMessage_mysql" parameterType="jkMessage" resultType="jkMessage">
+		select <include refid="commCols_mysql"/> from JK_MESSAGE
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

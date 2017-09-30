@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.yj.dao.Yj003StandardDao">
+
+	<sql id="commCols">
+		ID id,TYPE_NAME typeName,NAME name
+	</sql>
+
+	<insert id="save" parameterType="yj003Standard"  flushCache="true">
+		 insert into YJ003_STANDARD(ID,TYPE_NAME,NAME)
+		 values(#{id},#{typeName},#{name})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  YJ003_STANDARD
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="yj003Standard" flushCache="true">
+		update YJ003_STANDARD
+		<set>
+			ID=#{id},TYPE_NAME=#{typeName},NAME=#{name}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="yj003Standard">
+		select <include refid="commCols"/> from YJ003_STANDARD
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findYj003StandardCount" parameterType="yj003Standard" resultType="int">
+		select count(*) from YJ003_STANDARD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="yj003Standard">
+		select <include refid="commCols"/> from YJ003_STANDARD
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

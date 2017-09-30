@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcAccountConfigDao">
+
+	<sql id="commCols">
+		ID id,USER_ID userId,CONFIG_KEY configKey,CONFIG_VALUE configValue,UPD_TIME updTime
+	</sql>
+
+	<insert id="save" parameterType="acAccountConfig"  flushCache="true">
+		 insert into AC_ACCOUNT_CONFIG(ID,USER_ID,CONFIG_KEY,CONFIG_VALUE,UPD_TIME)
+		 values(#{id},#{userId},#{configKey},#{configValue},#{updTime})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  AC_ACCOUNT_CONFIG
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<delete id="deleteByKey" flushCache="true">
+		delete from AC_ACCOUNT_CONFIG
+		<where>
+			USER_ID=#{userId} and CONFIG_KEY = #{configKey}
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="acAccountConfig" flushCache="true">
+		update AC_ACCOUNT_CONFIG
+		<set>
+			ID=#{id},USER_ID=#{userId}, CONFIG_KEY = #{configKey}, CONFIG_VALUE = #{configValue}, UPD_TIME = #{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="acAccountConfig">
+		select <include refid="commCols"/> from AC_ACCOUNT_CONFIG
+  		<where>ID=#{id}</where>
+	</select>
+	
+	<select id="getByKey" resultType="acAccountConfig">
+		select <include refid="commCols"/> from AC_ACCOUNT_CONFIG
+		<where>
+			USER_ID=#{userId} and CONFIG_KEY = #{configKey}
+		</where>
+	</select>
+</mapper>

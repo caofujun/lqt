@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyServerMsgTemplateDao">
+
+	<sql id="commCols_mysql">
+		ID id,TITLE title,SP_CODE spCode,CONTENT content,CREATE_AT createAt,CREATE_OPER createOper
+	</sql>
+
+	<select id="findNyServerMsgTemplate_mysql" parameterType="nyServerMsgTemplate" resultType="nyServerMsgTemplate">
+		select <include refid="commCols_mysql"/> from NY_SERVER_MSG_TEMPLATE
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

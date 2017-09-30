@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.SysDictDao">
+
+	<sql id="commCols">
+		id id,parent_code parentCode,dict_type_code
+		dictTypeCode,dict_code dictCode,dict_name dictName,pinyin
+		pinyin,dict_status dictStatus,sequence_number
+		sequenceNumber,ext_param1 extParam1,ext_param2 extParam2,remark
+		remark,scope_level scopeLevel,unit_id unitId,dep_no depNo,update_time
+		updateTime
+	</sql>
+
+	<insert id="save" parameterType="sysDict" flushCache="true">
+		insert into
+		sys_dict(id,parent_code,dict_type_code,dict_code,dict_name,pinyin,dict_status,sequence_number,ext_param1,ext_param2,remark,scope_level,unit_id,dep_no,update_time)
+		values(#{id},#{parentCode},#{dictTypeCode},#{dictCode},#{dictName},#{pinyin},#{dictStatus},#{sequenceNumber},#{extParam1},#{extParam2},#{remark},#{scopeLevel},#{unitId},#{depNo},#{updateTime})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from sys_dict
+		<where>id=#{id}</where>
+	</delete>
+
+	<delete id="deleteByTypeCode" flushCache="true">
+		delete from sys_dict
+		<where>dict_type_code=#{dictTypeCode}</where>
+	</delete>
+
+	<update id="update" parameterType="sysDict" flushCache="true">
+		update sys_dict
+		<set>
+			parent_code=#{parentCode},dict_type_code=#{dictTypeCode},dict_code=#{dictCode},dict_name=#{dictName},
+			pinyin=#{pinyin},dict_status=#{dictStatus},sequence_number=#{sequenceNumber},ext_param1=#{extParam1},
+			ext_param2=#{extParam2},remark=#{remark},scope_level=#{scopeLevel},unit_id=#{unitId},dep_no=#{depNo},
+			update_time=#{updateTime}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+
+	<update id="updateLastTimebyCode">
+		update sys_dict
+		<set>
+			update_time=#{updateTime}
+		</set>
+		<where>dict_code=#{dictCode} and dict_type_code=#{dictTypeCode}
+		</where>
+	</update>
+
+	<update id="updateSort">
+		update sys_dict
+		<set>
+			sequence_number=#{sequenceNumber}
+		</set>
+		<where>
+			id=#{id}
+		</where>
+	</update>
+
+	<select id="get" resultType="sysDict">
+		select
+		<include refid="commCols" />
+		from sys_dict
+		<where>id=#{id}</where>
+	</select>
+
+
+	<select id="findSysDictCount" parameterType="sysDict"
+		resultType="int">
+		select count(*) from sys_dict
+		<where>
+			1=1
+			<if test="dictTypeCode!=null and dictTypeCode!=''">and dict_type_code=#{dictTypeCode}</if>
+			<if test="searchString!=null and searchString!=''"> and (dict_code like concat(
+				concat('%',#{searchString}),'%') or dict_name like concat(
+				concat('%',#{searchString}),'%') or upper(PINYIN) like upper(concat(
+				concat('%',#{searchString}),'%')))</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="sysDict" parameterType="sysDict">
+		select
+		<include refid="commCols" />
+		from sys_dict
+		<where>
+			dict_status='1'
+			<if test="dictTypeCode!=null and dictTypeCode!=''">and dict_type_code=#{dictTypeCode}</if>
+			<if test="parentCode!=null and parentCode!=''">and parent_code=#{parentCode}</if>
+			<choose>
+				<when test="unitId!=null and unitId!=''"> and scope_level=6 and unit_id=#{unitId}</when>
+				<otherwise> and scope_level=9</otherwise>
+			</choose>
+			<if test="searchString!=null and searchString!=''"> and (dict_code like concat(
+				concat('%',#{searchString}),'%') or dict_name like concat(
+				concat('%',#{searchString}),'%') or upper(pinyin) like upper(concat(
+				concat('%',#{searchString}),'%')))</if>
+			<if test="dictName!=null and dictName!=''">and dict_name=#{dictName}</if>
+		</where>
+		order by sequence_number asc
+	</select>
+
+	<select id="getAllTop" resultType="sysDict" parameterType="sysDict">
+		select
+		<include refid="commCols" />
+		from sys_dict
+		<where>
+			dict_status='1' and parent_id is null
+			<if test="dictTypeCode!=null and dictTypeCode!=''">and dict_type_code=#{dictTypeCode}</if>
+			<choose>
+				<when test="unitId!=null and unitId!=''"> and scope_level=6 and unit_id=#{unitId}</when>
+				<otherwise> and scope_level=9</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<select id="findByDictTypeCode" resultType="sysDict">
+		select
+		<include refid="commCols" />
+		from sys_dict
+		<where>
+			dict_status='1'
+			<if test="dictTypeCode!=null and dictTypeCode!=''"> and dict_type_code=#{dictTypeCode}</if>
+			<choose>
+				<when test="depNo!=null and depNo!=''"> and scope_level=3 and dep_no=#{depNo}</when>
+				<when test="unitId!=null and unitId!=''"> and scope_level=6 and unit_id=#{unitId}</when>
+				<otherwise> and scope_level=9</otherwise>
+			</choose>
+			order by sequence_number
+		</where>
+	</select>
+
+	<!-- <select id="findByDictTypeCode4QsType" resultType="sysDict"> 查询问卷类型 
+		select <include refid="commCols"/> from sys_dict <where> dict_status='1' 
+		<if test="dictTypeCode!=null and dictTypeCode!=''"> and dict_type_code=#{dictTypeCode}</if> 
+		<choose> <when test="unitId!=null and unitId!=''">and (scope_level=9 or unit_id=#{unitId})</when> 
+		<otherwise> and scope_level=9</otherwise> </choose> order by sequence_number 
+		</where> </select> -->
+
+	<select id="getMaxCodeAndSeq" resultType="sysDict">
+		select max(to_number(dict_code, '99999')) dictCode,
+		max(sequence_number) sequenceNumber from sys_dict
+		<where>
+			dict_status='1'
+			<if test="dictTypeCode!=null and dictTypeCode!=''"> and dict_type_code=#{dictTypeCode}</if>
+
+		</where>
+	</select>
+
+	<select id="findByParentId" resultType="sysDict">
+		select
+		<include refid="commCols" />
+		from sys_dict
+		<where>
+			dict_status='1' and dict_type_code=#{dictTypeCode}
+			<if test="parentCode!=null and parentCode!=''"> and parent_code=#{parentCode}</if>
+			<choose>
+				<when test="unitId!=null and unitId!=''"> and scope_level=6 and unit_id=#{unitId}</when>
+				<otherwise> and scope_level=9</otherwise>
+			</choose>
+		</where>
+		ORDER BY sequence_number
+	</select>
+
+	<select id="findTop" resultType="sysDict">
+		select
+		<include refid="commCols" />
+		from sys_dict
+		<where>
+			dict_status='1' and dict_type_code=#{dictTypeCode} and parent_code is
+			null
+			<choose>
+				<when test="unitId!=null and unitId!=''"> and scope_level=6 and unit_id=#{unitId}</when>
+				<otherwise> and scope_level=9</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<select id="getAllSpecDescribes" resultType="sysDict"
+		parameterType="sysDict">
+		select
+		<include refid="commCols" />
+		from sys_dict
+		where dict_type_code = 'spec_describes'
+		order by
+		dict_status desc , sequence_number
+	</select>
+
+	<select id="getMaxSpecDescribesNum" resultType="int">
+		select
+		max(t.sequence_number) from SYS_DICT t where t.dict_type_code =
+		'spec_describes'
+	</select>
+
+</mapper>

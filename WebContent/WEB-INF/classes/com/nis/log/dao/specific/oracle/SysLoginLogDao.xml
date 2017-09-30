@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.log.dao.SysLoginLogDao">
+
+	<sql id="commCols_oracle">
+		ID id,UNIT_ID unitId,USERNAME username,CONTENT content,SQLS sqls,IP ip,OPERATE_TIME operateTime
+	</sql>
+
+	<select id="findSysLoginLog_oracle" parameterType="sysLoginLog" resultType="sysLoginLog">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from SYS_LOGIN_LOG
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="username!=null and username!=''"> and USERNAME LIKE CONCAT(CONCAT('%',#{username}),'%')</if>
+			<choose>
+			<when test="queryStartDate != null and queryEndDate == null">
+				and OPERATE_TIME &gt; #{queryStartDate}
+			</when>
+			<when test="queryStartDate == null and queryEndDate != null">
+				and OPERATE_TIME &lt; #{queryEndDate}
+			</when>
+			<when test="queryStartDate != null and queryEndDate != null">
+				and OPERATE_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</when>
+			</choose>
+		</where>
+		order by OPERATE_TIME desc
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

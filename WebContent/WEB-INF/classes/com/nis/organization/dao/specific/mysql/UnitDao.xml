@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.UnitDao">
+
+	<sql id="commCols_mysql">
+		HOSP_ID unitId,HOSP_NAME hospName,HOSP_LEVEL hospLevel,BEDS
+		beds,HOSP_TYPE hospType,HOSP_NATURE hospNature,IFBRANCH
+		ifbranch,CREATE_AT createAt,BH_CODE bhCode,FLAG flag,LAST_AT
+		lastAt,SP_CODE spCode,SUPPORT support,SUPP_TEL suppTel,LICENCE licence
+	</sql>
+
+	<select id="findUnit_mysql" parameterType="unit" resultType="unit">
+		select <include refid="commCols_mysql"/> from ZG004_YYXX
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+</mapper>

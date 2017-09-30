@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm004JcmxDao">
+
+	<sql id="commCols_oracle">
+		IN_DEPT_DT inDeptDt,CREATIONDATE creationdate,TYPEID typeid,ZYID zyid,ISNEWBORN isnewborn,NEONATEBW neonatebw,DEPTID deptid,ISADD isadd,INTERVENTIONMARKS interventionmarks,OPERATOR_NAME operatorName,OPERATOR_DT operatorDt
+	</sql>
+
+	
+	<select id="findGm004Jcmx_oracle" parameterType="gm004Jcmx" resultType="gm004Jcmx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from GM004_JCMX
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findCgByZyid_oracle" resultType="cgPg">
+	select b.datetime dtime,nvl(mnd,0)+nvl(mndqs,0) mnd,nvl(zxjm,0)+nvl(zxjmqs,0) zxjm,nvl(hxj,0)+nvl(hxjqs,0) hxj from 
+	(select trunc(#{startDate}) +level - 1 as datetime
+		          from dual
+		        connect by level &lt;= (ceil((trunc(#{endDate}) - trunc(#{startDate}) + 1)))) b
+	    left join  
+	(select t.creationdate,sum(case when t.typeid=4 then 1 else 0 end) mnd,
+	sum(case when t.typeid=5 then 1 else 0 end) zxjm,
+	sum(case when t.typeid=6 then 1 else 0 end) hxj
+	from gm004_jcmx t where t.zyid=#{zyid}  and t.creationdate between  #{startDate} and  #{endDate}
+	group by t.creationdate ) a
+	    on b.datetime=a.creationdate
+	    left join 
+	 (select t.survey_time,sum(case when q.cat_id=2 then 4 else 0 end) mndqs,
+	  sum(case when q.cat_id=1 then 4 else 0 end) zxjmqs,
+	  sum(case when q.cat_id=3 then 4 else 0 end) hxjqs
+	  from qs_survey_record t left join qs_questionnaire q on t.qid=q.qid where t.zyid=#{zyid} and t.survey_time between  #{startDate} and  #{endDate}
+		group by t.survey_time ) c
+		    on b.datetime=c.survey_time    
+	    order by b.datetime asc
+	</select>
+</mapper>

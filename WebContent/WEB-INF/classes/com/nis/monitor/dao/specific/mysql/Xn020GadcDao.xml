@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Xn020GadcDao">
+
+	<sql id="commCols_mysql">
+		id id,zyid zyid,item_code itemCode,patho_code pathoCode,patient_from patientFrom,diagnosis_name diagnosisName,is_infect isInfect,infect_type_name infectTypeName,infect_part_name infectPartName,instru_infect instruInfect,infect_dept infectDept,infect_dt infectDt,jbyh jbyh,gryh gryh,last_at lastAt,last_by lastBy,last_name lastName,item_name itemName,patho_name pathoName,res_prop_name resPropName,test_order_no testOrderNo,spec_describes specDescribes,survey_dept_id surveyDeptId,survey_dept_name surveyDeptName,submi_at submiAt,ref_rowid refRowid,dt dt,ref_id refId
+	</sql>
+
+	<select id="findXn020Gadc_mysql" parameterType="xn020Gadc" resultType="xn020Gadc">
+		select <include refid="commCols_mysql"/> from xn020_gadc
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

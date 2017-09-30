@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl005WtjgDao">
+
+	<sql id="commCols">
+		UPD_FLAG updFlag,BL_ID blId,SJ_ID sjId,ST_ID stId,SH_TEXT shText,SH_TYPE shType,SH_MEMO shMemo,FLAG flag
+	</sql>
+
+	<insert id="save" parameterType="bl005Wtjg"  flushCache="true">
+		 insert into BL005_WTJG(UPD_FLAG,BL_ID,SJ_ID,ST_ID,SH_TEXT,SH_TYPE,SH_MEMO,FLAG)
+		 values(#{updFlag},#{blId},#{sjId},#{stId},#{shText},#{shType},#{shMemo},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  BL005_WTJG
+		<where>BL_ID=#{blId} and ST_ID=#{stId}</where>
+	</delete>
+	
+	<update id="update" parameterType="bl005Wtjg" flushCache="true">
+		update BL005_WTJG
+		<set>
+			UPD_FLAG=#{updFlag},SH_TEXT=#{shText},SH_TYPE=#{shType},SH_MEMO=#{shMemo},FLAG=#{flag}
+		</set>
+		<where>BL_ID=#{blId} and SJ_ID=#{sjId} and ST_ID=#{stId}</where>
+	</update>
+	
+	<select id="get" resultType="bl005Wtjg">
+		select <include refid="commCols"/> from BL005_WTJG
+  		<where>BL_ID=#{blId} and ST_ID=#{stId}</where>
+	</select>
+	
+	<select id="findByBlId" resultType="bl005Wtjg">
+		select st_id stId, wm_concat(sh_text) shText from BL005_WTJG
+  		<where>BL_ID=#{blId} and sh_type='1'</where>
+  		group by st_id
+	</select>
+	
+	<select id="findBl005WtjgCount" parameterType="bl005Wtjg" resultType="int">
+		select count(*) from BL005_WTJG
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="bl005Wtjg">
+		select <include refid="commCols"/> from BL005_WTJG
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

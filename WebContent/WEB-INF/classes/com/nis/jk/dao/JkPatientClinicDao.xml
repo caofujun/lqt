@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientClinicDao">
+
+	<sql id="commCols">
+		ID id,MZID mzid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,IDNUMBER idnumber,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,PARENT_NAME parentName,TEL tel,MARRIAGE marriage,NATION nation,WORK_UNIT workUnit,EDUCATION education,REGISTERADDR registeraddr,PRESENTADDR presentaddr,DIAGNOSIS_NAME diagnosisName,VISIT_DT visitDt,START_DT startDt,DEATH_DT deathDt,DEPT_ID deptId,DEPT_NAME deptName,DOCTOR_ID doctorId,DOCTOR_NAME doctorName,ISRETURNVISIT isreturnvisit,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientClinic" flushCache="true">
+		 insert into JK_PATIENT_CLINIC(ID,MZID,PATIENT_ID,VISIT_ID,PATIENT_NAME,SEX,IDNUMBER,BIRTHDAY,AGE,AGE_UNIT,PARENT_NAME,TEL,MARRIAGE,NATION,WORK_UNIT,EDUCATION,REGISTERADDR,PRESENTADDR,DIAGNOSIS_NAME,VISIT_DT,START_DT,DEATH_DT,DEPT_ID,DEPT_NAME,DOCTOR_ID,DOCTOR_NAME,ISRETURNVISIT,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{mzid},#{patientId},#{visitId},#{patientName},#{sex},#{idnumber},#{birthday},#{age},#{ageUnit},#{parentName},#{tel},#{marriage},#{nation},#{workUnit},#{education},#{registeraddr},#{presentaddr},#{diagnosisName},#{visitDt},#{startDt},#{deathDt},#{deptId},#{deptName},#{doctorId},#{doctorName},#{isreturnvisit},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_CLINIC
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientClinic" flushCache="true">
+		update JK_PATIENT_CLINIC
+		<set>
+			ID=#{id},MZID=#{mzid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},PATIENT_NAME=#{patientName},SEX=#{sex},IDNUMBER=#{idnumber},BIRTHDAY=#{birthday},AGE=#{age},AGE_UNIT=#{ageUnit},PARENT_NAME=#{parentName},TEL=#{tel},MARRIAGE=#{marriage},NATION=#{nation},WORK_UNIT=#{workUnit},EDUCATION=#{education},REGISTERADDR=#{registeraddr},PRESENTADDR=#{presentaddr},DIAGNOSIS_NAME=#{diagnosisName},VISIT_DT=#{visitDt},START_DT=#{startDt},DEATH_DT=#{deathDt},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},DOCTOR_ID=#{doctorId},DOCTOR_NAME=#{doctorName},ISRETURNVISIT=#{isreturnvisit},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientClinic" flushCache="true">
+		update JK_PATIENT_CLINIC
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientClinic">
+		select <include refid="commCols"/> from JK_PATIENT_CLINIC
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientClinicCount" parameterType="jkPatientClinic" resultType="int">
+		select count(*) from JK_PATIENT_CLINIC
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientClinic">
+		select <include refid="commCols"/> from JK_PATIENT_CLINIC
+		<where>
+		</where>
+	</select>
+</mapper>

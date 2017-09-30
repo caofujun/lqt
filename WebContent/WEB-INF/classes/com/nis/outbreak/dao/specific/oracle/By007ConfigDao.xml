@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007ConfigDao">
+
+	<sql id="commCols_oracle">
+		absolute_contrast absoluteContrast,absolute_p absoluteP,show_tab showTab,type_id typeId,
+		type_name typeName,
+		absolute_days absoluteDays,absolute_appear absoluteAppear,
+		absolute_people absolutePeople,
+		absolute_master_name absoluteMasterName,absolute_detail_name absoluteDetailName,extra_sql extraSql,order_by orderBy,
+		collect_proc collectProc,show_type showType,grade grade
+	</sql>
+
+	<select id="findBy007Config_oracle" parameterType="by007Config" resultType="by007Config">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from by007_config
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<update id="batchUpdAbsolute_oracle" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+            update by007_config 
+            <set>
+            	absolute_days=#{item.absoluteDays},absolute_appear=#{item.absoluteAppear}
+            </set>
+            <where>
+            	type_id=#{item.typeId}
+            </where>
+        </foreach>  
+    </update>
+    
+    <update id="batchUpdRelative_oracle" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+            update by007_config 
+            <set>
+            	relative_days=#{item.relativeDays},relative_threshold=#{item.relativeThreshold}
+            </set>
+            <where>
+            	type_id=#{item.typeId}
+            </where>
+        </foreach>  
+    </update>
+</mapper>

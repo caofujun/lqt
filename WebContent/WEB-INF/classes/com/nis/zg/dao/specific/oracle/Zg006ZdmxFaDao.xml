@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg006ZdmxFaDao">
+
+	<sql id="commCols_oracle">
+		id id,fa_name faName,jyxx_weight jyxxWeight,bcyx_weight bcyxWeight,xjpp_weight xjppWeight,kjyy_weight kjyyWeight,state state,create_user createUser,create_time createTime,fa_describe faDescribe,tyxzb_weight tyxzbWeight,JYXX_DAY jyxxDay,BCYX_DAY bcyxDay,XJPP_DAY xjppDay,KJYY_DAY kjyyDay,TYXZB_DAY tyxzbDay
+	</sql>
+
+	<select id="findZg006ZdmxFa_oracle" parameterType="zg006ZdmxFa" resultType="zg006ZdmxFa">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from zg006_zdmx_fa
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

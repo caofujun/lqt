@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Gr018BcgrysDao">
+
+	<sql id="commCols">
+		ZYID zyid,BC_ID bcId,ELEMENT_ID elementId,ELEMENT_NAME
+		elementName,DATA_FORM dataForm,ENTER_DATE enterDate,MONI_DATE moniDate
+	</sql>
+
+	<insert id="save" parameterType="gr018Bcgrys" flushCache="true">
+		insert
+		into
+		GR018_BCGRYS(ZYID,BC_ID,ELEMENT_ID,ELEMENT_NAME,DATA_FORM,ENTER_DATE,MONI_DATE)
+		values(#{zyid},#{bcId},#{elementId},#{elementName},#{dataForm},#{enterDate},#{moniDate})
+	</insert>
+
+	<insert id="saveList" parameterType="gr018Bcgrys" flushCache="true">
+		insert into
+		GR018_BCGRYS${tablename} (ZYID,BC_ID,ELEMENT_ID,ELEMENT_NAME,DATA_FORM,ENTER_DATE,MONI_DATE)
+		<foreach collection="gr018BcgrysList" item="item" index="index"
+			separator="union all">
+			(select
+			#{item.zyid},#{item.bcId},#{item.elementId},#{item.elementName},#{item.dataForm},#{item.enterDate},#{item.moniDate}
+			from dual)
+		</foreach>
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from GR018_BCGRYS${tablename}
+		<where>zyid=#{zyid} and bc_id=#{bcid}</where>
+	</delete>
+
+	<update id="update" parameterType="gr018Bcgrys" flushCache="true">
+		update GR018_BCGRYS
+		<set>
+			ZYID=#{zyid},BC_ID=#{bcId},ELEMENT_ID=#{elementId},ELEMENT_NAME=#{elementName},DATA_FORM=#{dataForm},ENTER_DATE=#{enterDate},MONI_DATE=#{moniDate}
+		</set>
+		<where>=#{}</where>
+	</update>
+
+	<select id="get" resultType="gr018Bcgrys">
+		select
+		<include refid="commCols" />
+		from GR018_BCGRYS
+		<where>=#{}</where>
+	</select>
+	
+	<select id="getMonitorPatientBcLastAt" resultType="date">
+		select max(monitor_at) from gr018_ysgrys ys
+		 join st003_cryxxb cr on ys.zyid=cr.zyid
+		 where cr.out_at is null and monitor_at&lt;sysdate
+	</select>
+
+	<select id="findGr018BcgrysCount" parameterType="gr018Bcgrys"
+		resultType="int">
+		select count(*) from GR018_BCGRYS
+		<where>
+			1=1
+		</where>
+	</select>
+
+	<select id="getAll" resultType="gr018Bcgrys">
+		select
+		<include refid="commCols" />
+		from GR018_BCGRYS
+		<where>
+			1=1
+		</where>
+	</select>
+
+	<select id="findGrysCount" parameterType="gr018Bcgrys"
+		resultType="int">
+		select count(1) num from gr018_bcgrys${tablename} bc join gr018_ysgrys${tablename} ys on
+		bc.zyid = ys.zyid
+		and bc.element_id = ys.element_id and bc.enter_date =
+		ys.data_date
+		<where>
+			bc.zyid=#{zyid} and bc.bc_id=#{bcid} and ys.data_form
+			in('病程','影像') and
+			instr(ys.sj_id, bc.bc_id)=0
+		</where>
+	</select>
+	
+	<delete id="deleteGrysByZyid" flushCache="true">
+		delete from gr018_ysgrys where zyid='' and id in(select ys.id from
+		gr018_bcgrys bc join gr018_ysgrys ys on bc.zyid = ys.zyid
+		and
+		bc.element_id = ys.element_id and bc.enter_date = ys.data_date
+		<where>
+			bc.zyid=#{zyid} and ys.data_form in('病程','影像') and
+			instr(ys.sj_id,
+			bc.bc_id)=0 and ys.monitor_at&lt;sysdate-0.2)
+		</where>
+	</delete>
+</mapper>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk005SyjcDao">
+
+	<sql id="commCols">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,ISINHOSPITAL isinhospital,PATIENT_NAME patientName,SEXID sexid,SEXNAME sexname,PARENT_NAME parentName,ID_TYPE idType,ID_TYPE_NAME idTypeName,ID id,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,UNIT unit,TELP telp,TELH telh,AREATYPE_ID areatypeId,AREATYPE_NAME areatypeName,ADDR addr,ADDRCODE addrcode,ADDRCODEVALUE addrcodevalue,REGISTERAREATYPE_ID registerareatypeId,REGISTERAREATYPE_NAME registerareatypeName,REGISTERAREA registerarea,REGISTERAREACODE registerareacode,REGISTERAREAVALUE registerareavalue,PROFESSION profession,START_DATE startDate,DIAGNOSE_DATE diagnoseDate,DEADDATE deaddate,SYMPTOMS symptoms,SYMPTOMS_FR symptomsFr,SYMPTOMS_OTHER symptomsOther,DIGESTIVES digestives,DIGESTIVE_OT digestiveOt,DIGESTIVE_FX digestiveFx,DIGESTIVE_FXXZ digestiveFxxz,DIGESTIVE_OTHER digestiveOther,RESPIRATORYS respiratorys,RESPIRATORY_OTHER respiratoryOther,CARDIOVASCULARS cardiovasculars,CARDIOVASCULAR_OTHER cardiovascularOther,URINARYS urinarys,URINARY_OTHER urinaryOther,NERVOUS nervous,NERVOU_YC nervouYc,NERVOU_OTHER nervouOther,SKINS skins,SKIN_OTHER skinOther,ISUSEDANTIBIOTIC isusedantibiotic,ANTIBIOTIC antibiotic,INITDIAGNOSIS initdiagnosis,INITDIAGNOSIS_OTHER initdiagnosisOther,PREVIOUSHISTORY previoushistory,PREVIOUSHISTORY_OTHER previoushistoryOther,ISFOODCAUSED isfoodcaused,ISBIOLOGICALSAMPLES isbiologicalsamples,REPORTDT reportdt,SAVEDT savedt,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,FLAG flag,VALID_DATE validDate,DOCTORID doctorid,DOCTORNAME doctorname,DEPTID deptid,DEPTNAME deptname,REJECT_REASON rejectReason,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,VALIDPERSON validperson,VALIDPERSONNAME validpersonname,NOTES notes,ISEMPTYCARD isemptycard,ISRETURNVISIT isreturnvisit,ISPRINT isprint
+	</sql>
+
+	<insert id="save" parameterType="ctgBk005Syjc"  flushCache="true">
+		 insert into CTG_BK005_SYJC(MASTERID,CARDID,PATIENT_ID,ZYID,VISIT_ID,MZID,ISINHOSPITAL,PATIENT_NAME,SEXID,SEXNAME,PARENT_NAME,ID_TYPE,ID_TYPE_NAME,ID,BIRTHDAY,AGE,AGE_UNIT,UNIT,TELP,TELH,AREATYPE_ID,AREATYPE_NAME,ADDR,ADDRCODE,ADDRCODEVALUE,REGISTERAREATYPE_ID,REGISTERAREATYPE_NAME,REGISTERAREA,REGISTERAREACODE,REGISTERAREAVALUE,PROFESSION,START_DATE,DIAGNOSE_DATE,DEADDATE,SYMPTOMS,SYMPTOMS_FR,SYMPTOMS_OTHER,DIGESTIVES,DIGESTIVE_OT,DIGESTIVE_FX,DIGESTIVE_FXXZ,DIGESTIVE_OTHER,RESPIRATORYS,RESPIRATORY_OTHER,CARDIOVASCULARS,CARDIOVASCULAR_OTHER,URINARYS,URINARY_OTHER,NERVOUS,NERVOU_YC,NERVOU_OTHER,SKINS,SKIN_OTHER,ISUSEDANTIBIOTIC,ANTIBIOTIC,INITDIAGNOSIS,INITDIAGNOSIS_OTHER,PREVIOUSHISTORY,PREVIOUSHISTORY_OTHER,ISFOODCAUSED,ISBIOLOGICALSAMPLES,REPORTDT,SAVEDT,REPORTDOCTORID,REPORTDOCTORNAME,FLAG,VALID_DATE,DOCTORID,DOCTORNAME,DEPTID,DEPTNAME,REJECT_REASON,REPORTDEPTID,REPORTDEPTNAME,VALIDPERSON,VALIDPERSONNAME,NOTES,ISEMPTYCARD,ISRETURNVISIT)
+		 values(#{masterid},#{cardid},#{patientId},#{zyid},#{visitId},#{mzid},#{isinhospital},#{patientName},#{sexid},#{sexname},#{parentName},#{idType},#{idTypeName},#{id},#{birthday},#{age},#{ageUnit},#{unit},#{telp},#{telh},#{areatypeId},#{areatypeName},#{addr},#{addrcode},#{addrcodevalue},#{registerareatypeId},#{registerareatypeName},#{registerarea},#{registerareacode},#{registerareavalue},#{profession},#{startDate},#{diagnoseDate},#{deaddate},#{symptoms},#{symptomsFr},#{symptomsOther},#{digestives},#{digestiveOt},#{digestiveFx},#{digestiveFxxz},#{digestiveOther},#{respiratorys},#{respiratoryOther},#{cardiovasculars},#{cardiovascularOther},#{urinarys},#{urinaryOther},#{nervous},#{nervouYc},#{nervouOther},#{skins},#{skinOther},#{isusedantibiotic},#{antibiotic},#{initdiagnosis},#{initdiagnosisOther},#{previoushistory},#{previoushistoryOther},#{isfoodcaused},#{isbiologicalsamples},#{reportdt},#{savedt},#{reportdoctorid},#{reportdoctorname},#{flag},#{validDate},#{doctorid},#{doctorname},#{deptid},#{deptname},#{rejectReason},#{reportdeptid},#{reportdeptname},#{validperson},#{validpersonname},#{notes},#{isemptycard},#{isreturnvisit})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK005_SYJC
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk005Syjc" flushCache="true">
+		update CTG_BK005_SYJC
+		<set>
+			MASTERID=#{masterid},CARDID=#{cardid},PATIENT_ID=#{patientId},ZYID=#{zyid},VISIT_ID=#{visitId},MZID=#{mzid},ISINHOSPITAL=#{isinhospital},PATIENT_NAME=#{patientName},SEXID=#{sexid},SEXNAME=#{sexname},PARENT_NAME=#{parentName},ID_TYPE=#{idType},ID_TYPE_NAME=#{idTypeName},ID=#{id},BIRTHDAY=#{birthday},AGE=#{age},AGE_UNIT=#{ageUnit},UNIT=#{unit},TELP=#{telp},TELH=#{telh},AREATYPE_ID=#{areatypeId},AREATYPE_NAME=#{areatypeName},ADDR=#{addr},ADDRCODE=#{addrcode},ADDRCODEVALUE=#{addrcodevalue},REGISTERAREATYPE_ID=#{registerareatypeId},REGISTERAREATYPE_NAME=#{registerareatypeName},REGISTERAREA=#{registerarea},REGISTERAREACODE=#{registerareacode},REGISTERAREAVALUE=#{registerareavalue},PROFESSION=#{profession},START_DATE=#{startDate},DIAGNOSE_DATE=#{diagnoseDate},DEADDATE=#{deaddate},SYMPTOMS=#{symptoms},SYMPTOMS_FR=#{symptomsFr},SYMPTOMS_OTHER=#{symptomsOther},DIGESTIVES=#{digestives},DIGESTIVE_OT=#{digestiveOt},DIGESTIVE_FX=#{digestiveFx},DIGESTIVE_FXXZ=#{digestiveFxxz},DIGESTIVE_OTHER=#{digestiveOther},RESPIRATORYS=#{respiratorys},RESPIRATORY_OTHER=#{respiratoryOther},CARDIOVASCULARS=#{cardiovasculars},CARDIOVASCULAR_OTHER=#{cardiovascularOther},URINARYS=#{urinarys},URINARY_OTHER=#{urinaryOther},NERVOUS=#{nervous},NERVOU_YC=#{nervouYc},NERVOU_OTHER=#{nervouOther},SKINS=#{skins},SKIN_OTHER=#{skinOther},ISUSEDANTIBIOTIC=#{isusedantibiotic},ANTIBIOTIC=#{antibiotic},INITDIAGNOSIS=#{initdiagnosis},INITDIAGNOSIS_OTHER=#{initdiagnosisOther},PREVIOUSHISTORY=#{previoushistory},PREVIOUSHISTORY_OTHER=#{previoushistoryOther},ISFOODCAUSED=#{isfoodcaused},ISBIOLOGICALSAMPLES=#{isbiologicalsamples},REPORTDT=#{reportdt},SAVEDT=#{savedt},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},FLAG=#{flag},VALID_DATE=#{validDate},DOCTORID=#{doctorid},DOCTORNAME=#{doctorname},DEPTID=#{deptid},DEPTNAME=#{deptname},REJECT_REASON=#{rejectReason},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},VALIDPERSON=#{validperson},notes=#{notes},ISEMPTYCARD=#{isemptycard},ISRETURNVISIT=#{isreturnvisit}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk005Syjc">
+		select <include refid="commCols"/> from CTG_BK005_SYJC
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	<update id="audit" parameterType="ctgBk005Syjc" flushCache="true">
+		update CTG_BK005_SYJC c set c.flag=1,c.valid_date= #{validDate}, c.validperson=#{validperson}, c.validpersonname=#{validpersonname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="retreat" parameterType="ctgBk005Syjc" flushCache="true">
+		update CTG_BK005_SYJC c set c.flag=2,c.valid_date= #{validDate}, c.validperson=#{validperson}, c.validpersonname=#{validpersonname},c.reject_reason=#{rejectReason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="cancel" parameterType="ctgBk005Syjc" flushCache="true">
+		update CTG_BK005_SYJC c set c.flag=0,c.valid_date= #{validDate}, c.validperson=#{validperson}, c.validpersonname=#{validpersonname},c.reject_reason='' where c.masterid=#{masterid}
+	</update>
+	
+	<update id="remove" parameterType="ctgBk005Syjc" flushCache="true">
+		update CTG_BK005_SYJC c set c.flag=3,c.valid_date= #{validDate}, c.validperson=#{validperson}, c.validpersonname=#{validpersonname}, c.reject_reason=#{rejectReason} where c.masterid=#{masterid}
+	</update>
+	
+	
+	<select id="findCtgBk005SyjcCount" parameterType="ctgBk005Syjc" resultType="int">
+		select count(*) from CTG_BK005_SYJC
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk005Syjc">
+		select <include refid="commCols"/> from CTG_BK005_SYJC
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findCardsForAdmin" resultType="ctgBk005Syjc" parameterType="ctgBk001Crbmaster">
+		select <include refid="commCols"/>,unReadMsg from
+       		(select m.* , (select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = m.zyid
+		             ) and user_id = #{userid} and is_read = 0) unReadMsg 
+		from CTG_BK005_SYJC m )m
+		<where>
+			1=1
+			<if test="reportdoctorid!=null and reportdoctorid!=''">
+				and m.reportdoctorid in (#{reportdoctorid})
+			</if>
+			<if test="reportdeptid!=null and reportdeptid!=''">
+		        and m.reportdeptid in (#{reportdeptid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+			</if>
+			<if test="dateType==1">
+				and trunc(m.reportdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+				and trunc(m.valid_date) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="cardStates>=0">
+				and m.flag=#{cardStates}
+			</if>
+			<choose>
+				<when test="isprint==1">
+					and m.isprint = 1
+				</when>
+				<when test="isprint==2">
+					 and ( m.isprint is null or m.isprint !=1 ) 
+				</when>
+			</choose>
+			<if test="unReadMsg==1">
+				and m.unReadMsg>0
+			</if>
+			<choose>
+				<when test="cardStates==1">
+					order by valid_date desc
+				</when>
+				<when test="cardStates!=1">
+					order by reportdt desc
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="updateNotes" parameterType="String" flushCache="true">
+		update CTG_BK005_SYJC c set c.notes=#{notes} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="batchAudit" parameterType="ctgBk002Sybk" flushCache="true">
+		update CTG_BK005_SYJC c set c.flag=1,c.valid_date= #{validDate}, c.validperson=#{validperson}, c.validpersonname=#{validpersonname} where c.masterid in (${masterid})
+	</update>
+	
+	<update id="updatePrintFlag" parameterType="String">
+		update CTG_BK005_SYJC set isprint=1
+  		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="getHospInfo4Excel" resultType="map">
+		select
+			  (select a.areacodevalue from ctg_sys004_dictaddrarea a where a.areacode=(select substr(x.addrareacode,0,2)||'000000' from zg004_yyxx x where x.flag=1 and rownum=1)) "sheng",
+			  (select a.areacodevalue from ctg_sys004_dictaddrarea a where a.areacode=(select substr(x.addrareacode,0,4)||'0000' from zg004_yyxx x where x.flag=1 and rownum=1)) "shi",
+			  (select a.areacodevalue from ctg_sys004_dictaddrarea a where a.areacode=(select substr(x.addrareacode,0,6)||'00' from zg004_yyxx x where x.flag=1 and rownum=1)) "xian",
+			  (select x.hosp_name from zg004_yyxx x where x.flag=1 and rownum=1) "hospName"
+			 from dual
+	</select>
+	
+	<select id="getAddrInfo4Excel" resultType="map" parameterType="String">
+		select
+		  (select a.areacodevalue from ctg_sys004_dictaddrarea a where a.areacode=(substr(#{areacode},0,2)||'000000')) "sheng",
+		  (select a.areacodevalue from ctg_sys004_dictaddrarea a where a.areacode=(substr(#{areacode},0,4)||'0000')) "shi",
+		  (select a.areacodevalue from ctg_sys004_dictaddrarea a where a.areacode=(substr(#{areacode},0,6)||'00')) "xian"
+		 from dual
+	</select>
+</mapper>

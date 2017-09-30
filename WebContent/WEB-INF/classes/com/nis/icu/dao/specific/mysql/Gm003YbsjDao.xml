@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm003YbsjDao">
+
+	<sql id="commCols_mysql">
+		IN_DEPT_COUNT inDeptCount,CREATIONDATE creationdate,DT_YEAR dtYear,DT_MONTH dtMonth,DT_DAY dtDay,TYPE_ID typeId,DEPT_ID deptId,SURVEY_COUNT surveyCount
+	</sql>
+
+	<select id="findGm003Ybsj_mysql" parameterType="gm003Ybsj" resultType="gm003Ybsj">
+		select <include refid="commCols_mysql"/> from GM003_YBSJ
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

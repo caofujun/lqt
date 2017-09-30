@@ -1,0 +1,18 @@
+/* CSS Document */
+
+/*表格基本样式*/
+.qi_table,.qi_table2{ background:#D5E3E6; width:100%;}
+.qi_table th,.qi_table2 th{ background:url(../images/m_search_qi_table_img.jpg) repeat-x left top; border-right:1px solid #FFF; color:#044D7A; height:28px; line-height:28px;font-weight:bold;}
+.qi_table td,.qi_table2 td{ background:#fff; height:32px; line-height:32px; text-align:left; padding:0 5px;}
+.qi_table .left,.qi_table2 .left,.ts_table .left{ text-align:left;}
+.qi_table .pretitle{ width:120px; font-weight:bold;}
+.qi_table .center{ text-align:center}
+.qi_table .page{ float:left; background:url(../images/m_search_qi_table_page_img.jpg) no-repeat left center; padding-left:15px;}
+.qi_table .pageTurn{ float:right; color:#055588;}
+.qi_table .pageTurn a{ color:#055588;}
+.qi_table .text{ width:30px; height:16px;}
+.qi_table .trgray{ background:#fafeff;}
+.qi_table2 td{ background:#F8FCFD; height:32px; line-height:32px; text-align:left; padding:0 5px;}
+/*questIndex style*/
+.qi_text{/*  height:22px; */padding: 2px;}
+

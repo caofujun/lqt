@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw001JcxmDao">
+
+	<sql id="commCols">
+		class_id classId,class_name className,pclass_id pclassId,material material,take_area takeArea,take_mode takeMode,test_mode testMode,default_mode_id defaultModeId,default_sample_id defaultSampleId,default_pos_id defaultPosId,bh_code bhCode,sp_code spCode,wb_code wbCode,memo memo,last_at lastAt,type type,flag flag
+	</sql>
+
+	<insert id="save" parameterType="hw001Jcxm" flushCache="true">
+		 insert into hw001_jcxm(class_id,class_name,pclass_id,material,take_area,take_mode,test_mode,default_mode_id,default_sample_id,default_pos_id,bh_code,sp_code,wb_code,memo,last_at,type,flag)
+		 values(#{classId},#{className},#{pclassId},#{material},#{takeArea},#{takeMode},#{testMode},#{defaultModeId},#{defaultSampleId},#{defaultPosId},#{bhCode},#{spCode},#{wbCode},#{memo},#{lastAt},#{type},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw001_jcxm
+		<where>class_id=#{classId}</where>
+	</delete>
+	
+	<delete id="delByClassIdPclassId" flushCache="true">
+		delete from hw001_jcxm
+		<where>
+			class_id=#{classId} or pclass_id=#{classId}
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="hw001Jcxm" flushCache="true">
+		update hw001_jcxm
+		<set>
+			class_id=#{classId},class_name=#{className},pclass_id=#{pclassId},material=#{material},take_area=#{takeArea},take_mode=#{takeMode},test_mode=#{testMode},default_mode_id=#{defaultModeId},default_sample_id=#{defaultSampleId},default_pos_id=#{defaultPosId},bh_code=#{bhCode},sp_code=#{spCode},wb_code=#{wbCode},memo=#{memo},last_at=#{lastAt},type=#{type},flag=#{flag}
+		</set>
+		<where>class_id=#{classId}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update hw001_jcxm
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='className'">class_name=#{hw001Jcxm.className},</when>
+					<when test="item=='pclassId'">pclass_id=#{hw001Jcxm.pclassId},</when>
+					<when test="item=='material'">material=#{hw001Jcxm.material},</when>
+					<when test="item=='takeArea'">take_area=#{hw001Jcxm.takeArea},</when>
+					<when test="item=='takeMode'">take_mode=#{hw001Jcxm.takeMode},</when>
+					<when test="item=='testMode'">test_mode=#{hw001Jcxm.testMode},</when>
+					<when test="item=='defaultModeId'">default_mode_id=#{hw001Jcxm.defaultModeId},</when>
+					<when test="item=='defaultSampleId'">default_sample_id=#{hw001Jcxm.defaultSampleId},</when>
+					<when test="item=='defaultPosId'">default_pos_id=#{hw001Jcxm.defaultPosId},</when>
+					<when test="item=='bhCode'">bh_code=#{hw001Jcxm.bhCode},</when>
+					<when test="item=='spCode'">sp_code=#{hw001Jcxm.spCode},</when>
+					<when test="item=='wbCode'">wb_code=#{hw001Jcxm.wbCode},</when>
+					<when test="item=='memo'">memo=#{hw001Jcxm.memo},</when>
+					<when test="item=='lastAt'">last_at=#{hw001Jcxm.lastAt},</when>
+					<when test="item=='type'">type=#{hw001Jcxm.type},</when>
+					<when test="item=='flag'">flag=#{hw001Jcxm.flag},</when>
+				</choose>
+			</foreach>
+			class_id=#{hw001Jcxm.classId}
+		</set>
+		<where>class_id=#{hw001Jcxm.classId}</where>
+	</update>
+	
+	<select id="get" resultType="hw001Jcxm">
+		select <include refid="commCols"/> from hw001_jcxm
+  		<where>class_id=#{classId}</where>
+	</select>
+	
+	
+	<select id="findHw001JcxmCount" parameterType="hw001Jcxm" resultType="int">
+		select count(*) from hw001_jcxm
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw001Jcxm">
+		select <include refid="commCols"/> from hw001_jcxm
+		<where>
+		</where>
+	</select>
+	
+	<select id="queryList" parameterType="hw001Jcxm" resultType="hw001Jcxm">
+		select class_id classId,class_name className,pclass_id pclassId,sp_code spCode from hw001_jcxm 
+		<where>
+			<if test="flag!=null">
+				and flag=#{flag}
+			</if>
+			<if test="pclassId!=null">
+				and pclass_id=#{pclassId}
+			</if>
+		</where>
+		order by class_id
+	</select>
+	
+	<select id="findSubclass" parameterType="hw001Jcxm" resultType="hw001Jcxm">
+		select <include refid="commCols"/> from hw001_jcxm 
+		<where>
+			class_id=#{pclassId} or pclass_id=#{pclassId}
+		</where>
+	</select>
+	
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg024ImpOpeDao">
+
+	<sql id="commCols">
+		IMP_OPE_ID impOpeId,IMP_OPE_NAME impOpeName,IMP_OPE_KEY impOpeKey,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,MEMO memo,FLAG flag,LAST_AT lastAt
+	</sql>
+
+	<insert id="save" parameterType="zg024ImpOpe"  flushCache="true">
+		 insert into ZG024_IMP_OPE(IMP_OPE_ID,IMP_OPE_NAME,IMP_OPE_KEY,BH_CODE,SP_CODE,WB_CODE,MEMO,FLAG,LAST_AT)
+		 values(#{impOpeId},#{impOpeName},#{impOpeKey},#{bhCode},#{spCode},#{wbCode},#{memo},#{flag},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG024_IMP_OPE
+		<where>IMP_OPE_ID=#{impOpeId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg024ImpOpe" flushCache="true">
+		update ZG024_IMP_OPE
+		<set>
+			IMP_OPE_ID=#{impOpeId},IMP_OPE_NAME=#{impOpeName},IMP_OPE_KEY=#{impOpeKey},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},MEMO=#{memo},FLAG=#{flag},LAST_AT=#{lastAt}
+		</set>
+		<where>IMP_OPE_ID=#{impOpeId}</where>
+	</update>
+	
+	<select id="get" resultType="zg024ImpOpe">
+		select <include refid="commCols"/> from ZG024_IMP_OPE
+  		<where>IMP_OPE_ID=#{impOpeId}</where>
+	</select>
+	
+	
+	<select id="findZg024ImpOpeCount" parameterType="zg024ImpOpe" resultType="int">
+		select count(*) from ZG024_IMP_OPE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg024ImpOpe">
+		select <include refid="commCols"/> from ZG024_IMP_OPE
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

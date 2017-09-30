@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.By001BfgzDao">
+
+	<sql id="commCols_mysql">
+		QID qid,OUTBREAK_TYPE_ID outbreakTypeId,OUTBREAK_TYPE_NAME outbreakTypeName,OUTBREAK_CYCLE outbreakCycle,MIN_CASE_NUM minCaseNum,TOTAL_DATA_TYPE totalDataType,BH_CODE bhCode,WB_CODE wbCode,SP_CODE spCode,LAST_AT lastAt,ISOUTBREAK isoutbreak,TYPE_ID typeId,OUTBREAK_RATE outbreakRate,COMP_CYCLE compCycle,COMP_MODE compMode
+	</sql>
+
+	<select id="findBy001Bfgz_mysql" parameterType="by001Bfgz" resultType="by001Bfgz">
+		select <include refid="commCols_mysql"/> from BY001_BFGZ
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

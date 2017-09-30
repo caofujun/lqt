@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbmasterDao">
+
+	<sql id="commCols_oracle">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,BED_NO bedNo,PATIENT_NAME patientName,PARENT_NAME parentName,SEXID sexid,SEXNAME sexname,BIRTYDAY birtyday,AGE age,AGEUNIT ageunit,IDCARD idcard,TELP telp,UNIT unit,PROFESSIONID professionid,PROFESSIONNAME professionname,AREATYPEID areatypeid,AREATYPENAME areatypename,ADDRCODE addrcode,ADDRCODEVALUE addrcodevalue,ADDR addr,VILLAGE village,HOUSENUMBER housenumber,DOCTORID doctorid,DOCTORNAME doctorname,OFFICEID officeid,OFFICENAME officename,DEADDATE deaddate,REPORTTYPEID reporttypeid,REPORTTYPENAME reporttypename,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,FILLDATE filldate,ISPRINT isprint,IDTYPE idtype,IDTYPEVALUE idtypevalue,ISEMPTYCARD isemptycard,NIDN nidn,DZBM dzbm
+	</sql>
+
+	
+	<select id="findCtgBk001Crbmaster_oracle" parameterType="ctgBk001Crbmaster" resultType="ctgBk001Crbmaster">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_BK001_CRBMASTER
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="reportHistoryQuery_oracle" resultType="ctgBk001Crbmaster" parameterType="ctgBk001Crbmaster">
+		select * from ( select a.*, rownum rn from (
+		<if test="cardType=='crbbk'">
+			select t.diseasename diseaseName,
+	           'crbbk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='crbbk') cardName,
+	           '/cdc/f_view/reportCardZY.shtml' cardUrl,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sexname sexname,
+	           (t.age || t.ageunit) ageunit,
+	           t.telp telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.filldate filldate,
+	           t.isemptycard isemptycard,
+	           t.subid subid,
+	           t.diseaseid diseaseId,
+	           t.isprint isprint
+	           from
+	           (select t.*,d.subid,d.diseasename,d.flag,d.diseaseid,d.auditor,d.auditdate,
+	                (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	          from CTG_BK001_CRBMASTER t, CTG_BK001_CRBDISEASE d 
+	          where t.masterid = d.masterid 
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.filldate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(d.auditdate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and d.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='sybk'">
+			select '' diseaseName,
+	           'sybk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='sybk') cardName,
+	           '/cdc/f_view/deathReport.shtml' cardUrl,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sexname sexname,
+	           (t.age || t.ageunit) ageunit,
+	           '' telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.filldate filldate,
+	           t.isemptycard isemptycard,
+	           '' subid,
+	           unReadMsg unReadMsg,
+	           t.isprint isprint
+	           from (select t.*,
+	           (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	           from CTG_BK002_SYBK t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.filldate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.auditdate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='syjcbk'">
+			select '' diseaseName,
+             'syjcbk' cardType,
+             (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='syjcbk') cardName,
+             '/cdc/f_view/fsmReport.shtml' cardUrl,
+             t.mzid mzid,t.zyid zyid,
+             t.masterid masterid,
+             t.flag cardStates,
+             t.patient_name patientName,
+             t.sexname sexname,
+             (t.age || t.age_unit) ageunit,
+             t.telp telp,
+             t.reportdoctorname reportdoctorname,
+             t.reportdeptname reportdeptname,
+             t.reject_reason delreason,
+             t.reportdt filldate,
+             t.isemptycard isemptycard,
+             '' subid,
+             unReadMsg unReadMsg,
+             t.isprint isprint
+             from (select t.*,
+             (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+                         select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+                   ) and user_id=#{userid} and is_read = 0)  unReadMsg
+             from CTG_BK005_SYJC t
+             where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.valid_date) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='zlbk'">
+			select '' diseaseName,
+	           'zlbk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='zlbk') cardName,
+	           '/cdc/f_view/tumourReport.shtml' cardUrl,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sex sexname,
+	           (t.age || t.age_unit) ageunit,
+	           t.tel telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.isemptycard isemptycard,
+	           t.reportDt filldate,
+	           '' subid,
+	           unReadMsg unReadMsg,
+	           t.isprint isprint
+	           from (select t.*,
+	           (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	           from CTG_BK006_Tumour t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='syycbk'">
+			select '' diseaseName,
+	           'syycbk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='syycbk') cardName,
+	           '/cdc/f_view/fsaReport.shtml' cardUrl,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sex sexname,
+	           (t.age || t.ageunit) ageunit,
+	           t.mobile_phone telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.reject_reason delreason,
+	           t.isemptycard isemptycard,
+	           t.reportDt filldate,
+	           '' subid,
+	           unReadMsg unReadMsg,
+	           t.isprint isprint
+	           from (select t.*,
+	           (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	           from CTG_BK004_Syycbk t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='xnxgbk'">
+			select '' diseaseName,
+             'xnxgbk' cardType,
+             (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='xnxgbk') cardName,
+             '/cdc/f_view/hcvReport.shtml' cardUrl,
+             t.mzid mzid,t.zyid zyid,
+             t.masterid masterid,
+             t.flag cardStates,
+             t.patient_name patientName,
+             t.sex sexname,
+             (t.age || t.age_unit) ageunit,
+             t.tel telp,
+             t.reportdoctorname reportdoctorname,
+             t.reportdeptname reportdeptname,
+             t.delreason delreason,
+             t.isemptycard isemptycard,
+             t.reportDt filldate,
+             '' subid,
+             unReadMsg unReadMsg,
+             t.isprint isprint
+             from (select t.*,
+             (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+                         select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+                   ) and user_id='admin' and is_read = 0)  unReadMsg
+             from CTG_BK008_CCVD t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='gwzsbk'">
+			select '' diseaseName,
+	           'gwzsbk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='gwzsbk') cardName,
+	           '/cdc/f_view/sunstrokeReport.shtml' cardUrl,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sex sexname,
+	           (t.age || t.age_unit) ageunit,
+	           '' telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.isemptycard isemptycard,
+	           t.reportDt filldate,
+	           '' subid,
+	           unReadMsg unReadMsg,
+	           t.isprint isprint
+	           from (select t.*,
+	           (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	           from CTG_BK009_SUNSTROKE t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	       <if test="cardType=='nyzdbk'">
+			select '' diseaseName,
+             'nyzdbk' cardType,
+             (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='nyzdbk') cardName,
+             '/cdc/f_view/nyzdReport.shtml' cardUrl,
+             t.mzid mzid,t.zyid zyid,
+             t.masterid masterid,
+             t.flag cardStates,
+             t.patient_name patientName,
+             t.sex sexname,
+             (t.age || t.age_unit) ageunit,
+             t.tel telp,
+             t.reportdoctorname reportdoctorname,
+             t.reportdeptname reportdeptname,
+             t.reject_reason delreason,
+             t.reportdt filldate,
+             t.isemptycard isemptycard,
+             '' subid,
+             unReadMsg unReadMsg,
+             t.isprint isprint
+             from (select t.*,
+             (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+                         select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+                   ) and user_id=#{userid} and is_read = 0)  unReadMsg
+             from CTG_BK010_PESTICIDE t
+             where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

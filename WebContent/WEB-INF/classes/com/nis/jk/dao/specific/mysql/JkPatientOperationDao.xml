@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientOperationDao">
+
+	<sql id="commCols_mysql">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,OPER_ORDER_NO operOrderNo,OPER_ROOM operRoom,OPER_NAME operName,OPER_ID operId,OPER_AT operAt,OPEDOC_ID opedocId,OPEDOC_NAME opedocName,ANES_DR_NAME anesDrName,OPER_DIAGNOSE operDiagnose,INCISION_GRADE incisionGrade,HEAL heal,ASA asa,URGENT_OPE urgentOpe,NARC_KIND narcKind,OPER_START_TIME operStartTime,OPER_END_TIME operEndTime,OPER_LENG_TIME operLengTime,REPLANT replant,GLASS_OPE glassOpe,WSQYY wsqyy,DEPT_ID deptId,DEPT_NAME deptName,OPEDOC_NAME2 opedocName2,OPEDOC_NAME3 opedocName3,CREATE_AT createAt,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientOperation_mysql" parameterType="jkPatientOperation" resultType="jkPatientOperation">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_OPERATION
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

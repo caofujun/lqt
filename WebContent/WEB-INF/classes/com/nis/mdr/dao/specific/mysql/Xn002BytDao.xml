@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn002BytDao">
+
+	<sql id="commCols_mysql">
+		PATHOGEN_ID pathogenId,PATHOGEN_NAME pathogenName,PATHOGEN_EN_NAME pathogenEnName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,KIND_ID kindId,RS_ID rsId,BACT_GENUS_ID bactGenusId,CN_ID cnId,FLAG flag,IF_COMMON ifCommon,LAST_AT lastAt,IS_FUNGUS isFungus
+	</sql>
+
+	<select id="findXn002Byt_mysql" parameterType="xn002Byt" resultType="xn002Byt">
+		select <include refid="commCols_mysql"/> from XN002_BYT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

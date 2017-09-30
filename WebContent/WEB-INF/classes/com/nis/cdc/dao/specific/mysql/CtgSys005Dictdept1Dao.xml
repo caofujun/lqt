@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys005Dictdept1Dao">
+
+	<sql id="commCols_mysql">
+		DEPTID deptid,DEPTNAME deptname,SPM spm
+	</sql>
+
+	<select id="findCtgSys005Dictdept1_mysql" parameterType="ctgSys005Dictdept1" resultType="ctgSys005Dictdept1">
+		select <include refid="commCols_mysql"/> from CTG_SYS005_DICTDEPT1
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

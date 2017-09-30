@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.task.dao.TaskProjectDao">
+
+	<sql id="commCols">
+		ID id,NAME name,REMARK remark,ISRECEMAIL isrecemail,ADDTIME addtime,ADDUSER adduser,SIGN sign,SIGNSTRING signstring
+	</sql>
+
+	<insert id="save" parameterType="taskProject"  flushCache="true">
+		 insert into TASK_PROJECT(ID,NAME,REMARK,ISRECEMAIL,ADDTIME,ADDUSER,SIGN,SIGNSTRING)
+		 values(#{id},#{name},#{remark},#{isrecemail},#{addtime},#{adduser},#{sign},#{signstring})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  TASK_PROJECT
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="taskProject" flushCache="true">
+		update TASK_PROJECT
+		<set>
+			ID=#{id},NAME=#{name},REMARK=#{remark},ISRECEMAIL=#{isrecemail},ADDTIME=#{addtime},ADDUSER=#{adduser},SIGN=#{sign},SIGNSTRING=#{signstring}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="taskProject">
+		select <include refid="commCols"/> from TASK_PROJECT
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findTaskProjectCount" parameterType="taskProject" resultType="int">
+		select count(*) from TASK_PROJECT
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (NAME like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="taskProject">
+		select <include refid="commCols"/> from TASK_PROJECT
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

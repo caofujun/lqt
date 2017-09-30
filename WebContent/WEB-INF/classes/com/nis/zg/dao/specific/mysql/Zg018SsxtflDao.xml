@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg018SsxtflDao">
+
+	<sql id="commCols_mysql">
+		OPESYSID opesysid,OPESYSTEM opesystem,ICDBOUND icdbound,REPORTORDER reportorder,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode
+	</sql>
+
+	<select id="findZg018Ssxtfl_mysql" parameterType="zg018Ssxtfl" resultType="zg018Ssxtfl">
+		select <include refid="commCols_mysql"/> from ZG018_SSXTFL
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

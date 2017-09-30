@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.docsearch.dao.DocDocumentDao">
+
+	<sql id="commCols_oracle">
+		doc.DOC_SCOPE docScope,doc.ID id,DOC_NAME docName,doc.DOC_DESC docDesc,doc.DOC_TYPE docType,doc.DOC_FORMAT docFormat,doc.DOC_PIC docPic,doc.DOC_RECOMMENG docRecommeng,doc.DOC_ANONYRNOUS docAnonyrnous,doc.DOC_URL docUrl,doc.DOC_SCORE docScore,doc.DOC_LOOK docLook,doc.DOC_DOWNLOAD docDownload,doc.CREATE_USERID createUserid,doc.CREATE_USERNAME createUsername,doc.CREATE_TIME createTime,doc.UPDATE_USERID updateUserid,doc.UPDATE_USERNAME updateUsername,doc.UPDATE_TIME updateTime,doc.DOC_SIZE docSize,doc.DOC_PREVIEW  docPreview, doc.DOC_FLAG docFlag
+	</sql>
+	
+	<sql id="commCols_oracle_houtai">
+		doc.DOC_SCOPE docScope,doc.ID id,DOC_NAME docName,doc.DOC_DESC docDesc,doc.DOC_TYPE docType,doc.DOC_FORMAT docFormat,doc.DOC_PIC docPic,doc.DOC_RECOMMENG docRecommeng,doc.DOC_ANONYRNOUS docAnonyrnous,doc.DOC_URL docUrl,doc.DOC_SCORE docScore,doc.DOC_LOOK docLook,doc.DOC_DOWNLOAD docDownload,doc.CREATE_USERID createUserid,doc.CREATE_USERNAME createUsername,doc.CREATE_TIME createTime,doc.UPDATE_USERID updateUserid,doc.UPDATE_USERNAME updateUsername,doc.UPDATE_TIME updateTime,doc.DOC_SIZE docSize,doc.DOC_PREVIEW  docPreview, doc.DOC_FLAG docFlag,dicdocType.dict_name docTypeName,doc.DOC_COMPLAIN docComplain
+	</sql>
+	
+    <sql id="commCols_oracle_houtai_suggest">
+		doc.DOC_SCOPE docScope,doc.ID id,DOC_NAME docName,doc.DOC_DESC docDesc,doc.DOC_TYPE docType,doc.DOC_FORMAT docFormat,doc.DOC_PIC docPic,doc.DOC_RECOMMENG docRecommeng,doc.DOC_ANONYRNOUS docAnonyrnous,doc.DOC_URL docUrl,doc.DOC_SCORE docScore,doc.DOC_LOOK docLook,doc.DOC_DOWNLOAD docDownload,doc.CREATE_USERID createUserid,doc.CREATE_USERNAME createUsername,doc.CREATE_TIME createTime,doc.UPDATE_USERID updateUserid,doc.UPDATE_USERNAME updateUsername,doc.UPDATE_TIME updateTime,doc.DOC_SIZE docSize,doc.DOC_PREVIEW  docPreview, doc.DOC_FLAG docFlag,dicdocType.dict_name docTypeName,doc.DOC_COMPLAIN docComplain,suggest.STATUS status
+	</sql>
+
+
+	<select id="findDocDocument_oracle" parameterType="docDocument"
+		resultType="docDocument">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle" /> from DOC_DOCUMENT doc 
+		left join ac_account account on doc.create_userid = account.user_id
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and doc.DOC_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') 
+			</if>	
+			<if test="docTypeList!=null and docTypeList.size!=0">
+				and doc.DOC_TYPE in
+				<foreach collection="docTypeList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="docFormatList!=null and docFormatList.size!=0">
+				and doc.DOC_FORMAT in
+				<foreach collection="docFormatList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<choose>
+				<when test="userId!=null and userId!=''">
+					<!-- 如果当前用户确定了所属医院 -->
+					<if test="unitId!=null and unitId!=''">
+						and (account.unit_id=#{unitId} or doc.create_userid=#{userId} or doc.doc_scope=9)
+					</if>
+					<!-- 如果当前用户没确定所属医院 -->
+					<if test="unitId==null or unitId==''">
+						and (doc.create_userid=#{userId} or doc.doc_scope=9)
+					</if>
+				</when>
+				<otherwise> <!-- 未登录只能查询公共的 -->
+					and doc.doc_scope='9'
+				</otherwise>
+			</choose>
+			and doc.DOC_FLAG &lt; &gt; '0'
+		</where>
+		order by doc.CREATE_TIME desc
+		) a where rownum &lt;= #{orclEndNum} )
+		where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findDocumentIdIn_oracle" resultType="docDocument">
+		select <include refid="commCols_oracle" />
+		from doc_document doc 
+		<where>
+			doc.id in
+			<foreach collection="idIn" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach>
+		</where>
+	</select>
+
+      <select id="findDocDocumentNOPrivilege_oracle" parameterType="docDocument" resultType="docDocument">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle_houtai"/> from DOC_DOCUMENT doc left join ac_account  account
+          on doc.create_userid=account.user_id
+          left join  (select dict_code,dict_name from  SYS_DICT where dict_type_code = 'docType') dicdocType
+          on doc.doc_type=dicdocType.dict_code
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and doc.DOC_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') 
+			</if>	
+			<if test="docTypeList!=null and docTypeList.size!=0">
+				and doc.DOC_TYPE in
+				<foreach collection="docTypeList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="docFormatList!=null and docFormatList.size!=0">
+				and doc.DOC_FORMAT in
+				<foreach collection="docFormatList" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		<if test="queryStartDate!=null and queryStartDate!=''"> 
+				and doc.CREATE_TIME &gt;= #{queryStartDate}
+		</if> 
+		<if test="queryEndDate!=null and queryEndDate!=''"> 
+				and doc.CREATE_TIME &lt;  #{queryEndDate}
+		</if> 
+		and doc.DOC_FLAG &lt; &gt; '0'
+		</where>
+		order by  doc.DOC_FLAG  desc , doc.UPDATE_TIME desc 
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	
+	
+	 <select id="findDocDocumentNOPrivilegeForSuggest_oracle" parameterType="docDocument" resultType="docDocument">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle_houtai_suggest"/> from DOC_DOCUMENT doc left join ac_account  account
+          on doc.create_userid=account.user_id
+          left join  (select dict_code,dict_name from  SYS_DICT where dict_type_code = 'docType') dicdocType
+          on doc.doc_type=dicdocType.dict_code
+          join SYS_SUGGEST suggest  on  doc.id =suggest.id
+		<where>
+			1=1
+	
+	   <if test="searchString!=null and searchString!=''">
+			and ( doc.DOC_NAME LIKE CONCAT(CONCAT('%', #{searchString}),
+			'%') or  doc.DOC_DESC LIKE CONCAT(CONCAT('%', #{searchString}),
+			'%') )
+		</if>
+		
+		
+		<if test="docTypeList!=null and docTypeList.size!=0">
+		and doc.DOC_TYPE in
+		<foreach collection="docTypeList" index="index" item="item" open="(" separator="," close=")" >
+		  #{item} 
+		</foreach>
+		</if>	
+		
+        <if test="queryStartDate!=null and queryStartDate!=''"> 
+				and suggest.FB_TIME &gt;= #{queryStartDate}
+		</if> 
+		<if test="queryEndDate!=null and queryEndDate!=''"> 
+				and suggest.FB_TIME &lt;  #{queryEndDate}
+		</if> 
+		
+	    <!-- 未处理的文档状态  -->
+		<if test="status!=null and status!=''">
+		    and suggest.status=#{status}
+		</if>
+					
+		</where>
+		
+		ORDER BY suggest.status ,doc.doc_complain desc,doc.CREATE_TIME desc
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getIndex_oracle" parameterType="docDocument" resultType="docDocument">
+		select * from ( select a.*, rownum rn from (
+		select d.id id,d.doc_name docName,d.doc_desc docDesc,d.create_time createTime,d.doc_scope docScope,d.create_userid,d.doc_type docType,ac.unit_id unitId
+    	from doc_document d left join ac_account ac on d.create_userid=ac.user_id
+		<where>
+		    doc_flag = '1' 
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+</mapper>

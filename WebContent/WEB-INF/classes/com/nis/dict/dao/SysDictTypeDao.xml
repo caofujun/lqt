@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.SysDictTypeDao">
+
+	<sql id="commCols">
+		id id,dict_type_code dictTypeCode,dict_type_name dictTypeName,remark remark
+	</sql>
+
+	<insert id="save" parameterType="sysDictType"  flushCache="true">
+		 insert into sys_dict_type(id,dict_type_code,dict_type_name,remark)
+		 values(#{id},#{dictTypeCode},#{dictTypeName},#{remark})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from sys_dict_type
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysDictType" flushCache="true">
+		update sys_dict_type
+		<set>
+			id=#{id},dict_type_code=#{dictTypeCode},dict_type_name=#{dictTypeName},remark=#{remark}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="sysDictType">
+		select <include refid="commCols"/> from sys_dict_type
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findSysDictTypeCount" parameterType="sysDictType" resultType="int">
+		select count(*) from sys_dict_type
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (dict_type_code like concat( concat('%',#{searchString}),'%')  or dict_type_name like concat( concat('%',#{searchString}),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="sysDictType" parameterType="sysDictType">
+		select <include refid="commCols"/> from sys_dict_type
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (dict_type_code like concat( concat('%',#{searchString}),'%')  or dict_type_name like concat( concat('%',#{searchString}),'%'))</if>
+		</where>
+		order by DICT_TYPE_NAME
+	</select>
+</mapper>

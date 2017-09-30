@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl002SjdjDao">
+
+	<sql id="commCols">
+		PG_KJYJ pgKjyj,SD_DATE sdDate,FLAG flag,WEIGHT weight,PG_R pgR,PG_SJ pgSj,REPORT_DATE reportDate,STEP2 step2,
+		STEP3 step3,D_DEPT_ID ddeptId,S_BLQK sjBlqk,BL_ID blId,SJ_ID sjId,BL_SGRADE blSgrade,BL_GRADE blGrade,D_CARDID djCardid,
+		D_NAME djName,D_SEX djSex,D_AGE djAge,D_GL djGl,D_ZC djZc,D_XL djXl,D_GW djGw,D_DEPT djDept,ENTER_TIME enterTime,
+		ENTER_ADD enterAdd,DJ_MEN djMen,DJ_TIME djTime,IP_TEL ipTel,S_NAME sjName,S_DEPT sjDept,S_PARIANT sjPariant,
+		S_BBTYPE sjBbtype,S_BBPARIANT sjBbpariant,S_BBNAME sjBbname,PG_TIME pgTime,PG_MEN pgMen,SJ_STATE sjState,PG_MS pgMs,
+		PG_JY pgJy,PG_YYNAME1 pgYyname1,PG_YYJL1 pgYyjl1,PG_YYSTIME1 pgYystime1,PG_YYETIME1 pgYyetime1,PG_YYNAME2 pgYyname2,
+		PG_YYJL2 pgYyjl2,PG_YYSTIME2 pgYystime2,PG_YYETIME2 pgYyetime2,SF_MEN sfMen,BL_JL blJl,BL_JL_MEN blJlMen,SJ_TEL sjTel,
+		CHECK_MEN checkMen,CHECK_TIME checkTime,CHECK_BZ checkBz,S_MEMO sjMemo,PG_YYNAME3 pgYyname3,PG_YYJL3 pgYyjl3,
+		PG_YYSTIME3 pgYystime3,PG_YYETIME3 pgYyetime3,PG_YYNAME4 pgYyname4,PG_YYJL4 pgYyjl4,PG_YYSTIME4 pgYystime4,
+		PG_YYETIME4 pgYyetime4,PG_YYNAME5 pgYyname5,PG_YYJL5 pgYyjl5,PG_YYSTIME5 pgYystime5,PG_YYETIME5 pgYyetime5,FC_TIME fcTime,
+		FC_ZT fcZt,DJ_ID djId,BL_STEP blStep,KJYJ_QM kjyjQm,GRXJBK_QM grxjbkQm,YGK_QM ygkQm,CWK_QM cwkQm,YGK_YJ ygkYj,CWK_YJ cwkYj,ZJCLYJ zjclYj,XLZXSYJ xlzxsYj
+	</sql>
+
+	<insert id="save" parameterType="bl002Sjdj"  flushCache="true">
+		 insert into BL002_SJDJ(PG_KJYJ,SD_DATE,FLAG,WEIGHT,PG_R,PG_SJ,REPORT_DATE,STEP2,STEP3,D_DEPT_ID,S_BLQK,BL_ID,SJ_ID,
+		 BL_SGRADE,BL_GRADE,D_CARDID,D_NAME,D_SEX,D_AGE,D_GL,D_ZC,D_XL,D_GW,D_DEPT,ENTER_TIME,ENTER_ADD,DJ_MEN,DJ_TIME,IP_TEL,
+		 S_NAME,S_DEPT,S_PARIANT,S_BBTYPE,S_BBPARIANT,S_BBNAME,PG_TIME,PG_MEN,SJ_STATE,PG_MS,PG_JY,PG_YYNAME1,PG_YYJL1,
+		 PG_YYSTIME1,PG_YYETIME1,PG_YYNAME2,PG_YYJL2,PG_YYSTIME2,PG_YYETIME2,SF_MEN,BL_JL,BL_JL_MEN,SJ_TEL,CHECK_MEN,CHECK_TIME,
+		 CHECK_BZ,S_MEMO,PG_YYNAME3,PG_YYJL3,PG_YYSTIME3,PG_YYETIME3,PG_YYNAME4,PG_YYJL4,PG_YYSTIME4,PG_YYETIME4,PG_YYNAME5,
+		 PG_YYJL5,PG_YYSTIME5,PG_YYETIME5,FC_TIME,FC_ZT,DJ_ID,BL_STEP,KJYJ_QM,GRXJBK_QM,YGK_QM,CWK_QM,YGK_YJ,CWK_YJ,ZJCLYJ,XLZXSYJ)
+		 values(#{pgKjyj},#{sdDate},#{flag},#{weight},#{pgR},#{pgSj},#{reportDate},#{step2},#{step3},#{ddeptId},#{sjBlqk},
+		 #{blId},#{sjId},#{blSgrade},#{blGrade},#{djCardid},#{djName},#{djSex},#{djAge},#{djGl},#{djZc},#{djXl},#{djGw},#{djDept},
+		 #{enterTime},#{enterAdd},#{djMen},#{djTime},#{ipTel},#{sjName},#{sjDept},#{sjPariant},#{sjBbtype},#{sjBbpariant},#{sjBbname},
+		 #{pgTime},#{pgMen},#{sjState},#{pgMs},#{pgJy},#{pgYyname1},#{pgYyjl1},#{pgYystime1},#{pgYyetime1},#{pgYyname2},
+		 #{pgYyjl2},#{pgYystime2},#{pgYyetime2},#{sfMen},#{blJl},#{blJlMen},#{sjTel},#{checkMen},#{checkTime},#{checkBz},
+		 #{sjMemo},#{pgYyname3},#{pgYyjl3},#{pgYystime3},#{pgYyetime3},#{pgYyname4},#{pgYyjl4},#{pgYystime4},#{pgYyetime4},
+		 #{pgYyname5},#{pgYyjl5},#{pgYystime5},#{pgYyetime5},#{fcTime},#{fcZt},#{djId},#{blStep},#{kjyjQm},#{grxjbkQm},#{ygkQm},#{cwkQm},#{ygkYj},#{cwkYj},#{zjclYj},#{xlzxsYj})
+	</insert>
+	
+	<update id="delete" parameterType="String" flushCache="true">
+		update BL002_SJDJ 
+		<set>SJ_STATE='10'</set>
+		 <where>BL_ID=#{blId}</where>
+	</update>
+	
+	<update id="update" parameterType="bl002Sjdj" flushCache="true">
+		update BL002_SJDJ
+		<set>
+			PG_KJYJ=#{pgKjyj},SD_DATE=#{sdDate},FLAG=#{flag},WEIGHT=#{weight},PG_R=#{pgR},PG_SJ=#{pgSj},REPORT_DATE=#{reportDate},
+			STEP2=#{step2},STEP3=#{step3},D_DEPT_ID=#{ddeptId},S_BLQK=#{sjBlqk},BL_ID=#{blId},SJ_ID=#{sjId},BL_SGRADE=#{blSgrade},
+			BL_GRADE=#{blGrade},D_CARDID=#{djCardid},D_NAME=#{djName},D_SEX=#{djSex},D_AGE=#{djAge},D_GL=#{djGl},D_ZC=#{djZc},D_XL=#{djXl},
+			D_GW=#{djGw},D_DEPT=#{djDept},ENTER_TIME=#{enterTime},ENTER_ADD=#{enterAdd},
+			IP_TEL=#{ipTel},S_NAME=#{sjName},S_DEPT=#{sjDept},S_PARIANT=#{sjPariant},S_BBTYPE=#{sjBbtype},S_BBPARIANT=#{sjBbpariant},
+			S_BBNAME=#{sjBbname},PG_TIME=#{pgTime},PG_MEN=#{pgMen},SJ_STATE=#{sjState},PG_MS=#{pgMs},PG_JY=#{pgJy},
+			PG_YYNAME1=#{pgYyname1},PG_YYJL1=#{pgYyjl1},PG_YYSTIME1=#{pgYystime1},PG_YYETIME1=#{pgYyetime1},PG_YYNAME2=#{pgYyname2},
+			PG_YYJL2=#{pgYyjl2},PG_YYSTIME2=#{pgYystime2},PG_YYETIME2=#{pgYyetime2},SF_MEN=#{sfMen},BL_JL=#{blJl},
+			BL_JL_MEN=#{blJlMen},SJ_TEL=#{sjTel},CHECK_MEN=#{checkMen},CHECK_TIME=#{checkTime},CHECK_BZ=#{checkBz},S_MEMO=#{sjMemo},
+			PG_YYNAME3=#{pgYyname3},PG_YYJL3=#{pgYyjl3},PG_YYSTIME3=#{pgYystime3},PG_YYETIME3=#{pgYyetime3},PG_YYNAME4=#{pgYyname4},
+			PG_YYJL4=#{pgYyjl4},PG_YYSTIME4=#{pgYystime4},PG_YYETIME4=#{pgYyetime4},PG_YYNAME5=#{pgYyname5},PG_YYJL5=#{pgYyjl5},
+			PG_YYSTIME5=#{pgYystime5},PG_YYETIME5=#{pgYyetime5},FC_TIME=#{fcTime},FC_ZT=#{fcZt},DJ_ID=#{djId},BL_STEP=#{blStep},
+			KJYJ_QM=#{kjyjQm},GRXJBK_QM=#{grxjbkQm},YGK_QM=#{ygkQm},CWK_QM=#{cwkQm},YGK_YJ=#{ygkYj},CWK_YJ=#{cwkYj},ZJCLYJ=#{zjclYj},XLZXSYJ=#{xlzxsYj}
+		</set>
+		<where>BL_ID=#{blId}</where>
+	</update>
+	
+	<select id="get" resultType="bl002Sjdj">
+		select <include refid="commCols"/> from BL002_SJDJ
+  		<where>BL_ID=#{blId}</where>
+	</select>
+	
+	
+	<select id="findBl002SjdjCount" parameterType="bl002Sjdj" resultType="int">
+		select count(distinct sjdj.bl_id) from BL002_SJDJ sjdj left join bl005_wtjg wtjg on wtjg.bl_id=sjdj.bl_id /*and wtjg.st_id=34*/ and wtjg.sh_type=1
+		<where>
+			1=1
+			<if test="dateType == 1">
+			    <if test="queryStartDate != null">
+					and sjdj.DJ_TIME &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate != null">
+					and sjdj.DJ_TIME &lt;= #{queryEndDate}+1
+				</if>
+			</if>
+			<if test="dateType == 2">
+			    <if test="queryStartDate != null">
+					and sjdj.ENTER_TIME &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate != null">
+					and sjdj.ENTER_TIME &lt;= #{queryEndDate}+1
+				</if>
+			</if>
+			<if test="djCardid!=null and djCardid!=''"> and sjdj.d_cardid=#{djCardid}</if>
+			<if test="djMen!=null and djMen!=''"> and sjdj.dj_men=#{djMen}</if>
+			<if test="djDept!=null and djDept!=''">and sjdj.D_DEPT = #{djDept}</if>
+			<if test="djGw!=null and djGw!=''">and sjdj.d_gw = #{djGw}</if>
+			<if test="searchString != null and searchString !=''">and ( sjdj.D_CARDID like CONCAT(CONCAT('%', #{searchString}), '%') or sjdj.D_NAME like CONCAT(CONCAT('%', #{searchString}), '%'))</if>
+			<if test="blGrade!=null and blGrade!=''">and ( wtjg.st_id = '185' and wtjg.sh_text = #{blGrade} )</if>
+			<if test="blSgrade!=null and blSgrade!=''">and sjdj.BL_Sgrade = #{blSgrade}</if>
+			<if test="blJl!=null and blJl!=''">and sjdj.BL_JL = #{blJl}</if>
+			<if test="sjState!=null and sjState!=''"> and sjdj.SJ_STATE in (${sjState})</if>
+			<if test="sjState==null or sjState==''">and sjdj.SJ_STATE != '10'</if>
+			<if test="sjBlqk!=null and sjBlqk!=''"> and sjdj.S_BLQK = #{sjBlqk}</if>
+			<if test="enterAdd!=null and enterAdd!=''"> and sjdj.ENTER_ADD = #{enterAdd}</if>
+			<if test="wtjg34!=null and wtjg34!=''"> and wtjg.sh_text=#{wtjg34} and wtjg.sh_type=1</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="bl002Sjdj">
+		select <include refid="commCols"/> from BL002_SJDJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findzyblryksfb"  resultType="map">
+	  select * from (select nvl(d_dept,'其他科室') as DEPT_NAME,count(d_name) as COUNT 
+	  from bl002_sjdj
+	  where sj_state >0  and enter_time between to_date(#{startDate},'yyyy-MM-dd') AND to_date(#{endDate},'yyyy-MM-dd')
+	  group by d_dept
+	  order by count(d_name) desc) where rownum&lt;=5
+	</select>
+	
+	<select id="findFcMessage"  resultType="bl002Sjdj">
+	select distinct b.fc fcTime, b2.d_name djName, b2.d_cardid djCardid, n.item_name itemName,b2.bl_id blId
+	  from bl007_fcsj b
+	  left join bl002_sjdj b2
+	    on b2.bl_id = b.bl_id
+	  left join bl004_cs_detailinfo b4
+	    on b4.csm_id = b.csm_id
+	   and b4.csd_id = b.csd_id
+	   join  ny_sys_dddd n on b4.csm_id=n.item_id and n.dict_id='DD0019'
+	   <where>
+	    	to_date(to_char(b.fc,'yyyy-MM-dd'),'yyyy-MM-dd')-#{days} = to_date(to_char(sysdate,'yyyy-MM-dd'),'yyyy-MM-dd')
+	   </where>
+	</select>
+	
+	<select id="findFcMessageCount"  resultType="bl002Sjdj">
+	select distinct b2.d_name djName, b2.d_cardid djCardid, b2.bl_id blId
+	  from bl007_fcsj b
+	  left join bl002_sjdj b2
+	    on b2.bl_id = b.bl_id
+	  left join bl004_cs_detailinfo b4
+	    on b4.csm_id = b.csm_id
+	   and b4.csd_id = b.csd_id
+	   join  ny_sys_dddd n on b4.csm_id=n.item_id and n.dict_id='DD0019'
+	   <where>
+	    	to_date(to_char(b.fc,'yyyy-MM-dd'),'yyyy-MM-dd')-#{days} = to_date(to_char(sysdate,'yyyy-MM-dd'),'yyyy-MM-dd')
+	   </where>
+	</select>
+	
+	<select id="findzyblfsgwtj"  resultType="map">
+	  select tjtype as tjtype,
+	  count(d_name) as COUNT
+	  from
+	  (select nvl(d_gw,'其他岗位') as tjtype,d_name
+	  from bl002_sjdj
+	  where sj_state >0  and enter_time between to_date(#{startDate},'yyyy-MM-dd') AND to_date(#{endDate},'yyyy-MM-dd')
+	  )
+	  group by tjtype
+	</select>
+</mapper>

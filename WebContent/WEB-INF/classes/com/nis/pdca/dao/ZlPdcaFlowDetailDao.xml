@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.pdca.dao.ZlPdcaFlowDetailDao">
+
+	<sql id="commCols">
+		SOCCR soccr,CDR cdr,FLAG flag,XH xh,F_UID fuid,FD_SUBID fdSubid,PROCESS_NO processNo,PROCESS_NAME processName,PROCESS_CONTENT processContent
+	</sql>
+
+	<insert id="save" parameterType="zlPdcaFlowDetail"  flushCache="true">
+		 insert into ZL_PDCA_FLOW_DETAIL(SOCCR,CDR,FLAG,XH,F_UID,FD_SUBID,PROCESS_NO,PROCESS_NAME,PROCESS_CONTENT)
+		 values(#{soccr},#{cdr},#{flag},#{xh},#{fuid},#{fdSubid},#{processNo},#{processName},#{processContent})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZL_PDCA_FLOW_DETAIL
+		<where>FD_SUBID=#{fdSubid}</where>
+	</delete>
+	
+	<update id="update" parameterType="zlPdcaFlowDetail" flushCache="true">
+		update ZL_PDCA_FLOW_DETAIL
+		<set>
+			SOCCR=#{soccr},CDR=#{cdr},FLAG=#{flag},XH=#{xh},F_UID=#{fuid},FD_SUBID=#{fdSubid},PROCESS_NO=#{processNo},PROCESS_NAME=#{processName},PROCESS_CONTENT=#{processContent}
+		</set>
+		<where>FD_SUBID=#{fdSubid}</where>
+	</update>
+	
+	<select id="get" resultType="zlPdcaFlowDetail">
+		select <include refid="commCols"/> from ZL_PDCA_FLOW_DETAIL
+  		<where>FD_SUBID=#{fdSubid}</where>
+	</select>
+	
+	
+	<select id="findZlPdcaFlowDetailCount" parameterType="zlPdcaFlowDetail" resultType="int">
+		select count(*) from ZL_PDCA_FLOW_DETAIL
+		<where>
+			<if test="fuid!=null and fuid!=''">and F_UID=#{fuid}</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zlPdcaFlowDetail">
+		select <include refid="commCols"/> from ZL_PDCA_FLOW_DETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByFuid"  resultType="zlPdcaFlowDetail">
+		select <include refid="commCols"/> from ZL_PDCA_FLOW_DETAIL
+		<where>
+			 F_UID=#{fuid}
+		</where>
+		order by ZL_PDCA_FLOW_DETAIL.XH asc
+	</select>
+	
+	<select id="findZlPdcaFlowDetailList" parameterType="zlPdcaFlowDetail" resultType="zlPdcaFlowDetail">
+		select <include refid="commCols_oracle"/>,ZL_PDCA_FLOW.FLow_name flowName from ZL_PDCA_FLOW_DETAIL left join ZL_PDCA_FLOW on ZL_PDCA_FLOW.F_UID=ZL_PDCA_FLOW_DETAIL.F_UID
+		<where>
+			<if test="fuid!=null and fuid!=''">and ZL_PDCA_FLOW_DETAIL.F_UID=#{fuid}</if>
+		</where>
+		order by ZL_PDCA_FLOW_DETAIL.XH asc
+	</select>
+</mapper>

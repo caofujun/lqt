@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw101JcdjDao">
+
+	<sql id="commCols_oracle">
+		dj_id djId,dept_id deptId,dept_name deptName,take_by takeBy,take_at takeAt,create_by createBy,create_at createAt,report_by reportBy,report_at reportAt,memo memo,type type,isprint isprint
+	</sql>
+
+	<select id="findHw101Jcdj_oracle" parameterType="hw101Jcdj" resultType="hw101Jcdj">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw101_jcdj
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findHw101List_oracle" parameterType="hw102Jcdmx" resultType="hw102Jcdmx">
+		select * from ( select a.*, rownum rn from (
+		select distinct hw101.dj_id djId, hw101.dept_id deptId,hw101.dept_name deptName,z3.employee_name reportByName,hw101.report_at reportAt,hw101.isprint isprint 
+		from hw101_jcdj hw101 
+		left join hw010_zzry z3 on z3.employee_id = hw101.report_by 
+		left join hw102_jcdmx hw102 on hw101.dj_id = hw102.dj_id
+		left join hw103_jcdjg hw103 on hw103.report_id = hw102.report_id
+		<where>
+			and hw101.dept_id in (select  * from (select h9.dept_id from hw009_kssq h9 where user_id=#{userId}))
+			<if test="type!=null and type!=''">
+				and hw101.type=#{type}
+			</if>
+			<if test="djId!=null and djId!=''">
+				and hw101.dj_id LIKE CONCAT(CONCAT('%', #{djId}), '%')
+			</if>
+			<if test="result!=null and result!=''">
+				and hw103.result like CONCAT(CONCAT('%', #{result}), '%')
+			</if>
+			<if test="status!=null and status!=''">
+				and hw102.status=#{status}
+			</if>
+			<if test="dateField!=null">
+				<if test="queryStartDate!=null and dateField=='report_at'">
+					and hw101.report_at &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate!=null and dateField=='report_at'">
+					and hw101.report_at &lt;= #{queryEndDate}
+				</if>
+				<if test="queryStartDate!=null and dateField=='test_at'">
+					and hw102.test_at &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate!=null and dateField=='test_at'">
+					and hw102.test_at &lt;= #{queryEndDate}
+				</if>
+			</if>
+			<if test="placeId!=null and placeId!=''">
+				and hw102.place_id = #{placeId}
+			</if>
+			<if test="classId!=null and classId!=''">
+				and hw102.class_id in (select class_id from hw001_jcxm start with class_id=#{classId} connect by prior class_id = pclass_id)
+			</if>
+			<if test="resultFlag!=null">
+				and hw102.result_flag = #{resultFlag}
+			</if>
+			<if test="dataStatus!=null and dataStatus!=''">
+				<choose>
+					<when test="dataStatus==1">
+						and hw102.result_flag!=-1
+					</when>
+					<when test="dataStatus==2">
+						and (hw102.result_flag=-1 or hw102.result_flag is null)
+					</when>
+					<when test="dataStatus==3">
+						and hw102.status=1
+					</when>
+					<when test="dataStatus==4">
+						and (hw102.status=0 or hw102.status is null)
+					</when>
+				</choose>
+			</if>
+			<if test="recheck!=null and recheck!=''">
+				and hw102.recheck = #{recheck}
+			</if>
+			<if test="notPass!=null and notPass!=''">
+				and hw102.result_flag='1'
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and hw101.dept_id = #{deptId}
+			</if>
+			<if test="deptIds!=null and deptIds!=''">
+				and hw101.dept_id  in
+				<foreach collection="deptIds" open="(" close=")" item="deptId" separator=",">
+						#{deptId}
+				</foreach>
+			</if> 
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

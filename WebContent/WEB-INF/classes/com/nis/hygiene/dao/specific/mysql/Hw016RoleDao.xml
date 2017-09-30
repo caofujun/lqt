@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw016RoleDao">
+
+	<sql id="commCols_mysql">
+		role_id roleId,role_name roleName,memo memo,sp_code spCode,wb_code wbCode,last_at lastAt,order_index orderIndex,flag flag
+	</sql>
+
+	<select id="findHw016Role_mysql" parameterType="hw016Role" resultType="hw016Role">
+		select <include refid="commCols_mysql"/> from hw016_role
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

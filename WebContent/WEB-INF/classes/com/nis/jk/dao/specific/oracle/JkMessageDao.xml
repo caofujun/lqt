@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkMessageDao">
+
+	<sql id="commCols_oracle">
+		ID id,MSG_TYPE msgType,MSG_CONTENT msgContent,FLAG flag,CREATE_TIME createTime,MSG_RETURN msgReturn
+	</sql>
+
+	<select id="findJkMessage_oracle" parameterType="jkMessage" resultType="jkMessage">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from JK_MESSAGE
+		<where>
+			<if test="createTime!=null">
+				and CREATE_TIME = #{createTime}
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+
+	<select id="findJkSyncLog_oracle" parameterType="jkSyncLog" resultType="jkSyncLog">
+		select * from ( select a.*, rownum rn from (
+			 select 
+			 	UPD_TIME syncTime,WM_CONCAT(table_name) bizType,
+	        	(select count(1) from jk_message where jk.UPD_TIME = jk_message.CREATE_TIME) syncStatus
+			 from (
+			    SELECT DISTINCT 'JK_DIC_DISEASE' table_name,UPD_TIME FROM JK_DIC_DISEASE T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_DIC_DOCTOR' table_name,UPD_TIME FROM JK_DIC_DOCTOR T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_DIC_DRUG' table_name,UPD_TIME FROM JK_DIC_DRUG T WHERE UPD_FLAG = 0
+          		UNION SELECT DISTINCT 'JK_DIC_OFFICE' table_name,UPD_TIME FROM JK_DIC_OFFICE T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_BC' table_name,UPD_TIME FROM JK_PATIENT_BC T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_CLINIC' table_name,UPD_TIME FROM JK_PATIENT_CLINIC T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_DIAGNOSE' table_name,UPD_TIME FROM JK_PATIENT_DIAGNOSE T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_LAB_ITEMS' table_name,UPD_TIME FROM JK_PATIENT_LAB_ITEMS T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_LAB_PATHO' table_name,UPD_TIME FROM JK_PATIENT_LAB_PATHO T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_OPERATION' table_name,UPD_TIME FROM JK_PATIENT_OPERATION T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_ROUTINE' table_name,UPD_TIME FROM JK_PATIENT_ROUTINE T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_TEMPRATURE' table_name,UPD_TIME FROM JK_PATIENT_TEMPRATURE T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_VISIT' table_name,UPD_TIME FROM JK_PATIENT_VISIT T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_YX',UPD_TIME FROM JK_PATIENT_YX T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_YZ',UPD_TIME FROM JK_PATIENT_YZ T WHERE UPD_FLAG = 0
+			    UNION SELECT DISTINCT 'JK_PATIENT_ZKMX',UPD_TIME FROM JK_PATIENT_ZKMX T WHERE UPD_FLAG = 0
+			    ) jk
+			where UPD_TIME is not null
+			group by UPD_TIME
+			order by UPD_TIME desc
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

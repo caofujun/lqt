@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsTopicDao">
+
+	<sql id="commCols">
+		TID tid,TITLE title,TTYPE ttype,TLEVEL tlevel,ALLOW_NULL allowNull,NOTE note,CAT_ID catId,CAT_NAME catName,UNIT_ID unitId,DEP_NO depNo,DOC_NO docNo,ATTR attr,STATUS status,UPD_TIME updTime,UPD_USER updUser,QID qid,SORT_NO sortNo,DEP_TYPE depType,MAX_VALUE maxValue,FEED_TYPE feedType,IS_COUNT isCount,WEIGHT weight
+	</sql>
+
+	<insert id="save" parameterType="qsTopic" flushCache="true">
+		 insert into QS_TOPIC(TID,TITLE,TTYPE,TLEVEL,ALLOW_NULL,NOTE,CAT_ID,CAT_NAME,UNIT_ID,DEP_NO,DOC_NO,ATTR,STATUS,UPD_TIME,UPD_USER,QID,SORT_NO,DEP_TYPE,MAX_VALUE,FEED_TYPE,IS_COUNT)
+		 values(#{tid},#{title},#{ttype},#{tlevel},#{allowNull},#{note},#{catId},#{catName},#{unitId},#{depNo},#{docNo},#{attr},0,#{updTime},#{updUser},#{qid},#{sortNo},#{depType},#{maxValue},#{feedType},#{isCount})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from QS_TOPIC
+		<where>TID=#{tid}</where>
+	</delete>
+	
+	<delete id="deleteCache" flushCache="true">
+		delete from QS_TOPIC where QS_TOPIC.QID in (select QS_QUESTIONNAIRE.QID from QS_QUESTIONNAIRE where QS_QUESTIONNAIRE.EXT1 = 'cached' )
+	</delete>
+	
+	<update id="update" parameterType="qsTopic" flushCache="true">
+		update QS_TOPIC
+		<set>
+			TITLE=#{title},TTYPE=#{ttype},TLEVEL=#{tlevel},ALLOW_NULL=#{allowNull},NOTE=#{note},CAT_ID=#{catId},CAT_NAME=#{catName},ATTR=#{attr},UPD_TIME=#{updTime},UPD_USER=#{updUser},QID=#{qid},DEP_TYPE=#{depType},MAX_VALUE=#{maxValue},FEED_TYPE=#{feedType},IS_COUNT=#{isCount}
+		</set>
+		<where>TID=#{tid}</where>
+	</update>
+	
+	<update id="updateSortNo" flushCache="true">
+		update QS_TOPIC
+		<set>SORT_NO=#{sortNo}</set>
+		<where>TID=#{tid}</where>
+	</update>
+	
+	<update id="updateScore" flushCache="true">
+		update QS_TOPIC
+			<set>WEIGHT=#{weight}</set>
+			<where>TID=#{tid}</where>
+	</update>
+	
+	<select id="get" resultType="qsTopic">
+		select <include refid="commCols"/> from QS_TOPIC
+  		<where>TID=#{tid}</where>
+	</select>
+	
+	
+	<select id="findQsTopicCount" parameterType="qsTopic" resultType="int">
+		select count(*) from QS_TOPIC
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="qsTopic">
+		select <include refid="commCols"/> from QS_TOPIC
+		<where>
+		</where>
+	</select>
+	
+	
+	<select id="findByQid" resultType="qsTopic">
+		select <include refid="commCols"/> from QS_TOPIC
+		<where>
+			QID=#{qid} and status!=-1
+		</where>
+		order by SORT_NO,QID
+	</select>
+	
+	<resultMap type="com.nis.questionnaire.entity.QsTopic" id="_qsTopic">
+		<id column="TID" property="tid"/>  
+        <result column="TITLE" property="title"/>
+        <collection property="options" ofType="com.nis.questionnaire.entity.QsTopicOption" >
+        	<id column="OPT_ID" property="optId"/>  
+	        <result column="OPT_NAME" property="optName"/>
+        </collection>
+	</resultMap>
+	
+	<select id="findTopicInfo" parameterType="qsTopic" resultMap="_qsTopic" >
+		select tp.tid,tp.title,op.opt_id,op.opt_name from QS_TOPIC tp left join qs_topic_option op 
+		on tp.tid = op.tid 
+		<where>
+			tp.QID=#{qid} and tp.status!=-1 and tp.TTYPE != '3' 
+		</where>
+		order by tp.SORT_NO,tp.QID 
+	</select>
+	
+</mapper>

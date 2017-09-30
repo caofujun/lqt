@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.yj.dao.Yj003SynonymDao">
+
+	<sql id="commCols_mysql">
+		ID id,STANDARD_ID standardId,SYNONYMS synonyms,COMPARE_TYPE compareType
+	</sql>
+
+	<select id="findYj003Synonym_mysql" parameterType="yj003Synonym" resultType="yj003Synonym">
+		select <include refid="commCols_mysql"/> from YJ003_SYNONYM
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

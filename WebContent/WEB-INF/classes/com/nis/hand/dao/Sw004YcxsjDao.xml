@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hand.dao.Sw004YcxsjDao">
+
+	<sql id="commCols">
+		KEY_ID keyId,DC_ID dcId,SJ_ID sjId,RY_TYPE ryType,RY_NAME ryName,SJ_LIST sjList,SWS_LIST swsList,IS_RIGHT isRight,ERR_REASON errReason,ORDERBY orderBy
+	</sql>
+
+	<insert id="save" parameterType="sw004Ycxsj"  flushCache="true">
+		 insert into SW004_YCXSJ(KEY_ID,DC_ID,SJ_ID,RY_TYPE,RY_NAME,SJ_LIST,SWS_LIST,IS_RIGHT,ERR_REASON,ORDERBY)
+		 values(#{keyId},#{dcId},#{sjId},#{ryType},#{ryName},#{sjList},#{swsList},#{isRight},#{errReason},#{orderBy})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  SW004_YCXSJ
+		<where>KEY_ID=#{keyId}</where>
+	</delete>
+	
+	<delete id="deleteByDcid" flushCache="true">
+		delete from  SW004_YCXSJ
+		<where>DC_ID=#{dcId}</where>
+	</delete>
+	
+	<update id="update" parameterType="sw004Ycxsj" flushCache="true">
+		update SW004_YCXSJ
+		<set>
+			KEY_ID=#{keyId},DC_ID=#{dcId},SJ_ID=#{sjId},RY_TYPE=#{ryType},RY_NAME=#{ryName},SJ_LIST=#{sjList},SWS_LIST=#{swsList},IS_RIGHT=#{isRight},ERR_REASON=#{errReason},ORDERBY=#{orderBy}
+		</set>
+		<where>KEY_ID=#{keyId}</where>
+	</update>
+	
+	<select id="get" resultType="sw004Ycxsj">
+		select <include refid="commCols"/> from SW004_YCXSJ
+  		<where>KEY_ID=#{keyId}</where>
+	</select>
+	
+	
+	<select id="findSw004YcxsjCount" parameterType="sw004Ycxsj" resultType="int">
+		select count(*) from SW004_YCXSJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="sw004Ycxsj">
+		select <include refid="commCols"/> from SW004_YCXSJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByDcid"  resultType="sw004Ycxsj">
+		select DC_ID dcId,
+	       SJ_ID sjId,
+	       RY_TYPE ryType,
+	       RY_NAME ryName,
+	       wm_concat(SJ_LIST) sjList,
+	       SWS_LIST swsList,
+	       IS_RIGHT isRight,
+	       ERR_REASON errReason,
+	       ORDERBY orderBy
+	  from SW004_YCXSJ t
+	  <where>
+	  	DC_ID = #{dcId}
+	  </where>
+	 group by DC_ID, SJ_ID, RY_TYPE, RY_NAME, SWS_LIST, IS_RIGHT, ERR_REASON, ORDERBY
+	 order by ORDERBY
+	</select>
+</mapper>

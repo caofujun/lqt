@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl002SjdjDao">
+
+	<sql id="commCols_mysql">
+		PG_KJYJ pgKjyj,SD_DATE sdDate,FLAG flag,WEIGHT weight,PG_R pgR,PG_SJ pgSj,REPORT_DATE reportDate,STEP2 step2,STEP3 step3,D_DEPT_ID dDeptId,S_BLQK sBlqk,BL_ID blId,SJ_ID sjId,BL_SGRADE blSgrade,BL_GRADE blGrade,D_CARDID dCardid,D_NAME dName,D_SEX dSex,D_AGE dAge,D_GL dGl,D_ZC dZc,D_XL dXl,D_GW dGw,D_DEPT dDept,ENTER_TIME enterTime,ENTER_ADD enterAdd,DJ_MEN djMen,DJ_TIME djTime,IP_TEL ipTel,S_NAME sName,S_DEPT sDept,S_PARIANT sPariant,S_BBTYPE sBbtype,S_BBPARIANT sBbpariant,S_BBNAME sBbname,PG_TIME pgTime,PG_MEN pgMen,SJ_STATE sjState,PG_MS pgMs,PG_JY pgJy,PG_YYNAME1 pgYyname1,PG_YYJL1 pgYyjl1,PG_YYSTIME1 pgYystime1,PG_YYETIME1 pgYyetime1,PG_YYNAME2 pgYyname2,PG_YYJL2 pgYyjl2,PG_YYSTIME2 pgYystime2,PG_YYETIME2 pgYyetime2,SF_MEN sfMen,BL_JL blJl,BL_JL_MEN blJlMen,SJ_TEL sjTel,CHECK_MEN checkMen,CHECK_TIME checkTime,CHECK_BZ checkBz,S_MEMO sMemo,PG_YYNAME3 pgYyname3,PG_YYJL3 pgYyjl3,PG_YYSTIME3 pgYystime3,PG_YYETIME3 pgYyetime3,PG_YYNAME4 pgYyname4,PG_YYJL4 pgYyjl4,PG_YYSTIME4 pgYystime4,PG_YYETIME4 pgYyetime4,PG_YYNAME5 pgYyname5,PG_YYJL5 pgYyjl5,PG_YYSTIME5 pgYystime5,PG_YYETIME5 pgYyetime5,FC_TIME fcTime,FC_ZT fcZt,DJ_ID djId
+	</sql>
+
+	<select id="findBl002Sjdj_mysql" parameterType="bl002Sjdj" resultType="bl002Sjdj">
+		select <include refid="commCols_mysql"/> from BL002_SJDJ
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

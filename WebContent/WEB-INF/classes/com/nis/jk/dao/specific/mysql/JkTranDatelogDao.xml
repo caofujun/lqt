@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkTranDatelogDao">
+
+	<sql id="commCols_mysql">
+		SYNC_CODE syncCode,SYNC_NAME syncName,PARAM_BEGINTIME paramBegintime,PARAM_ENDTIME paramEndtime,LAST_ID lastId,LAST_STATUS lastStatus,LAST_SYNC_TIME lastSyncTime,LAST_LOG lastLog
+	</sql>
+
+	<select id="findJkTranDatelog_mysql" parameterType="jkTranDatelog" resultType="jkTranDatelog">
+		select <include refid="commCols_mysql"/> from JK_TRAN_DATELOG
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

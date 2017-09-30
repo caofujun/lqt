@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientZkmxDao">
+
+	<sql id="commCols">
+		ID id,ZYID zyid,IN_DEPT_AT inDeptAt,IN_DEPT_ID inDeptId,OUT_DEP_AT outDepAt,OUT_DEPT_ID outDeptId,BED_NO bedNo,IN_DEPT_DAYS inDeptDays,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientZkmx" flushCache="true">
+		 insert into JK_PATIENT_ZKMX(ID,ZYID,IN_DEPT_AT,IN_DEPT_ID,OUT_DEP_AT,OUT_DEPT_ID,BED_NO,IN_DEPT_DAYS,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{zyid},#{inDeptAt},#{inDeptId},#{outDepAt},#{outDeptId},#{bedNo},#{inDeptDays},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_ZKMX
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientZkmx" flushCache="true">
+		update JK_PATIENT_ZKMX
+		<set>
+			ID=#{id},ZYID=#{zyid},IN_DEPT_AT=#{inDeptAt},IN_DEPT_ID=#{inDeptId},OUT_DEP_AT=#{outDepAt},OUT_DEPT_ID=#{outDeptId},BED_NO=#{bedNo},IN_DEPT_DAYS=#{inDeptDays},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientZkmx" flushCache="true">
+		update JK_PATIENT_ZKMX
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientZkmx">
+		select <include refid="commCols"/> from JK_PATIENT_ZKMX
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientZkmxCount" parameterType="jkPatientZkmx" resultType="int">
+		select count(*) from JK_PATIENT_ZKMX
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientZkmx">
+		select <include refid="commCols"/> from JK_PATIENT_ZKMX
+		<where>
+		</where>
+	</select>
+</mapper>

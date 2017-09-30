@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl006JyjgDao">
+
+	<sql id="commCols">
+		FLAG flag,BL_ID blId,JY_TIME jyTime,JY_HM jyHm,JY_JG jyJg,DJ_MEN djMen,DJ_TIME djTime,JY_DH jyDh,SF_MEMO sfMemo
+	</sql>
+
+	<insert id="save" parameterType="bl006Jyjg"  flushCache="true">
+		 insert into BL006_JYJG(FLAG,BL_ID,JY_TIME,JY_HM,JY_JG,DJ_MEN,DJ_TIME,JY_DH,SF_MEMO)
+		 values(#{flag},#{blId},#{jyTime},#{jyHm},#{jyJg},#{djMen},#{djTime},#{jyDh},#{sfMemo})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  BL006_JYJG
+		<where>BL_ID=#{blId}</where>
+	</delete>
+	
+	<update id="update" parameterType="bl006Jyjg" flushCache="true">
+		update BL006_JYJG
+		<set>
+			JY_JG=#{jyJg},JY_TIME=#{jyTime},FLAG=#{flag},SF_MEMO=#{sfMemo}
+		</set>
+		<where>BL_ID=#{blId} and JY_HM=#{jyHm} and JY_DH=#{jyDh}</where>
+	</update>
+	
+	<select id="get" resultType="bl006Jyjg">
+		select <include refid="commCols"/> from BL006_JYJG
+  		<where>BL_ID=#{blId} and JY_HM=#{jyHm} and JY_DH=#{jyDh}</where>
+	</select>
+	
+	
+	<select id="findBl006JyjgCount" parameterType="bl006Jyjg" resultType="int">
+		select count(*) from BL006_JYJG
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="bl006Jyjg">
+		select <include refid="commCols"/> from BL006_JYJG
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getBl006JyjgList" resultType="bl006Jyjg">
+		select <include refid="commCols"/> from BL006_JYJG
+  		<where>
+  		BL_ID=#{blId} 
+  		<if test="jyDh!=null and jyDh!=''">
+  		and JY_DH=#{jyDh} 
+  		</if>
+  		<if test="itemName!=null and itemName!=''">
+  		and JY_HM in (select bl004_cs_detailinfo.csd_name
+      from bl004_cs_detailinfo 
+      join  ny_sys_dddd  on bl004_cs_detailinfo.csm_id=ny_sys_dddd.item_id and ny_sys_dddd.dict_id='DD0019'
+      where ny_sys_dddd.item_name = #{itemName})
+      </if>
+      </where>
+	</select>
+	
+	<select id="findByItemName" resultType="bl006Jyjg">
+		select <include refid="commCols"/> from bl006_jyjg where jy_dh in (select bl004_cs_detailinfo.csd_name
+	      from bl004_cs_detailinfo 
+	      join  ny_sys_dddd  on bl004_cs_detailinfo.csm_id=ny_sys_dddd.item_id and ny_sys_dddd.dict_id='DD0019'
+	      where ny_sys_dddd.item_name = #{itemName1}) and bl_id=#{blId} and bl006_jyjg.jy_hm in (select bl004_cs_detailinfo.csd_name
+	      from bl004_cs_detailinfo 
+	      join  ny_sys_dddd  on bl004_cs_detailinfo.csm_id=ny_sys_dddd.item_id and ny_sys_dddd.dict_id='DD0019'
+	      where ny_sys_dddd.item_name = #{itemName2})
+	</select>
+	
+	<select id="findByTime" resultType="jyjgFc">
+		select a.d_name as djName,(select max(bl006_jyjg.jy_time)
+                  from bl006_jyjg
+                 where jy_time &lt; to_date(#{startDate}, 'yyyy-MM-dd')
+                   and bl006_jyjg.bl_id = a.bl_id) as backTime,(select min(bl006_jyjg.jy_time)
+                  from bl006_jyjg
+                 where jy_time &gt;= to_date(#{startDate}, 'yyyy-MM-dd')
+                   and bl006_jyjg.bl_id = a.bl_id) as nowTime
+	  from bl002_sjdj a
+	 where a.bl_id in
+	       (select bl_id
+	          from bl006_jyjg
+	         where jy_time &gt;= to_date(#{startDate}, 'yyyy-MM-dd') and jy_time &lt; to_date(#{endDate}, 'yyyy-MM-dd')+1)
+		
+	</select>
+</mapper>

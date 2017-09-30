@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.UnitDao">
+
+	<sql id="commCols">
+		HOSP_ID unitId,HOSP_NAME hospName,HOSP_LEVEL hospLevel,BEDS
+		beds,HOSP_TYPE hospType,HOSP_NATURE hospNature,IFBRANCH
+		ifbranch,CREATE_AT createAt,BH_CODE bhCode,FLAG flag,LAST_AT
+		lastAt,SP_CODE spCode,SUPPORT support,SUPP_TEL suppTel,LICENCE licence
+	</sql>
+
+	<insert id="save" parameterType="unit" flushCache="true">
+		insert into
+		ZG004_YYXX(HOSP_ID,HOSP_NAME,HOSP_LEVEL,BEDS,HOSP_TYPE,HOSP_NATURE,IFBRANCH,CREATE_AT,BH_CODE,FLAG,LAST_AT,SP_CODE,SUPPORT,SUPP_TEL,LICENCE)
+		values(#{unitId},#{hospName},#{hospLevel},#{beds},#{hospType},#{hospNature},#{ifbranch},#{createAt},#{bhCode},#{flag},#{lastAt},#{spCode},#{support},#{suppTel},#{licence})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from ZG004_YYXX
+		<where>HOSP_ID=#{unitId}</where>
+	</delete>
+
+	<update id="updateUnitState" flushCache="true">
+		update ZG004_YYXX
+		<set>FLAG=#{flag}</set>
+		<where>HOSP_ID=#{unitId}</where>
+	</update>
+
+	<update id="updateAllTableUnitId1" flushCache="true">
+		update zg004_yyxx set HOSP_ID=#{unitId}, HOSP_NAME=#{unitName} 
+		where (select count(1) from zg004_yyxx) = 1
+	</update>
+
+	<update id="updateAllTableUnitId2" flushCache="true">
+		update zg002_byks set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId3" flushCache="true">
+		update zg003_yyzg set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId4" flushCache="true">
+		update ac_account set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId5" flushCache="true">
+		update ac_menu set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId6" flushCache="true">
+		update ac_role set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId7" flushCache="true">
+		update qs_questionnaire set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId8" flushCache="true">
+		update qs_repo_options set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId9" flushCache="true">
+		update qs_repo_topic set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId10" flushCache="true">
+		update QS_SURVEY_RECORD set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId11" flushCache="true">
+		update QS_TOPIC set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId12" flushCache="true">
+		update QS_TOPIC_OPTION set unit_id=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId13" flushCache="true">
+		update CTG_SYS008_MARKEDCASE set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId14" flushCache="true">
+		update GR004_GRBL_BASEINFO set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId15" flushCache="true">
+		update ST003_CRYXXB set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId16" flushCache="true">
+		update ST005_SSXXB set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId17" flushCache="true">
+		update ST009_SJBB set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="updateAllTableUnitId18" flushCache="true">
+		update ST020_CLINIC_PATIENTS set HOSP_ID=#{unitId}
+	</update>
+
+	<update id="update" parameterType="unit" flushCache="true">
+		update ZG004_YYXX
+		<set>
+			HOSP_NAME=#{hospName},
+			HOSP_LEVEL=#{hospLevel},
+			BEDS=#{beds},
+			HOSP_TYPE=#{hospType},
+			HOSP_NATURE=#{hospNature},
+			IFBRANCH=#{ifbranch},
+			BH_CODE=#{bhCode},
+			FLAG=#{flag},
+			LAST_AT=#{lastAt},
+			SP_CODE=#{spCode},
+			SUPPORT=#{support},
+			SUPP_TEL=#{suppTel},
+			LICENCE = #{licence}
+		</set>
+		<where>HOSP_ID=#{unitId}</where>
+	</update>
+
+	<select id="get" resultType="unit">
+		select
+		<include refid="commCols" />
+		from ZG004_YYXX
+		<where>HOSP_ID=#{unitId}</where>
+	</select>
+
+	<select id="findUnitByUnitName" resultType="unit">
+		select
+		<include refid="commCols" />
+		from ZG004_YYXX
+		<where>HOSP_NAME=#{hospName} </where>
+	</select>
+
+	<select id="findUnitCount" parameterType="unit" resultType="int">
+		select count(*) from ZG004_YYXX
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and (HOSP_NAME LIKE CONCAT(CONCAT('%', #{searchString}),'%') or 
+					 lower(SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') or
+					 HOSP_ID LIKE CONCAT(CONCAT('%', #{searchString}),'%')
+					 )
+			</if>
+			<if test="flag!=null">and FLAG=#{flag}</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="unit">
+		select
+		<include refid="commCols" />
+		from ZG004_YYXX
+		<where>
+			1=1
+		</where>
+	</select>
+
+	<select id="findLike" resultType="unit">
+		select
+		<include refid="commCols" />
+		from ZG004_YYXX
+		<where>
+			HOSP_NAME LIKE CONCAT(CONCAT('%', #{name}), '%')
+			or SP_CODE LIKE CONCAT(CONCAT('%', Upper(#{name})), '%')
+		</where>
+	</select>
+</mapper>

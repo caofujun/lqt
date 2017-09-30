@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg006GrzdmxDao">
+
+	<sql id="commCols">
+		MX_ID mxId,INFECT_CODE infectCode,STANDARD_NO standardNo,NODE_LEVEL nodeLevel,NODE_ID nodeId,NODE_BODY nodeBody,IF_BASE_ELEMENT ifBaseElement,ELEMENT_ID elementId,IF_MUST ifMust,LIST_COUNT listCount,NEED_COUNT needCount,WEIGHT_VALUE weightValue,P_NODE_ID pNodeId,WEIGHT_RATIO weightRatio
+	</sql>
+
+	<insert id="save" parameterType="zg006Grzdmx"  flushCache="true">
+		 insert into ZG006_GRZDMX(MX_ID,INFECT_CODE,STANDARD_NO,NODE_LEVEL,NODE_ID,NODE_BODY,IF_BASE_ELEMENT,ELEMENT_ID,IF_MUST,LIST_COUNT,NEED_COUNT,WEIGHT_VALUE,P_NODE_ID,WEIGHT_RATIO)
+		 values(#{mxId},#{infectCode},#{standardNo},#{nodeLevel},#{nodeId},#{nodeBody},#{ifBaseElement},#{elementId},#{ifMust},#{listCount},#{needCount},#{weightValue},#{pNodeId},#{weightRatio})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG006_GRZDMX
+		<where>MX_ID=#{mxId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg006Grzdmx" flushCache="true">
+		update ZG006_GRZDMX
+		<set>
+			MX_ID=#{mxId},INFECT_CODE=#{infectCode},STANDARD_NO=#{standardNo},NODE_LEVEL=#{nodeLevel},NODE_ID=#{nodeId},NODE_BODY=#{nodeBody},IF_BASE_ELEMENT=#{ifBaseElement},ELEMENT_ID=#{elementId},IF_MUST=#{ifMust},LIST_COUNT=#{listCount},NEED_COUNT=#{needCount},WEIGHT_VALUE=#{weightValue},P_NODE_ID=#{pNodeId},WEIGHT_RATIO=#{weightRatio}
+		</set>
+		<where>MX_ID=#{mxId}</where>
+	</update>
+	
+	<select id="get" resultType="zg006Grzdmx">
+		select <include refid="commCols"/> from ZG006_GRZDMX
+  		<where>MX_ID=#{mxId}</where>
+	</select>
+	
+	
+	<select id="findZg006GrzdmxCount" parameterType="zg006Grzdmx" resultType="int">
+		select count(*) from ZG006_GRZDMX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg006Grzdmx">
+		select <include refid="commCols"/> from ZG006_GRZDMX
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

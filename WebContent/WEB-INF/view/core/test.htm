@@ -1,0 +1,15 @@
+<HTML>
+<head>
+<script type="text/javascript" language="javascript"> 
+ function ConfigSet(AUserID,AUserName,AURL,AUpdateURL){
+        TestOcx.SetConfig(AUserID,AUserName,AURL,AUpdateURL);
+    }
+    </script>
+    </head>
+<OBJECT    id="TestOcx"  
+	  classid="clsid:E94142D9-4680-46F9-8297-E9BB8F74E4FD"
+	  style="width:0;height:0;"
+>
+</OBJECT>
+    <button onclick=ConfigSet('GJH','郭军华','http://192.168.1.165:8080/nis7/nis/f_adapter/msg.shtml?adapterType=getMsgByUser&data={"userId":"GJH"}','http://192.168.1.165:8080/nis7/lqtMessage/UpdateList.ini')>测试写入用户</button>
+</HTML>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys003DictdetailDao">
+
+	<sql id="commCols">
+		SCOPEID scopeid,MASTERID masterid,DICTID dictid,DICTVALUE dictvalue
+	</sql>
+
+	<insert id="save" parameterType="ctgSys003Dictdetail"  flushCache="true">
+		 insert into CTG_SYS003_DICTDETAIL(SCOPEID,MASTERID,DICTID,DICTVALUE)
+		 values(#{scopeid},#{masterid},#{dictid},#{dictvalue})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS003_DICTDETAIL
+		<where>SCOPEID=#{scopeid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys003Dictdetail" flushCache="true">
+		update CTG_SYS003_DICTDETAIL
+		<set>
+			SCOPEID=#{scopeid},MASTERID=#{masterid},DICTID=#{dictid},DICTVALUE=#{dictvalue}
+		</set>
+		<where>SCOPEID=#{scopeid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys003Dictdetail">
+		select <include refid="commCols"/> from CTG_SYS003_DICTDETAIL
+  		<where>SCOPEID=#{scopeid}</where>
+	</select>
+	
+	
+	<select id="findCtgSys003DictdetailCount" parameterType="ctgSys003Dictdetail" resultType="int">
+		select count(*) from CTG_SYS003_DICTDETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys003Dictdetail">
+		select <include refid="commCols"/> from CTG_SYS003_DICTDETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

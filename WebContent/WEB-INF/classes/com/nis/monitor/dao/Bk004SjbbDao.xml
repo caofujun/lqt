@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk004SjbbDao">
+
+	<sql id="commCols">
+		id id,card_relid cardRelid,refid refid,sn sn,patient_id patientId,zyid zyid,visit_id visitId,patient_name patientName,sex sex,age age,test_no testNo,test_type_id testTypeId,test_type_name testTypeName,submi_at submiAt,sample_id sampleId,sample_name sampleName,patho_id pathoId,patho_name pathoName,memo memo,create_date createDate,is_select isSelect,submi_dept_id submiDeptId,oper_id operId,pathogen_sn pathogenSn
+	</sql>
+
+	<insert id="save" parameterType="bk004Sjbb" flushCache="true">
+		 insert into bk004_sjbb(id,card_relid,refid,sn,patient_id,zyid,visit_id,patient_name,sex,age,test_no,test_type_id,test_type_name,submi_at,sample_id,sample_name,patho_id,patho_name,memo,create_date,is_select,submi_dept_id,oper_id,pathogen_sn)
+		 values(#{id},#{cardRelid},#{refid},#{sn},#{patientId},#{zyid},#{visitId},#{patientName},#{sex},#{age},#{testNo},#{testTypeId},#{testTypeName},#{submiAt},#{sampleId},#{sampleName},#{pathoId},#{pathoName},#{memo},#{createDate},#{isSelect},#{submiDeptId},#{operId},#{pathogenSn})
+	</insert>
+	
+	<delete id="delete" parameterType="bk004Sjbb" flushCache="true">
+		delete from bk004_sjbb
+		<where>
+			refid=#{refid} 
+			<if test="testNoNotIn!=null and testNoNotIn.size!=0">
+		    	and test_no not in 
+				<foreach collection="testNoNotIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<delete id="delByRefid" flushCache="true">
+		delete from bk004_sjbb 
+		<where> refid=#{refid} </where>
+	</delete>
+	
+	<update id="update" parameterType="bk004Sjbb" flushCache="true">
+		update bk004_sjbb
+		<set>
+			id=#{id},card_relid=#{cardRelid},refid=#{refid},sn=#{sn},patient_id=#{patientId},zyid=#{zyid},visit_id=#{visitId},patient_name=#{patientName},sex=#{sex},age=#{age},test_no=#{testNo},test_type_id=#{testTypeId},test_type_name=#{testTypeName},submi_at=#{submiAt},sample_id=#{sampleId},sample_name=#{sampleName},patho_id=#{pathoId},patho_name=#{pathoName},memo=#{memo},create_date=#{createDate},is_select=#{isSelect},submi_dept_id=#{submiDeptId},oper_id=#{operId},pathogen_sn=#{pathogenSn}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" parameterType="bk004Sjbb" resultType="bk004Sjbb">
+		select <include refid="commCols"/> from bk004_sjbb
+  		<where>card_relid=#{cardRelid} and refid=#{refid} and zyid=#{zyid} and test_no=#{testNo} and sample_id=#{sampleId} and patho_id=#{pathoId}</where>
+	</select>
+	
+	
+	<select id="findBk004SjbbCount" parameterType="bk004Sjbb" resultType="int">
+		select count(*) from bk004_sjbb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="bk004Sjbb">
+		select <include refid="commCols"/> from bk004_sjbb
+		<where>
+		</where>
+	</select>
+	
+	<select id="findNumBytestNo" parameterType="bk004Sjbb" resultType="int">
+		select count(1) from bk004_sjbb
+  		<where>card_relid=#{cardRelid} and refid=#{refid} and zyid=#{zyid} and test_no=#{testNo}</where>
+	</select>
+	
+	<select id="findBk004ByRefid" resultType="bk004Sjbb">
+		select refid refid,sample_id sampleId,patho_id pathoId,patho_name pathoName,submi_at submiAt,pathogen_sn pathogenSn,test_no testNo from bk004_sjbb 
+  		<where> refid=#{refid} </where>
+	</select>
+	
+	<select id="findMultiDrugResis" resultType="bk004Sjbb">
+		select b2.infect_dept_name infectDeptname,b2.infect_date infectDate,b2.infect_type infectType,b4.zyid zyid,b4.test_no testNo,b4.submi_at submiAt,b4.sample_id sampleId,b4.patho_id pathoId,b4.submi_dept_id submiDeptId,s10.test_date testDate
+		from bk002_grzd b2 left join bk004_sjbb b4 on b2.refid = b4.card_relid left join st010_jcbyt s10 on s10.test_order_no=b4.test_no and s10.zyid=b4.zyid and s10.patho_code=b4.patho_id
+		<where>
+			b2.relid=#{relid}
+		</where>
+	</select>
+	
+	<!-- <select id="findPathogenDetection" parameterType="bk004Sjbb" resultType="bk004Sjbb">
+		select sj.id st9Id,sj.item_code sampleId,sj.item_name sampleName,sj.submi_at submiAtStr,byt.test_date enterAt,byt.patho_code pathogenId,byt.patho_name pathogenName,jg.anti_code antiDrugId,jg.anti_name antiDrugName,jg.yaomin_result result,x11.res_prop resProp 
+        from bk004_sjbb bk join bk002_grzd zd on bk.refid=zd.relid 
+        join st009_sjbb sj on bk.test_no=sj.test_order_no  
+        left join st010_jcbyt byt on sj.test_order_no=byt.test_order_no and bk.patho_id=byt.patho_code
+        left join st011_syjgb jg on byt.test_order_no=jg.test_order_no and byt.pathogen_sn=jg.pathogen_sn 
+        left join xn011_dclymx x11 on byt.test_order_no=x11.test_order_no and byt.pathogen_sn=x11.pathogen_sn
+		<where>
+			bk.card_relid=#{relid} and x11.infect_part_id=#{infectPartId}
+		</where>
+		order by sj.id,sj.submi_at,sj.item_code,byt.patho_code,jg.anti_code 
+	</select> -->
+	
+	<select id="findPathogenDetection" parameterType="bk004Sjbb" resultType="bk004Sjbb">
+		select bk.test_no testNo, sj.id st9Id,sj.item_code sampleId,sj.item_name sampleName,sj.submi_at submiAtStr,byt.test_date testDate,byt.patho_code pathoId,byt.patho_name pathoName,x11.res_prop resProp ,x11.pathogen_sn pathogenSn
+        from bk004_sjbb bk join bk002_grzd zd on bk.refid=zd.relid 
+        join st009_sjbb sj on bk.test_no=sj.test_order_no  
+        left join st010_jcbyt byt on sj.test_order_no=byt.test_order_no and bk.patho_id=byt.patho_code
+        left join xn011_dclymx x11 on byt.test_order_no=x11.test_order_no and byt.pathogen_sn=x11.pathogen_sn
+		<where>
+			bk.refid=#{refid}
+		</where>
+		order by sj.id,sj.submi_at,sj.item_code,byt.patho_code 
+	</select>
+	
+	<select id="findPathogenDetectionCount" parameterType="bk004Sjbb" resultType="int">
+		   select count(*)
+		     from bk004_sjbb bk
+		     join bk002_grzd zd
+		       on bk.refid = zd.relid
+		     join st009_sjbb sj
+		       on bk.test_no = sj.test_order_no
+		     left join st010_jcbyt byt
+		       on sj.test_order_no = byt.test_order_no
+		      and bk.patho_id = byt.patho_code
+		     left join xn011_dclymx x11
+		       on byt.test_order_no = x11.test_order_no
+		      and byt.pathogen_sn = x11.pathogen_sn
+		    <where>
+			     bk.refid =#{refid}
+		    </where>
+	</select>
+	
+</mapper>

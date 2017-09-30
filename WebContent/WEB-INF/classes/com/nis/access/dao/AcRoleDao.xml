@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcRoleDao">
+
+	<sql id="commCols">
+		ROLE_ID roleId,NAME name,REMARK remark,CREATE_TIME
+		createTime,CREATE_USER createUser,DEP_NO depNo,UNIT_ID
+		unitId,ROLE_TYPE roleType,ROLE_SCOPE roleScope
+	</sql>
+
+	<insert id="save" parameterType="acRole" flushCache="true">
+		insert into
+		AC_ROLE(ROLE_ID,NAME,REMARK,CREATE_TIME,CREATE_USER,DEP_NO,UNIT_ID,ROLE_TYPE,ROLE_SCOPE)
+		values(#{roleId},#{name},#{remark},#{createTime},#{createUser},#{depNo},#{unitId},#{roleType},#{roleScope})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from AC_ROLE
+		<where>ROLE_ID=#{roleId}</where>
+	</delete>
+
+	<update id="update" parameterType="acRole" flushCache="true">
+		update AC_ROLE
+		<set>
+			NAME=#{name},REMARK=#{remark},ROLE_SCOPE=#{roleScope}
+		</set>
+		<where>ROLE_ID=#{roleId}</where>
+	</update>
+
+	<select id="get" resultType="acRole">
+		select
+		<include refid="commCols" />
+		from AC_ROLE
+		<where>ROLE_ID=#{roleId}</where>
+	</select>
+
+
+	<select id="findAcRoleCount" parameterType="acRole" resultType="int">
+		select count(*) from AC_ROLE
+		<where>
+			ROLE_TYPE = #{roleType}
+			<if test="name!=null and name!=''"> and name LIKE CONCAT(CONCAT('%', #{name}), '%')</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="acRole">
+		select
+		<include refid="commCols" />
+		from AC_ROLE
+	</select>
+
+	<select id="getRoleByUnitId" resultType="acRole">
+		select
+		<include refid="commCols" />
+		from AC_ROLE
+		<where>
+		1=1
+		<if test="unitId!=null and unitId!=''">
+			and UNIT_ID=#{unitId}
+		</if>
+		<if test="acType!=null and acType!=''">
+				and role_type=#{acType}
+		</if> 
+		</where>
+	</select>
+</mapper>

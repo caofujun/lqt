@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk001SbkDao">
+
+	<sql id="commCols_oracle">
+		report_dept_name reportDeptName,is_ok isOk,is_lb isLb,is_gr isGr,card_return_cause cardReturnCause,is_del isDel,is_cb isCb,weight weight,bed_no bedNo,report_dr_id reportDrId,jbzd_code jbzdCode,jbzd jbzd,card_source cardSource,del_reason delReason,gd_flag gdFlag,gd_userid gdUserid,gd_at gdAt,bk_type bkType,lastoper_name lastoperName,lastoper_date lastoperDate,bk_typename bkTypename,infect_dept_name_edit infectDeptNameEdit,relid relid,zyid zyid,patient_id patientId,visit_id visitId,report_visit reportVisit,patient_name patientName,in_hosp_at inHospAt,ryzd_code ryzdCode,ryzd ryzd,sex sex,age age,age_unit ageUnit,report_at reportAt,charge_dr_id chargeDrId,report_dr_name reportDrName,report_dept_id reportDeptId
+	</sql>
+
+	<select id="findBk001Sbk_oracle" parameterType="bk001Sbk" resultType="bk001Sbk">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from bk001_sbk
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findInfectionsCards_oracle" parameterType="bk001Sbk" resultType="bk001Sbk">
+		select bk1.REPORT_AT reportAt,bk1.REPORT_DEPT_NAME reportDeptName,bk1.patient_id patientId,
+		bk1.zyid zyid, bk1.patient_name patientName,bk1.relid relid, 
+		bk2.INFECT_DEPT_ID infectDeptId,bk2.INFECT_DEPT_NAME infectDeptName,count(*) reportNum 
+		from bk001_sbk bk1 right join 
+		(select bk2.refid,bk2.auth_at,bk2.relid,bk2.INFECT_DEPT_ID,bk2.INFECT_DEPT_NAME from bk002_grzd bk2 
+		<if test="specDescribes!=null and specDescribes!=''">
+		left join bk004_sjbb bk4 on bk2.relid = bk4.refid
+        left join xn011_dclymx xn11 on bk4.test_no = xn11.test_order_no and bk4.sample_id = xn11.item_code and bk4.patho_id = xn11.patho_code
+        </if>
+		<where>
+		    <if test="unitId!=null and unitId!=''">
+				and bk2.infect_dept_id in(select dept_id from zg002_byks where hosp_id = #{unitId})
+			</if>
+			<if test="queryStartDate!=null and dateField!=null and dateField=='infect_date'">
+				and bk2.infect_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null and dateField!=null and dateField=='infect_date'">
+				and bk2.infect_date &lt;= #{queryEndDate}
+			</if>
+			<if test="infectTypeId!=null">
+				and bk2.infect_type = #{infectTypeId}
+			</if>
+			<if test="relationIn!=null and relationIn.size!=0">
+		    	and bk2.relation in 
+				<foreach collection="relationIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		    <if test="infectDeptId!=null and infectDeptId!=''">
+				and bk2.infect_dept_id = #{infectDeptId}
+			</if>
+		    <if test="infectDiagnId!=null and infectDiagnId!=''">
+				and bk2.infect_diagn_id in (select infect_code from zg005_yygrzd start with infect_code=#{infectDiagnId} connect by prior infect_code = p_infect_code)
+			</if>
+			<if test="specDescribes!=null and specDescribes!=''">
+				and xn11.spec_describes = #{specDescribes}
+			</if>
+		</where>
+		group by bk2.refid,bk2.auth_at,bk2.relid,bk2.INFECT_DEPT_ID,bk2.INFECT_DEPT_NAME)
+		bk2 on bk1.relid = bk2.refid inner join st003_cryxxb st3 on bk1.zyid = st3.zyid 
+		<where>
+			<if test="queryStartDate!=null and dateField!=null and dateField!='infect_date'">
+				and ${dateField} &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null and dateField!=null and dateField!='infect_date'">
+				and ${dateField} &lt;= #{queryEndDate}
+			</if>
+			<if test="isOk!=null">
+				and bk1.is_ok = #{isOk}
+			</if>
+			<if test="isDel!=null">
+				and bk1.is_del = #{isDel}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+		    	and (bk1.patient_id like concat(concat('%',#{searchString}), '%') or bk1.patient_name like concat(concat('%',#{searchString}), '%') or bk1.zyid like concat(concat('%',#{searchString}), '%')) 
+		    </if>
+		    <if test="reportOrInfectDeptId!=null and reportOrInfectDeptId!=''">
+				and (bk2.infect_dept_id = #{reportOrInfectDeptId} or bk1.report_dept_id = #{reportOrInfectDeptId})
+			</if>
+		    <if test="reportDeptId!=null and reportDeptId!=''">
+				and bk1.report_dept_id = #{reportDeptId}
+			</if>
+		</where>
+		group by bk1.relid,bk1.patient_id,bk1.zyid, bk1.patient_name,bk1.REPORT_AT,bk1.REPORT_DEPT_NAME,bk2.INFECT_DEPT_ID,bk2.INFECT_DEPT_NAME
+		order by bk1.REPORT_AT,bk1.patient_id desc
+	</select>
+	
+	<select id="findReportCards_oracle" parameterType="bk001Sbk" resultType="bk001Sbk">
+		select bk1.relid relid, bk2.refid refid, bk1.is_ok isOk,bk2.infect_diagn_id infectDiagnId,bk2.infect_diagn_name infectDiagnName 
+		from bk001_sbk bk1 right join 
+		(select row_number() over(partition by bk2.refid order by bk2.auth_status) as rn,bk2.refid,bk2.infect_diagn_id,bk2.infect_diagn_name,bk2.auth_at from bk002_grzd bk2 
+		<if test="specDescribes!=null and specDescribes!=''">
+		left join bk004_sjbb bk4 on bk2.relid = bk4.refid
+        left join xn011_dclymx xn11 on bk4.test_no = xn11.test_order_no and bk4.sample_id = xn11.item_code and bk4.patho_id = xn11.patho_code
+        </if>
+		<where>
+			<if test="queryStartDate!=null and dateField!=null and dateField=='infect_date'">
+				and bk2.infect_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null and dateField!=null and dateField=='infect_date'">
+				and bk2.infect_date &lt;= #{queryEndDate}
+			</if>
+			<if test="infectTypeId!=null">
+				and bk2.infect_type = #{infectTypeId}
+			</if>
+			<if test="relationIn!=null and relationIn.size!=0">
+		    	and bk2.relation in 
+				<foreach collection="relationIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		    <if test="infectDeptId!=null and infectDeptId!=''">
+				and bk2.infect_dept_id = #{infectDeptId}
+			</if>
+		    <if test="infectDiagnId!=null and infectDiagnId!=''">
+				and bk2.infect_diagn_id in (select infect_code from zg005_yygrzd start with infect_code=#{infectDiagnId} connect by prior infect_code = p_infect_code)
+			</if>
+			<if test="specDescribes!=null and specDescribes!=''">
+				and xn11.spec_describes = #{specDescribes}
+			</if>
+		</where>
+		) bk2 on bk1.relid = bk2.refid left join st003_cryxxb st3 on bk1.zyid = st3.zyid left join zg002_byks ks on bk1.report_dept_id = ks.dept_id
+		<where>
+			bk2.rn = 1 and bk1.zyid = #{zyid}
+			<if test="queryStartDate!=null and dateField!=null and dateField!='infect_date'">
+				and ${dateField} &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null and dateField!=null and dateField!='infect_date'">
+				and ${dateField} &lt;= #{queryEndDate}
+			</if>
+			<if test="isOk!=null">
+				and bk1.is_ok = #{isOk}
+			</if>
+			<if test="isDel!=null">
+				and bk1.is_del = #{isDel}
+			</if>
+		    <if test="reportDeptId!=null and reportDeptId!=''">
+				and bk1.report_dept_id = #{reportDeptId}
+			</if>
+		</where>
+		order by bk1.is_ok
+	</select>
+	
+	<!-- <select id="findExportExcel_oracle" parameterType="bk001Sbk" resultType="bk001Sbk">
+		select bk1.relid relid,bk1.patient_id patientId,bk1.zyid zyid,bk1.visit_id visitId,st3.in_days inDays,bk1.patient_name patientName,bk1.sex sex,bk1.age age,bk1.age_unit ageUnit,bk1.ryzd ryzd,
+		st3.dept_name deptName,st3.in_hosp_at inHospAt,st3.out_at outAt,bk1.report_dr_name reportDrName,bk1.report_at reportAt,bk2.infect_date infectDate,bk2.infect_diagn_name infectDiagnName,
+		bk2.infect_dept_name infectDeptName,bk2.relation relation,bk2.ope_name opeName,bk2.memo memo,bk2.jbzg jbzg, (select wm_concat(bk3.factor_name) from bk003_ygys bk3 where bk3.refid=bk2.relid) ygys,
+		bk4.sampleName,bk4.pathoName,bk4.antiName,bk2.confirm_dt confirmDt,bk2.auth_username authUsername,bk2.auth_at authAt
+  		from bk001_sbk bk1 left join bk002_grzd bk2 on bk1.relid=bk2.refid left join st003_cryxxb st3 on bk1.zyid = st3.zyid
+  		left join zg002_byks ks on bk1.report_dept_id = ks.dept_id
+  		left join (select bk.refid,wm_concat(distinct sj.item_name) sampleName, wm_concat(distinct byt.patho_name) pathoName,wm_concat(distinct jg.anti_name) antiName from bk004_sjbb bk
+  		join st009_sjbb sj on bk.test_no = sj.test_order_no left join st010_jcbyt byt on sj.test_order_no = byt.test_order_no and bk.patho_id = byt.patho_code
+  		left join st011_syjgb jg on byt.test_order_no=jg.test_order_no and byt.pathogen_sn=jg.pathogen_sn group by bk.refid) bk4 on bk4.refid = bk2.relid
+  		<where>
+  			<if test="queryStartDate!=null and dateField!=null and dateField=='infect_date'">
+				and bk2.infect_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null and dateField!=null and dateField=='infect_date'">
+				and bk2.infect_date &lt;= #{queryEndDate}
+			</if>
+			<if test="infectTypeId!=null">
+				and bk2.infect_type = #{infectTypeId}
+			</if>
+			<if test="relationIn!=null and relationIn.size!=0">
+		    	and bk2.relation in 
+				<foreach collection="relationIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		    <if test="infectDeptId!=null and infectDeptId!=''">
+				and bk2.infect_dept_id = #{infectDeptId}
+			</if>
+			<if test="infectDiagnId!=null and infectDiagnId!=''">
+				and bk2.infect_diagn_id in (select infect_code from zg005_yygrzd start with infect_code=#{infectDiagnId} connect by prior infect_code = p_infect_code)
+			</if>
+			<if test="queryStartDate!=null and dateField!=null and dateField!='infect_date'">
+				and ${dateField} &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null and dateField!=null and dateField!='infect_date'">
+				and ${dateField} &lt;= #{queryEndDate}
+			</if>
+			<if test="isOk!=null">
+				and bk1.is_ok = #{isOk}
+			</if>
+			<if test="isDel!=null">
+				and bk1.is_del = #{isDel}
+			</if>
+			<if test="reportDeptId!=null and reportDeptId!=''">
+				and bk1.report_dept_id = #{reportDeptId}
+			</if>
+		</where>
+		order by bk1.is_ok 
+	</select> -->
+	
+</mapper>

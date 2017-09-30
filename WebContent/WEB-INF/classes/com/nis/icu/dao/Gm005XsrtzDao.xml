@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm005XsrtzDao">
+
+	<sql id="commCols">
+		ZYID zyid,DEPTID deptid,WEIGHT weight,OPERATOIN_BY operatoinBy,OPERATOR_AT operatorAt,ISNEWBORN isnewborn,NEONATEBW neonatebw,ISADD isadd
+	</sql>
+
+	<insert id="save" parameterType="gm005Xsrtz"  flushCache="true">
+		 insert into GM005_XSRTZ(ZYID,DEPTID,WEIGHT,OPERATOIN_BY,OPERATOR_AT,ISNEWBORN,NEONATEBW,ISADD)
+		 values(#{zyid},#{deptid},#{weight},#{operatoinBy},#{operatorAt},#{isnewborn},#{neonatebw},#{isadd})
+	</insert>
+	
+	<update id="update" parameterType="gm005Xsrtz" flushCache="true">
+		update gm005_xsrtz
+		<set>
+			deptid=#{deptid},weight=#{weight},operatoin_by=#{operatoinBy},operator_at=#{operatorAt},isnewborn=#{isnewborn},neonatebw=#{neonatebw},isadd=#{isadd}
+		</set>
+		<where>zyid=#{zyid}</where>
+	</update>
+	
+	<select id="get" resultType="gm005Xsrtz">
+		select <include refid="commCols"/> from GM005_XSRTZ
+  		<where>zyid=#{zyid}</where>
+	</select>
+	
+	<select id="findGm005XsrtzCount" parameterType="gm005Xsrtz" resultType="int">
+		select count(*) from GM005_XSRTZ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="gm005Xsrtz">
+		select <include refid="commCols"/> from GM005_XSRTZ
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

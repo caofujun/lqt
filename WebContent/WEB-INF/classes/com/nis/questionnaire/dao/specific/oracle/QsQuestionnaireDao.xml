@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsQuestionnaireDao">
+
+	<sql id="commCols_oracle">
+		QID qid,TITLE title,NOTE note,CAT_ID catId,CAT_NAME catName,STATUS status,END_TIME endTime,START_TIME startTime,CREATE_TIME createTime,UPD_TIME updTime,UPD_USER updUser,DEP_NO depNo,UNIT_ID unitId,Q_IDS qIds,RESULT_OPEN_STATE resultOpenState,CREATE_USER createUser,PUBLISH publish,IS_MOD isMod,IS_EVAL isEval,ANSWER_COUNT answerCount,YJ_COUNT yjCount,TM_COUNT tmCount, QLEVEL qlevel,IS_ANONYMOUS isAnonymous
+	</sql>
+
+	<select id="findQsQuestionnaire_oracle" parameterType="qsQuestionnaire" resultType="qsQuestionnaire">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from QS_QUESTIONNAIRE
+		<where>
+			UNIT_ID=#{unitId} and (EXT1 != 'cached' or EXT1 is null ) 
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QLEVEL=#{qlevel}
+			</if>
+			<if test="catId!=null and catId!=''">
+			and CAT_ID=#{catId}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QLEVEL=#{qlevel} or QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (QLEVEL='3' and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="title!=null and title!=''">and title LIKE CONCAT(CONCAT('%', #{title}), '%')</if>
+			<!-- <if test="depNo!=null and depNo!='' ">and DEP_NO=#{depNo}</if> -->
+			order by QS_QUESTIONNAIRE.Create_Time desc
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="pagefindCanEnter_oracle" resultType="qsQuestionnaire" parameterType="qsQuestionnaire">
+	select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from QS_QUESTIONNAIRE
+		<where>
+			UNIT_ID=#{unitId} and (EXT1 != 'cached' or EXT1 is null ) 
+			<!-- <if test="depNo!=null and depNo!=''">and (DEP_NO IS NULL or DEP_NO=#{depNo})</if> -->
+			<if test="catId!=null">and CAT_ID=#{catId}</if>
+			<!-- and STATUS=1 -->
+			<!-- and (END_TIME is null or END_TIME='' or END_TIME&gt;=#{endTime}) -->
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QLEVEL=#{qlevel}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QLEVEL=#{qlevel} or QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (QLEVEL='3' and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+		</where>
+		)a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

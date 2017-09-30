@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys003DictdetailDao">
+
+	<sql id="commCols_mysql">
+		SCOPEID scopeid,MASTERID masterid,DICTID dictid,DICTVALUE dictvalue
+	</sql>
+
+	<select id="findCtgSys003Dictdetail_mysql" parameterType="ctgSys003Dictdetail" resultType="ctgSys003Dictdetail">
+		select <include refid="commCols_mysql"/> from CTG_SYS003_DICTDETAIL
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

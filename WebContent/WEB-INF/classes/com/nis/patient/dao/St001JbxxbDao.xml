@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St001JbxxbDao">
+
+	<sql id="commCols">
+		id id,patient_id patientId,patient_name patientName,sex sex,birth_date birthDate,weight weight,address address,tel tel,id_card_id idCardId,nation nation,upd_date updDate
+	</sql>
+
+	<insert id="save" parameterType="st001Jbxxb" flushCache="true">
+		 insert into st001_jbxxb(id,patient_id,patient_name,sex,birth_date,weight,address,tel,id_card_id,nation,upd_date)
+		 values(#{id},#{patientId},#{patientName},#{sex},#{birthDate},#{weight},#{address},#{tel},#{idCardId},#{nation},#{updDate})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st001_jbxxb
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st001Jbxxb" flushCache="true">
+		update st001_jbxxb
+		<set>
+			id=#{id},patient_id=#{patientId},patient_name=#{patientName},sex=#{sex},birth_date=#{birthDate},weight=#{weight},address=#{address},tel=#{tel},id_card_id=#{idCardId},nation=#{nation},upd_date=#{updDate}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updWeightByZyid" flushCache="true"> 
+		update st001_jbxxb
+		<set>
+			weight=#{weight}
+		</set>
+		<where>patient_id in (select patient_id from st003_cryxxb where zyid=#{zyid})</where>
+	</update>
+	
+	<select id="get" resultType="st001Jbxxb">
+		select <include refid="commCols"/> from ( 
+			select * from st001_jbxxb
+  			<where>patient_id=#{id}</where>
+  		) where rownum=1
+	</select>
+	
+	<select id="findSt001JbxxbCount" parameterType="st001Jbxxb" resultType="int">
+		select count(distinct *) from st001_jbxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st001Jbxxb">
+		select <include refid="commCols"/> from st001_jbxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="findbyZyid" resultType="patientView">
+	select 
+		t.day,
+		t.datetime,
+		max(twxx.tw_values) twValues,
+		nvl2(max(twxx.tw_values), 1, 0) twValuesCount,
+		max(ssxxb.OPER_AT) operAt,
+		count(distinct ssxxb.OPER_AT) operAtCount,
+		max(ssxxb.OPER_NAME) operName,
+		max(mndcg.creationdate) mndcgOrderAt,
+		nvl2(max(mndcg.creationdate), 1, 0) mndcgOrderAtCount,
+		'泌尿道' mndcgOrderName,
+		max(jmcg.creationdate) jmcgOrderAt,
+		nvl2(max(jmcg.creationdate), 1, 0) jmcgOrderAtCount,
+		'中心静脉' jmcgOrderName,
+		max(hxj.creationdate) hxjOrderAt,
+		nvl2(max(hxj.creationdate), 1, 0) hxjOrderAtCount,
+		'呼吸机' hxjOrderName,
+		max(xcg.SUBMI_AT) xcgSubmiAt,
+		max(xcg.TEST_ORDER_NO) xcgTestOrderNo,
+		count(distinct xcg.ID) xcgSubmiAtCount,
+		max(xcg.ITEM_TYPE_NAME) xcgItemName,
+		max(ncg.SUBMI_AT) ncgSubmiAt,
+		max(ncg.TEST_ORDER_NO) ncgTestOrderNo,
+		count(distinct ncg.ID) ncgSubmiAtCount,
+		max(ncg.ITEM_TYPE_NAME) ncgItemName,
+		max(qtcg.SUBMI_AT) qtcgSubmiAt,
+		max(qtcg.TEST_ORDER_NO) qtcgTestOrderNo,
+		count(distinct qtcg.ID) qtcgSubmiAtCount,
+		max(jgsy.SUBMI_AT) jgsySubmiAt,
+		max(jgsy.ITEM_TYPE_NAME) jgsyItemName,
+		max(jgsy.TEST_ORDER_NO) jgsyTestOrderNo,
+		count(distinct jgsy.ID) jgsySubmiAtCount,
+		max(cmcfydb.SUBMI_AT) cmcfydbSubmiAt,
+		max(cmcfydb.ITEM_TYPE_NAME) cmcfydbItemName,
+		max(cmcfydb.TEST_ORDER_NO) cmcfydbTestOrderNo,
+		count(distinct cmcfydb.ID) cmcfydbSubmiAtCount,
+		max(cfydb.SUBMI_AT) cfydbSubmiAt,
+		max(cfydb.ITEM_TYPE_NAME) cfydbItemName,
+		max(cfydb.TEST_ORDER_NO) cfydbTestOrderNo,
+		count(distinct cfydb.ID) cfydbSubmiAtCount,
+		max(yj.SUBMI_AT) yjSubmiAt,
+       	max(yj.ITEM_TYPE_NAME) yjItemName,
+       	max(yj.TEST_ORDER_NO) yjTestOrderNo,
+       	count(distinct yj.ID) yjSubmiAtCount,
+       	max(glbs.order_at) glbsOrderAt,
+        wmsys.wm_concat(distinct glbs.order_name) glbsOrderName,
+        count(distinct glbs.id) glbsOrderAtCount
+		from (
+		  select 
+		  trunc((to_date(#{startDate}, 'yyyy-MM-dd hh24-mi-ss') + level) - to_date(#{inHospAt}, 'yyyy-MM-dd hh24-mi-ss')) day ,
+		  to_date(#{startDate} , 'yyyy-MM-dd hh24-mi-ss')+level-1 as datetime
+		  from dual 
+		  connect by level &lt;= (ceil((to_date(#{endDate} , 'yyyy-MM-dd hh24-mi-ss') - to_date(#{startDate} , 'yyyy-MM-dd hh24-mi-ss'))))
+		) t
+		left outer join ST006_TWXX twxx
+		on twxx.zyid = #{zyid} and to_date(to_char(twxx.recording_at , 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		and twxx.tw_values &gt;= 38
+		left outer join ST005_SSXXB ssxxb
+		on ssxxb.zyid = #{zyid} and to_date(to_char(ssxxb.OPER_AT , 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		left outer join GM004_JCMX mndcg
+		on mndcg.zyid = #{zyid} and to_date(to_char(mndcg.creationdate , 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		and mndcg.typeid='04'
+		left outer join GM004_JCMX jmcg
+		on jmcg.zyid = #{zyid} and to_date(to_char(jmcg.creationdate , 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		and jmcg.typeid='05'
+		left outer join GM004_JCMX hxj
+		on hxj.zyid = #{zyid} and to_date(to_char(hxj.creationdate , 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		and hxj.typeid='06'
+		left outer join (
+		  select t.*
+		  from st009_sjbb t,(select order_name from jk_dic_all where class_code='101') t1
+		  where zyid = #{zyid}
+		  and t.item_type_name like t1.order_name) xcg
+		on to_date(to_char(xcg.SUBMI_AT, 'yyyy-MM-dd') ,'yyyy-MM-dd') = t.datetime
+		left outer join (
+		  select t.*
+		  from st009_sjbb t,(select order_name from jk_dic_all where class_code='102') t1
+		  where zyid = #{zyid}
+		  and t.item_type_name like t1.order_name) ncg
+		on to_date(to_char(ncg.SUBMI_AT, 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		left outer join (
+		  select t.*
+		  from st009_sjbb t,(select order_name from jk_dic_all where class_code='103') t1
+		  where zyid = #{zyid}
+		  and t.item_type_name like '%'||t1.order_name||'%') qtcg
+		on to_date(to_char(qtcg.SUBMI_AT, 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		left outer join (
+		  select t.*
+		  from st009_sjbb t,(select order_name from jk_dic_all where class_code='104') t1
+		  where t.zyid = #{zyid}
+		  and t.item_type_name like '%'||t1.order_name||'%') jgsy
+		on to_date(to_char(jgsy.SUBMI_AT, 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		left outer join (
+		  select t.*
+		  from st009_sjbb t,st011_syjgb st011,(select order_name from jk_dic_all where class_code='106') t1
+		  where t.zyid = st011.zyid and t.test_order_no = st011.test_order_no
+		  and t.zyid = #{zyid}
+		  and  (
+		  	t.item_type_name like t1.order_name
+		  	or st011.anti_name like  t1.order_name
+		  )
+		) cmcfydb on to_date(to_char(cmcfydb.SUBMI_AT, 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		left outer join (
+		  select t.*
+		  from st009_sjbb t,st011_syjgb st011,(select order_name from jk_dic_all where class_code='107') t1,
+		  (select order_name from jk_dic_all where class_code='106') t2
+		  where t.zyid = st011.zyid and t.test_order_no = st011.test_order_no
+		  and t.zyid = #{zyid}
+		  and  (
+		  	t.item_type_name like t1.order_name
+		  	or st011.anti_name like  t1.order_name
+		  )
+	      <!-- C反应蛋白特殊特殊处理，剔除超敏C反应蛋白 -->
+		  and  (
+		  	t.item_type_name not like t2.order_name
+		  	and st011.anti_name not like  t2.order_name
+		  )
+		) cfydb on to_date(to_char(cfydb.SUBMI_AT, 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		left outer join (
+		  select t.* 
+		  from st009_sjbb t,st010_jcbyt t1
+		    where t.test_order_no=t1.test_order_no
+		    and t.zyid=t1.zyid and t.zyid = #{zyid}
+		    and t1.isyang = '1' and item_type = '1') yj
+		on to_date(to_char(yj.SUBMI_AT, 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		left outer join (
+			select t.* 
+			from st004_yzxxb t,(select order_name from jk_dic_all where class_code = '108') t1
+            where zyid = #{zyid}
+            and t.order_name like '%' || t1.order_name || '%') glbs
+    	on to_date(to_char(glbs.order_at, 'yyyy-MM-dd'), 'yyyy-MM-dd') = t.datetime
+		group by t.day,t.datetime
+		order by t.day
+	</select>
+	
+	<select id="getByPatientId" resultType="st001Jbxxb">
+		select <include refid="commCols"/> from st001_jbxxb
+  		<where>patient_id=#{patientId}</where>
+	</select>
+	
+	<select id="findbyZyidAndClassCode" resultType="st009Sjbb">
+      select distinct t.submi_at submiAt,t.item_type_name itemTypeName,t.test_order_no testOrderNo ,t.zyid zyid,
+       (select decode(count(1),0,0,1) from st011_syjgb s11 where s11.zyid=t.zyid and s11.test_order_no=t.test_order_no and remark in 
+		<foreach collection="remark" index="index" item="item" open="(" separator="," close=")" >
+	  		#{item} 
+	  	</foreach>
+		) as  isexception,case when exists(select * from st010_jcbyt where zyid = t.zyid
+      and test_order_no = t.test_order_no and isyang=1) then 1 else  0 end isyang, 
+      (select max(RESULT_DATE) from ST011_SYJGB st011 where st011.zyid = t.zyid and st011.test_order_no = t.test_order_no) checkOutAt
+      from st009_sjbb t,st011_syjgb st011,(select order_name from jk_dic_all where class_code=#{classCode}) t1
+            <!-- C反应蛋白特殊特殊处理，剔除超敏C反应蛋白 -->
+		<if test="classCode == '107'">
+			,(select order_name from jk_dic_all where class_code='106') t2
+		</if>
+		  where t.zyid = st011.zyid and t.test_order_no = st011.test_order_no
+		  and t.zyid = #{zyid}
+		  and  (
+		  	t.item_type_name like t1.order_name
+		  	or st011.anti_name like  t1.order_name
+		  )	
+            <!-- C反应蛋白特殊特殊处理，剔除超敏C反应蛋白 -->
+		<if test="classCode == '107'">
+		  and  (
+		  	t.item_type_name not like t2.order_name
+		  	and st011.anti_name not like  t2.order_name
+		  )
+		</if>
+	  order by isyang desc , isexception,t.submi_at asc
+	</select>
+	
+</mapper>

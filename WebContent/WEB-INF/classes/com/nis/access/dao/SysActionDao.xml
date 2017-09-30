@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.SysActionDao">
+
+	<sql id="commCols">
+		ID id,SOURCE_HOSPITAL sourceHospital,SOURCE_DEPNO
+		sourceDepno,SOURCE_USER sourceUser,FUNC_TYPE funcType,FUNC_NO
+		funcNo,CONTENT content,ADD_TIME addTime,UPDATE_TIME updateTime,REMARK
+		remark,EXT_1 ext1
+	</sql>
+
+	<insert id="save" parameterType="sysAction" flushCache="true">
+		insert into
+		SYS_ACTION(ID,SOURCE_HOSPITAL,SOURCE_DEPNO,SOURCE_USER,FUNC_TYPE,FUNC_NO,CONTENT,ADD_TIME,UPDATE_TIME,REMARK,EXT_1)
+		values(#{id},#{sourceHospital},#{sourceDepno},#{sourceUser},#{funcType},#{funcNo},#{content},#{addTime},#{updateTime},#{remark},#{ext1})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from SYS_ACTION
+		<where>ID=#{id}</where>
+	</delete>
+
+	<update id="update" parameterType="sysAction" flushCache="true">
+		update SYS_ACTION
+		<set>
+			SOURCE_HOSPITAL=#{sourceHospital},SOURCE_DEPNO=#{sourceDepno},SOURCE_USER=#{sourceUser},FUNC_TYPE=#{funcType},FUNC_NO=#{funcNo},CONTENT=#{content},ADD_TIME=#{addTime},UPDATE_TIME=#{updateTime},REMARK=#{remark},EXT_1=#{ext1}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<select id="get" resultType="sysAction">
+		select
+		<include refid="commCols" />
+		from SYS_ACTION
+		<where>ID=#{id}</where>
+	</select>
+
+	<select id="findSysAction" resultType="sysAction" parameterType="sysAction">
+		select
+		<include refid="commCols" />
+		from SYS_ACTION
+		<where>
+			SOURCE_HOSPITAL=#{sourceHospital}
+			<if test="sourceDepno!=null and sourceDepno!=''">and SOURCE_DEPNO=#{sourceDepno}</if>
+			and SOURCE_USER=#{sourceUser}
+			and FUNC_TYPE=#{funcType}
+			<if test="funcNo!=null and funcNo!=''">and FUNC_NO=#{funcNo}</if>
+		</where>
+	</select>
+
+	<select id="findSysActionList" parameterType="sysAction"
+		resultType="sysAction">
+		select
+		<include refid="commCols" />
+		from SYS_ACTION
+		<where>
+			1=1
+			<if test="funcType !=null and funcType != '' "> and FUNC_TYPE=#{funcType} </if>
+			<if test="funcNo !=null and funcNo != '' "> and FUNC_NO=#{funcNo} </if>
+			<if test="sourceHospital !=null and sourceHospital != '' "> and SOURCE_HOSPITAL=#{sourceHospital} </if>
+			<if test="sourceUser !=null and sourceUser != '' "> and SOURCE_USER=#{sourceUser} </if>
+		</where>
+	</select>
+
+
+</mapper>

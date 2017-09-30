@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn008JlybzDao">
+
+	<sql id="commCols">
+		item_id itemId,germ_id germId,germ_name germName,orderno orderno,mdr mdr,xdr xdr,pdr pdr,class_type classType,match_name matchName
+	</sql>
+
+	<insert id="save" parameterType="xn008Jlybz" flushCache="true">
+		 insert into xn008_jlybz(item_id,germ_id,germ_name,orderno,mdr,xdr,pdr,class_type,match_name)
+		 values(#{itemId},#{germId},#{germName},#{orderno},#{mdr},#{xdr},#{pdr},#{classType},#{matchName})
+	</insert>
+	
+	<update id="update" parameterType="xn008Jlybz" flushCache="true">
+		update xn008_jlybz
+		<set>
+			item_id=#{itemId},germ_id=#{germId},germ_name=#{germName},orderno=#{orderno},mdr=#{mdr},xdr=#{xdr},pdr=#{pdr},class_type=#{classType},match_name=#{matchName}
+		</set>
+		<where>item_id=#{itemId}</where>
+	</update>
+	
+	<select id="findXn008JlybzCount" parameterType="xn008Jlybz" resultType="int">
+		select count(*) from xn008_jlybz
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xn008Jlybz">
+		select <include refid="commCols"/> from xn008_jlybz
+		<where>
+		</where>
+	</select>
+	
+	<resultMap type="com.nis.mdr.entity.Xn008Jlybz" id="analysisMap">
+		<id column="item_id" property="itemId"/>
+		<id column="xn8Orderno" property="orderno"/>
+        <result column="germ_id" property="germId"/>
+        <result column="germ_name" property="germName" />
+        <result column="mdr" property="mdr" />
+        <result column="xdr" property="xdr" />
+        <result column="pdr" property="pdr" />
+        <result column="class_type" property="classType" />
+        <collection property="xn009List" ofType="com.nis.mdr.entity.Xn009Lybzmx" >
+	        <result column="xn9Orderno" property="orderno"/>
+	        <result column="xn9DrugTypeId" property="drugTypeId"/>
+	        <result column="drug_type_name" property="drugTypeName"/>
+	        <result column="classtype" property="classtype"/>
+	        <result column="testresult" property="testresult"/>
+        </collection>
+        <collection property="xn013List" ofType="com.nis.mdr.entity.Xn013Dbyw" select="findByItemId" column="{ itemId=item_id, orderno=xn8Orderno }" ></collection>
+	</resultMap>
+	
+	<select id="findJlybzInfo" resultMap="analysisMap">
+		select xn8.item_id,xn8.germ_id,xn8.germ_name,xn8.orderno xn8Orderno,xn8.mdr,xn8.xdr,xn8.pdr,xn8.class_type,xn9.orderno xn9Orderno,xn9.drug_type_id xn9DrugTypeId,xn9.drug_type_name,xn9.classtype,xn9.testresult
+			from xn008_jlybz xn8 left join xn009_lybzmx xn9 on xn8.item_id=xn9.item_id and xn8.orderno=xn9.orderno
+		order by xn8.item_id,xn8.orderno
+	</select>
+</mapper>

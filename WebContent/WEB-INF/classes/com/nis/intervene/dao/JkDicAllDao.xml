@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.JkDicAllDao">
+
+	<sql id="commCols">
+		CLASS_NAME className,CLASS_CODE classCode,ORDER_CODE orderCode,ORDER_NAME orderName,ORDER_USE orderUse,ORDER_VISIBLE orderVisible,FLAG flag,UPD_TIME updTime,WB_CODE wbCode,SP_CODE spCode,BH_CODE bhCode,PY_CODE pyCode,UPDATE_USER_ID updateUserId,UPDATE_TIME updateTime,SOURCE source
+	</sql>
+
+	<insert id="save" parameterType="jkDicAll"  flushCache="true">
+		 insert into JK_DIC_ALL(CLASS_NAME,CLASS_CODE,ORDER_CODE,ORDER_NAME,ORDER_USE,ORDER_VISIBLE,FLAG,UPD_TIME,WB_CODE,SP_CODE,BH_CODE,PY_CODE,UPDATE_USER_ID,UPDATE_TIME,SOURCE)
+		 values(#{className},#{classCode},#{orderCode},#{orderName},#{orderUse},#{orderVisible},#{flag},#{updTime},#{wbCode},#{spCode},#{bhCode},#{pyCode},#{updateUserId},#{updateTime},#{source})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  JK_DIC_ALL
+		<where>ORDER_CODE=#{orderCode}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkDicAll" flushCache="true">
+		update JK_DIC_ALL
+		<set>
+			CLASS_NAME=#{className},CLASS_CODE=#{classCode},ORDER_CODE=#{orderCode},ORDER_NAME=#{orderName},UPD_TIME=#{updTime},PY_CODE=#{pyCode},UPDATE_USER_ID=#{updateUserId},UPDATE_TIME=#{updateTime},SOURCE=#{source}
+		</set>
+		<where>ORDER_CODE=#{orderCode}</where>
+	</update>
+	
+	<select id="get" resultType="jkDicAll">
+		select <include refid="commCols"/> from JK_DIC_ALL
+  		<where>ORDER_CODE=#{orderCode}</where>
+	</select>
+	
+	
+	<select id="findJkDicAllCount" parameterType="jkDicAll" resultType="int">
+		select count(*) from JK_DIC_ALL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="jkDicAll">
+		select <include refid="commCols"/> from JK_DIC_ALL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByClassCode"  resultType="jkDicAll">
+		select <include refid="commCols"/> from JK_DIC_ALL
+		<where>
+			CLASS_CODE=#{classCode}
+		</where>
+		order by ORDER_NAME
+	</select>
+	
+	<select id="findDictType"  resultType="jkDicAll">
+		select distinct class_name className,class_code classCode from JK_DIC_ALL order by classCode
+	</select>
+	
+	<select id="findDict" parameterType="jkDicAll" resultType="jkDicAll">
+		select <include refid="commCols"/> from JK_DIC_ALL
+		<where>
+			CLASS_CODE=#{classCode}
+			<if test="searchString!=null and searchString!=''">
+			 and ORDER_NAME like  CONCAT(CONCAT('%', #{searchString}), '%')
+			</if>
+		</where>
+		order by ORDER_NAME
+	</select>
+</mapper>

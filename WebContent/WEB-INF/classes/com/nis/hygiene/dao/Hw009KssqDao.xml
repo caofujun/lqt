@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw009KssqDao">
+
+	<sql id="commCols">
+		user_id userId,dept_id deptId
+	</sql>
+
+	<insert id="save" parameterType="hw009Kssq" flushCache="true">
+		 insert into hw009_kssq(user_id,dept_id)
+		 values(#{userId},#{deptId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw009_kssq
+		<where> user_id=#{userId} and dept_id=#{deptId} </where>
+	</delete>
+	
+	<delete id="deleteByUserId" flushCache="true">
+		delete from hw009_kssq
+		<where> user_id=#{userId} </where>
+	</delete>
+	
+	<delete id="delHw009KssqNotIn" flushCache="true">
+		delete from hw009_kssq
+		<where> 
+			user_id=#{userId} 
+   			<if test="deptIdList!=null and deptIdList.size!=0">
+		    	and dept_id not in 
+				<foreach collection="deptIdList" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="hw009Kssq" flushCache="true">
+		update hw009_kssq
+		<set>
+			user_id=#{userId},dept_id=#{deptId}
+		</set>
+		<where> user_id=#{userId} and dept_id=#{deptId} </where>
+	</update>
+	
+	<select id="get" resultType="hw009Kssq">
+		select <include refid="commCols"/> from hw009_kssq
+  		<where> user_id=#{userId} and dept_id=#{deptId} </where>
+	</select>
+	
+	
+	<select id="findHw009KssqCount" parameterType="hw009Kssq" resultType="int">
+		select count(*) from hw009_kssq
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw009Kssq">
+		select <include refid="commCols"/> from hw009_kssq
+		<where>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxZhibiaoDao">
+
+	<sql id="commCols_oracle">
+		ZB_ID zbId,ZB_NAME zbName,ZB_CLASS zbClass,ZB_VALUE zbValue,ZB_SCORE zbScore,IS_GY isGy,ZB_TYPE zbType,QID qid
+	</sql>
+
+	
+	<select id="findFxZhibiao_oracle" parameterType="fxZhibiao" resultType="fxZhibiao">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from FX_ZHIBIAO
+		<where>
+			<if test="searchString!=null and searchString!=''">
+				ZB_NAME like CONCAT(CONCAT('%', #{searchString}), '%')
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

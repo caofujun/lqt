@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl007FcsjDao">
+
+	<sql id="commCols">
+		RELID relid,BL_ID blId,SJ_ID sjId,CSM_ID csmId,CSD_ID csdId,FLAG flag,FC fc,FC_ZT fcZt
+	</sql>
+
+	<insert id="save" parameterType="bl007Fcsj"  flushCache="true">
+		 insert into BL007_FCSJ(RELID,BL_ID,SJ_ID,CSM_ID,CSD_ID,FLAG,FC,FC_ZT)
+		 values(#{relid},#{blId},#{sjId},#{csmId},#{csdId},#{flag},#{fc},#{fcZt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  BL007_FCSJ
+		<where>RELID=#{relid}</where>
+	</delete>
+	
+	<delete id="deleteByBlid" flushCache="true">
+		delete from  BL007_FCSJ
+		<where>BL_ID=#{blId}</where>
+	</delete>
+	
+	<update id="update" parameterType="bl007Fcsj" flushCache="true">
+		update BL007_FCSJ
+		<set>
+			RELID=#{relid},BL_ID=#{blId},SJ_ID=#{sjId},CSM_ID=#{csmId},CSD_ID=#{csdId},FLAG=#{flag},FC=#{fc},FC_ZT=#{fcZt}
+		</set>
+		<where>RELID=#{relid}</where>
+	</update>
+	
+	<select id="get" resultType="bl007Fcsj">
+		select <include refid="commCols"/> from BL007_FCSJ
+  		<where>RELID=#{relid}</where>
+	</select>
+	
+	
+	<select id="findBl007FcsjCount" parameterType="bl007Fcsj" resultType="int">
+		select count(*) from BL007_FCSJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="bl007Fcsj">
+		select <include refid="commCols"/> from BL007_FCSJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findByBlId"  resultType="bl007Fcsj">
+		select <include refid="commCols"/> from BL007_FCSJ
+		<where>
+			BL_ID=#{blId}
+		</where>
+	</select>
+	
+	<select id="findByTime"  resultType="jyjgFc">
+	select a.d_name as djName,a.bl_id blId,
+	(select max(bl006_jyjg.jy_time)
+	                  from bl006_jyjg
+	                 where jy_time &lt; to_date(#{startDate}, 'yyyy-MM-dd')
+	                   and bl006_jyjg.bl_id = a.bl_id) as backTime,(select min(bl007_fcsj.fc)
+	                  from bl007_fcsj
+	                 where  fc &gt;= to_date(#{startDate}, 'yyyy-MM-dd')
+	   and fc &lt;= to_date(#{endDate}, 'yyyy-MM-dd') + 1 and bl_id = a.bl_id) as nowTime
+	            from bl002_sjdj a where bl_id in(
+	select bl_id
+	  from bl007_fcsj
+	 where fc &gt;= to_date(#{startDate}, 'yyyy-MM-dd')
+	   and fc &lt;= to_date(#{endDate}, 'yyyy-MM-dd') + 1)
+	</select>
+	
+	<select id="findByDays"  resultType="bl007Fcsj">
+		select a.relid relid,a.fc fc,a.bl_id blId,(select b.d_name from bl002_sjdj b where b.bl_id=a.bl_id) djName,(select max(fc) from bl007_fcsj where bl_id=a.bl_id and fc>a.fc) afterFc from BL007_FCSJ a
+		<where>
+			a.fc &gt;=sysdate and a.fc &lt;=sysdate+#{days}
+		</where>
+	</select>
+	
+	<select id="getFcList" resultType="bl007Fcsj">
+		select s.d_cardid djCardid,
+				s.d_name djName,
+				d.bl_id blId,
+				d.fc fc,
+				d.beforFc beforFc,
+				s.enter_time enterTime,
+       			d.fc fc,
+       			d.beforFc beforFc,
+       			d.fc_zt fcZt,
+       			 (select x.dept_name from zg002_byks x where x.dept_id=s.d_dept) djDept,
+      			(select t.item_name from ny_sys_dddd t where t.item_id = d.csm_id) itemName from(
+		select *
+		  from (select fc,
+                       bl_id,
+                       csm_id,
+                       fc_zt,
+		               (select max(JY_TIME) from BL006_JYJG z
+                          left join bl004_cs_detailinfo o
+                          on z.jy_dh=o.csd_name
+                          where z.BL_ID=a.bl_id and o.csm_id= a.csm_id) beforFc
+		          from BL007_FCSJ a
+		         where fc &lt; sysdate + ${days}
+		         and fc &gt; sysdate - ${days}
+		         ) c
+		   ) d
+		 left outer join bl002_sjdj s on d.bl_id = s.bl_id 
+		 where s.sj_state!=10
+	</select>
+	
+</mapper>

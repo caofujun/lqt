@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn013LisbytDao">
+
+	<sql id="commCols">
+		LIS_BYTID lisBytid,LIS_BYTNAME lisBytname,PYCODE pycode,WBCODE wbcode,BHCODE bhcode,COUNTER_BYTID counterBytid
+	</sql>
+
+	<insert id="save" parameterType="xn013Lisbyt"  flushCache="true">
+		 insert into XN013_LISBYT(LIS_BYTID,LIS_BYTNAME,PYCODE,WBCODE,BHCODE,COUNTER_BYTID)
+		 values(#{lisBytid},#{lisBytname},#{pycode},#{wbcode},#{bhcode},#{counterBytid})
+	</insert>
+	
+	
+	<select id="matchBefore"  resultType="xn013Lisbyt">
+		select distinct t.patho_code lisBytid,t.patho_name lisBytname from st010_jcbyt t 
+		<where>
+			 t.patho_code not in (select LIS_BYTID from XN013_LISBYT) and t.patho_code is not null
+		</where>
+	</select>
+	
+	
+	
+	
+	<delete id="delete" flushCache="true">
+		delete from  XN013_LISBYT
+		<where>LIS_BYTID=#{lisBytid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xn013Lisbyt" flushCache="true">
+		update XN013_LISBYT
+		<set>
+			LIS_BYTID=#{lisBytid},LIS_BYTNAME=#{lisBytname},COUNTER_BYTID=#{counterBytid}
+		</set>
+		<where>LIS_BYTID=#{lisBytid}</where>
+	</update>
+	
+	<update id="match" parameterType="xn013Lisbyt" flushCache="true">
+		update XN013_LISBYT a  
+		<set> a.counter_bytid =
+(select z.pathogen_id from XN013_LISBYT t ,XN002_BYT z where t.lis_bytname=z.pathogen_name and t.counter_bytid is null and a.lis_bytid=t.lis_bytid)
+  		</set>
+  		<where> a.counter_bytid is null</where>
+	</update>
+	<select id="queryMatched"  resultType="map">
+		select (select count(*)  from XN013_LISBYT z where z.counter_bytid is null) WPP,
+(select count(*) as shuju  from XN013_LISBYT t ,XN002_BYT z  where t.lis_bytname=z.pathogen_name and t.counter_bytid is null) YPP from dual
+  		<where></where>
+	</select>
+	
+	<select id="get" resultType="xn013Lisbyt">
+		select <include refid="commCols"/> from XN013_LISBYT
+  		<where>LIS_BYTID=#{lisBytid}</where>
+	</select>
+	
+	
+	<select id="findXn013LisbytCount" parameterType="xn013Lisbyt" resultType="int">
+		select count(*) from XN013_LISBYT
+		<where>
+			COUNTER_BYTID is not null
+			<if test="searchString!=null and searchString!=''">
+				and (LIS_BYTNAME like CONCAT( CONCAT('%',#{searchString}),'%') or LIS_BYTID like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xn013Lisbyt">
+		select <include refid="commCols"/> from XN013_LISBYT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findXn013LisbytListCount" parameterType="xn013Lisbyt" resultType="int">
+		select count(*) from XN013_LISBYT
+		<where>
+			COUNTER_BYTID is null
+			<if test="searchString!=null and searchString!=''">
+				and (LIS_BYTNAME like CONCAT( CONCAT('%',#{searchString}),'%') or LIS_BYTID like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="autoSaveList"  resultType="xn013Lisbyt">
+	select distinct jc.patho_code lisBytid,jc.patho_name lisBytname from st010_jcbyt jc left join st009_sjbb sj on jc.test_order_no=sj.test_order_no left join st011_syjgb sy on sy.test_order_no=jc.test_order_no where 1=1
+		and not exists( select * from ny_unanalyze_bb_dict d where jc.patho_name like '%'||d.no_dict_name||'%')
+		and jc.patho_code not in (select x.lis_bytid  from xn013_lisbyt x)
+		and jc.patho_name not  like '%/%%' ESCAPE '/' 
+		and jc.isym=1 
+		and sj.item_type=1 
+		and sj.item_type_name not like '%支原体%' and sj.item_type_name not like '%衣原体%' and sj.item_type_name not like '%真菌%' and sj.item_type_name not like '%病毒%'
+		and sy.id is not null
+	</select>
+</mapper>

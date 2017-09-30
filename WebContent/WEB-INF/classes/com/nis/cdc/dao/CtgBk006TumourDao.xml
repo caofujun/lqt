@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk006TumourDao">
+
+	<sql id="commCols">
+		MASTERID masterid,CARD_TYPE cardType,CARDID cardid,ICD10_ID icd10Id,ICD10_NAME icd10Name,ICD0_ID icd0Id,ICD0_NAME icd0Name,MZID mzid,ZYID zyid,PATIENT_NAME patientName,ID_NO idNo,SEX sex,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,NATION nation,MARRIAGE marriage,PROFESSION profession,EDUCATION education,TEL tel,KINSFOLK_TEL kinsfolkTel,UNIT unit,REGISTERAREACODE registerareacode,REGISTERAREAADDR registerareaaddr,REGISTERADDR_VILLAGE registeraddrVillage,REGISTERADDR_GROUP registeraddrGroup,NOWADDRAREACODE nowaddrareacode,NOWADDR nowaddr,NOWADDR_VILLAGE nowaddrVillage,NOWADDR_GROUP nowaddrGroup,IN_HOSPITAL_DT inHospitalDt,START_DT startDt,CURE_WAY cureWay,CURE_HOSPITAL cureHospital,OPERATION_DT operationDt,DISEASE_CHECK diseaseCheck,DIAGNOSIS_PART diagnosisPart,OLD_DIAGNOSE oldDiagnose,OLD_DIAGNOSED_DATE oldDiagnosedDate,DIAGNOSE diagnose,PATHOLOGY_NAME pathologyName,PATHOLOGY_ID pathologyId,TIME_T timeT,TIME_N timeN,TIME_M timeM,CLINICAL_STAGES clinicalStages,DIAGNOSED_DATE diagnosedDate,DIAGNOSED_UNIT diagnosedUnit,DIAGNOSTIC_BASIS diagnosticBasis,DEATHDATE deathdate,DEATH_CAUSES deathCauses,DEATH_ADDR deathAddr,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDT reportdt,FLAG flag,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,VALIDDT validdt, ISEMPTYCARD isemptycard, DELREASON delreason, REGISTERFULLADDR registerfulladdr, NOWFULLADDR nowfulladdr,ISPRINT isprint
+	</sql>
+
+	<insert id="save" parameterType="ctgBk006Tumour"  flushCache="true">
+		 insert into CTG_BK006_TUMOUR(MASTERID,CARD_TYPE,CARDID,ICD10_ID,ICD10_NAME,ICD0_ID,ICD0_NAME,MZID,ZYID,PATIENT_NAME,ID_NO,SEX,BIRTHDAY,AGE,AGE_UNIT,NATION,MARRIAGE,PROFESSION,EDUCATION,TEL,KINSFOLK_TEL,UNIT,REGISTERAREACODE,REGISTERAREAADDR,REGISTERADDR_VILLAGE,REGISTERADDR_GROUP,NOWADDRAREACODE,NOWADDR,NOWADDR_VILLAGE,NOWADDR_GROUP,IN_HOSPITAL_DT,START_DT,CURE_WAY,CURE_HOSPITAL,OPERATION_DT,DISEASE_CHECK,DIAGNOSIS_PART,OLD_DIAGNOSE,OLD_DIAGNOSED_DATE,DIAGNOSE,PATHOLOGY_NAME,PATHOLOGY_ID,TIME_T,TIME_N,TIME_M,CLINICAL_STAGES,DIAGNOSED_DATE,DIAGNOSED_UNIT,DIAGNOSTIC_BASIS,DEATHDATE,DEATH_CAUSES,DEATH_ADDR,REPORTDEPTID,REPORTDEPTNAME,REPORTDOCTORID,REPORTDOCTORNAME,REPORTDT,FLAG,VALIDPERSONID,VALIDPERSONNAME,VALIDDT, ISEMPTYCARD,DELREASON,REGISTERFULLADDR,NOWFULLADDR)
+		 values(#{masterid},#{cardType},#{cardid},#{icd10Id},#{icd10Name},#{icd0Id},#{icd0Name},#{mzid},#{zyid},#{patientName},#{idNo},#{sex},#{birthday},#{age},#{ageUnit},#{nation},#{marriage},#{profession},#{education},#{tel},#{kinsfolkTel},#{unit},#{registerareacode},#{registerareaaddr},#{registeraddrVillage},#{registeraddrGroup},#{nowaddrareacode},#{nowaddr},#{nowaddrVillage},#{nowaddrGroup},#{inHospitalDt},#{startDt},#{cureWay},#{cureHospital},#{operationDt},#{diseaseCheck},#{diagnosisPart},#{oldDiagnose},#{oldDiagnosedDate},#{diagnose},#{pathologyName},#{pathologyId},#{timeT},#{timeN},#{timeM},#{clinicalStages},#{diagnosedDate},#{diagnosedUnit},#{diagnosticBasis},#{deathdate},#{deathCauses},#{deathAddr},#{reportdeptid},#{reportdeptname},#{reportdoctorid},#{reportdoctorname},#{reportdt},#{flag},#{validpersonid},#{validpersonname},#{validdt},#{isemptycard},#{delreason},#{registerfulladdr},#{nowfulladdr})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK006_TUMOUR
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk006Tumour" flushCache="true">
+		update CTG_BK006_TUMOUR
+		<set>
+			MASTERID=#{masterid},CARD_TYPE=#{cardType},CARDID=#{cardid},ICD10_ID=#{icd10Id},ICD10_NAME=#{icd10Name},ICD0_ID=#{icd0Id},ICD0_NAME=#{icd0Name},MZID=#{mzid},ZYID=#{zyid},PATIENT_NAME=#{patientName},ID_NO=#{idNo},SEX=#{sex},BIRTHDAY=#{birthday},AGE=#{age},AGE_UNIT=#{ageUnit},NATION=#{nation},MARRIAGE=#{marriage},PROFESSION=#{profession},EDUCATION=#{education},TEL=#{tel},KINSFOLK_TEL=#{kinsfolkTel},UNIT=#{unit},REGISTERAREACODE=#{registerareacode},REGISTERAREAADDR=#{registerareaaddr},REGISTERADDR_VILLAGE=#{registeraddrVillage},REGISTERADDR_GROUP=#{registeraddrGroup},NOWADDRAREACODE=#{nowaddrareacode},NOWADDR=#{nowaddr},NOWADDR_VILLAGE=#{nowaddrVillage},NOWADDR_GROUP=#{nowaddrGroup},IN_HOSPITAL_DT=#{inHospitalDt},START_DT=#{startDt},CURE_WAY=#{cureWay},CURE_HOSPITAL=#{cureHospital},OPERATION_DT=#{operationDt},DISEASE_CHECK=#{diseaseCheck},DIAGNOSIS_PART=#{diagnosisPart},OLD_DIAGNOSE=#{oldDiagnose},OLD_DIAGNOSED_DATE=#{oldDiagnosedDate},DIAGNOSE=#{diagnose},PATHOLOGY_NAME=#{pathologyName},PATHOLOGY_ID=#{pathologyId},TIME_T=#{timeT},TIME_N=#{timeN},TIME_M=#{timeM},CLINICAL_STAGES=#{clinicalStages},DIAGNOSED_DATE=#{diagnosedDate},DIAGNOSED_UNIT=#{diagnosedUnit},DIAGNOSTIC_BASIS=#{diagnosticBasis},DEATHDATE=#{deathdate},DEATH_CAUSES=#{deathCauses},DEATH_ADDR=#{deathAddr},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},REPORTDT=#{reportdt},FLAG=#{flag},VALIDPERSONID=#{validpersonid},VALIDPERSONNAME=#{validpersonname},VALIDDT=#{validdt}, ISEMPTYCARD=#{isemptycard}, DELREASON=#{delreason}, REGISTERFULLADDR=#{registerfulladdr}, NOWFULLADDR=#{nowfulladdr}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk006Tumour">
+		select <include refid="commCols"/> from CTG_BK006_TUMOUR
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk006TumourCount" parameterType="ctgBk006Tumour" resultType="int">
+		select count(*) from CTG_BK006_TUMOUR
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk006Tumour">
+		select <include refid="commCols"/> from CTG_BK006_TUMOUR
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findCardsForAdmin" resultType="ctgBk006Tumour" parameterType="ctgBk001Crbmaster">
+		select <include refid="commCols"/>,unReadMsg from
+       		(select m.* , (select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = m.zyid
+		             ) and user_id = #{userid} and is_read = 0) unReadMsg 
+		from CTG_BK006_Tumour m )m
+		<where>
+			1=1
+			<if test="reportdoctorid!=null and reportdoctorid!=''">
+				and m.reportdoctorid in (#{reportdoctorid})
+			</if>
+			<if test="reportdeptid!=null and reportdeptid!=''">
+		        and m.reportdeptid in (#{reportdeptid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+			</if>
+			<if test="dateType==1">
+				and trunc(m.reportdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+				and trunc(m.validdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="cardStates>=0">
+				and m.flag=#{cardStates}
+			</if>
+			<choose>
+				<when test="isprint==1">
+					and m.isprint = 1
+				</when>
+				<when test="isprint==2">
+					 and ( m.isprint is null or m.isprint !=1 ) 
+				</when>
+			</choose>
+			<if test="unReadMsg==1">
+				and m.unReadMsg>0
+			</if>
+			<choose>
+				<when test="cardStates==1">
+					order by validdt desc
+				</when>
+				<when test="cardStates!=1">
+					order by reportdt desc
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="audit" parameterType="ctgBk006Tumour" flushCache="true">
+		update CTG_BK006_Tumour c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="retreat" parameterType="ctgBk006Tumour" flushCache="true">
+		update CTG_BK006_Tumour c set c.flag=2,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.delreason=#{delreason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="cancel" parameterType="ctgBk006Tumour" flushCache="true">
+		update CTG_BK006_Tumour c set c.flag=0,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.delreason='' where c.masterid=#{masterid}
+	</update>
+	
+	<update id="remove" parameterType="ctgBk006Tumour" flushCache="true">
+		update CTG_BK006_Tumour c set c.flag=3,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname}, c.delreason=#{delreason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="batchAudit" parameterType="ctgBk006Tumour" flushCache="true">
+		update CTG_BK006_Tumour c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid in (${masterid})
+	</update>
+	
+	<update id="updatePrintFlag" parameterType="String" flushCache="true">
+		update CTG_BK006_Tumour set isprint=1
+		<where>
+			MASTERID=#{masterid}
+		</where>
+	</update>
+	
+</mapper>

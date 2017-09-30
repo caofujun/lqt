@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys014TodolistDao">
+
+	<sql id="commCols">
+		KEYID keyid,PATIENT_TYPE patientType,MZZYID mzzyid,PATIENT_NAME patientName
+	</sql>
+
+	<insert id="save" parameterType="ctgSys014Todolist"  flushCache="true">
+		 insert into CTG_SYS014_TODOLIST(KEYID,PATIENT_TYPE,MZZYID,PATIENT_NAME)
+		 values(#{keyid},#{patientType},#{mzzyid},#{patientName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS014_TODOLIST
+		<where>KEYID=#{keyid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys014Todolist" flushCache="true">
+		update CTG_SYS014_TODOLIST
+		<set>
+			KEYID=#{keyid},PATIENT_TYPE=#{patientType},MZZYID=#{mzzyid},PATIENT_NAME=#{patientName}
+		</set>
+		<where>KEYID=#{keyid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys014Todolist">
+		select <include refid="commCols"/> from CTG_SYS014_TODOLIST
+  		<where>KEYID=#{keyid}</where>
+	</select>
+	
+	
+	<select id="findCtgSys014TodolistCount" parameterType="ctgSys014Todolist" resultType="int">
+		select count(*) from CTG_SYS014_TODOLIST
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys014Todolist">
+		select <include refid="commCols"/> from CTG_SYS014_TODOLIST
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="isExist"  resultType="ctgSys014Todolist"  parameterType="ctgSys014Todolist" >
+		select <include refid="commCols"/> from CTG_SYS014_TODOLIST
+		<where>
+			1=1
+			and MZZYID = #{mzzyid}
+			and PATIENT_TYPE = #{patientType}
+		</where>
+	</select>
+	
+	<delete id="removeByZyidPatientType" parameterType="ctgSys014Todolist" flushCache="true">
+		delete  from CTG_SYS014_TODOLIST
+		<where>
+			1=1
+			and MZZYID = #{mzzyid}
+			and PATIENT_TYPE = #{patientType}
+		</where>
+	</delete>
+	
+</mapper>

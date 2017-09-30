@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.task.dao.TaskJobLogDao">
+
+	<sql id="commCols">
+		ID id,JOBID jobid,ADDTIME addtime,STATUS status,LINK link,RESULT result
+	</sql>
+
+	<insert id="save" parameterType="taskJobLog"  flushCache="true">
+		 insert into TASK_JOB_LOG(ID,JOBID,ADDTIME,STATUS,LINK,RESULT)
+		 values(#{id},#{jobid},#{addtime},#{status},#{link},#{result})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  TASK_JOB_LOG
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<delete id="deleteLtDate" flushCache="true">
+		delete from  TASK_JOB_LOG
+		<where><![CDATA[and ADDTIME < to_date(#{date},'yyyy-MM-dd hh24:mi:ss')]]></where>
+	</delete>
+	
+	<update id="update" parameterType="taskJobLog" flushCache="true">
+		update TASK_JOB_LOG
+		<set>
+			ID=#{id},JOBID=#{jobid},ADDTIME=#{addtime},STATUS=#{status},LINK=#{link},RESULT=#{result}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="taskJobLog">
+		select <include refid="commCols"/> from TASK_JOB_LOG
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findTaskJobLogCount" parameterType="taskJobLog" resultType="int">
+		select count(*) from TASK_JOB_LOG
+		<where>
+			JOBID=#{jobid}
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="taskJobLog">
+		select <include refid="commCols"/> from TASK_JOB_LOG
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

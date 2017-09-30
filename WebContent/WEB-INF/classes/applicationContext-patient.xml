@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!--
+		define the SqlSessionFactory, notice that configLocation is not needed
+		when you use MapperFactoryBean
+	-->
+	<bean id="patient_sqlSessionFactory" class="com.nis.mybatis.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="dialectManager" ref="dialectManager" />
+		<property name="typeAliasesPackage" value="com.nis.comm.entity;com.nis.zg.entity;com.nis.patient.entity,com.nis.follow.entity,com.nis.yj.entity,com.nis.cdc.entity"/>
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:com/nis/patient/dao/*.xml</value>
+				<value>classpath*:com/nis/patient/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/patient/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/follow/dao/*.xml</value>
+				<value>classpath*:com/nis/follow/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/follow/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/yj/dao/*.xml</value>
+				<value>classpath*:com/nis/yj/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/yj/dao/specific/oracle/*.xml</value>
+				<value>classpath*:ibatis/mapper/*Mapper.xml</value>
+			</list>
+		</property>	
+		<property name="plugins">
+			<list>
+                <ref bean="sqlLogInterceptor"/>
+			</list>
+        </property>
+	</bean>
+	<!-- scan for mappers and let them be autowired -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.nis.patient.dao,com.nis.follow.dao,com.nis.yj.dao"></property>
+		<property name="sqlSessionFactory" ref="patient_sqlSessionFactory"></property>
+	</bean>
+	
+	
+	<bean id="jk_sqlSessionFactory" class="com.nis.mybatis.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="dataSource" ref="jk_dataSource" />
+		<property name="dialectManager" ref="dialectManager" />
+		<property name="typeAliasesPackage" value="com.nis.comm.entity;com.nis.jk.entity"/>
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:com/nis/jk/dao/*.xml</value>
+				<value>classpath*:com/nis/jk/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/jk/dao/specific/oracle/*.xml</value>
+				<value>classpath*:ibatis/mapper/*Mapper.xml</value>
+			</list>
+		</property>	
+		<property name="plugins">
+			<list>
+                <ref bean="sqlLogInterceptor"/>
+			</list>
+        </property>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.nis.jk.dao"></property>
+		<property name="sqlSessionFactory" ref="jk_sqlSessionFactory"></property>
+	</bean>
+</beans>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hand.dao.Sw003YcxsjDao">
+
+	<sql id="commCols_oracle">
+		SJ_ID sjId,RY_TYPE ryType,ZZ_BRQ zzBrq,ZZ_CZQ zzCzq,DC_ID dcId,IS_RIGHT isRight,ZZ_TYH zzTyh,ZZ_BRH zzBrh,ZZ_HJH zzHjh,XW_SX xwSx,XW_FZS xwFzs,XW_DST xwDst,XW_W xwW
+	</sql>
+
+	
+	<select id="findSw003Ycxsj_oracle" parameterType="sw003Ycxsj" resultType="sw003Ycxsj">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from SW003_YCXSJ
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

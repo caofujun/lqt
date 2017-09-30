@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl005WtjgDao">
+
+	<sql id="commCols_mysql">
+		UPD_FLAG updFlag,BL_ID blId,SJ_ID sjId,ST_ID stId,SH_TEXT shText,SH_TYPE shType,SH_MEMO shMemo,FLAG flag
+	</sql>
+
+	<select id="findBl005Wtjg_mysql" parameterType="bl005Wtjg" resultType="bl005Wtjg">
+		select <include refid="commCols_mysql"/> from BL005_WTJG
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

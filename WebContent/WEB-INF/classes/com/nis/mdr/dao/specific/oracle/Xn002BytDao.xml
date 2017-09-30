@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn002BytDao">
+
+	<sql id="commCols_oracle">
+		PATHOGEN_ID pathogenId,PATHOGEN_NAME pathogenName,PATHOGEN_EN_NAME pathogenEnName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,KIND_ID kindId,RS_ID rsId,BACT_GENUS_ID bactGenusId,CN_ID cnId,FLAG flag,IF_COMMON ifCommon,LAST_AT lastAt,IS_FUNGUS isFungus
+	</sql>
+
+	
+	<select id="findXn002Byt_oracle" parameterType="xn002Byt" resultType="xn002Byt">
+		select * from ( select a.*, rownum rn from (
+		select distinct <include refid="commCols_oracle"/> from XN002_BYT
+		<if test='isByt=="1"'>
+			left join XN013_LISBYT on pathogen_id = counter_bytid
+		</if>
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> 
+			and (PATHOGEN_NAME like CONCAT( CONCAT('%',#{searchString}),'%')
+			 or lower(SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%'))</if>
+			<if test='isByt=="1"'>
+			   and counter_bytid is not null
+			</if>
+		</where>
+		order by PATHOGEN_NAME
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findXn002BytEdit_oracle" parameterType="xn002Byt" resultType="xn002Byt">
+		select nvl(d.item_name, '其他') itemName,
+	       nvl(x5.bact_genus_id_name, '其他') jsName,
+	       t.pathogen_id pathogenId,
+	       t.pathogen_name pathogenName,
+	       t.pathogen_en_name pathogenEnName,
+	       t.sp_Code spCode,
+	       t.rs_id rsId,
+	       t.bact_genus_id bactGenusId
+	  from xn002_byt t left join xn005_jszd x5
+	    on x5.bact_genus_id = t.bact_genus_id
+	  left join ny_sys_dddd d
+	    on d.dict_id = 'DD0017'
+	   and d.item_id = t.rs_id
+	   <where> 1=1 
+	   <if test="pathogenId!=null and pathogenId!=''">
+	   and t.pathogen_id = #{pathogenId}
+	   </if>
+	   </where>
+	 </select>
+	
+	<select id="findXn002BytIndex_oracle" parameterType="xn002Byt" resultType="xn002Byt">
+		select * from ( select a.*, rownum rn from (
+		select nvl(d.item_name, '其他') itemName,
+	       nvl(x5.bact_genus_id_name, '其他') jsName,
+	       t.pathogen_id pathogenId,
+	       t.pathogen_name pathogenName,
+	       t.pathogen_en_name pathogenEnName,
+	       t.sp_Code spCode
+	  from xn002_byt t left join xn005_jszd x5
+	    on x5.bact_genus_id = t.bact_genus_id
+	  left join ny_sys_dddd d
+	    on d.dict_id = 'DD0017'
+	   and d.item_id = t.rs_id
+		<where>
+			1=1
+			<if test="jszd!=null and jszd!=''">
+		 		and x5.BACT_GENUS_ID=#{jszd}
+			 </if>
+			 <if test="rsId=='G+'.toString()">
+			 	and t.rs_id in ('1','3','5','7')
+			 </if>
+			  <if test="rsId=='G-'.toString()">
+			 	and t.rs_id in ('2','4','6','8')
+			 </if>
+			<if test="searchString!=null and searchString!=''"> and (t.PATHOGEN_ID like CONCAT( CONCAT('%',#{searchString}),'%') or t.PATHOGEN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or t.PATHOGEN_EN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or t.BH_CODE like CONCAT( CONCAT('%',#{searchString}),'%') 
+			 or lower(t.SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%')
+			 or lower(t.WB_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%'))</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+
+	
+	<select id="findXn002BytTemp_oracle" parameterType="xn002Byt" resultType="xn002Byt">
+		select distinct * from ( select a.*, rownum rn from (
+			select distinct b.PATHOGEN_ID pathogenId,b.PATHOGEN_NAME pathogenName,b.PATHOGEN_EN_NAME pathogenEnName,b.BH_CODE bhCode,b.SP_CODE spCode,b.WB_CODE wbCode,b.KIND_ID kindId,b.RS_ID rsId,b.BACT_GENUS_ID bactGenusId,b.CN_ID cnId,b.FLAG flag,b.IF_COMMON ifCommon,b.LAST_AT lastAt,b.IS_FUNGUS isFungus from XN002_BYT b,XN013_LISBYT t ,view_mdr v
+		<where>
+			1=1 and t.counter_bytid=b.pathogen_id and t.counter_bytid  is not null  and v.LISPATHO_CODE=t.lis_bytid and v.DT between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+			<if test="searchString!=null and searchString!=''"> and (b.PATHOGEN_ID like CONCAT( CONCAT('%',#{searchString}),'%') or b.PATHOGEN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or b.PATHOGEN_EN_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or b.BH_CODE like CONCAT( CONCAT('%',#{searchString}),'%') 
+			 or lower(b.SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') 
+			  or lower(b.WB_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%'))</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn003KjywDao">
+
+	<sql id="commCols_oracle">
+		xn3.IS_SHOW isShow,xn3.DRUG_ID drugId,xn3.DRUG_NAME drugName,xn3.DRUG_ENNAME drugEnname,xn3.BH_CODE bhCode,
+		xn3.SP_CODE spCode,xn3.WB_CODE wbCode,xn3.IF_COMMON ifCommon,xn3.FLAG flag,xn3.IF_REPORT ifReport,xn3.ZJ_CODE zjCode,
+		xn3.LAST_AT lastAt,xn3.DRUG_TYPE_ID drugTypeId,xn3.SUBCLASS_ID subclassId
+	</sql>
+
+	
+	<select id="findXn003KjywByByt_oracle" parameterType="xn003Kjyw" resultType="xn003Kjyw">
+		select distinct <include refid="commCols_oracle"/> from ST011_SYJGB  st11,
+       		st009_sjbb   st9, st010_jcbyt  st10, xn013_lisbyt xn13,
+       		xn014_liskjyw xn14, xn002_byt    xn2, xn003_kjyw    xn3
+		<where>
+		   and st9.test_order_no = st11.test_order_no
+		   and st9.test_order_no = st10.test_order_no
+		   and st10.pathogen_sn = xn13.lis_bytid
+		   and xn13.counter_bytid = xn2.pathogen_id
+		   and xn13.lis_bytid = st10.patho_code
+		   and xn14.counter_drugid = xn3.drug_id
+		   and xn14.drugid = st11.anti_code
+		   and st9.item_type = 1
+			<if test="pathogenId!=null and pathogenId!=''">
+			 and xn2.pathogen_id = #{pathogenId}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+			 and (xn3.DRUG_NAME like CONCAT( CONCAT('%',#{searchString}),'%') 
+			    or lower(xn3.SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%'))
+			</if>
+		</where>
+			order by xn3.DRUG_NAME
+	</select>
+	
+	<select id="findXn003Kjyw_oracle" parameterType="xn003Kjyw" resultType="xn003Kjyw">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from XN003_KJYW xn3
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+			 and (xn3.DRUG_NAME like CONCAT( CONCAT('%',#{searchString}),'%') 
+			    or lower(xn3.SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%'))
+			</if>
+		</where>
+			order by xn3.DRUG_NAME
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn009LybzmxDao">
+
+	<sql id="commCols_mysql">
+		item_id itemId,orderno orderno,drug_type_id drugTypeId,drug_type_name drugTypeName,classtype classtype,memo memo,testresult testresult
+	</sql>
+
+	<select id="findXn009Lybzmx_mysql" parameterType="xn009Lybzmx" resultType="xn009Lybzmx">
+		select <include refid="commCols_mysql"/> from xn009_lybzmx
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

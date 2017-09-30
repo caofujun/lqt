@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Xk002ShdjDao">
+
+	<sql id="commCols_oracle">
+		SH_NO shNo,SH_TYPE shType,SCQY_NO scqyNo,SCQY_NAME scqyName,JYQY_NAME jyqyName,JYQY_NO jyqyNo,SCJY_DATE scjyDate,JYGR_DATE jygrDate,SC_ND scNd,JY_JYDATE jyJydate,DEP_CG depCg,CG_RY cgRy,SH_DATE shDate,SH_NAME shName,SH_JG shJg,USE_FLAG useFlag,REMARK remark
+	</sql>
+
+	
+	<select id="findXk002Shdj_oracle" parameterType="xk002Shdj" resultType="xk002Shdj">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from XK002_SHDJ
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

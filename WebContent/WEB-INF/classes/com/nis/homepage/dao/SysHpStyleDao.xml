@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.homepage.dao.SysHpStyleDao">
+
+	<sql id="commCols">
+		ID id,LAYOUT_CODE layoutCode,COMPONENT_CODES componentCodes,BUSINESS_CODE businessCode,SCOPE_LEVEL scopeLevel,UNIT_ID unitId,DEP_NO depNo,USER_NAME userName
+	</sql>
+
+	<insert id="save" parameterType="sysHpStyle" flushCache="true">
+		 insert into SYS_HP_STYLE(ID,LAYOUT_CODE,COMPONENT_CODES,BUSINESS_CODE,SCOPE_LEVEL,UNIT_ID,DEP_NO,USER_NAME)
+		 values(#{id},#{layoutCode},#{componentCodes},#{businessCode},#{scopeLevel},#{unitId},#{depNo},#{userName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from SYS_HP_STYLE
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysHpStyle" flushCache="true">
+		update SYS_HP_STYLE
+		<set>
+			LAYOUT_CODE=#{layoutCode},COMPONENT_CODES=#{componentCodes},BUSINESS_CODE=#{businessCode},SCOPE_LEVEL=#{scopeLevel},UNIT_ID=#{unitId},DEP_NO=#{depNo},USER_NAME=#{userName}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="sysHpStyle">
+		select <include refid="commCols"/> from SYS_HP_STYLE
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findSysHpStyleCount" parameterType="sysHpStyle" resultType="int">
+		select count(*) from SYS_HP_STYLE
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="sysHpStyle">
+		select <include refid="commCols"/> from SYS_HP_STYLE
+		<where>
+		</where>
+	</select>
+	
+	<select id="findByUnitIdDepNoUserName" resultType="sysHpStyle">
+		select <include refid="commCols"/> from SYS_HP_STYLE
+		<where>
+			<choose>
+  				<when test="scopeLevel!=null">SCOPE_LEVEL=#{scopeLevel} and UNIT_ID is null and DEP_NO is null and USER_NAME is null </when>
+  				<when test="userName!=null and userName!=''">SCOPE_LEVEL=0 and USER_NAME=#{userName}</when>
+  				<when test="depNo!=null and depNo!=''">SCOPE_LEVEL=3 and UNIT_ID=#{unitId} and DEP_NO=#{depNo}</when>
+  				<when test="unitId!=null and unitId!=''">SCOPE_LEVEL=6 and UNIT_ID=#{unitId}</when>
+  				<otherwise>SCOPE_LEVEL=9</otherwise>
+  			</choose>
+		</where>
+	</select>
+</mapper>

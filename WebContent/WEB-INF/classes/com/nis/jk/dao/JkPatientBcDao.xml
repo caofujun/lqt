@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientBcDao">
+
+	<sql id="commCols">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID
+		visitId,DEPT_ID deptId,DEPT_NAME deptName,ENTER_DATE
+		enterDate,CASE_CLASS caseClass,BC_CODE bcCode,BC_NAME
+		bcName,COURSE_CONTENT courseContent,CREATE_AT createAt,UPD_TIME
+		updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientBc" flushCache="true">
+		insert into
+		JK_PATIENT_BC(ID,ZYID,PATIENT_ID,VISIT_ID,DEPT_ID,DEPT_NAME,ENTER_DATE,CASE_CLASS,BC_CODE,BC_NAME,COURSE_CONTENT,CREATE_AT,UPD_TIME,UPD_FLAG)
+		values(#{id},#{zyid},#{patientId},#{visitId},#{deptId},#{deptName},#{enterDate},#{caseClass},#{bcCode},#{bcName},#{courseContent},#{createAt},#{updTime},#{updFlag})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_BC
+		<where>ID=#{id}</where>
+	</delete>
+
+	<update id="update" parameterType="jkPatientBc" flushCache="true">
+		update JK_PATIENT_BC
+		<set>
+			ID=#{id},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},ENTER_DATE=#{enterDate},CASE_CLASS=#{caseClass},BC_CODE=#{bcCode},BC_NAME=#{bcName},COURSE_CONTENT=#{courseContent},CREATE_AT=#{createAt},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<update id="updateFlag" parameterType="jkPatientBc" flushCache="true">
+		update JK_PATIENT_BC
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<select id="get" resultType="jkPatientBc">
+		select
+		<include refid="commCols" />
+		from JK_PATIENT_BC
+		<where>ID=#{id}</where>
+	</select>
+
+
+	<select id="findJkPatientBcCount" parameterType="jkPatientBc"
+		resultType="int">
+		select count(*) from JK_PATIENT_BC
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="jkPatientBc">
+		select
+		<include refid="commCols" />
+		from JK_PATIENT_BC
+		<where>
+		</where>
+	</select>
+</mapper>

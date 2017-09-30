@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St011SyjgbDao">
+
+	<sql id="commCols_oracle">
+		id id,zyid zyid,patient_id patientId,visit_id visitId,test_order_no testOrderNo,result_date resultDate,isym isym,anti_code antiCode,anti_name antiName,yaomin_result yaominResult,test_result testResult,unit unit,refer_range referRange,remark remark,pathogen_sn pathogenSn,create_at createAt,upd_date updDate
+	</sql>
+
+	<select id="findSt011Syjgb_oracle" parameterType="st011Syjgb" resultType="st011Syjgb">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from st011_syjgb
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

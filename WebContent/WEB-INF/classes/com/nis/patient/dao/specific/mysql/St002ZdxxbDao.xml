@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St002ZdxxbDao">
+
+	<sql id="commCols_mysql">
+		treatresult treatresult,diagnosis_class diagnosisClass,id id,zyid zyid,patient_id patientId,visit_id visitId,doc_id docId,doc_name docName,diagnosis_date diagnosisDate,diagnosis_type diagnosisType,diagnosis_no diagnosisNo,diagnosis_name diagnosisName,upd_date updDate
+	</sql>
+
+	<select id="findSt002Zdxxb_mysql" parameterType="st002Zdxxb" resultType="st002Zdxxb">
+		select <include refid="commCols_mysql"/> from st002_zdxxb
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

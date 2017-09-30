@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsSurveyRecordDao">
+
+	<sql id="commCols">
+		RID rid,QS_SURVEY_RECORD.QID qid,QS_SURVEY_RECORD.UNIT_ID unitId,PATIENT_ID patientId,PATIENT_NAME patientName,PATIENT_PHONE patientPhone,VISIT_ID visitId,USERNAME username,SURVEY_TIME surveyTime,SURVEY_TYPE surveyType,DEP_TYPE depType,QS_SURVEY_RECORD.DEP_NO depNo,IS_FINISH isFinish,DT_NUM dtNum,DT_SCORE dtScore,QS_SURVEY_RECORD.STATUS status,QS_SURVEY_RECORD.EXT1 ext1,QS_SURVEY_RECORD.EXT2 ext2,ZYID zyid,FX_COLOR fxColor
+	</sql>
+
+	<insert id="save" parameterType="qsSurveyRecord" flushCache="true">
+		 insert into QS_SURVEY_RECORD(RID,QID,UNIT_ID,PATIENT_ID,PATIENT_NAME,PATIENT_PHONE,VISIT_ID,USERNAME,SURVEY_TIME,SURVEY_TYPE,DEP_TYPE,DEP_NO,IS_FINISH,DT_NUM,DT_SCORE,STATUS,EXT1,EXT2,ZYID,FX_COLOR)
+		 values(#{rid},#{qid},#{unitId},#{patientId},#{patientName},#{patientPhone},#{visitId},#{username},#{surveyTime},#{surveyType},#{depType},#{depNo},#{isFinish},#{dtNum},#{dtScore},0,#{ext1},#{ext2},#{zyid},#{fxColor})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from QS_SURVEY_RECORD
+		<where>RID=#{rid}</where>
+	</delete>
+	
+	<update id="update" parameterType="qsSurveyRecord" flushCache="true">
+		update QS_SURVEY_RECORD
+		<set>
+			PATIENT_ID=#{patientId},PATIENT_NAME=#{patientName},PATIENT_PHONE=#{patientPhone},VISIT_ID=#{visitId},SURVEY_TIME=#{surveyTime},SURVEY_TYPE=#{surveyType},DEP_TYPE=#{depType},DEP_NO=#{depNo},IS_FINISH=#{isFinish},DT_NUM=#{dtNum},DT_SCORE=#{dtScore},EXT1=#{ext1},EXT2=#{ext2},ZYID=#{zyid},FX_COLOR=#{fxColor},USERNAME=#{username}
+		</set>
+		<where>RID=#{rid}</where>
+	</update>
+	
+	<select id="get" resultType="qsSurveyRecord">
+		select <include refid="commCols"/>,QS_QUESTIONNAIRE.title title,fx_zhibiao.zb_id zbId,fx_zhibiao.zb_name zbName from QS_SURVEY_RECORD left join QS_QUESTIONNAIRE on QS_QUESTIONNAIRE.qid=QS_SURVEY_RECORD.qid left join fx_zhibiao on fx_zhibiao.qid=QS_QUESTIONNAIRE.qid
+  		<where>RID=#{rid}</where>
+	</select>
+	
+	<select id="getBySSLID" resultType="qsSurveyRecord">
+		select <include refid="commCols"/> from QS_SURVEY_RECORD
+  		<where>EXT1=#{sslid}</where>
+	</select>
+	
+	<select id="getByPidQid" resultType="qsSurveyRecord">
+		select <include refid="commCols"/> from QS_SURVEY_RECORD
+  		<where>
+  		<if test="patientId!=null">PATIENT_ID=#{patientId}</if>
+  		<if test="qid!=null">and QID=#{qid}</if>
+  		</where>
+	</select>
+	
+	<select id="findQsSurveyRecordCount" parameterType="qsSurveyRecord" resultType="int">
+		select count(*) from QS_SURVEY_RECORD
+		<where>
+			UNIT_ID=#{unitId}
+			<if test="qid!=null">and QID=#{qid}</if>
+			and STATUS=0
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="qsSurveyRecord">
+		select <include refid="commCols"/> from QS_SURVEY_RECORD
+		<where>
+		</where>
+	</select>
+	
+	<select id="sumScore" resultType="map" parameterType="qsSurveyRecord">
+		SELECT SUM(DT_SCORE) SUMSCORE,COUNT(1) COUNT,QID FROM QS_SURVEY_RECORD
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="surveyType != null and surveyType != ''">
+				AND SURVEY_TYPE = #{surveyType}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and queryEndDate != null">
+				AND SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</if>
+			GROUP BY QID
+		</where>
+	</select>
+	
+	<select id="findQsQuestionnaireFeedbackCount" resultType="int" parameterType="qsSurveyRecord">
+		select  count(1)
+		  from qs_survey_result left join qs_survey_record on qs_survey_result.rid = qs_survey_record.rid
+		   left join QS_QUESTIONNAIRE on qs_survey_result.qid=QS_QUESTIONNAIRE.qid
+		   left join qs_topic_option on qs_topic_option.opt_id=qs_survey_result.opt_id
+		   left join qs_topic on qs_survey_result.tid=qs_topic.tid
+		   where 1=1
+		   <choose>
+		   <when test="dcValue != null and dcValue != ''">and (qs_topic_option.opt_value &lt;= #{dcValue} or qs_topic.TTYPE='3' )</when>
+		   <otherwise>
+		  		and (qs_topic.TTYPE='3' or qs_topic.TTYPE='1')
+		   </otherwise>
+		   </choose> 
+		   <if test="qid != null and qid != ''">
+				AND qs_survey_record.qid = #{qid}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND qs_survey_record.SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND qs_survey_record.SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+	</select>
+	
+	<select id="findQsQuestionnaireFeedbackList" resultType="qsQuestionnaireFeedback" parameterType="qsSurveyRecord">
+		select * from (select  qs_survey_result.id id,qs_survey_record.rid rid,qs_topic.tid tid,qs_topic.title ttitle,qs_survey_record.survey_time surveyTime,patient_id patientId, patient_name patientName, patient_phone patientPhone,input_value inputValue,QS_QUESTIONNAIRE.cat_id catId,QS_QUESTIONNAIRE.cat_name catName,qs_survey_record.UNIT_ID unitId,qs_survey_record.dep_no depNo,qs_survey_record.dep_type depType,qs_survey_record.USERNAME userName,qs_topic_option.opt_name optName,qs_topic_option.opt_value optValue,qs_survey_result.fb_status fbStatus,QS_QUESTIONNAIRE.feedback_value feedbackValue,qs_topic.TTYPE ttype
+		  from qs_survey_result left join qs_survey_record on qs_survey_result.rid = qs_survey_record.rid
+		  left join qs_topic on qs_survey_result.tid=qs_topic.tid
+		  left join qs_topic_option on QS_SURVEY_RESULT.opt_id=qs_topic_option.opt_id
+		  left join QS_QUESTIONNAIRE on qs_survey_result.qid=QS_QUESTIONNAIRE.qid
+		    left join qs_topic_option on qs_topic_option.opt_id=qs_survey_result.opt_id
+		   where 1=1
+		 	<choose>
+		   <when test="dcValue != null and dcValue != ''">
+		   and (qs_topic_option.opt_value &lt;= #{dcValue} or qs_topic.TTYPE='3' )
+		   </when>
+		   <otherwise>
+		   		and (qs_topic.TTYPE='3' or qs_topic.TTYPE='1')
+		   </otherwise>
+		   </choose> 
+		   <if test="qid != null and qid != ''">
+				AND qs_survey_record.qid = #{qid}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND qs_survey_record.SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND qs_survey_record.SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+			) a where 1=1
+			<if test="feedbackValue == true ">
+				AND (optValue &lt;= feedbackValue or ttype='3')
+			</if>
+			<if test="fbStatus != '' and fbStatus != null ">
+				AND fbStatus=#{fbStatus}
+			</if>
+	</select>
+	
+	<select id="findByVisitId" resultType="qsSurveyRecord">
+		select <include refid="commCols"/>,QS_QUESTIONNAIRE.TITLE title from QS_SURVEY_RECORD left join QS_QUESTIONNAIRE on QS_QUESTIONNAIRE.qid=QS_SURVEY_RECORD.qid
+		<where>
+			QS_SURVEY_RECORD.VISIT_ID=#{visitId}
+		</where>
+	</select>
+	
+	<select id="findByzyId" resultType="qsSurveyRecord">
+		select <include refid="commCols"/>,QS_QUESTIONNAIRE.TITLE title from QS_SURVEY_RECORD left join QS_QUESTIONNAIRE on QS_QUESTIONNAIRE.qid=QS_SURVEY_RECORD.qid
+		<where>
+			QS_SURVEY_RECORD.ZYID=#{zyid}
+			<if test="startDate!=null and startDate!=''">
+				and to_char(QS_SURVEY_RECORD.SURVEY_TIME,'yyyy-MM-dd') = #{startDate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findByzyidAndQid" resultType="qsSurveyRecord">
+		select <include refid="commCols"/>,QS_QUESTIONNAIRE.TITLE title from QS_SURVEY_RECORD left join QS_QUESTIONNAIRE on QS_QUESTIONNAIRE.qid=QS_SURVEY_RECORD.qid
+		<where>
+			QS_SURVEY_RECORD.ZYID=#{zyid}
+			and QS_SURVEY_RECORD.QID=#{qid}
+		</where>
+		order by QS_SURVEY_RECORD.SURVEY_TIME desc
+	</select>
+	
+	<select id="findByQid" resultType="int">
+		select count(1) from QS_SURVEY_RECORD 
+		<where>
+			QS_SURVEY_RECORD.QID=#{qid}
+		</where>
+		order by QS_SURVEY_RECORD.SURVEY_TIME desc
+	</select>
+	
+	<select id="findByzyidAndDate" resultType="qsSurveyRecord">
+		select <include refid="commCols"/>,QS_QUESTIONNAIRE.TITLE title from QS_SURVEY_RECORD left join QS_QUESTIONNAIRE on QS_QUESTIONNAIRE.qid=QS_SURVEY_RECORD.qid
+		<where>
+			QS_SURVEY_RECORD.ZYID=#{zyid}
+			and QS_SURVEY_RECORD.QID=#{qid}
+			and QS_SURVEY_RECORD.SURVEY_TIME=#{surveyTime}
+			and rownum &lt;=1
+		</where>
+	</select>
+	
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk006TumourDao">
+
+	<sql id="commCols_oracle">
+		MASTERID masterid,CARD_TYPE cardType,CARDID cardid,ICD10_ID icd10Id,ICD10_NAME icd10Name,ICD0_ID icd0Id,ICD0_NAME icd0Name,MZID mzid,ZYID zyid,PATIENT_NAME patientName,ID_NO idNo,SEX sex,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,NATION nation,MARRIAGE marriage,PROFESSION profession,EDUCATION education,TEL tel,KINSFOLK_TEL kinsfolkTel,UNIT unit,REGISTERAREACODE registerareacode,REGISTERAREAADDR registerareaaddr,REGISTERADDR_VILLAGE registeraddrVillage,REGISTERADDR_GROUP registeraddrGroup,NOWADDRAREACODE nowaddrareacode,NOWADDR nowaddr,NOWADDR_VILLAGE nowaddrVillage,NOWADDR_GROUP nowaddrGroup,IN_HOSPITAL_DT inHospitalDt,START_DT startDt,CURE_WAY cureWay,CURE_HOSPITAL cureHospital,OPERATION_DT operationDt,DISEASE_CHECK diseaseCheck,DIAGNOSIS_PART diagnosisPart,OLD_DIAGNOSE oldDiagnose,OLD_DIAGNOSED_DATE oldDiagnosedDate,DIAGNOSE diagnose,PATHOLOGY_NAME pathologyName,PATHOLOGY_ID pathologyId,TIME_T timeT,TIME_N timeN,TIME_M timeM,CLINICAL_STAGES clinicalStages,DIAGNOSED_DATE diagnosedDate,DIAGNOSED_UNIT diagnosedUnit,DIAGNOSTIC_BASIS diagnosticBasis,DEATHDATE deathdate,DEATH_CAUSES deathCauses,DEATH_ADDR deathAddr,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDT reportdt,FLAG flag,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,VALIDDT validdt, ISEMPTYCARD  isemptycard, DELREASON delreason, REGISTERFULLADDR registerfulladdr, NOWFULLADDR nowfulladdr
+	</sql>
+
+	
+	<select id="findCtgBk006Tumour_oracle" parameterType="ctgBk006Tumour" resultType="ctgBk006Tumour">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_BK006_TUMOUR
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St002ZdxxbDao">
+
+	<sql id="commCols">
+		treatresult treatresult,diagnosis_class diagnosisClass,id id,zyid zyid,patient_id patientId,visit_id visitId,doc_id docId,doc_name docName,diagnosis_date diagnosisDate,diagnosis_type diagnosisType,diagnosis_no diagnosisNo,diagnosis_name diagnosisName,upd_date updDate,outcome outcome,cdc_anal_flag cdcanalflag, cdc_anal_dt cdcanaldt
+	</sql>
+
+	<insert id="save" parameterType="st002Zdxxb" flushCache="true">
+		 insert into st002_zdxxb(treatresult,diagnosis_class,id,zyid,patient_id,visit_id,doc_id,doc_name,diagnosis_date,diagnosis_type,diagnosis_no,diagnosis_name,upd_date,outcome,cdc_anal_flag,cdc_anal_dt)
+		 values(#{treatresult},#{diagnosisClass},#{id},#{zyid},#{patientId},#{visitId},#{docId},#{docName},#{diagnosisDate},#{diagnosisType},#{diagnosisNo},#{diagnosisName},#{updDate},#{outcome},#{cdcanalflag},#{cdcanaldt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st002_zdxxb
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st002Zdxxb" flushCache="true">
+		update st002_zdxxb
+		<set>
+			treatresult=#{treatresult},diagnosis_class=#{diagnosisClass},id=#{id},zyid=#{zyid},patient_id=#{patientId},visit_id=#{visitId},doc_id=#{docId},doc_name=#{docName},diagnosis_date=#{diagnosisDate},diagnosis_type=#{diagnosisType},diagnosis_no=#{diagnosisNo},diagnosis_name=#{diagnosisName},upd_date=#{updDate},outcome=#{outcome},cdc_anal_flag=#{cdcanalflag},cdc_anal_dt=#{cdcanaldt}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="st002Zdxxb">
+		select <include refid="commCols"/> from st002_zdxxb
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findSt002ZdxxbCount" parameterType="st002Zdxxb" resultType="int">
+		select count(*) from st002_zdxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st002Zdxxb">
+		select <include refid="commCols"/> from st002_zdxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="findListByZyid" resultType="st002Zdxxb">
+		select diagnosis_date diagnosisDate,diagnosis_type diagnosisType,diagnosis_no diagnosisNo,diagnosis_name diagnosisName,treatresult treatresult,doc_name docName,doc_id docId 
+		from st002_zdxxb
+		<where>
+			zyid=#{zyid}
+		</where>
+		order by diagnosis_type, diagnosis_class, diagnosis_no, diagnosis_date
+	</select>
+	
+	<select id="findListByZyidAndName" resultType="st002Zdxxb">
+		select st002_zdxxb.id id,st002_zdxxb.zyid zyid,st002_zdxxb.patient_id patientId,diagnosis_date diagnosisDate,diagnosis_type diagnosisType,diagnosis_no diagnosisNo,diagnosis_name diagnosisName,treatresult treatresult,doc_name docName,doc_id docId 
+		from st002_zdxxb left join st003_cryxxb on st003_cryxxb.zyid=st002_zdxxb.zyid
+		<where>
+			 (st003_cryxxb.fx_status=0 or st003_cryxxb.upd_date>st003_cryxxb.fx_date) and diagnosis_name in 
+			<foreach collection="diagnosisNames" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+		</where>
+		order by diagnosis_type, diagnosis_class, diagnosis_no, diagnosis_date
+	</select>
+	
+	<select id="findDiagnosisName" resultType="string">
+		 select to_char(wm_concat(diagnosis_name)) diagnosisName from st002_zdxxb 
+		 <where>
+		 	diagnosis_type='1' and zyid=#{zyid} 
+		 </where>
+		 group by zyid
+	</select>
+	
+	<select id="findZyZdList" resultType="st002Zdxxb">
+		select * from (
+		 	select <include refid="commCols" />,mzid mzid
+			from st002_zdxxb 
+			<where>
+				NVL(CDC_ANAL_FLAG,0) != 1 
+			</where>
+			order by diagnosis_date desc
+		) 
+		where rownum &lt;=#{rownum}
+	</select>
+
+	<select id="findPatentZdxxbWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST002_ZDXXB where ZYID ='''||ZYID||'''' sql,
+			'ST002_ZDXXB表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST002_ZDXXB t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and diagnosis_date BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST002_ZDXXB where DOC_ID ='''||DOC_ID||'''' sql,
+			'ST002_ZDXXB表中诊断医生编号（'||DOC_ID||'）在ZG003_YYZG表中未找到！' as warning from ST002_ZDXXB t
+			where t.DOC_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and diagnosis_date BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+</mapper>

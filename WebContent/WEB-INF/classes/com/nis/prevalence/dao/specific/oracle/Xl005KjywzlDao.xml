@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl005KjywzlDao">
+
+	<sql id="commCols_oracle">
+		ywzlid ywzlid,brid brid,drug_kind_id drugKindId,drug_kind_name drugKindName,last_at lastAt
+	</sql>
+
+	<select id="findXl005Kjywzl_oracle" parameterType="xl005Kjywzl" resultType="xl005Kjywzl">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from xl005_kjywzl
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

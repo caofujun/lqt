@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientLabAntiDao">
+
+	<sql id="commCols_mysql">
+		REFER_RANGE referRange,REMARK remark,ORDER_NO orderNo,PATHOGEN_SN pathogenSn,CREATE_AT createAt,CHECK_TIME checkTime,UPD_TIME updTime,UPD_FLAG updFlag,ID id,MZID mzid,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,TEST_ORDER_NO testOrderNo,RESULT_DATE resultDate,ANTI_CODE antiCode,ANTI_NAME antiName,MIC_RESULT micResult,TEST_RESULT testResult,UNIT unit
+	</sql>
+
+	<select id="findJkPatientLabAnti_mysql" parameterType="jkPatientLabAnti" resultType="jkPatientLabAnti">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_LAB_ANTI
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

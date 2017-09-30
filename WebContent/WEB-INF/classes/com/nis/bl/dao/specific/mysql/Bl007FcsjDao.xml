@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl007FcsjDao">
+
+	<sql id="commCols_mysql">
+		RELID relid,BL_ID blId,SJ_ID sjId,CSM_ID csmId,CSD_ID csdId,FLAG flag,FC fc,FC_ZT fcZt
+	</sql>
+
+	<select id="findBl007Fcsj_mysql" parameterType="bl007Fcsj" resultType="bl007Fcsj">
+		select <include refid="commCols_mysql"/> from BL007_FCSJ
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

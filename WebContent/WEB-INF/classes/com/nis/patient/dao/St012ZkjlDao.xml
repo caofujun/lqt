@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St012ZkjlDao">
+
+	<sql id="commCols">
+		id id,zyid zyid,in_date inDate,in_dept_id inDeptId,out_date outDate,out_dept_id outDeptId,bed_no bedNo,in_dept_days inDeptDays,upd_time updTime
+	</sql>
+
+	<insert id="save" parameterType="st012Zkjl" flushCache="true">
+		 insert into st012_zkjl(id,zyid,in_date,in_dept_id,out_date,out_dept_id,bed_no,in_dept_days,upd_time)
+		 values(#{id},#{zyid},#{inDate},#{inDeptId},#{outDate},#{outDeptId},#{bedNo},#{inDeptDays},#{updTime})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st012_zkjl
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st012Zkjl" flushCache="true">
+		update st012_zkjl
+		<set>
+			id=#{id},zyid=#{zyid},in_date=#{inDate},in_dept_id=#{inDeptId},out_date=#{outDate},out_dept_id=#{outDeptId},bed_no=#{bedNo},in_dept_days=#{inDeptDays},upd_time=#{updTime}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="st012Zkjl">
+		select <include refid="commCols"/> from st012_zkjl
+  		<where>id=#{id}</where>
+	</select>
+	
+	<select id="getMonitorPatientInZkxxLastAt" resultType="date">
+		select max(in_date) from st012_zkjl zk
+		join st003_cryxxb cr on zk.zyid=cr.zyid
+		where cr.out_at is null and in_date&lt;sysdate
+		<if test="deptId!=null and deptId!=''">
+			AND in_dept_id = #{deptId}
+		</if>
+	</select>
+	
+	<select id="getMonitorPatientOutZkxxLastAt" resultType="date">
+		select max(out_date) from st012_zkjl zk
+		join st003_cryxxb cr on zk.zyid=cr.zyid
+		where cr.out_at is null and out_date&lt;sysdate
+		<if test="deptId!=null and deptId!=''">
+			AND out_dept_id = #{deptId}
+		</if>
+	</select>
+	
+	<select id="findSt012ZkjlCount" parameterType="st012Zkjl" resultType="int">
+		select count(*) from st012_zkjl
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st012Zkjl">
+		select <include refid="commCols"/> from st012_zkjl
+		<where>
+		</where>
+	</select>
+	
+	<select id="findInAndOutDepList" resultType="st012Zkjl">
+		select s12.in_date inDate,s12.in_dept_id inDeptId,s12.out_date outDate,s12.out_dept_id outDeptId,s12.bed_no bedNo,s12.in_dept_days inDeptDays,z2.dept_name inDeptName,zg2.dept_name outDeptName 
+		from st012_zkjl s12 left join zg002_byks z2 on s12.in_dept_id=z2.dept_id left join zg002_byks zg2 on s12.out_dept_id=zg2.dept_id
+		<where>
+			s12.zyid=#{zyid} 
+		</where>
+		order by s12.in_date
+	</select>
+	
+</mapper>

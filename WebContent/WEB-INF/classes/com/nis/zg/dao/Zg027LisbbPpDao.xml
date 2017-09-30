@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg027LisbbPpDao">
+
+	<sql id="commCols">
+		BBID bbid,BBMC bbmc,ITEM_CODE itemCode,ITEM_NAME itemName,BBPP_ID bbppId
+	</sql>
+
+	<insert id="save" parameterType="zg027LisbbPp"  flushCache="true">
+		 insert into ZG027_LISBB_PP(BBID,BBMC,ITEM_CODE,ITEM_NAME,BBPP_ID)
+		 values(#{bbid},#{bbmc},#{itemCode},#{itemName},#{bbppId})
+	</insert>
+	
+	<update id="update" parameterType="zg027LisbbPp" flushCache="true">
+		update ZG027_LISBB_PP
+		<set>
+			BBID=#{bbid},BBMC=#{bbmc},ITEM_CODE=#{itemCode},ITEM_NAME=#{itemName}
+		</set>
+		<where>BBPP_ID=#{bbppId}</where>
+	</update>
+	<update id="match" parameterType="zg027LisbbPp" flushCache="true">
+		update ZG027_LISBB_PP a   
+		<set>  
+		a.bbid =(select z.bbid from ny_bb_dict z where z.bbmc=a.item_name) , a.bbmc=(select z.bbmc from ny_bb_dict z where z.bbmc=a.item_name)  
+  		</set>
+  		<where> a.bbid is null and a.bbmc is null</where>
+	</update>
+	<select id="queryMatched"  resultType="map">
+		select (select count(*)  from ZG027_LISBB_PP z where z.bbid is  null and z.bbmc is null) WPP,
+		(select count(*) from ny_bb_dict z,ZG027_LISBB_PP a where z.bbmc=a.item_name and  a.bbid is null) YPP from dual
+	</select>
+	
+	<select id="matchBefore"  resultType="zg027LisbbPp">
+		select distinct t.item_code itemCode,t.item_name itemName from st009_sjbb t 
+		<where>
+		 t.item_code not in (select zg7.item_code from ZG027_LISBB_PP zg7) and t.item_code is not null
+		</where>
+	</select>
+	
+	<select id="findZg027LisbbPpCount" parameterType="zg027LisbbPp" resultType="int">
+		select count(*) from ZG027_LISBB_PP
+		<where>
+			BBID is not null
+			<if test="searchString!=null and searchString!=''">
+				and (ITEM_CODE like CONCAT( CONCAT('%',#{searchString}),'%') or ITEM_NAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="findZg027LisbbPpListCount" parameterType="zg027LisbbPp" resultType="int">
+		select count(*) from ZG027_LISBB_PP
+		<where>
+			BBID is null
+			<if test="searchString!=null and searchString!=''">
+				and (ITEM_CODE like CONCAT( CONCAT('%',#{searchString}),'%') or ITEM_NAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg027LisbbPp">
+		select <include refid="commCols"/> from ZG027_LISBB_PP
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="get"  resultType="zg027LisbbPp">
+		select <include refid="commCols"/> from ZG027_LISBB_PP
+		<where>
+			BBPP_ID = #{bbppId}
+		</where>
+	</select>
+	
+	<select id="findbySt009"  resultType="zg027LisbbPp">
+		select distinct s.item_code itemCode,s.item_name itemName from st009_sjbb s where s.item_code not in (select z.item_code from zg027_lisbb_pp z) and  s.item_code is not null
+	</select>
+</mapper>

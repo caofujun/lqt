@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk004SyycbkDao">
+
+	<sql id="commCols_mysql">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,MZID mzid,ZYID zyid,VISIT_ID visitId,PATIENT_NAME patientName,PARENT_NAME parentName,SEXID sexid,SEXNAME sexname,BIRTYDAY birtyday,AGE age,AGEUNIT ageunit,MOBILEPHONE mobilephone,TELEPHONE telephone,ID id,NOWADDRTYPEID nowaddrtypeid,NOWADDRTYPENAME nowaddrtypename,NOWADDRCODE nowaddrcode,NOWADDRCODEVALUE nowaddrcodevalue,NOWADDR nowaddr,REGADDRTYPEID regaddrtypeid,REGADDRTYPENAME regaddrtypename,REGADDRCODE regaddrcode,REGADDRCODEVALUE regaddrcodevalue,REGADDR regaddr,STARTDATE startdate,DIAGNOSEDATE diagnosedate,OFFICEID officeid,OFFICENAME officename,GENSYMPTOMS gensymptoms,GENS_VALUE gensValue,GENSYMPTOMS_OTHER gensymptomsOther,SKINSYMPTOMS skinsymptoms,SKINS_VALUE skinsValue,SKINSYMPTOMS_OTHER skinsymptomsOther,BREATHESYMPTOMS breathesymptoms,BREATHS_VALUE breathsValue,BREATHESYMPTOMS_OTHER breathesymptomsOther,ANGISYMPTOMS angisymptoms,ANGIS_VALUE angisValue,ANGISYMPTOMS_OTHER angisymptomsOther,URINSYMPTOMS urinsymptoms,URINS_VALUE urinsValue,URINSYMPTOMS_OTHER urinsymptomsOther,DIGESYMPTOMS digesymptoms,DIGES_VALUE digesValue,DIGESYMPTOMS_OTHER digesymptomsOther,NERVSYMPTOMS nervsymptoms,NERVS_VALUE nervsValue,NERVSYMPTOMS_OTHER nervsymptomsOther,SYMPTOMS_OTHER symptomsOther,MAINSIGN mainsign,LABCONCLUSION labconclusion,AUXCONCLUSION auxconclusion,PRIMARYDIAGNOSIS primarydiagnosis,SUSPETIOLOGY suspetiology,SUSPS_VALUE suspsValue,SUSPETIOLOGY_OTHER suspetiologyOther,SUSPECTEDFOODS suspectedfoods,DOCTORID doctorid,DOCTORNAME doctorname,REPORTREASON reportreason,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,FILLDATE filldate,DELREASON delreason,FLAG flag,AUDITDATE auditdate,AUDITOR auditor,ISPRINT isprint
+	</sql>
+
+	<select id="findCtgBk004Syycbk_mysql" parameterType="ctgBk004Syycbk" resultType="ctgBk004Syycbk">
+		select <include refid="commCols_mysql"/> from CTG_BK004_SYYCBK
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

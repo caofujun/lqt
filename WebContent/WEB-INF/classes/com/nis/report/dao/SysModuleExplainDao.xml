@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.report.dao.SysModuleExplainDao">
+
+	<sql id="commCols">
+		MID mid,MK_NAME mkName,MK_EXPLAIN mkExplain,UPDATE_TIME updateTime,CREATE_USER createUser,REALNAME createName
+	</sql>
+
+	<insert id="save" parameterType="sysModuleExplain"  flushCache="true">
+		 insert into SYS_MODULE_EXPLAIN(MID,MK_NAME,MK_EXPLAIN,UPDATE_TIME,CREATE_USER)
+		 values(#{mid},#{mkName},#{mkExplain},#{updateTime},#{createUser})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  SYS_MODULE_EXPLAIN
+		<where>MID=#{mid}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysModuleExplain" flushCache="true">
+		update SYS_MODULE_EXPLAIN
+		<set>
+			MID=#{mid},MK_NAME=#{mkName},MK_EXPLAIN=#{mkExplain},UPDATE_TIME=#{updateTime},CREATE_USER=#{createUser}
+		</set>
+		<where>MID=#{mid}</where>
+	</update>
+	
+	<select id="get" resultType="sysModuleExplain">
+		select <include refid="commCols"/> from SYS_MODULE_EXPLAIN join AC_ACCOUNT  on CREATE_USER=USER_ID
+  		<where>MID=#{mid}</where>
+	</select>
+	
+	
+	<select id="findSysModuleExplainCount" parameterType="sysModuleExplain" resultType="int">
+		select count(*) from SYS_MODULE_EXPLAIN join AC_ACCOUNT  
+        on CREATE_USER=USER_ID 
+		<where>
+			1=1
+			
+		<if test="mkName!=null and mkName !='' ">
+			and MK_NAME LIKE CONCAT(CONCAT('%', #{mkName}),'%') 
+		</if>
+			
+		</where>
+		
+	</select>
+	
+	<select id="getAll"  resultType="sysModuleExplain">
+		select <include refid="commCols"/> from SYS_MODULE_EXPLAIN
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findByName"  resultType="sysModuleExplain">
+		select <include refid="commCols"/> from SYS_MODULE_EXPLAIN
+		<where>
+			MK_NAME=#{mkName}
+		</where>
+	</select>
+</mapper>

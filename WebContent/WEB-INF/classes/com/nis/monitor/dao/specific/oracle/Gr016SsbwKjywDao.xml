@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr016SsbwKjywDao">
+
+	<sql id="commCols_oracle">
+		date_section dateSection,memo memo,yz_id yzId,relid relid,refid refid,oper_type_id operTypeId,
+		isselect isselect,order_type orderType,order_at orderAt,stop_at stopAt,order_name orderName,dose dose,
+		dosage_unit dosageUnit,qty qty,frequency frequency,daily_times dailyTimes,admin_route_name adminRouteName,
+		execute_name executeName,execute_time executeTime,pre_yymd preYymd,szyzjyyewzj szyzjyyewzj
+	</sql>
+
+	<select id="findGr016SsbwKjyw_oracle" parameterType="gr016SsbwKjyw" resultType="gr016SsbwKjyw">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from gr016_ssbw_kjyw
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<update id="updateByRefids_oracle" flushCache="true">
+		<foreach collection="gr016List" item="item" index="index" open="begin" close=";end;" separator=";">
+            update gr016_ssbw_kjyw 
+            <set>
+            	date_section=#{item.dateSection},pre_yymd=#{item.preYymd},szyzjyyewzj=#{item.szyzjyyewzj}
+            </set>
+            where relid=#{item.relid}
+        </foreach>
+	</update>
+	
+	<update id="updSs001Zdb_oracle" flushCache="true">
+		merge into ss001_zdb a
+			using (select #{operName} oper_name, #{opepartkindid} typeid, #{partkindname} typename from dual) b on (a.oper_name = b.oper_name)
+		when matched then
+		   update
+		      set a.typeid = b.typeid, a.typename = b.typename
+		   where nvl(a.typeid, '') = ''
+		      or <![CDATA[a.typename = '<分类名称>']]>
+		      or nvl(a.typename, '') = ''
+		when not matched then
+		   insert
+		      (oper_name, typeid, typename)
+		   values
+		      (b.oper_name, b.typeid, b.typename) 
+	</update>
+	
+	<update id="updZg011Ss_oracle" flushCache="true">
+		update zg011_ss t 
+		<set>
+		t.opepart_kindid=(select d.dict_code from sys_dict d where d.dict_type_code='icd9_opekind' and d.dict_name=
+	   (select a.partkindname from st005_ssxxb a where a.zyid=#{zyid}  and a.relid=#{relid})), t.imp_ope_id=(select a.imp_ope_id from st005_ssxxb a where a.zyid=#{zyid} and a.relid=#{relid})
+	   </set> 
+   where t.opera_cnname=(select a.oper_name from st005_ssxxb a where a.zyid=#{zyid}  and a.relid=#{relid})
+	</update>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hand.dao.Sw002YcxdcDao">
+
+	<sql id="commCols">
+		DC_ID dcId,DC_DATE dcDate,DC_WARD dcWard,DC_WARD_ID dcWardId,GC_TIME gcTime,GC_USERNAME gcUsername,GC_USERID gcUserId,DJ_DATE djDate,YPSS ypss 
+	</sql>
+
+	<insert id="save" parameterType="sw002Ycxdc"  flushCache="true">
+		 insert into SW002_YCXDC(DC_ID,DC_DATE,DC_WARD,GC_TIME,GC_USERNAME,DJ_DATE,YPSS,DC_WARD_ID,GC_USERID)
+		 values(#{dcId},#{dcDate},#{dcWard},#{gcTime},#{gcUsername},#{djDate},#{ypss},#{dcWardId},#{gcUserId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  SW002_YCXDC
+		<where>DC_ID=#{dcId}</where>
+	</delete>
+	
+	<update id="update" parameterType="sw002Ycxdc" flushCache="true">
+		update SW002_YCXDC
+		<set>
+			DC_ID=#{dcId},DC_DATE=#{dcDate},DC_WARD=#{dcWard},DC_WARD_ID=#{dcWardId},GC_TIME=#{gcTime},GC_USERID=#{gcUserId},GC_USERNAME=#{gcUsername},DJ_DATE=#{djDate},YPSS=#{ypss}
+		</set>
+		<where>DC_ID=#{dcId}</where>
+	</update>
+	
+	<select id="get" resultType="sw002Ycxdc">
+		select <include refid="commCols"/> from SW002_YCXDC
+  		<where>DC_ID=#{dcId}</where>
+	</select>
+	
+	
+	<select id="findSw002YcxdcCount-bk" parameterType="sw002Ycxdc" resultType="int">
+		select count(*) from (
+		select x.*,
+		(select count(*) from sw003_ycxsj j
+            left join sys_dict g on j.ry_type = g.dict_code
+            where j.dc_id = x.dc_id) sjs,
+		(select wm_concat(dict_name||'('||count(*)||')') from sw003_ycxsj j 
+			left join sys_dict g on j.ry_type = g.dict_code
+			where g.dict_type_code = 'personnel_type' 
+			and j.dc_id=x.dc_id
+		 	group by g.dict_name) personalType
+		 from sw002_ycxdc x
+		<where>
+			1=1
+			<if test="dcWardId!=null and dcWardId!=''">
+				and x.dc_Ward_Id = #{dcWardId}
+			</if>
+			<if test="queryStartDate!=null">
+				and x.dc_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and x.dc_date &lt;= #{queryEndDate}
+			</if>
+		</where>
+		    order by x.dc_date desc
+		) a 
+		<where>
+			<if test="personalType!=null and personalType!=''">
+				 instr(a.personalType,'${personalType}') &gt; 0
+			</if>
+		</where>
+	</select>
+	
+	<select id="findSw002YcxdcCount" parameterType="sw002Ycxdc" resultType="int">
+		select count(*) from (
+		select x.*,
+		(select count(*) from ( select DC_ID,SJ_ID,RY_TYPE,RY_NAME, wm_concat(SJ_LIST) sjList, SWS_LIST,IS_RIGHT,ERR_REASON from SW004_YCXSJ t group by DC_ID, SJ_ID, RY_TYPE, RY_NAME, SWS_LIST, IS_RIGHT, ERR_REASON) j
+            left join sys_dict g on j.ry_type = g.dict_code
+            where j.dc_id = x.dc_id and g.dict_type_code = 'personnel_type') sjs,
+		(select wm_concat(dict_name||'('||count(*)||')') from ( select DC_ID,SJ_ID,RY_TYPE,RY_NAME, wm_concat(SJ_LIST) sjList, SWS_LIST,IS_RIGHT,ERR_REASON from SW004_YCXSJ t group by DC_ID, SJ_ID, RY_TYPE, RY_NAME, SWS_LIST, IS_RIGHT, ERR_REASON) j 
+			left join sys_dict g on j.ry_type = g.dict_code
+			where g.dict_type_code = 'personnel_type' 
+			and j.dc_id=x.dc_id
+		 	group by g.dict_name) personalType
+		 from sw002_ycxdc x
+		<where>
+			1=1
+			<if test="dcWardId!=null and dcWardId!=''">
+				and x.dc_Ward_Id = #{dcWardId}
+			</if>
+			<if test="queryStartDate!=null">
+				and x.dc_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and x.dc_date &lt;= #{queryEndDate}
+			</if>
+			<if test="gcUserId!=null and gcUserId!=''">
+				and x.gc_userid = #{gcUserId}
+			</if>
+		</where>
+		    order by x.dc_date desc
+		) a 
+		<where>
+			<if test="personalType!=null and personalType!=''">
+				 instr(a.personalType,'${personalType}') &gt; 0
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="sw002Ycxdc">
+		select <include refid="commCols"/> from SW002_YCXDC
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

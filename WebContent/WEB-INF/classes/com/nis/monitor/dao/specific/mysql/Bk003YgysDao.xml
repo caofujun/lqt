@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk003YgysDao">
+
+	<sql id="commCols_mysql">
+		card_relid cardRelid,refid refid,factor_id factorId,factor_name factorName,is_flag isFlag,id id
+	</sql>
+
+	<select id="findBk003Ygys_mysql" parameterType="bk003Ygys" resultType="bk003Ygys">
+		select <include refid="commCols_mysql"/> from bk003_ygys
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

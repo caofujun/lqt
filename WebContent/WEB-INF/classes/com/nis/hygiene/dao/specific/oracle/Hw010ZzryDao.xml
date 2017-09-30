@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw010ZzryDao">
+
+	<sql id="commCols_oracle">
+		dept_id deptId,employee_id employeeId,source source,employee_name employeeName
+	</sql>
+
+	<select id="findHw010Zzry_oracle" parameterType="hw010Zzry" resultType="hw010Zzry">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw010_zzry
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findAccreditList_oracle" parameterType="hw010Zzry" resultType="hw010Zzry">
+		select * from ( select a.*, rownum rn from (
+		select h10.employee_id employeeId,h10.employee_name employeeName,h10.dept_id deptId,h10.source source,t1.role_name roleName,t2.dept_name operateDeptName
+		from hw010_zzry h10
+		left join (select h18.user_id, to_char(wm_concat(h16.role_name)) role_name from hw018_role_user h18 left join hw016_role h16 on h16.role_id = h18.role_id group by h18.user_id) t1 on t1.user_id = h10.employee_id 
+		left join (select h9.user_id, to_char(wm_concat(z2.dept_name)) dept_name,',' || to_char(wm_concat(h9.dept_id)) || ',' dept_id from hw009_kssq h9 left join zg002_byks z2 on z2.dept_id = h9.dept_id where rownum&lt;100 group by h9.user_id) t2 on t2.user_id = h10.employee_id 
+		<where>
+			<if test="operateDeptId!=null and operateDeptId!=''">
+				and t2.dept_id like CONCAT(CONCAT('%',#{operateDeptId}), '%') 
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and h10.dept_id=#{deptId}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (h10.employee_name like CONCAT(CONCAT('%',#{searchString}), '%') or h10.employee_id like CONCAT(CONCAT('%',#{searchString}), '%'))
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

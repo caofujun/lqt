@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001ZzdDao">
+
+	<sql id="commCols">
+		MASTERID masterid,REFERRAL_REASON referralReason,OUT_AT outAt,REFERENCES_UNIT referencesUnit,REFERENCES_PERSON referencesPerson,REFERENCES_DT referencesDt,UNIT_TEL unitTel,SUBID subid
+	</sql>
+
+	<insert id="save" parameterType="ctgBk001Zzd"  flushCache="true">
+		 insert into CTG_BK001_ZZD(MASTERID,REFERRAL_REASON,OUT_AT,REFERENCES_UNIT,REFERENCES_PERSON,REFERENCES_DT,UNIT_TEL,SUBID)
+		 values(#{masterid},#{referralReason},#{outAt},#{referencesUnit},#{referencesPerson},#{referencesDt},#{unitTel},#{subid})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK001_ZZD
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk001Zzd" flushCache="true">
+		update CTG_BK001_ZZD
+		<set>
+			MASTERID=#{masterid},REFERRAL_REASON=#{referralReason},OUT_AT=#{outAt},REFERENCES_UNIT=#{referencesUnit},REFERENCES_PERSON=#{referencesPerson},REFERENCES_DT=#{referencesDt},UNIT_TEL=#{unitTel},SUBID=#{subid}
+		</set>
+		<where>SUBID=#{subid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk001Zzd">
+		select <include refid="commCols"/> from CTG_BK001_ZZD
+  		<where>SUBID=#{subid}</where>
+	</select>
+	
+	<select id="getByMasterid" resultType="ctgBk001Zzd">
+		select <include refid="commCols"/> from CTG_BK001_ZZD
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	<select id="findCtgBk001ZzdCount" parameterType="ctgBk001Zzd" resultType="int">
+		select count(*) from CTG_BK001_ZZD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk001Zzd">
+		select <include refid="commCols"/> from CTG_BK001_ZZD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="isFjhExist" resultType="int">
+		select count(*) from CTG_BK001_ZZD t
+		 <where>
+			t.MASTERID=#{masterid}
+		</where>
+	</select>
+	
+</mapper>

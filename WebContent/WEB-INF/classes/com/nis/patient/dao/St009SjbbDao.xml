@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St009SjbbDao">
+
+	<sql id="commCols">
+		id id,zyid zyid,mzid mzid,patient_id patientId,visit_id visitId,patient_name patientName,test_order_no testOrderNo,sex sex,age age,age_unit ageUnit,item_type itemType,item_type_name itemTypeName,item_code itemCode,item_name itemName,submi_at submiAt,dept_id deptId,dept_name deptName,create_at createAt,upd_date updDate,cgjy_spe_flag cgjySpeFlag,sjbb_anal_flag sjbbAnalFlag,sjbb_anal_dt sjbbAnalDt,cdc_anal_flag cdcanalflag,cdc_anal_dt cdcanaldt,like_flag likeFlag
+	</sql>
+
+	<insert id="save" parameterType="st009Sjbb" flushCache="true">
+		 insert into st009_sjbb(id,zyid,mzid,patient_id,visit_id,patient_name,test_order_no,sex,age,age_unit,item_type,item_type_name,item_code,item_name,submi_at,dept_id,dept_name,create_at,upd_date,cgjy_spe_flag,sjbb_anal_flag,sjbb_anal_dt,cdc_anal_flag,cdc_anal_dt,like_flag)
+		 values(#{id},#{zyid},#{mzid},#{patientId},#{visitId},#{patientName},#{testOrderNo},#{sex},#{age},#{ageUnit},#{itemType},#{itemTypeName},#{itemCode},#{itemName},#{submiAt},#{deptId},#{deptName},#{createAt},#{updDate},#{cgjySpeFlag},#{sjbbAnalFlag},#{sjbbAnalDt},#{cdcanalflag},#{cdcanaldt},#{likeFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st009_sjbb
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st009Sjbb" flushCache="true">
+		update st009_sjbb
+		<set>
+			id=#{id},zyid=#{zyid},mzid=#{mzid},patient_id=#{patientId},visit_id=#{visitId},patient_name=#{patientName},test_order_no=#{testOrderNo},sex=#{sex},age=#{age},age_unit=#{ageUnit},item_type=#{itemType},item_type_name=#{itemTypeName},item_code=#{itemCode},item_name=#{itemName},submi_at=#{submiAt},dept_id=#{deptId},dept_name=#{deptName},create_at=#{createAt},upd_date=#{updDate},cgjy_spe_flag=#{cgjySpeFlag},sjbb_anal_flag=#{sjbbAnalFlag},sjbb_anal_dt=#{sjbbAnalDt},cdc_anal_flag=#{cdcanalflag},cdc_anal_dt=#{cdcanaldt},like_flag=#{likeFlag}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateFlagByMzzyid" parameterType="st009Sjbb" flushCache="true">
+		update st009_sjbb
+		<set>
+			cdc_anal_flag=#{cdcanalflag},cdc_anal_dt=#{cdcanaldt}
+		</set>
+		<where>
+			<if test="patientType=='MZ'">
+				mzid=#{mzzyid}
+			</if>
+			<if test="patientType=='ZY'">
+				zyid=#{mzzyid}
+			</if>
+		</where>
+	</update>
+	
+	<select id="get" resultType="st009Sjbb">
+		select <include refid="commCols"/> from st009_sjbb
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findSt009SjbbCount" parameterType="st009Sjbb" resultType="int">
+		select count(*)
+		from st009_sjbb s9
+		<where>
+			1=1
+			<if test="zyid!=null and zyid!=''">
+				and s9.zyid=#{zyid}
+			</if>
+			<if test="mzid!=null and mzid!=''">
+				and s9.mzid=#{mzid}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getMonitorPatientTestLastAt" resultType="map">
+		select max(SUBMI_AT) SUBMIAT,max(jc.test_date) TESTDATE from st009_sjbb sj
+		join st010_jcbyt jc on sj.zyid=jc.zyid and sj.test_order_no=jc.test_order_no
+		join st003_cryxxb cr on sj.zyid=cr.zyid
+		where cr.out_at is null and SUBMI_AT&lt;sysdate
+		<if test="deptId!=null and deptId!=''">
+			AND sj.dept_id = #{deptId}
+		</if>
+	</select>
+	
+	<select id="getMonitorPatientTestLastAt6" resultType="map">
+		select max(to_date(substr(SUBMI_AT,1,10),'yyyy-mm-dd')) SUBMIAT,max(jc.test_date) TESTDATE from st009_sjbb sj
+		join st010_jcbyt jc on sj.zyid=jc.zyid and sj.test_order_no=jc.test_order_no
+		join st003_cryxxb cr on sj.zyid=cr.zyid
+		where cr.out_at is null and to_date(substr(SUBMI_AT,1,10),'yyyy-mm-dd')&lt;sysdate
+		<if test="deptId!=null and deptId!=''">
+			AND sj.dept_id = #{deptId}
+		</if>
+	</select>
+	
+	<select id="getMonitorPatientTestsLastAt" resultType="map">
+		select max(SUBMI_AT) SUBMIATS,max(to_date(substr(jg.result_date,1,10),'yyyy-mm-dd')) RESULTDATE from st009_sjbb sj
+		join st011_syjgb jg on sj.zyid=jg.zyid and sj.test_order_no=jg.test_order_no
+		join st003_cryxxb cr on sj.zyid=cr.zyid
+		where cr.out_at is null and SUBMI_AT&lt;sysdate 
+		<if test="deptId!=null and deptId!=''">
+			AND sj.dept_id = #{deptId}
+		</if>
+	</select>
+	
+	<select id="getMonitorPatientTestsLastAt6" resultType="map">
+		select max(to_date(substr(SUBMI_AT,1,10),'yyyy-mm-dd')) SUBMIATS,max(to_date(substr(jg.result_date,1,10),'yyyy-mm-dd')) RESULTDATE from st009_sjbb sj
+		join st011_syjgb jg on sj.zyid=jg.zyid and sj.test_order_no=jg.test_order_no
+		join st003_cryxxb cr on sj.zyid=cr.zyid
+		where cr.out_at is null and to_date(substr(SUBMI_AT,1,10),'yyyy-mm-dd')&lt;sysdate 
+		<if test="deptId!=null and deptId!=''">
+			AND sj.dept_id = #{deptId}
+		</if>
+	</select>
+	
+	<select id="getAll" resultType="st009Sjbb">
+		select <include refid="commCols"/> from st009_sjbb
+		<where>
+		</where>
+	</select>
+	
+	<select id="findSjbbListBytestNo" resultType="st009Sjbb">
+		select sj.item_type itemType,sj.item_type_name itemTypeName,sj.submi_at submiAt,sj.item_code itemCode,sj.item_name itemName,byt.patho_code pathoCode,byt.patho_name pathoName 
+		from st009_sjbb sj join st010_jcbyt byt on sj.test_order_no = byt.test_order_no 
+		<where>
+			sj.test_order_no=#{testOrderNo}
+		</where>
+		order by sj.test_order_no desc
+	</select>
+	
+	<select id="findBacteriaList" parameterType="st009Sjbb" resultType="st009Sjbb">
+		select 
+			s9.submi_at submiAt,s9.item_name itemName,s9.test_order_no testOrderNo, s9.zyid zyid,
+			(select min(result_date) from st011_syjgb where zyid = s9.zyid and test_order_no = s9.test_order_no) checkOutAt,
+	       	s10.patho_name pathoName,x11.res_prop resProp,x11.spec_describes specDescribes 
+       	from st009_sjbb s9 
+       	left join st010_jcbyt s10 on s9.test_order_no = s10.test_order_no 
+       	left join xn011_dclymx x11 on s10.zyid = x11.zyid and s10.test_order_no = x11.test_order_no and s10.patho_code = x11.patho_code
+		<where>
+			s9.zyid=#{zyid} and trunc(s9.submi_at) = trunc(#{submiAt})
+			 and s10.isyang = '1' and s9.item_type = '1'
+		</where>
+		order by s9.item_type, s9.submi_at 
+	</select>
+	
+	<select id="getCheckResultTitle" parameterType="st009Sjbb" resultType="st009Sjbb">
+		select max(s9.submi_at) submiAt, min(s9.test_order_no) testOrderNo, min(s11.result_date) checkOutAt 
+		from st009_sjbb s9 left join st011_syjgb s11 on s9.zyid=s11.zyid and s9.test_order_no=s11.test_order_no
+		<where>
+			s9.zyid=#{zyid} and s9.test_order_no=#{testOrderNo}
+		</where>
+	</select>
+	
+	<select id="getUnAnalysisRecord" resultType="st009Sjbb" parameterType="int">
+		select *
+  			from (select (case
+                 when mzid is null then
+                  'ZY'
+                 else
+                  'MZ'
+               end) patientType,
+               test_order_no testOrderNo,
+               (case
+                 when mzid is null then
+                   zyid
+                 else
+                   mzid
+               end) MZZYID
+          from st009_sjbb b 
+          where nvl(b.cdc_anal_flag,0) !=1
+         order by b.submi_at desc
+		)where rownum &lt;= #{rows}
+	</select>
+	
+	<select id="getUnAnalysisRecord-BK2" resultType="st009Sjbb" parameterType="int">
+	 select b.zyid as mzzyid,
+       wm_concat('''' || b.test_order_no || '''') testOrderNo,
+       'ZY' as patientType
+ from (select * from (select * from st009_sjbb s
+ where zyid in (select distinct zyid
+                  from st009_sjbb b
+                 where b.cdc_anal_flag is null
+                   and b.zyid is not null
+                   and rownum &lt;= #{rows}) order by s.submi_at desc ) where rownum&lt;=100) b
+ group by zyid
+union all
+select b.mzid as mzzyid,
+       wm_concat('''' || b.test_order_no || '''') testOrderNo,
+       'MZ' as patientType
+ from (select * from (select * from st009_sjbb s
+ where mzid in (select distinct mzid
+                  from st009_sjbb b
+                 where b.cdc_anal_flag is null
+                   and b.mzid is not null
+                   and rownum &lt;= #{rows}) order by s.submi_at desc ) where rownum&lt;=100) b
+
+ group by mzid
+
+    </select>  
+	
+	<select id="masterCdts" resultType="String" parameterType="String">
+		select wm_concat(''''||test_order_no||'''') testOrderNo from st009_sjbb 
+		<where>
+			test_order_no in (${testOrderNos})
+			and ${sql}
+		</where>
+		<if test="patientType eq 'MZ'">
+			order by mzid
+		</if>
+		<if test="patientType eq 'ZY'">
+			order by zyid
+		</if>
+	</select>
+	
+	<select id="masterCdtsNew" resultType="int" parameterType="String">
+		select count(*) from st009_sjbb 
+		<where>
+			test_order_no = #{testOrderNos} 
+			and ${sql}
+		</where>
+	</select>
+
+	<select id="findPatentSjbbWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST009_SJBB where ZYID ='''||ZYID||'''' sql,
+			'ST009_SJBB表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST009_SJBB t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and SUBMI_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST009_SJBB where MZID ='''||MZID||'''' sql,
+			'ST009_SJBB表中患者门诊ID（'||MZID||'）在ST020_CLINIC_PATIENTS表中未找到！' as warning from ST009_SJBB t
+			where t.MZID not in(select MZID from ST020_CLINIC_PATIENTS )
+			and SUBMI_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+	      select distinct 'select * from st011_syjgb where TEST_ORDER_NO ='''||TEST_ORDER_NO||'''' sql,
+	      'st011_syjgb表中非常规检查标本在ST009_SJBB表中未找到！' as warning from st010_jcbyt t
+			where t.TEST_ORDER_NO not in(select TEST_ORDER_NO from ST009_SJBB a WHERE a.item_type=2) 
+	    	and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<select id="findPatentSjbbWarning6" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST009_SJBB where ZYID ='''||ZYID||'''' sql,
+			'ST009_SJBB表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST009_SJBB t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and to_date(substr(SUBMI_AT,1,10),'yyyy-mm-dd') BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST009_SJBB where MZID ='''||MZID||'''' sql,
+			'ST009_SJBB表中患者门诊ID（'||MZID||'）在ST020_CLINIC_PATIENTS表中未找到！' as warning from ST009_SJBB t
+			where t.MZID not in(select MZID from ST020_CLINIC_PATIENTS )
+			and to_date(substr(SUBMI_AT,1,10),'yyyy-mm-dd') BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+	      select distinct 'select * from st011_syjgb where TEST_ORDER_NO ='''||TEST_ORDER_NO||'''' sql,
+	      'st011_syjgb表中非常规检查标本在ST009_SJBB表中未找到！' as warning from st010_jcbyt t
+			where t.TEST_ORDER_NO not in(select TEST_ORDER_NO from ST009_SJBB a WHERE a.item_type=2) 
+	    	and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<update id="updateFlagByTestOrderNo" parameterType="st009Sjbb" flushCache="true">
+		update st009_sjbb
+		<set>
+			cdc_anal_flag=#{cdcanalflag},cdc_anal_dt=#{cdcanaldt}
+		</set>
+		<where>
+			test_order_no = #{testOrderNo}
+		</where>
+	</update>
+	
+</mapper>

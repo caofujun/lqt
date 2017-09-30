@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St005SsxxbDao">
+
+	<sql id="commCols_oracle">
+		sqbxbs sqbxbs,sfsszylg sfsszylg,cysfylg cysfylg,isjt isjt,isdzcz isdzcz,id id,pre_zqyy preZqyy,
+		after_zqyy afterZqyy,wsq_lhyy wsqLhyy,wsq_zqyy wsqZqyy,jbzg jbzg,heal heal,imp_ope_id impOpeId,
+		imp_ope_name impOpeName,view_flag viewFlag,circuit_nurse circuitNurse,scrub_nurse scrubNurse,
+		xg_flag xgFlag,zyid zyid,patient_id patientId,visit_id visitId,dept_name deptName,upd_date updDate,
+		out_at outAt,age age,age_unit ageUnit,sex sex,bed_no bedNo,in_hosp_at inHospAt,sync_code syncCode,
+		sync_name syncName,param_begintime paramBegintime,param_endtime paramEndtime,last_id lastId,
+		last_status lastStatus,last_sync_time lastSyncTime,last_log lastLog,dept_id deptId,in_dept_id inDeptId,
+		in_dept_name inDeptName,out_dept_id outDeptId,out_dept_name outDeptName,in_days inDays,
+		charge_dr_id chargeDrId,charge_dr_name chargeDrName,cost cost,memo memo,bed_no_index bedNoIndex,
+		patient_name patientName,last_mod_userid lastModUserid,status status,oper_at operAt,
+		returnvisitdate3 returnvisitdate3,returnvisitdate2 returnvisitdate2,returnvisitdate1 returnvisitdate1,
+		relid relid,oper_room operRoom,oper_name operName,oper_id operId,opedoc_id opedocId,opedoc_name opedocName,
+		anes_dr_name anesDrName,asa asa,narc_kind narcKind,oper_leng_time operLengTime,incision_grade incisionGrade,
+		hosp_id hospId,tel tel,weight weight,patient_address patientAddress,lapse_to lapseTo,lapse_to_at lapseToAt,
+		inope_days inopeDays,wzbxbjs wzbxbjs,blood_sugar_level bloodSugarLevel,yzjcjb yzjcjb,bmi bmi,
+		type_build typeBuild,nutrition_condition nutritionCondition,opepartkindid opepartkindid,
+		partkindname partkindname,oper_at_end operAtEnd,ssyszc ssyszc,anes_dr_id anesDrId,nurse_id nurseId,
+		nurse_name nurseName,nnis nnis,blood_in bloodIn,blood_out bloodOut,continuous_ope continuousOpe,
+		skin_prepare skinPrepare,skin_method skinMethod,pre_skintime preSkintime,wsqsykjyw wsqsykjyw,
+		wsqsyyfkjyw wsqsyyfkjyw,pre_yymd preYymd,pre_lhyy preLhyy,pre_yyts preYyts,is_sqyy isSqyy,
+		szyzjyyewzj szyzjyyewzj,after_yymd afterYymd,after_lhyy afterLhyy,after_yyts afterYyts,tm_exceed1 tmExceed1,
+		cutred1 cutred1,cutpus1 cutpus1,pathoisyang1 pathoisyang1,tm_exceed2 tmExceed2,cutred2 cutred2,
+		cutpus2 cutpus2,pathoisyang2 pathoisyang2,tm_exceed3 tmExceed3,cutred3 cutred3,cutpus3 cutpus3,
+		pathoisyang3 pathoisyang3,monitor_date monitorDate,last_mod_date lastModDate,create_date createDate,
+		urgent_ope urgentOpe,replant replant,glass_ope glassOpe,returnvisit_status returnvisitStatus,
+		danger_index dangerIndex,OPER_AT_START operAtStart
+	</sql>
+
+	<select id="findSt005Ssxxb_oracle" parameterType="st005Ssxxb" resultType="st005Ssxxb">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from st005_ssxxb
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findGradeType_oracle" resultType="int">
+		 select decode(incision_grade,'I类',0,'II类',1,'III类',2,'IV类',3,-1) gradeType from st005_ssxxb 
+		 <where>
+		 	zyid=#{zyid} and rownum = 1
+		 </where>
+	</select>
+	
+	<select id="getNnisPer_oracle" resultType="integer">
+		select perc_bit_value from table(get_nnis_perv7(#{impType})) where imp_ope_id=#{impOpeId}
+	</select>
+	
+	<select id="findSurgeryList_oracle" parameterType="st005Ssxxb" resultType="st005Ssxxb">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select 
+			st3.patient_name patientName,st3.sex sex,st3.bed_no bedNo,st3.age age,st3.age_unit ageUnit,
+			st3.zyid zyid,st3.patient_id patientId,st3.visit_id visitId, st3.out_at outAt,st3.in_hosp_at inHospAt,
+			<if test="deptType == 's'.toString()">
+				st5.dept_name deptName, st5.dept_id deptId,
+			</if>
+			<if test="deptType == 'z'.toString()">
+				st3.dept_name deptName, st3.dept_code deptId,
+			</if>
+			st5.id id,st5.oper_id operId,st5.relid relid,st5.nnis nnis,st5.oper_at_end operAtEnd,st5.OPER_AT_START operAtStart,
+			st5.oper_name operName,st5.oper_at operAt,st5.incision_grade incisionGrade,st5.opedoc_name opedocName,
+			st5.oper_leng_time operLengTime,st5.asa asa,st5.opedoc_id opedocId,st5.view_flag viewFlag,st5.status status,
+			st5.memo memo,st5.imp_ope_id impOpeId,#{riskRateType} riskRateType,
+			bk2.infect_date infectDate, bk2.infect_type infectTypeId, bk2.infect_diagn_name infectDiagnName, 
+			(select count(1) from GR016_SSBW_KJYW gr016 where gr016.refid = st5.relid 
+			and gr016.OPER_TYPE_ID = '3' and gr016.ISSELECT = '1' and gr016.DATE_SECTION in('8','9','10')) afterGreater24, 
+			(select wm_concat(st2.diagnosis_name) diagnosisName from ST002_ZDXXB st2 where st5.zyid=st2.zyid and st2.diagnosis_type=1) diagnosisName
+		from st005_ssxxb st5  
+		left join bk002_grzd bk2 on bk2.ope_relid=st5.relid 
+		inner join st003_cryxxb st3 on st3.zyid = st5.zyid 
+		<where>
+			<if test="queryStartDate != null and dateType == 2">
+				and trunc(st5.oper_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null and dateType == 2">
+				and trunc(st5.oper_at) &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and dateType == 1">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null and dateType == 1">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and dateType == 3">
+				and trunc(bk2.infect_date) &gt;= #{queryStartDate}
+				and nvl(bk2.infect_type,'0')!=2
+			</if>
+			<if test="queryEndDate != null and dateType == 3">
+				and trunc(bk2.infect_date) &lt;= #{queryEndDate}
+				and nvl(bk2.infect_type,'0')!=2
+				and bk2.auth_status in (0,1)
+			</if>
+			<if test="deptId!=null and deptId!='' and deptType == 's'.toString()"> 
+				and st5.dept_id=#{deptId}
+			</if>
+			<if test="deptId!=null and deptId!='' and deptType == 'z'.toString()"> 
+				and st3.dept_code=#{deptId}
+			</if>
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and st5.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+			<if test="opepartkindid!=null and opepartkindid!=''"> 
+				and st5.opepartkindid=#{opepartkindid}
+			</if>
+			<if test="incisionGrade!=null and incisionGrade!=''"> 
+				and st5.incision_grade=#{incisionGrade}
+			</if>
+			<if test="impOpeId!=null and impOpeId!=''"> 
+				and st5.imp_ope_id=#{impOpeId}
+			</if>
+			<if test="opedocId!=null and opedocId!=''"> 
+				and st5.opedoc_id=#{opedocId}
+			</if>
+			<if test="searchString!=null and searchString!=''"> 
+				and (st5.zyid like concat( concat('%',#{searchString}),'%') or st5.patient_name like concat( concat('%',#{searchString}),'%'))
+			</if>
+			<if test="operName!=null and operName!=''"> 
+				and st5.oper_name like concat( concat('%',#{operName}),'%')
+			</if>
+			<if test="operBw!=null and operBw!=''"> 
+				and st5.oper_bw=#{operBw}
+			</if>
+			<if test="isMonitorOpera == 1"> 
+				and st5.opepartkindid in (select opepartkindid from zg017_ssczfl where flag = 1)
+			</if>
+			<if test="isMonitorOpera == 2"> 
+				and st5.opepartkindid not in (select opepartkindid from zg017_ssczfl where flag = 1)
+			</if>
+			<if test="viewFlag!=null"> 
+				and st5.view_flag=#{viewFlag}
+			</if>
+			<if test="status!=null and status != -1"> 
+				and st5.status=#{status}
+			</if>
+			<if test="status == -1"> 
+				and (st5.status is null or status &lt;&gt; 4)
+			</if>
+			<if test="gr == 1"> 
+				and bk2.infect_diagn_name is not null
+				and nvl(bk2.infect_type,'0')!=2
+				and bk2.auth_status in (0,1)
+			</if>
+			<if test="grType!=null and grType!=''"> 
+				and bk2.infect_type=#{grType}
+			</if>
+			<if test="operRoom!=null and operRoom!=''"> 
+				and st5.oper_room = #{operRoom}
+			</if>
+			<if test="lengTime!=null and lengTime!='' and operLengTime!=null and operLengTime!=''"> 
+				<if test="lengTime==1 "> 
+				and st5.oper_leng_time &gt; #{operLengTime}
+				</if>
+				<if test="lengTime==2 "> 
+				and st5.oper_leng_time &lt; #{operLengTime}
+				</if>
+			</if>
+		</where>
+		order by 
+		<if test="dateType == 2">
+			st5.oper_at desc,
+		</if>
+		<if test="dateType == 1">
+			st3.out_at desc,
+		</if>
+		st5.id 
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<!-- 已废弃，统一使用findSurgeryList -->
+	<select id="findSurgeryListExcel_oracle" parameterType="st005Ssxxb" resultType="st005Ssxxb">
+		select 
+			bk2.infect_date infectDate, st5.out_at outAt, st5.oper_id operId,st5.relid relid,st5.nnis nnis,
+			st5.status status,st5.zyid zyid,st5.patient_id patientId,st5.visit_id visitId,st5.patient_name patientName,
+			st5.sex sex,st5.age age,st5.bed_no bedNo,st5.age_unit ageUnit,st5.dept_name deptName,st5.dept_id deptId,
+			st5.oper_name operName,st5.memo memo,st5.oper_at_end operAtEnd,st5.OPER_AT_START operAtStart,st5.oper_at operAt,
+			bk2.infect_diagn_name infectDiagnName,wm_concat(st2.diagnosis_name) diagnosisName ,st5.incision_grade incisionGrade,
+			st5.opedoc_name opedocName,st5.in_hosp_at inHospAt,st5.oper_leng_time operLengTime,st5.asa asa,st5.opedoc_id opedocId,
+			st5.view_flag viewFlag,st5.id id,st5.imp_ope_id impOpeId ,#{riskRateType} riskRateType, 
+			(select count(1) from GR016_SSBW_KJYW gr016 where gr016.refid = st5.relid 
+			and gr016.OPER_TYPE_ID = '3' and gr016.ISSELECT = '1' and gr016.DATE_SECTION in('8','9','10')) afterGreater24
+		from st005_ssxxb st5 
+		left join bk002_grzd bk2 on bk2.ope_relid=st5.relid 
+		inner join st003_cryxxb st3 on st3.zyid = st5.zyid 
+		left join  ST002_ZDXXB st2 on st5.zyid=st2.zyid and st2.diagnosis_type=1    
+		<where>
+			<if test="queryStartDate != null">
+				and st5.oper_at &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and st5.oper_at &lt;= #{queryEndDate}
+			</if>
+			<if test="deptId!=null and deptId!=''"> 
+				and st5.dept_id=#{deptId}
+			</if>
+			<if test="opepartkindid!=null and opepartkindid!=''"> 
+				and st5.opepartkindid=#{opepartkindid}
+			</if>
+			<if test="incisionGrade!=null and incisionGrade!=''"> 
+				and st5.incision_grade=#{incisionGrade}
+			</if>
+			<if test="impOpeId!=null and impOpeId!=''"> 
+				and st5.imp_ope_id=#{impOpeId}
+			</if>
+			<if test="opedocId!=null and opedocId!=''"> 
+				and st5.opedoc_id=#{opedocId}
+			</if>
+			<if test="searchString!=null and searchString!=''"> 
+				and (st5.zyid like concat( concat('%',#{searchString}),'%') or st5.patient_name like concat( concat('%',#{searchString}),'%'))
+			</if>
+			<if test="operName!=null and operName!=''"> 
+				and st5.oper_name like concat( concat('%',#{operName}),'%')
+			</if>
+			<if test="isMonitorOpera == 1"> 
+				and st5.opepartkindid in (select opepartkindid from zg017_ssczfl where flag = 1)
+			</if>
+			<if test="isMonitorOpera == 2"> 
+				and st5.opepartkindid not in (select opepartkindid from zg017_ssczfl where flag = 1)
+			</if>
+			<if test="viewFlag!=null"> 
+				and st5.view_flag=#{viewFlag}
+			</if>
+			<if test="status!=null"> 
+				and st5.status=#{status}
+			</if>
+			<if test="gr == 1"> 
+				and bk2.infect_diagn_name is not null
+			</if>
+			<if test="operRoom!=null and operRoom!=''"> 
+				and st5.oper_room like concat( concat('%',#{operRoom}),'%')
+			</if>
+			<if test="operLengTime!=null and operLengTime!=''"> 
+				and st5.oper_leng_time &gt; #{operLengTime}
+			</if>
+		</where>
+		 group by bk2.infect_date, st5.out_at, st5.oper_id ,st5.relid ,st5.nnis ,st5.status ,st5.zyid ,st5.patient_id ,st5.visit_id ,st5.patient_name ,st5.sex ,st5.age ,st5.bed_no ,st5.age_unit ,st5.dept_name ,st5.dept_id ,st5.oper_name ,
+		st5.oper_at ,bk2.infect_diagn_name ,st5.incision_grade ,st5.opedoc_name ,st5.in_hosp_at ,st5.oper_leng_time ,st5.asa ,st5.opedoc_id ,st5.view_flag ,st5.id ,st5.imp_ope_id  ,st5.id,st5.memo,st5.oper_at_end,st5.OPER_AT_START
+		order by st5.oper_at desc
+	</select>
+	
+	
+	<select id="findSurgeryDayList_oracle" parameterType="st005Ssxxb" resultType="st005Ssxxb">
+		select st5.oper_id operId,st5.relid relid,st5.nnis nnis,st5.status status,bk2.infect_diagn_name infectDiagnName, st5.zyid zyid,st5.patient_id patientId,st5.visit_id visitId,st5.patient_name patientName,st5.sex sex,st5.age age,st5.bed_no bedNo,st5.age_unit ageUnit,st5.dept_name deptName,st5.dept_id deptId,st5.oper_name operName,
+		st5.oper_at operAt,st5.incision_grade incisionGrade,st5.opedoc_name opedocName,st5.in_hosp_at inHospAt,st5.oper_leng_time operLengTime,st5.asa asa,st5.opedoc_id opedocId,st5.view_flag viewFlag,st5.id id,st5.imp_ope_id impOpeId,#{riskRateType} riskRateType
+		from st005_ssxxb st5 left join bk002_grzd bk2 on bk2.ope_relid=st5.relid 
+		<where>
+			<if test="date!=null and date!=''">
+			 	and st5.oper_at &gt;=  to_date(#{date},'yyyy-MM-dd')  and st5.oper_at &lt; to_date(#{date},'yyyy-MM-dd')+1 
+			</if>
+			<if test="isZdjc=='zd'.toString()">
+				and st5.imp_ope_id in  (select dict_code from sys_dict t where t.dict_type_code='operation_point')
+			</if>
+			<if test="isZdjc=='fzd'.toString()">
+				and st5.imp_ope_id is null
+			</if>  
+			<if test="incisionGrade!=null and incisionGrade!=''">
+				<if test="incisionGrade!='未维护'.toString()">
+					and st5.incision_grade=#{incisionGrade}
+				</if> 
+				<if test="incisionGrade=='未维护'.toString()">
+					and ((st5.incision_grade!='零类' and st5.incision_grade!='I类' and st5.incision_grade!='II类'  and st5.incision_grade!='III类' and st5.incision_grade!='IV类') or st5.incision_grade is null)
+				</if>
+			</if>
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and st5.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+		order by st5.status, st5.dept_id ,st5.id
+	</select>
+	
+	<select id="findSurgeryDayListExcel_oracle" parameterType="st005Ssxxb" resultType="st005Ssxxb">
+		select bk2.infect_date infectDate, st5.out_at outAt, st5.oper_id operId,st5.relid relid,st5.nnis nnis,st5.status status,st5.zyid zyid,st5.patient_id patientId,st5.visit_id visitId,st5.patient_name patientName,st5.sex sex,st5.age age,st5.bed_no bedNo,st5.age_unit ageUnit,st5.dept_name deptName,st5.dept_id deptId,st5.oper_name operName,
+		st5.oper_at operAt,bk2.infect_diagn_name infectDiagnName,bk2.infect_type infectTypeId,wm_concat(st2.diagnosis_name) diagnosisName ,st5.incision_grade incisionGrade,st5.opedoc_name opedocName,st5.in_hosp_at inHospAt,st5.oper_leng_time operLengTime,st5.asa asa,st5.opedoc_id opedocId,st5.view_flag viewFlag,st5.id id,st5.imp_ope_id impOpeId ,#{riskRateType} riskRateType 
+		from st005_ssxxb st5 left join bk002_grzd bk2 on bk2.ope_relid=st5.relid left join  ST002_ZDXXB st2 on st5.zyid=st2.zyid and st2.diagnosis_type=1 
+		<where>
+			<if test="date!=null and date!=''">
+			 	and st5.oper_at &gt;=  to_date(#{date},'yyyy-MM-dd')  and st5.oper_at &lt; to_date(#{date},'yyyy-MM-dd')+1 
+			</if>
+			<if test="isZdjc=='zd'.toString()">
+				and st5.imp_ope_id in  (select dict_code from sys_dict t where t.dict_type_code='operation_point')
+			</if>
+			<if test="isZdjc=='fzd'.toString()">
+				and st5.imp_ope_id is null
+			</if>  
+			<if test="incisionGrade!=null and incisionGrade!=''">
+				<if test="incisionGrade!='未维护'.toString()">
+					and st5.incision_grade=#{incisionGrade}
+				</if> 
+				<if test="incisionGrade=='未维护'.toString()">
+					and (st5.incision_grade!='零类' and st5.incision_grade!='I类' and st5.incision_grade!='II类'  and st5.incision_grade!='III类' and st5.incision_grade!='IV类')
+				</if>
+			</if>
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and st5.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+		 group by bk2.infect_date, st5.out_at, st5.oper_id ,st5.relid ,st5.nnis ,st5.status ,st5.zyid ,st5.patient_id ,st5.visit_id ,st5.patient_name ,st5.sex ,st5.age ,st5.bed_no ,st5.age_unit ,st5.dept_name ,st5.dept_id ,st5.oper_name ,
+		st5.oper_at ,bk2.infect_diagn_name ,bk2.infect_type, st5.incision_grade ,st5.opedoc_name ,st5.in_hosp_at ,st5.oper_leng_time ,st5.asa ,st5.opedoc_id ,st5.view_flag ,st5.id ,st5.imp_ope_id 
+		order by st5.status, st5.dept_id ,st5.id
+	</select>
+	
+	<select id="getNumBefore_oracle" resultType="date">
+		select * from (select st5.oper_at from st005_ssxxb st5 
+		<where>
+			st5.zyid=#{zyid} and st5.oper_at between (#{updDate} - #{day}) and  #{updDate}
+		</where>
+		order by st5.oper_at desc ) where rownum = 1
+	</select>
+	
+	<select id="getRecentOperAt_oracle" resultType="date">
+		select * from (select st5.oper_at from st005_ssxxb st5 left join st003_cryxxb st3 on st5.zyid=st3.zyid
+		<where>
+			st5.zyid=#{zyid} and st5.oper_at &lt; #{operAt} and st5.oper_at >= st3.in_hosp_at + 2
+		</where>
+		order by st5.oper_at desc ) where rownum = 1
+	</select>
+</mapper>

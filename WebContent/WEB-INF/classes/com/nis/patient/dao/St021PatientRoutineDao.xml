@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St021PatientRoutineDao">
+
+	<sql id="commCols">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,RECORDING_AT recordingAt,ROUTINE_VALUES routineValues,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="st021PatientRoutine" flushCache="true">
+		 insert into ST021_PATIENT_ROUTINE(ID,ZYID,PATIENT_ID,VISIT_ID,RECORDING_AT,ROUTINE_VALUES,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{zyid},#{patientId},#{visitId},#{recordingAt},#{routineValues},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from ST021_PATIENT_ROUTINE
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st021PatientRoutine" flushCache="true">
+		update ST021_PATIENT_ROUTINE
+		<set>
+			ID=#{id},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},RECORDING_AT=#{recordingAt},ROUTINE_VALUES=#{routineValues},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="st021PatientRoutine">
+		select <include refid="commCols"/> from ST021_PATIENT_ROUTINE
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findSt021PatientRoutineCount" parameterType="st021PatientRoutine" resultType="int">
+		select count(*) from ST021_PATIENT_ROUTINE
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st021PatientRoutine">
+		select <include refid="commCols"/> from ST021_PATIENT_ROUTINE
+		<where>
+		</where>
+	</select>
+</mapper>

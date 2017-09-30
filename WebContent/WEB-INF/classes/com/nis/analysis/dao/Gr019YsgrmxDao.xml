@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Gr019YsgrmxDao">
+
+	<sql id="commCols">
+		IF_BASE_ELEMENT ifBaseElement,NODE_TYPE2 nodeType2,ZYID zyid,INFECT_CODE infectCode,NODE_LEVEL nodeLevel,NODE_ID nodeId,IF_MUST ifMust,LIST_COUNT listCount,NEED_COUNT needCount,CURR_ITEMS currItems,ELEMENT_ID elementId,WEIGHT_VALUE weightValue,CREATE_AT createAt,LAST_AT lastAt,P_NODE_ID pNodeId,FLAG flag,WEIGHT_RATIO weightRatio,WEIGHT_FLAG weightFlag,YS_ID ysId,TIEMS_COUNT tiemsCount,STANDARD_NO standardNo,INFECT_TYPEID infectTypeid,CURWTVALUE curwtvalue,NODE_TYPE nodeType
+	</sql>
+
+	<insert id="save" parameterType="gr019Ysgrmx"  flushCache="true">
+		 insert into GR019_YSGRMX(IF_BASE_ELEMENT,NODE_TYPE2,ZYID,INFECT_CODE,NODE_LEVEL,NODE_ID,IF_MUST,LIST_COUNT,NEED_COUNT,CURR_ITEMS,ELEMENT_ID,WEIGHT_VALUE,CREATE_AT,LAST_AT,P_NODE_ID,FLAG,WEIGHT_RATIO,WEIGHT_FLAG,YS_ID,TIEMS_COUNT,STANDARD_NO,INFECT_TYPEID,CURWTVALUE,NODE_TYPE)
+		 values(#{ifBaseElement},#{nodeType2},#{zyid},#{infectCode},#{nodeLevel},#{nodeId},#{ifMust},#{listCount},#{needCount},#{currItems},#{elementId},#{weightValue},#{createAt},#{lastAt},#{pNodeId},#{flag},#{weightRatio},#{weightFlag},#{ysId},#{tiemsCount},#{standardNo},#{infectTypeid},#{curwtvalue},#{nodeType})
+	</insert>
+	
+	<insert id="saveList"  flushCache="true">
+		<foreach collection="gr019List" item="item" index="index" open="begin" close=";end;" separator=";">
+			 insert into GR019_YSGRMX${tablename}(ZYID,INFECT_CODE,NODE_LEVEL,NODE_ID,IF_MUST,LIST_COUNT,NEED_COUNT,CURR_ITEMS,ELEMENT_ID,WEIGHT_VALUE,CREATE_AT,LAST_AT,P_NODE_ID,FLAG,WEIGHT_RATIO,WEIGHT_FLAG,YS_ID,TIEMS_COUNT,STANDARD_NO,INFECT_TYPEID,CURWTVALUE,NODE_TYPE,IF_BASE_ELEMENT,NODE_TYPE2)
+		 	values(#{item.zyid},#{item.infectCode},#{item.nodeLevel},#{item.nodeId},#{item.ifMust},#{item.listCount},#{item.needCount},#{item.currItems},#{item.elementId},#{item.weightValue},#{item.createAt},#{item.lastAt},#{item.pNodeId},#{item.flag},#{item.weightRatio},#{item.weightFlag},#{item.ysId},#{item.tiemsCount},#{item.standardNo},#{item.infectTypeid},#{item.curwtvalue},#{item.nodeType},#{item.ifBaseElement},#{item.nodeType2})
+		</foreach>
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  GR019_YSGRMX${tablename}
+		<where>ZYID=#{zyid}</where>
+	</delete>
+	
+	<select id="getMonitorPatientGrLastAt" resultType="date">
+		select max(create_at) create_at,max(last_at) last_at from GR019_YSGRMX mx
+	 join st003_cryxxb cr on mx.zyid=cr.zyid
+	 where cr.out_at is null and create_at&lt;sysdate
+	</select>
+	
+	<update id="update" parameterType="gr019Ysgrmx" flushCache="true">
+		update GR019_YSGRMX
+		<set>
+			IF_BASE_ELEMENT=#{ifBaseElement},NODE_TYPE2=#{nodeType2},ZYID=#{zyid},INFECT_CODE=#{infectCode},NODE_LEVEL=#{nodeLevel},NODE_ID=#{nodeId},IF_MUST=#{ifMust},LIST_COUNT=#{listCount},NEED_COUNT=#{needCount},CURR_ITEMS=#{currItems},ELEMENT_ID=#{elementId},WEIGHT_VALUE=#{weightValue},CREATE_AT=#{createAt},LAST_AT=#{lastAt},P_NODE_ID=#{pNodeId},FLAG=#{flag},WEIGHT_RATIO=#{weightRatio},WEIGHT_FLAG=#{weightFlag},YS_ID=#{ysId},TIEMS_COUNT=#{tiemsCount},STANDARD_NO=#{standardNo},INFECT_TYPEID=#{infectTypeid},CURWTVALUE=#{curwtvalue},NODE_TYPE=#{nodeType}
+		</set>
+		<where>ZYID=#{zyid}</where>
+	</update>
+	
+	<select id="get" resultType="gr019Ysgrmx">
+		select <include refid="commCols"/> from GR019_YSGRMX
+  		<where>ZYID=#{zyid}</where>
+	</select>
+	
+	
+	<select id="findGr019YsgrmxCount" parameterType="gr019Ysgrmx" resultType="int">
+		select count(*) from GR019_YSGRMX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="gr019Ysgrmx">
+		select <include refid="commCols"/> from GR019_YSGRMX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+		<select id="getbyZyid" resultType="gr019Ysgrmx">
+		select <include refid="commCols"/> from GR019_YSGRMX${tablename}
+  		<where>ZYID=#{zyid}</where>
+	</select>
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Zg007DictDao">
+
+	<sql id="commCols">
+		BH_ELEMENT bhElement,KEYID keyid,ELEMENT_ID elementId,ITEM_NAME itemName,ITEM_CLASS itemClass,ELEMENT_TYPE elementType,QY_ELEMENT qyElement,APP_ELEMENT appElement,dict_type dictType,flag flag,IS_MAIN isMain
+	</sql>
+
+	<insert id="save" parameterType="zg007Dict"  flushCache="true">
+		 insert into ZG007_DICT(BH_ELEMENT,KEYID,ELEMENT_ID,ITEM_NAME,ITEM_CLASS,ELEMENT_TYPE,QY_ELEMENT,APP_ELEMENT,dict_type,flag,IS_MAIN)
+		 values(#{bhElement},#{keyid},#{elementId},#{itemName},#{itemClass},#{elementType},#{qyElement},#{appElement},#{dictType},#{flag},#{isMain})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG007_DICT
+		<where>KEYID=#{keyid}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg007Dict" flushCache="true">
+		update ZG007_DICT
+		<set>
+			BH_ELEMENT=#{bhElement},KEYID=#{keyid},ELEMENT_ID=#{elementId},ITEM_NAME=#{itemName},ITEM_CLASS=#{itemClass},ELEMENT_TYPE=#{elementType},QY_ELEMENT=#{qyElement},APP_ELEMENT=#{appElement},dict_type=#{dictType},flag=#{flag},IS_MAIN=#{isMain}
+		</set>
+		<where>KEYID=#{keyid}</where>
+	</update>
+	
+	<select id="get" resultType="zg007Dict">
+		select <include refid="commCols"/> from ZG007_DICT
+  		<where>KEYID=#{keyid}</where>
+	</select>
+	
+	<select id="getByElementId" resultType="zg007Dict">
+		select 
+			BH_ELEMENT   bhElement,
+			ELEMENT_ID   elementId,
+			ITEM_CLASS   itemClass,
+			ELEMENT_TYPE elementType,
+			QY_ELEMENT   qyElement,
+			APP_ELEMENT  appElement,
+			dict_type    dictType,
+			flag         flag
+		from ZG007_DICT
+		<where>
+			1=1
+			and ELEMENT_ID =#{elementId}
+			and IS_MAIN = '86A8433C4635E2ED'
+		</where>
+	</select>
+		
+	<select id="findZg007DictCount" parameterType="zg007Dict" resultType="int">
+		select count(*) from ZG007_DICT t
+		<where>
+			1=1
+			<if test="elementId!=null and elementId!=''">
+				and t.element_id =#{elementId}
+			</if>
+			<!-- 0 否定词 A9B8E397C091559F ， 3 关键词 52B669C0526DBADC -->
+			<choose>
+				<when test='itemClass=="A9B8E397C091559F"'>
+					and t.item_class = 'A9B8E397C091559F'
+				</when>
+				<when test='itemClass=="52B669C0526DBADC"'>
+					and t.item_class = '52B669C0526DBADC'
+				</when>
+				<otherwise>
+					and (t.item_class = 'A9B8E397C091559F' or t.item_class = '52B669C0526DBADC')
+				</otherwise>
+			</choose>
+			<choose>
+				<!-- 院感 977C5BB729F88946 是否为主要1 86A8433C4635E2ED-->
+				<when test='dictType=="977C5BB729F88946"'>
+					and t.dict_type = '977C5BB729F88946'
+					<if test='itemClass=="52B669C0526DBADC"'>
+						and is_Main = '86A8433C4635E2ED'
+					</if>
+				</when>
+				<!-- 传染病 1544E1B70E4296E8 -->
+				<when test='dictType=="1544E1B70E4296E8"'>
+					and t.dict_type = '1544E1B70E4296E8'
+				</when>
+				<otherwise>
+					
+				</otherwise>
+			</choose>
+<!-- 			<if test="searchString!=null and searchString!=''">
+				and t.item_name like concat(concat('%', #{searchString}), '%') or t.element_id like concat(concat('%', #{searchString}), '%')
+			</if> -->
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg007Dict">
+		select <include refid="commCols"/> from ZG007_DICT
+		<where>
+			1=1
+		</where>
+	</select>
+	<select id="getByClass"  resultType="zg007Dict">
+		select <include refid="commCols"/> from ZG007_DICT
+		<where>item_class=#{itemClass} and dict_Type=#{dictType} and item_name is not null</where> 
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientClinicDao">
+
+	<sql id="commCols_mysql">
+		ID id,MZID mzid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,IDNUMBER idnumber,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,PARENT_NAME parentName,TEL tel,MARRIAGE marriage,NATION nation,WORK_UNIT workUnit,EDUCATION education,REGISTERADDR registeraddr,PRESENTADDR presentaddr,DIAGNOSIS_NAME diagnosisName,VISIT_DT visitDt,START_DT startDt,DEATH_DT deathDt,DEPT_ID deptId,DEPT_NAME deptName,DOCTOR_ID doctorId,DOCTOR_NAME doctorName,ISRETURNVISIT isreturnvisit,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientClinic_mysql" parameterType="jkPatientClinic" resultType="jkPatientClinic">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_CLINIC
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

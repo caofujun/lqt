@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DoctorDao">
+
+	<sql id="commCols">
+		ID id,HOSP_ID hospId,EMPLOYEE_ID employeeId,EMPLOYEE_NAME employeeName,DEPT_ID deptId,ZJ_CODE zjCode,BH_CODE bhCode,
+		SP_CODE spCode,WB_CODE wbCode,FLAG flag,OPER_DOC operDoc,DR_LINETYPE drLinetype,LAST_AT lastAt,IN_TEL inTel,
+		PHONE_NO phoneNo,EMAIL email,IN_GROUP_NO inGroupNo,AUTH_MODE authMode,AUTH_CODE authCode,CLASS cclass,PWD pwd,STATE state,EMPLOYEE_TYPE employeeType,ROLE_ID roleId
+	</sql>
+
+	<insert id="save" parameterType="doctor" flushCache="true">
+		 insert into ZG003_YYZG(ID,HOSP_ID,EMPLOYEE_ID,EMPLOYEE_NAME,DEPT_ID,ZJ_CODE,BH_CODE,SP_CODE,WB_CODE,FLAG,OPER_DOC,
+		 DR_LINETYPE,LAST_AT,IN_TEL,PHONE_NO,EMAIL,IN_GROUP_NO,AUTH_MODE,AUTH_CODE,CLASS,STATE,EMPLOYEE_TYPE,ROLE_ID)
+		 values(#{id},#{hospId},#{employeeId},#{employeeName},#{deptId},#{zjCode},#{bhCode},#{spCode},#{wbCode},#{flag},
+		 #{operDoc},#{drLinetype},#{lastAt},#{inTel},#{phoneNo},#{email},#{inGroupNo},#{authMode},#{authCode},#{cclass},#{state},#{employeeType},#{roleId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG003_YYZG
+		<where>EMPLOYEE_ID=#{employeeId}</where>
+	</delete>
+	
+	<update id="update" parameterType="doctor" flushCache="true">
+		update ZG003_YYZG
+		<set>
+			ID=#{id},
+			HOSP_ID=#{hospId},
+			PWD=#{pwd},
+			EMPLOYEE_ID=#{employeeId},
+			EMPLOYEE_NAME=#{employeeName},
+			DEPT_ID=#{deptId},
+			ZJ_CODE=#{zjCode},
+			BH_CODE=#{bhCode},
+			SP_CODE=#{spCode},
+			WB_CODE=#{wbCode},
+			FLAG=#{flag},
+			OPER_DOC=#{operDoc},
+			DR_LINETYPE=#{drLinetype},
+			LAST_AT=#{lastAt},
+			IN_TEL=#{inTel},
+			PHONE_NO=#{phoneNo},
+			EMAIL=#{email},
+			IN_GROUP_NO=#{inGroupNo},
+			AUTH_MODE=#{authMode},
+			AUTH_CODE=#{authCode},
+			CLASS=#{cclass},
+			STATE=#{state},
+			EMPLOYEE_TYPE=#{employeeType},
+			ROLE_ID=#{roleId}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updatePwd" flushCache="true">
+		update ZG003_YYZG
+		<set>
+			AUTH_CODE=#{authCode}
+		</set>
+		<where>EMPLOYEE_ID=#{employeeId}</where>
+	</update>
+	
+	<select id="get" resultType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG
+  		<where>lower(EMPLOYEE_ID)=lower(#{employeeId})</where>
+	</select>
+	
+	<select id="getDoctorByHisDocNo" resultType="doctor" parameterType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG
+  		<where>HIS_DOC_NO=#{hisDocNo} and UNIT_ID=#{unitId}</where>
+		order by EMPLOYEE_NAME
+	</select>
+	
+	<select id="listDoctor" resultType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG 
+		<where>
+		    ZG003_YYZG.HOSP_ID = #{hospId} and 
+			ZG003_YYZG.ID in 
+			<foreach collection="doctorIdList" open="(" close=")" item="doctorId" separator=",">
+				#{doctorId}
+			</foreach>
+		</where>
+		ORDER BY EMPLOYEE_ID
+	</select>
+	
+	<select id="findDoctorListByDept" resultType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG 
+		<where>
+			<if test="hospId!=null and hospId!=''">and HOSP_ID=#{hospId}</if>
+			<if test="deptId!=null and deptId!=''">and DEPT_ID=#{deptId}</if>
+			<if test="deptIds!=null and deptIds!=''">
+				and ZG003_YYZG.DEPT_ID in 
+				<foreach collection="deptIds" open="(" close=")" item="deptId" separator=",">
+					#{deptId}
+				</foreach>
+			</if>
+		</where>
+		ORDER BY EMPLOYEE_ID
+	</select>
+	
+	<select id="findDoctorCount" parameterType="doctor" resultType="int">
+		select count(*) from ZG003_YYZG
+		<where>
+			<if test="hospId!=null and hospId!=''">and HOSP_ID=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (EMPLOYEE_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') or EMPLOYEE_ID LIKE CONCAT(CONCAT('%', #{searchString}), '%')) 
+				or lower(SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%')
+			</if>
+			<if test="deptId!=null and deptId!=''">and DEPT_ID=#{deptId}</if>
+			<if test="cclass!=null and cclass!=''">and CLASS=#{cclass}</if>
+		</where>
+	</select>
+	
+	<select id="findNosetDepDoctorCount" resultType="int">
+		select count(*) from ZG003_YYZG
+		<where>
+			<if test="hospId!=null and hospId!=''">and HOSP_ID=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (EMPLOYEE_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') or EMPLOYEE_ID LIKE CONCAT(CONCAT('%', #{searchString}), '%')) 
+			</if>
+			<if test="deptId!=null and deptId!=''">and DEPT_ID=#{deptId}</if>
+			<if test="cclass!=null and cclass!=''">and CLASS=#{cclass}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG
+		<where>
+			<if test="hospId!=null and hospId!=''">HOSP_ID=#{hospId}</if>
+		</where>
+		order by EMPLOYEE_NAME
+	</select>
+	
+	<select id="findLike" resultType="doctor">
+		select ID id,EMPLOYEE_ID employeeId,EMPLOYEE_NAME employeeName from ZG003_YYZG
+		<where>
+			<if test="hospId!=null and hospId!=''">and HOSP_ID=#{hospId}</if>
+			<if test="deptId!=null and deptId!=''">and DEPT_ID=#{deptId}</if>
+			<if test="name != null and name != ''">
+				and (
+				EMPLOYEE_NAME LIKE CONCAT(CONCAT('%', #{name}), '%')
+				or DEPT_ID LIKE CONCAT(CONCAT('%', Upper(#{name})), '%')
+				or EMPLOYEE_ID LIKE CONCAT(CONCAT('%', Upper(#{name})), '%')
+				)
+			</if>
+		</where>
+		order by EMPLOYEE_NAME
+	</select>
+	
+	<select id="login" resultType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG
+		<where>
+		 	lower(EMPLOYEE_ID)=lower(#{employeeId}) and AUTH_CODE=#{pwd}
+			<if test="hospId!=null and hospId!=''">and HOSP_ID=#{hospId}</if>
+		</where>
+		order by EMPLOYEE_NAME
+	</select>
+	
+	<select id="getUnitIdDocId" resultType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG
+		<where>
+			HOSP_ID=#{hospId} and ID=#{id}
+			<if test="deptId!=null and deptId!=''">and DEPT_ID=#{deptId}</if>
+		</where>
+	</select>
+
+	<select id="findExtis" resultType="doctor">
+		select <include refid="commCols"/> from ZG003_YYZG
+		<where>
+			HOSP_ID=#{hospId} and EMPLOYEE_ID=#{employeeId}
+			<if test="id!=null and id!=''"> and ID!=#{id}</if>
+		</where>
+	</select>
+	
+</mapper>

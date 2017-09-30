@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw010ZzryDao">
+
+	<sql id="commCols">
+		dept_id deptId,employee_id employeeId,source source,employee_name employeeName
+	</sql>
+
+	<insert id="save" parameterType="hw010Zzry" flushCache="true">
+		 insert into hw010_zzry(dept_id,employee_id,source,employee_name)
+		 values(#{deptId},#{employeeId},#{source},#{employeeName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw010_zzry
+		<where>employee_id=#{employeeId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw010Zzry" flushCache="true">
+		update hw010_zzry
+		<set>
+			dept_id=#{deptId},employee_id=#{employeeId},source=#{source},employee_name=#{employeeName}
+		</set>
+		<where>employee_id=#{employeeId}</where>
+	</update>
+	
+	<select id="get" resultType="hw010Zzry">
+		select <include refid="commCols"/> from hw010_zzry
+  		<where>employee_id=#{employeeId}</where>
+	</select>
+	
+	
+	<select id="findHw010ZzryCount" parameterType="hw010Zzry" resultType="int">
+		select count(*) from hw010_zzry
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw010Zzry">
+		select <include refid="commCols"/> from hw010_zzry
+		<where>
+		</where>
+	</select>
+	
+	<select id="queryList" parameterType="hw010Zzry" resultType="hw010Zzry">
+		select 
+			distinct h10.employee_id employeeId,h10.employee_name employeeName 
+		from hw010_zzry h10 
+		inner join view_xmsq h9 on h9.user_id=h10.employee_id
+		<where>
+			<if test="searchString!=null and searchString!=''"> and (employee_id like CONCAT( CONCAT('%',#{searchString}),'%') or employee_name like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+		order by h10.employee_name
+	</select>
+	
+	<select id="findAccreditListCount" parameterType="hw010Zzry" resultType="int">
+		select count(*)
+		from hw010_zzry h10 
+		left join (select h9.user_id, to_char(wm_concat(z2.dept_name)) dept_name,',' || to_char(wm_concat(h9.dept_id)) || ',' dept_id from hw009_kssq h9 left join zg002_byks z2 on z2.dept_id = h9.dept_id group by h9.user_id) t2 on t2.user_id = h10.employee_id 
+		<where>
+			<if test="operateDeptId!=null and operateDeptId!=''">
+				and t2.dept_id like CONCAT(CONCAT('%',#{operateDeptId}), '%') 
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and h10.dept_id=#{deptId}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (h10.employee_name like CONCAT(CONCAT('%',#{searchString}), '%') or h10.employee_id like CONCAT(CONCAT('%',#{searchString}), '%'))
+			</if>
+		</where>
+	</select>
+</mapper>

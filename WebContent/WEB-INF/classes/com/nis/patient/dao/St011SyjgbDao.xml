@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St011SyjgbDao">
+
+	<sql id="commCols">
+		id id,zyid zyid,patient_id patientId,visit_id visitId,test_order_no testOrderNo,result_date resultDate,isym isym,anti_code antiCode,anti_name antiName,yaomin_result yaominResult,test_result testResult,unit unit,refer_range referRange,remark remark,pathogen_sn pathogenSn,create_at createAt,upd_date updDate
+	</sql>
+
+	<insert id="save" parameterType="st011Syjgb" flushCache="true">
+		 insert into st011_syjgb(id,zyid,patient_id,visit_id,test_order_no,result_date,isym,anti_code,anti_name,yaomin_result,test_result,unit,refer_range,remark,pathogen_sn,create_at,upd_date)
+		 values(#{id},#{zyid},#{patientId},#{visitId},#{testOrderNo},#{resultDate},#{isym},#{antiCode},#{antiName},#{yaominResult},#{testResult},#{unit},#{referRange},#{remark},#{pathogenSn},#{createAt},#{updDate})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st011_syjgb
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st011Syjgb" flushCache="true">
+		update st011_syjgb
+		<set>
+			id=#{id},zyid=#{zyid},patient_id=#{patientId},visit_id=#{visitId},test_order_no=#{testOrderNo},result_date=#{resultDate},isym=#{isym},anti_code=#{antiCode},anti_name=#{antiName},yaomin_result=#{yaominResult},test_result=#{testResult},unit=#{unit},refer_range=#{referRange},remark=#{remark},pathogen_sn=#{pathogenSn},create_at=#{createAt},upd_date=#{updDate}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="st011Syjgb">
+		select <include refid="commCols"/> from st011_syjgb
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findSt011SyjgbCount" parameterType="st011Syjgb" resultType="int">
+		select count(*) from st011_syjgb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st011Syjgb">
+		select <include refid="commCols"/> from st011_syjgb
+		<where>
+		</where>
+		order by remark
+	</select>
+	
+	<select id="findSt011SyjgbList" parameterType="st011Syjgb" resultType="st011Syjgb">
+		select 
+			s11.zyid zyid, anti_code antiCode,anti_name antiName,yaomin_result yaominResult,
+			test_result testResult,unit unit,remark remark,refer_range referRange
+		from st011_syjgb s11
+		<where>
+			1=1
+			<if test="pathogenSn!=null and pathogenSn!=''"> and s11.pathogen_sn=#{pathogenSn}</if>
+			<if test="zyid!=null and zyid!='' and zyid!='null'"> and s11.zyid=#{zyid}</if>
+			<if test="mzid!=null and mzid!='' and mzid!='null'" > and s11.mzid=#{mzid} </if>
+			<if test="testOrderNo!=null and testOrderNo!=''"> and s11.test_order_no=#{testOrderNo}</if>
+			<if test="resultDate!=null and resultDate!='' and zyid!=null and zyid!=''">
+			 and s11.test_order_no in(select test_order_no from st009_sjbb where zyid=#{zyid} and SUBMI_AT= to_date(#{resultDate}, 'yyyy-MM-dd'))
+			</if>
+		</where>
+		order by remark
+	</select>
+	
+	<select id="findSt011Syjgbqst" resultType="st011Syjgb">
+		select 
+			st11.test_result testResult,st11.result_date resultDate 
+		from st011_syjgb st11
+		where st11.anti_code = #{antiCode}
+		   and st11.test_order_no in (
+		   		select t.test_order_no 
+		   		from st009_sjbb t,st011_syjgb st011,
+	               (select order_name from jk_dic_all where class_code = #{classCode}) t1
+	             <!-- C反应蛋白特殊特殊处理，剔除超敏C反应蛋白 -->
+				<if test="classCode == '107'">
+					,(select order_name from jk_dic_all where class_code='106') t2
+				</if>
+	         	where t.zyid = st011.zyid and t.test_order_no = st011.test_order_no
+		  		and t.zyid = #{zyid}
+				  and  (
+				  	t.item_type_name like t1.order_name
+				  	or st011.anti_name like  t1.order_name
+				  )	
+	             <!-- C反应蛋白特殊特殊处理，剔除超敏C反应蛋白 -->
+				<if test="classCode == '107'">
+				  and  (
+				  	t.item_type_name not like t2.order_name
+				  	and st011.anti_name not like  t2.order_name
+				  )
+				</if>
+	       )
+	    order by st11.result_date
+	</select>
+	
+	<select id="findByBDB" resultType="st011Syjgb">
+		select * from st009_sjbb sj 
+		join st011_syjgb jg on sj.test_order_no=jg.test_order_no
+		where sj.item_name in(
+		select p.item_name from ny_bb_dict d
+		join zg027_lisbb_pp p on (d.bbid=p.bbid or d.bbmc=p.item_name)
+		where d.dybw=#{dybw})
+		and jg.anti_name like CONCAT(CONCAT('%', #{zbName}), '%') and jg.zyid=#{zyid}
+		and (jg.remark='l' or jg.remark='h')
+	</select>
+	
+	<select id="findByBXB" resultType="st011Syjgb">
+		select * from st009_sjbb sj 
+		join st011_syjgb jg on sj.test_order_no=jg.test_order_no
+		where sj.item_name in(
+		select p.item_name from ny_bb_dict d
+		join zg027_lisbb_pp p on (d.bbid=p.bbid or d.bbmc=p.item_name)
+		where d.dybw=#{dybw})
+		and jg.anti_name in
+		<foreach collection="strList" index="index" item="item" open="(" separator="," close=")" >
+  			#{item} 
+  		</foreach> 
+		 and jg.zyid=#{zyid}
+	</select>
+	
+	<select id="findDrugAllergytList" resultType="st011Syjgb">
+		select d.infect_diagn_id infectDiagnId,c.sample_id sampleId,c.patho_id pathoId,a.anti_code antiCode,a.anti_name antiName,a.refer_range referRange,a.yaomin_result yaominResult,c.submi_at submiAt,c.test_no testOrderNo 
+		from st011_syjgb a left join st010_jcbyt b on b.zyid = a.zyid and b.test_order_no = a.test_order_no and b.pathogen_sn = a.pathogen_sn
+		left join bk004_sjbb c on c.zyid = b.zyid and c.test_no = b.test_order_no and c.patho_id = b.patho_code left join bk002_grzd d on d.relid = c.refid
+		<where>
+			c.refid=#{refid} and d.isselect = 1 and d.infect_type = 1 and d.deleted = 0
+		</where>
+		group by d.infect_diagn_id, c.sample_id, c.patho_id, a.anti_code, a.anti_name, a.refer_range, a.yaomin_result, c.submi_at,c.test_no
+	</select>
+	
+	<select id="findByOrderNoAndSn" resultType="st011Syjgb">
+		select <include refid="commCols"/>,
+       t2.drug_id drugId,
+       t2.drug_name drugName,
+       t3.drug_type_name drugTypeName,
+       case
+         when (t2.drug_id in (select case
+                                       when bb.drug_id is null then
+                                        aa.drug_type_id
+                                       else
+                                        bb.drug_id
+                                     end as drug_id
+                                from xn009_lybzmx aa
+                                left join xn013_dbyw bb
+                                  on aa.item_id = bb.item_id
+                                 and aa.orderno = bb.orderno
+                                 and aa.drug_type_id = bb.drug_type_id
+                               where aa.item_id ='-1'
+                                 and aa.orderno = '-1')) and
+              (upper(t.yaomin_result) = 'R' or t.yaomin_result = '耐药') then
+          1
+         else
+          0
+       end db,
+       ( select count(*) from xn004_trny t5 where t5.pathogen_id=t4.counter_bytid and trim(t5.drug_id)=trim(t2.drug_id) ) gn
+	  from ST011_SYJGB t
+	  left join xn014_liskjyw t1
+	    on t1.drugid = t.anti_code
+	  left join xn003_kjyw t2
+	    on t2.drug_id = t1.counter_drugid
+	  left join XN006_KJYWFL t3
+	  on t3.drug_type_id=t2.drug_type_id
+	  left join xn013_lisbyt t4
+      on t4.lis_bytid = t.pathogen_sn
+	 where t.test_order_no = #{testOrderNo}
+	   and t.pathogen_sn = #{pathogenSn} order by t3.drug_type_name
+	</select>
+	
+	<select id="queryForYJ" parameterType="String" resultType="st011Syjgb">
+		select <include refid="commCols"/> from ST011_SYJGB 
+		<where>
+			test_order_no in (#{testOrderNo})
+			<if test="sql!=null and sql!=''">
+				and ( ${sql} )
+			</if>
+		</where>
+	</select>
+
+	<select id="queryForYJByZyid" parameterType="String" resultType="st011Syjgb">
+		select <include refid="commCols"/> from ST011_SYJGB 
+		<where>
+			zyid = #{zyid}
+			<if test="sql!=null and sql!=''">
+				and ( ${sql} )
+			</if>
+		</where>
+	</select>
+
+	<select id="queryForYJByMzid" parameterType="String" resultType="st011Syjgb">
+		select <include refid="commCols"/> from ST011_SYJGB 
+		<where>
+			mzid = #{mzid}
+			<if test="sql!=null and sql!=''">
+				and ( ${sql} )
+			</if>
+		</where>
+	</select>
+
+	<select id="findPatentSyjgbWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST011_SYJGB where ZYID ='''||ZYID||'''' sql,
+			'ST011_SYJGB表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST011_SYJGB t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST011_SYJGB where MZID ='''||MZID||'''' sql,
+			'ST011_SYJGB表中患者门诊ID（'||MZID||'）在ST020_CLINIC_PATIENTS表中未找到！' as warning from ST011_SYJGB t
+			where t.MZID not in(select MZID from ST020_CLINIC_PATIENTS )
+			and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST011_SYJGB where TEST_ORDER_NO ='''||TEST_ORDER_NO||'''' sql,
+			'ST011_SYJGB表中送检编号（'||TEST_ORDER_NO||'）在ST009_SJBB表中未找到！' as warning from ST011_SYJGB t
+			where t.TEST_ORDER_NO not in(select MZID from ST009_SJBB )
+			and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST011_SYJGB where TEST_ORDER_NO ='''||TEST_ORDER_NO||''' AND PATHOGEN_SN ='''||PATHOGEN_SN||'''' sql,
+			'ST011_SYJGB表中细菌编号（'||PATHOGEN_SN||'）在ST009_SJBB表中未找到！' as warning from ST011_SYJGB t
+			where (t.TEST_ORDER_NO,t.PATHOGEN_SN) not in(select TEST_ORDER_NO,PATHO_CODE from ST010_JCBYT )
+			and t.ISYM=1
+			and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST011_SYJGB where ANTI_CODE ='''||ANTI_CODE||'''' sql,
+			'ST011_SYJGB表中病原体编号（'||ANTI_CODE||'）在XN013_LISBYT表中未找到！' as warning from ST011_SYJGB t
+			where (t.ANTI_CODE) not in(select (LIS_BYTID) from XN013_LISBYT )
+			and t.ISYM=1
+			and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<select id="findByZyidTestNo" resultType="st011Syjgb">
+		select anti_code antiCode,anti_name antiName,yaomin_result yaominResult,test_result testResult,unit unit,refer_range referRange,remark remark
+		from st011_syjgb 
+		<where>
+			zyid=#{zyid} and test_order_no=#{testOrderNo}
+		</where>
+	</select>
+	
+	<select id="findWaitAnalysis" resultType="st011Syjgb">
+		select t.anti_code antiCode,t.anti_name antiName,t.yaomin_result yaominResult,t2.drug_id drugId,t2.drug_name drugName,t3.subclass_id subclassId,
+			t3.subclass_name subclassName,t4.drug_type_id drugTypeId,t4.drug_type_name drugTypeName 
+			from st011_syjgb t left join xn014_liskjyw t1 on t1.drugid=t.anti_code
+			left join xn003_kjyw t2 on t2.drug_id=t1.counter_drugid
+			left join xn007_kjywyl t3 on t3.subclass_id=t2.subclass_id
+			left join xn006_kjywfl t4 on t4.drug_type_id=t2.drug_type_id
+		<where>
+			t.pathogen_sn=#{pathogenSn} and t.test_order_no=#{testOrderNo}
+		</where>
+	</select>
+</mapper>

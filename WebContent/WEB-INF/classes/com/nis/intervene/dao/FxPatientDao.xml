@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxPatientDao">
+
+	<sql id="commCols">
+		FX_ID fxId,FX_PATIENT.PATIENT_ID patientId,FX_PATIENT.ZY_ID zyId,SCORE score,FX_PATIENT.UP_DATE updateTime
+	</sql>
+
+	<insert id="save" parameterType="fxPatient"  flushCache="true">
+		 insert into FX_PATIENT(FX_ID,PATIENT_ID,ZY_ID,SCORE,UP_DATE)
+		 values(#{fxId},#{patientId},#{zyId},#{score},#{updateTime})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  FX_PATIENT
+		<where>FX_ID=#{fxId}</where>
+	</delete>
+	
+	<update id="update" parameterType="fxPatient" flushCache="true">
+		update FX_PATIENT
+		<set>
+			FX_ID=#{fxId},PATIENT_ID=#{patientId},ZY_ID=#{zyId},SCORE=#{score},UP_DATE=#{updateTime}
+		</set>
+		<where>FX_ID=#{fxId}</where>
+	</update>
+	
+	<select id="get" resultType="fxPatient">
+		select <include refid="commCols"/> from FX_PATIENT
+  		<where>FX_ID=#{fxId}</where>
+	</select>
+	
+	
+	<select id="findFxPatientCount" parameterType="fxPatient" resultType="int">
+		select count(*) from FX_PATIENT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="fxPatient">
+		select <include refid="commCols"/> ,st001_jbxxb.patient_name patientName,st001_jbxxb.sex sex,st001_jbxxb.birth_date birthDate from FX_PATIENT left join st001_jbxxb on FX_PATIENT.patient_id=st001_jbxxb.patient_id
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findByZyid" resultType="fxPatient">
+		select <include refid="commCols"/> from FX_PATIENT
+  		<where>ZY_ID=#{zyid}</where>
+	</select>
+	
+	<select id="findDepFxCount" resultType="int" parameterType="fxPatient">
+	  select count(count(dept_name)) from FX_PATIENT 
+	  	 left join st003_cryxxb
+		  on FX_PATIENT.Zy_Id = st003_cryxxb.zyid
+		 <where>
+		 	<if test="dgsType==0">
+		 		(<![CDATA[out_at <= to_date(#{endDate}, 'yyyy-MM-dd') and out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>)
+				or (<![CDATA[out_at is null and in_hosp_at <= to_date(#{endDate}, 'yyyy-MM-dd') ]]>)
+				or (<![CDATA[in_hosp_at <= to_date(#{endDate}, 'yyyy-MM-dd') and in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]>)
+		 	</if>
+		 	<if test="dgsType==1">
+			 	<if test="startDate!=null and startDate!=''"> <![CDATA[and OUT_AT >= to_date(#{startDate},'yyyy-MM-dd hh24:mi:ss')]]></if>
+				<if test="endDate!=null and endDate!=''"> <![CDATA[and OUT_AT <= to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')]]></if>
+			</if>
+		 </where>
+		 group by dept_name	
+	</select>
+	
+	<select id="findFxPatientList"  resultType="fxPatient">
+		select * from (select a.* ,wm_concat(q.visit_id) visitId,wm_concat(q.fx_color) fxColor from (select FX_PATIENT.ZY_ID zyId,st003_cryxxb.patient_name patientName,st003_cryxxb.GY_STATUS gyStatus,st003_cryxxb.PDCA_STATUS pdcaStatus, sum(case when gr002_ysgr_mx.state=1 then 1 else 0 end) yjgrCount,sum(case when gr002_ysgr_mx.state=2 then 1 else 0 end) qrgrCount from FX_PATIENT left join st003_cryxxb on FX_PATIENT.Zy_Id = st003_cryxxb.zyid   left join (select * from gr002_ysgr_mx where (state=1 or state=2) and infect_type_id=1) gr002_ysgr_mx on gr002_ysgr_mx.zyid=FX_PATIENT.Zy_Id
+		<where>
+			 <if test="dgsType==0">
+			<choose>
+			<when test="deptCode!=null and deptCode!=''">
+				(<![CDATA[st003_cryxxb.out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and st003_cryxxb.out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>  and st003_cryxxb.dept_code = #{deptCode})
+				or (<![CDATA[st003_cryxxb.out_at is null and st003_cryxxb.in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1)]]> and st003_cryxxb.dept_code = #{deptCode})
+				or (<![CDATA[st003_cryxxb.in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1) and st003_cryxxb.in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]> and st003_cryxxb.dept_code = #{deptCode})
+			</when>
+			<otherwise>
+				(<![CDATA[st003_cryxxb.out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and st003_cryxxb.out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>)
+				or (<![CDATA[st003_cryxxb.out_at is null and st003_cryxxb.in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1)]]>)
+				or (<![CDATA[st003_cryxxb.in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1) and st003_cryxxb.in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]>)
+			</otherwise>
+			</choose>
+			</if>
+			<if test="dgsType==1">
+				<if test="startDate!=null and startDate!=''"> <![CDATA[and OUT_AT >= to_date(#{startDate},'yyyy-MM-dd')]]></if>
+				<if test="endDate!=null and endDate!=''"> <![CDATA[and OUT_AT < (to_date(#{endDate},'yyyy-MM-dd')+1)]]></if>
+				<if test="deptCode!=null and deptCode!=''">  and st003_cryxxb.dept_code = #{deptCode} </if>
+			</if>
+		</where>
+		group by FX_ID,FX_PATIENT.PATIENT_ID,FX_PATIENT.ZY_ID,SCORE,FX_PATIENT.UP_DATE,st003_cryxxb.patient_name,st003_cryxxb.GY_STATUS,st003_cryxxb.PDCA_STATUS order by st003_cryxxb.GY_STATUS asc) a
+		  left join fx_patient_zb zb on a.zyId = zb.zy_id left join qs_survey_record q on zb.pz_id = q.visit_id       
+            group by a.zyId,a.patientName,a.gyStatus,a.pdcaStatus,a.yjgrCount,a.qrgrCount) b
+		<where>
+		<if test="gyStatusList!=null">
+			gyStatus in 
+			<foreach collection="gyStatusList" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+		</if>
+		<if test="gyStatus=='0'.toString()">
+			(gyStatus=#{gyStatus} or gyStatus is null)
+		</if>
+		<if test="pgStatus=='0'.toString()">
+			 visitId is null
+		</if>
+		<if test="pgStatus=='1'.toString()">
+			 visitId is not null
+		</if>
+		<if test="cxStatus=='0'.toString()">
+			 fxColor like '%orange%'
+		</if>
+		<if test="cxStatus=='1'.toString()">
+			 fxColor like '%red%'
+		</if>
+		</where>
+	</select>
+	
+	
+	<select id="findCountbyDate" resultType="int" parameterType="fxPatient">
+	 	select count(*)  from fx_patient left join st003_cryxxb on  st003_cryxxb.zyid=fx_patient.zy_id
+		<where>
+		  <if test="dgsType==0">
+			<choose>
+			<when test="deptCode!=null and deptCode!=''">
+				(<![CDATA[out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>  and st003_cryxxb.dept_code = #{deptCode})
+				or (<![CDATA[out_at is null and in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1)]]> and st003_cryxxb.dept_code = #{deptCode})
+				or (<![CDATA[in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1) and in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]> and st003_cryxxb.dept_code = #{deptCode})
+			</when>
+			<otherwise>
+				(<![CDATA[out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>)
+				or (<![CDATA[out_at is null and in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1)]]>)
+				or (<![CDATA[in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1) and in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]>)
+			</otherwise>
+			</choose>
+			</if>
+			<if test="dgsType==1">
+				<if test="startDate!=null and startDate!=''"> <![CDATA[and OUT_AT >= to_date(#{startDate},'yyyy-MM-dd')]]></if>
+				<if test="endDate!=null and endDate!=''"> <![CDATA[and OUT_AT < (to_date(#{endDate},'yyyy-MM-dd')+1)]]></if>
+				<if test="deptCode!=null and deptCode!=''">  and st003_cryxxb.dept_code = #{deptCode} </if>
+			</if>
+		</where>
+	</select>
+	
+	<select id="findDepFxList" parameterType="fxPatient" resultType="fxPatientIndex">
+	select t.*,zg2.dept_name deptName from  (
+	  select dept_code deptCode, count(zyid) fxCount,sum( case when ( gy_status='0' or  gy_status is null) then 1 else 0 end) wgyCount,sum( case when (gy_status='1' or  gy_status='2') then 1 else 0 end) ygyCount, 
+	  sum(case when visit_id is not null then 1 else 0 end) ypgCount,sum(case when visit_id is null then 1 else 0 end)  wpgCount ,
+	  sum(case when fx_color like '%orange%' then 1 else 0 end) wzxCount, sum(case when fx_color like '%red%' then 1 else 0 end) yqxCount 
+	 from (select st003_cryxxb.zyid,st003_cryxxb.gy_status,st003_cryxxb.dept_name,st003_cryxxb.dept_code,st003_cryxxb.out_at,st003_cryxxb.in_hosp_at,wm_concat(q.visit_id) visit_id,wm_concat(q.fx_color) fx_color from FX_PATIENT  left join st003_cryxxb
+      on FX_PATIENT.Zy_Id = st003_cryxxb.zyid
+      left join fx_patient_zb zb on FX_PATIENT.zy_id=zb.zy_id left join qs_survey_record q on zb.pz_id=q.visit_id 
+      group by st003_cryxxb.zyid,st003_cryxxb.gy_status,st003_cryxxb.dept_name,st003_cryxxb.dept_code,st003_cryxxb.out_at,st003_cryxxb.in_hosp_at) a
+		 <where>
+		 	<if test="dgsType==0">
+		 		(<![CDATA[out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>)
+				or (<![CDATA[out_at is null and in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) ]]>)
+				or (<![CDATA[in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]>)
+		 	</if>
+		 	<if test="dgsType==1">
+			 	<if test="startDate!=null and startDate!=''"> <![CDATA[and OUT_AT >= to_date(#{startDate},'yyyy-MM-dd')]]></if>
+				<if test="endDate!=null and endDate!=''"> <![CDATA[and OUT_AT < (to_date(#{endDate},'yyyy-MM-dd')+1)]]></if>
+			</if>
+		</where>
+		 group by dept_code) t left join zg002_byks zg2 on t.deptCode=zg2.dept_id
+		 order by zg2.show_order, zg2.dept_id
+	</select>
+	
+	<select id="findFxPatientByList"  resultType="fxPatient">
+		select st003_cryxxb.zyid zyId,st003_cryxxb.patient_name patientName,st003_cryxxb.GY_STATUS gyStatus,st003_cryxxb.PDCA_STATUS pdcaStatus, sum(case when gr002_ysgr_mx.state=1 then 1 else 0 end) yjgrCount,sum(case when gr002_ysgr_mx.state=2 then 1 else 0 end) qrgrCount,wm_concat(q.visit_id) visitId,wm_concat(q.fx_color) fxColor from st003_cryxxb
+		left join fx_patient_zb zb on st003_cryxxb.zyid=zb.zy_id left join qs_survey_record q on zb.pz_id=q.visit_id   left join (select * from gr002_ysgr_mx where (state=1 or state=2) and infect_type_id=1) gr002_ysgr_mx on gr002_ysgr_mx.zyid=st003_cryxxb.zyid 
+		<where>
+			st003_cryxxb.zyid in
+			<foreach collection="cryxxbList" item="item" index="index" open="(" separator="," close=")" > 
+				#{item.zyid}
+			</foreach>
+		</where>
+		group by st003_cryxxb.zyid,st003_cryxxb.patient_name,st003_cryxxb.GY_STATUS,st003_cryxxb.PDCA_STATUS order by st003_cryxxb.GY_STATUS asc
+	</select>
+</mapper>

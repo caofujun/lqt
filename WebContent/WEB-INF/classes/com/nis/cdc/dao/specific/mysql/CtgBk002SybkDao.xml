@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk002SybkDao">
+
+	<sql id="commCols_mysql">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,PATIENT_NAME patientName,AGE age,AGEUNIT ageunit,SEXID sexid,SEXNAME sexname,WOMANTYPEID womantypeid,WOMANTYPENAME womantypename,ID id,BIRTYDAY birtyday,NATIONID nationid,NATIONNAME nationname,MARRIAGEID marriageid,MARRIAGEVALUE marriagevalue,PROFESSIONID professionid,PROFESSIONNAME professionname,EDUCATIONID educationid,EDUCATIONNAME educationname,REGADDRTYPEID regaddrtypeid,REGADDRTYPENAME regaddrtypename,REGISTRATIONADDRCODE registrationaddrcode,REGISTRATIONADDRCODEVALUE registrationaddrcodevalue,REGISTRATIONADDR registrationaddr,NOWADDRTYPEID nowaddrtypeid,NOWADDRTYPENAME nowaddrtypename,NOWADDRCODE nowaddrcode,NOWADDRCODEVALUE nowaddrcodevalue,NOWADDR nowaddr,WORKPLACE workplace,DEADDATE deaddate,DEADZONEID deadzoneid,DEADZONEVALUE deadzonevalue,FOLKNAME folkname,FOLKTEL folktel,FOLKADDR folkaddr,A_CAUSE aCause,A_ICD10 aIcd10,A_SCOPETIME aScopetime,A_SCOPETIMEUNIT aScopetimeunit,B_CAUSE bCause,B_ICD10 bIcd10,B_SCOPETIME bScopetime,B_SCOPETIMEUNIT bScopetimeunit,C_CAUSE cCause,C_ICD10 cIcd10,C_SCOPETIME cScopetime,C_SCOPETIMEUNIT cScopetimeunit,D_CAUSE dCause,D_ICD10 dIcd10,D_SCOPETIME dScopetime,D_SCOPETIMEUNIT dScopetimeunit,OTHER_CAUSE otherCause,OTHER_ICD10 otherIcd10,BASECAUSE basecause,BSICD10 bsicd10,DORGLEVELID dorglevelid,DORGLEVELVALUE dorglevelvalue,DIAGNOSEBY diagnoseby,DIAGNOSEBYVALUE diagnosebyvalue,DOCTORID doctorid,DOCTORNAME doctorname,OFFICEID officeid,OFFICENAME officename,NOTES notes,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,FILLDATE filldate,DELREASON delreason,FLAG flag,AUDITDATE auditdate,AUDITOR auditor,IDTYPE idtype,IDTYPEVALUE idtypevalue,LIVING_HISTORY livingHistory,SURVEY_NAME surveyName,RELATION_DEAD relationDead,CONTACTPHONE contactphone,CONTACTADDR contactaddr,VERBAL_AUTOPSY verbalAutopsy,DSURVEY dsurvey,AREA area,ISPRINT isprint
+	</sql>
+
+	<select id="findCtgBk002Sybk_mysql" parameterType="ctgBk002Sybk" resultType="ctgBk002Sybk">
+		select <include refid="commCols_mysql"/> from CTG_BK002_SYBK
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Zg005YygrzdDao">
+
+	<sql id="commCols">
+		INDIAGID indiagid,INFECT_CODE infectCode,INFECT_NAME infectName,P_INFECT_CODE pInfectCode,BH_CODE bhCode,
+		SP_CODE spCode,WB_CODE wbCode,FLAG flag,ORDER_INDEX orderIndex,MEMO memo,LAST_AT lastAt,IS_LAST_LV isLastLv,TYPE type
+	</sql>
+
+	<insert id="save" parameterType="zg005Yygrzd"  flushCache="true">
+		 insert into ZG005_YYGRZD(INDIAGID,INFECT_CODE,INFECT_NAME,P_INFECT_CODE,BH_CODE,SP_CODE,WB_CODE,FLAG,ORDER_INDEX,MEMO,LAST_AT,IS_LAST_LV,TYPE)
+		 values(#{indiagid},#{infectCode},#{infectName},#{pInfectCode},#{bhCode},#{spCode},#{wbCode},#{flag},#{orderIndex},#{memo},#{lastAt},#{isLastLv},#{type})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG005_YYGRZD
+		<where>INFECT_CODE=#{infectCode}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg005Yygrzd" flushCache="true">
+		update ZG005_YYGRZD
+		<set>
+			INDIAGID=#{indiagid},INFECT_CODE=#{infectCode},INFECT_NAME=#{infectName},P_INFECT_CODE=#{pInfectCode},
+			BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},FLAG=#{flag},ORDER_INDEX=#{orderIndex},MEMO=#{memo},
+			LAST_AT=#{lastAt},IS_LAST_LV=#{isLastLv},TYPE=#{type}
+		</set>
+		<where>INFECT_CODE=#{infectCode}</where>
+	</update>
+	
+	<update id="updFlag" flushCache="true">
+		update zg005_yygrzd
+		<set>
+			flag=#{flag},last_at=#{lastAt}
+		</set>
+		<where>infect_code=#{infectCode}</where>
+	</update>
+	
+	<select id="get" resultType="zg005Yygrzd">
+		select <include refid="commCols"/> from ZG005_YYGRZD
+  		<where>INFECT_CODE=#{infectCode}</where>
+		ORDER BY ORDER_INDEX
+	</select>
+	
+	
+	<select id="findZg005YygrzdCount" parameterType="zg005Yygrzd" resultType="int">
+		select count(*) from ZG005_YYGRZD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg005Yygrzd">
+		select <include refid="commCols"/> from ZG005_YYGRZD
+		<where>
+			1=1
+		</where>
+		ORDER BY ORDER_INDEX
+	</select>
+</mapper>

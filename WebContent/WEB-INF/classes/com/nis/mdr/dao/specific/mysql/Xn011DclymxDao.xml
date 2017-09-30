@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn011DclymxDao">
+
+	<sql id="commCols_mysql">
+		DT dt,SURVEY_DEPT_ID surveyDeptId,SURVEY_DEPT_NAME surveyDeptName,ORDERNO orderno,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,AGE age,AGE_UNIT ageUnit,INFECT_PART_ID infectPartId,INFECT_PART_NAME infectPartName,INFECT_TYPE_ID infectTypeId,INFECT_TYPE_NAME infectTypeName,TEST_ORDER_NO testOrderNo,ITEM_TYPE itemType,ITEM_TYPE_NAME itemTypeName,ITEM_CODE itemCode,ITEM_NAME itemName,SUBMI_AT submiAt,DEPT_ID deptId,DEPT_NAME deptName,PATHO_CODE pathoCode,PATHO_NAME pathoName,PATHOGEN_SN pathogenSn,RES_PROP resProp,ISYM isym,MANUAL_RES_PROP manualResProp,CHANGE_USERID changeUserid,CHANGE_DT changeDt,AUDITED audited,INTE_FLAG inteFlag,INTE_MODE inteMode,INTE_AT inteAt,NORM_ITEM_ID normItemId,NORM_ORDERNO normOrderno,AFFIRM_DT affirmDt,AFFIRM_USERID affirmUserid,SPEC_DESCRIBES specDescribes,ESBL esbl,VALIDATION_STR validationStr,DRUG_FAST_COUNT drugFastCount,BB_ANAL_TAG bbAnalTag,BB_ANAL_DT bbAnalDt,ID id
+	</sql>
+
+	<select id="findXn011Dclymx_mysql" parameterType="xn011Dclymx" resultType="xn011Dclymx">
+		select <include refid="commCols_mysql"/> from XN011_DCLYMX
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn013LisbytDao">
+
+	<sql id="commCols_oracle">
+		LIS_BYTID lisBytid,LIS_BYTNAME lisBytname,PYCODE pycode,WBCODE wbcode,BHCODE bhcode,COUNTER_BYTID counterBytid
+	</sql>
+
+	
+	<select id="findXn013Lisbyt_oracle" parameterType="xn013Lisbyt" resultType="xn013Lisbyt">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>,XN002_BYT.pathogen_name pathogenName  from XN013_LISBYT left join XN002_BYT on XN013_LISBYT.COUNTER_BYTID=XN002_BYT.pathogen_id
+		<where>
+			COUNTER_BYTID is not null
+			<if test="searchString!=null and searchString!=''">
+				and (LIS_BYTNAME like CONCAT( CONCAT('%',#{searchString}),'%') or LIS_BYTID like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findXn013LisbytList_oracle" parameterType="xn013Lisbyt" resultType="xn013Lisbyt">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>  from XN013_LISBYT
+		<where>
+			COUNTER_BYTID is null
+			<if test="searchString!=null and searchString!=''">
+				and (LIS_BYTNAME like CONCAT( CONCAT('%',#{searchString}),'%') or LIS_BYTID like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

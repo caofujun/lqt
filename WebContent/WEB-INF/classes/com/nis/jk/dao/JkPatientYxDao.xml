@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientYxDao">
+
+	<sql id="commCols">
+		ID id,MZID mzid,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,CHECK_NO checkNo,EXAM_CLASS examClass,CHECK_PART checkPart,DESCRIPTION description,IMPRESSION impression,CLIN_DIAGNOSE clinDiagnose,DEPT_ID deptId,DEPT_NAME deptName,CHECK_DATE checkDate,REPORT_DATE reportDate,REPORT_DOCTOR reportDoctor,CHECK_DOCTOR checkDoctor,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientYx" flushCache="true">
+		 insert into JK_PATIENT_YX(ID,MZID,ZYID,PATIENT_ID,VISIT_ID,PATIENT_NAME,SEX,CHECK_NO,EXAM_CLASS,CHECK_PART,DESCRIPTION,IMPRESSION,CLIN_DIAGNOSE,DEPT_ID,DEPT_NAME,CHECK_DATE,REPORT_DATE,REPORT_DOCTOR,CHECK_DOCTOR,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{mzid},#{zyid},#{patientId},#{visitId},#{patientName},#{sex},#{checkNo},#{examClass},#{checkPart},#{description},#{impression},#{clinDiagnose},#{deptId},#{deptName},#{checkDate},#{reportDate},#{reportDoctor},#{checkDoctor},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_YX
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientYx" flushCache="true">
+		update JK_PATIENT_YX
+		<set>
+			ID=#{id},MZID=#{mzid},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},PATIENT_NAME=#{patientName},SEX=#{sex},CHECK_NO=#{checkNo},EXAM_CLASS=#{examClass},CHECK_PART=#{checkPart},DESCRIPTION=#{description},IMPRESSION=#{impression},CLIN_DIAGNOSE=#{clinDiagnose},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},CHECK_DATE=#{checkDate},REPORT_DATE=#{reportDate},REPORT_DOCTOR=#{reportDoctor},CHECK_DOCTOR=#{checkDoctor},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientYx" flushCache="true">
+		update JK_PATIENT_YX
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientYx">
+		select <include refid="commCols"/> from JK_PATIENT_YX
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientYxCount" parameterType="jkPatientYx" resultType="int">
+		select count(*) from JK_PATIENT_YX
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientYx">
+		select <include refid="commCols"/> from JK_PATIENT_YX
+		<where>
+		</where>
+	</select>
+</mapper>

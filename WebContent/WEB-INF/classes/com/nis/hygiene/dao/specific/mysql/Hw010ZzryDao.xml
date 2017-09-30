@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw010ZzryDao">
+
+	<sql id="commCols_mysql">
+		dept_id deptId,employee_id employeeId,source source,employee_name employeeName
+	</sql>
+
+	<select id="findHw010Zzry_mysql" parameterType="hw010Zzry" resultType="hw010Zzry">
+		select <include refid="commCols_mysql"/> from hw010_zzry
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

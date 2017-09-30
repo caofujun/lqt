@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw103JcdjgDao">
+
+	<sql id="commCols">
+		id id,report_id reportId,result_id resultId,class_id classId,item_id itemId,result result,result_condition resultCondition,result_criterion resultCriterion,result_unit resultUnit,result_flag resultFlag,memo memo,hw102_id hw102Id 
+	</sql>
+
+	<insert id="save" parameterType="hw103Jcdjg" flushCache="true">
+		 insert into hw103_jcdjg(id,report_id,result_id,class_id,item_id,result,result_condition,result_criterion,result_unit,result_flag,memo,hw102_id)
+		 values(#{id},#{reportId},#{resultId},#{classId},#{itemId},#{result},#{resultCondition},#{resultCriterion},#{resultUnit},#{resultFlag},#{memo},#{hw102Id})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw103_jcdjg
+		<where>id=#{id}</where>
+	</delete>
+	
+	<delete id="delByHw102Id"  flushCache="true">
+		delete from hw103_jcdjg
+		<where>hw102_id=#{hw102Id}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw103Jcdjg" flushCache="true">
+		update hw103_jcdjg
+		<set>
+			id=#{id},report_id=#{reportId},result_id=#{resultId},class_id=#{classId},item_id=#{itemId},result=#{result},result_condition=#{resultCondition},result_criterion=#{resultCriterion},result_unit=#{resultUnit},result_flag=#{resultFlag},memo=#{memo},hw102_id=#{hw102Id}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update hw103_jcdjg
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='result'">result=#{hw103Jcdjg.result},</when>
+					<when test="item=='resultCondition'">result_condition=#{hw103Jcdjg.resultCondition},</when>
+					<when test="item=='resultCriterion'">result_criterion=#{hw103Jcdjg.resultCriterion},</when>
+					<when test="item=='resultUnit'">result_unit=#{hw103Jcdjg.resultUnit},</when>
+					<when test="item=='resultFlag'">result_flag=#{hw103Jcdjg.resultFlag},</when>
+					<when test="item=='memo'">memo=#{hw103Jcdjg.memo},</when>
+				</choose>
+			</foreach>
+			id=#{hw103Jcdjg.id}
+		</set>
+		<where>id=#{hw103Jcdjg.id}</where>
+	</update>
+	
+	<select id="get" resultType="hw103Jcdjg">
+		select <include refid="commCols"/> from hw103_jcdjg
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findHw103JcdjgCount" parameterType="hw103Jcdjg" resultType="int">
+		select count(*) from hw103_jcdjg
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw103Jcdjg">
+		select <include refid="commCols"/> from hw103_jcdjg
+		<where>
+		</where>
+	</select>
+	
+	<select id="findListByHw102Id" resultType="hw103Jcdjg">
+		select hw103.id	id,
+	           hw103.result_id        resultId,
+	           hw103.result           result,
+	           hw103.result_condition resultCondition,
+	           hw103.result_criterion resultCriterion,
+	           hw103.result_unit      resultUnit,
+	           hw103.result_flag      resultFlag,
+	           hw2.unit               unit,
+	           hw2.criterion          criterion,
+	           hw2.condition          condition,
+	           hw2.item_name          itemName,
+	           hw103.item_id          itemId,
+	           hw103.class_id         classId,
+	           hw103.memo             memo
+		from hw103_jcdjg hw103
+		left join hw002_jsbz hw2
+		  on hw103.item_id = hw2.item_id
+		<where>
+			hw103.hw102_id=#{hw102Id}
+			<if test="result!=null and result!=''">
+				and hw103.result like CONCAT(CONCAT('%', #{result}), '%')
+			</if>
+		</where>
+	</select>
+</mapper>

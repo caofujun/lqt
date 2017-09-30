@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicDoctorDao">
+
+	<sql id="commCols">
+		ID id,DR_NO drNo,DR_NAME drName,DR_JOB drJob,DEPT_ID deptId,DEPT_NAME deptName,DOC_LINE docLine,DR_TYPE drType,DR_SPELL drSpell,DR_STATUS drStatus,DR_TITLE drTitle,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkDicDoctor" flushCache="true">
+		 insert into JK_DIC_DOCTOR(ID,DR_NO,DR_NAME,DR_JOB,DEPT_ID,DEPT_NAME,DOC_LINE,DR_TYPE,DR_SPELL,DR_STATUS,DR_TITLE,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{drNo},#{drName},#{drJob},#{deptId},#{deptName},#{docLine},#{drType},#{drSpell},#{drStatus},#{drTitle},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_DIC_DOCTOR
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkDicDoctor" flushCache="true">
+		update JK_DIC_DOCTOR
+		<set>
+			ID=#{id},DR_NO=#{drNo},DR_NAME=#{drName},DR_JOB=#{drJob},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},DOC_LINE=#{docLine},DR_TYPE=#{drType},DR_SPELL=#{drSpell},DR_STATUS=#{drStatus},DR_TITLE=#{drTitle},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkDicDoctor" flushCache="true">
+		update JK_DIC_DOCTOR
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkDicDoctor">
+		select <include refid="commCols"/> from JK_DIC_DOCTOR
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkDicDoctorCount" parameterType="jkDicDoctor" resultType="int">
+		select count(*) from JK_DIC_DOCTOR
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkDicDoctor">
+		select <include refid="commCols"/> from JK_DIC_DOCTOR
+		<where>
+		</where>
+	</select>
+</mapper>

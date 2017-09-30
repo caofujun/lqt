@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl010DicStatkindDao">
+
+	<sql id="commCols">
+		statid statid,statname statname,zjc zjc
+	</sql>
+
+	<insert id="save" parameterType="xl010DicStatkind" flushCache="true">
+		 insert into xl010_dic_statkind(statid,statname,zjc)
+		 values(#{statid},#{statname},#{zjc})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl010_dic_statkind
+		<where>statid=#{statid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl010DicStatkind" flushCache="true">
+		update xl010_dic_statkind
+		<set>
+			statid=#{statid},statname=#{statname},zjc=#{zjc}
+		</set>
+		<where>statid=#{statid}</where>
+	</update>
+	
+	<select id="get" resultType="xl010DicStatkind">
+		select <include refid="commCols"/> from xl010_dic_statkind
+  		<where>statid=#{statid}</where>
+	</select>
+	
+	
+	<select id="findXl010DicStatkindCount" parameterType="xl010DicStatkind" resultType="int">
+		select count(*) from xl010_dic_statkind
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl010DicStatkind">
+		select <include refid="commCols"/> from xl010_dic_statkind
+		<where>
+		</where>
+	</select>
+</mapper>

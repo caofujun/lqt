@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg031SqksDao">
+
+	<sql id="commCols">
+		ID id,AUTHO_DEPT_ID authDeptId
+	</sql>
+	
+	<select id="getAll" resultType="zg031Sqks">
+		select <include refid="commCols" /> from zg031_sqks 
+		<where>
+			id=#{userId}
+		</where>
+	</select>
+	
+	<insert id="save" parameterType="zg031Sqks">
+		insert into zg031_sqks (id,autho_dept_id) values (#{id},#{authDeptId})
+	</insert>
+	
+	<select id="isTableExist" parameterType="String" resultType="int">
+		select count(*) from user_tables d  where d.TABLE_NAME=#{tableName}
+	</select>
+	
+	<delete id="delete" parameterType="zg031Sqks">
+		delete from zg031_sqks 
+		<where> 1=1
+			<if test="null!=id">
+				and id=#{id}
+			</if>
+			<if test="null!=authDeptId">
+				and autho_dept_id = #{authDeptId}
+			</if>
+		</where>
+	</delete>
+	
+	<select id="getDepts" parameterType="String" resultType="String">
+		select wm_concat(autho_dept_id) from ZG031_SQKS t where id=#{userId}
+	</select>
+</mapper>

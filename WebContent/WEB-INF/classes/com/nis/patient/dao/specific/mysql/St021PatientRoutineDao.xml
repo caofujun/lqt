@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St021PatientRoutineDao">
+
+	<sql id="commCols_mysql">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,RECORDING_AT recordingAt,ROUTINE_VALUES routineValues,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findSt021PatientRoutine_mysql" parameterType="st021PatientRoutine" resultType="st021PatientRoutine">
+		select <include refid="commCols_mysql"/> from ST021_PATIENT_ROUTINE
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

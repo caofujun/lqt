@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys012PathologyDao">
+
+	<sql id="commCols">
+		PATHOLOGYNO pathologyno,PATHOLOGYNAME pathologyname,PYCODE pycode,WBCODE wbcode,BHCODE bhcode
+	</sql>
+
+	<insert id="save" parameterType="ctgSys012Pathology"  flushCache="true">
+		 insert into CTG_SYS012_PATHOLOGY(PATHOLOGYNO,PATHOLOGYNAME,PYCODE,WBCODE,BHCODE)
+		 values(#{pathologyno},#{pathologyname},#{pycode},#{wbcode},#{bhcode})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS012_PATHOLOGY
+		<where>PATHOLOGYNO=#{pathologyno}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys012Pathology" flushCache="true">
+		update CTG_SYS012_PATHOLOGY
+		<set>
+			PATHOLOGYNO=#{pathologyno},PATHOLOGYNAME=#{pathologyname},PYCODE=#{pycode},WBCODE=#{wbcode},BHCODE=#{bhcode}
+		</set>
+		<where>PATHOLOGYNO=#{pathologyno}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys012Pathology">
+		select <include refid="commCols"/> from CTG_SYS012_PATHOLOGY
+  		<where>PATHOLOGYNO=#{pathologyno}</where>
+	</select>
+	
+	
+	<select id="findCtgSys012PathologyCount" parameterType="ctgSys012Pathology" resultType="int">
+		select count(*) from CTG_SYS012_PATHOLOGY
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and ( upper(PATHOLOGYNO) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(PATHOLOGYNAME) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(PYCODE) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(WBCODE) like upper(CONCAT('%',CONCAT(#{searchString},'%')))  )
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys012Pathology">
+		select <include refid="commCols"/> from CTG_SYS012_PATHOLOGY
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="isNoExist"  resultType="ctgSys012Pathology">
+		select <include refid="commCols"/> from CTG_SYS012_PATHOLOGY
+		<where>
+			PATHOLOGYNO = #{pathologyno}
+		</where>
+	</select>
+</mapper>

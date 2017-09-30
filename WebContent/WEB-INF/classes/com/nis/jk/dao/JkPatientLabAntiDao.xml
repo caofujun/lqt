@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientLabAntiDao">
+
+	<sql id="commCols">
+		REFER_RANGE referRange,REMARK remark,ORDER_NO orderNo,PATHOGEN_SN pathogenSn,CREATE_AT createAt,CHECK_TIME checkTime,UPD_TIME updTime,UPD_FLAG updFlag,ID id,MZID mzid,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,TEST_ORDER_NO testOrderNo,RESULT_DATE resultDate,ANTI_CODE antiCode,ANTI_NAME antiName,MIC_RESULT micResult,TEST_RESULT testResult,UNIT unit
+	</sql>
+
+	<insert id="save" parameterType="jkPatientLabAnti" flushCache="true">
+		 insert into JK_PATIENT_LAB_ANTI(REFER_RANGE,REMARK,ORDER_NO,PATHOGEN_SN,CREATE_AT,CHECK_TIME,UPD_TIME,UPD_FLAG,ID,MZID,ZYID,PATIENT_ID,VISIT_ID,TEST_ORDER_NO,RESULT_DATE,ANTI_CODE,ANTI_NAME,MIC_RESULT,TEST_RESULT,UNIT)
+		 values(#{referRange},#{remark},#{orderNo},#{pathogenSn},#{createAt},#{checkTime},#{updTime},#{updFlag},#{id},#{mzid},#{zyid},#{patientId},#{visitId},#{testOrderNo},#{resultDate},#{antiCode},#{antiName},#{micResult},#{testResult},#{unit})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_LAB_ANTI
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientLabAnti" flushCache="true">
+		update JK_PATIENT_LAB_ANTI
+		<set>
+			REFER_RANGE=#{referRange},REMARK=#{remark},ORDER_NO=#{orderNo},PATHOGEN_SN=#{pathogenSn},CREATE_AT=#{createAt},CHECK_TIME=#{checkTime},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag},ID=#{id},MZID=#{mzid},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},TEST_ORDER_NO=#{testOrderNo},RESULT_DATE=#{resultDate},ANTI_CODE=#{antiCode},ANTI_NAME=#{antiName},MIC_RESULT=#{micResult},TEST_RESULT=#{testResult},UNIT=#{unit}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientLabAnti" flushCache="true">
+		update JK_PATIENT_LAB_ANTI
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientLabAnti">
+		select <include refid="commCols"/> from JK_PATIENT_LAB_ANTI
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientLabAntiCount" parameterType="jkPatientLabAnti" resultType="int">
+		select count(*) from JK_PATIENT_LAB_ANTI
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG=#{updFlag}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientLabAnti">
+		select <include refid="commCols"/> from JK_PATIENT_LAB_ANTI
+		<where>
+		</where>
+	</select>
+</mapper>

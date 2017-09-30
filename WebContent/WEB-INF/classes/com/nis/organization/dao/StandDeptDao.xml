@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.StandDeptDao">
+
+	<sql id="commCols">
+		DEPT_ID deptId,DEPT_NAME deptName,DEPT_TYPE deptType,ZJ_CODE zjCode,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,FLAG flag,LAST_AT lastAt,PDEPT_ID pdeptId
+	</sql>
+
+	<insert id="save" parameterType="standDept"  flushCache="true">
+		 insert into ZG001_BZKS(DEPT_ID,DEPT_NAME,DEPT_TYPE,ZJ_CODE,BH_CODE,SP_CODE,WB_CODE,FLAG,LAST_AT,PDEPT_ID)
+		 values(#{deptId},#{deptName},#{deptType},#{zjCode},#{bhCode},#{spCode},#{wbCode},#{flag},#{lastAt},#{pdeptId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG001_BZKS
+		<where>DEPT_ID=#{deptId}</where>
+	</delete>
+	
+	<update id="update" parameterType="standDept" flushCache="true">
+		update ZG001_BZKS
+		<set>
+			DEPT_ID=#{deptId},DEPT_NAME=#{deptName},DEPT_TYPE=#{deptType},ZJ_CODE=#{zjCode},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},FLAG=#{flag},LAST_AT=#{lastAt},PDEPT_ID=#{pdeptId}
+		</set>
+		<where>DEPT_ID=#{deptId}</where>
+	</update>
+	
+	<select id="get" resultType="standDept">
+		select <include refid="commCols"/> from ZG001_BZKS
+  		<where>DEPT_ID=#{deptId}</where>
+	</select>
+	
+	<select id="getStandDept" resultType="standDept">
+		select <include refid="commCols"/> from ZG001_BZKS
+  		<where> 1=1
+  			<if test="flag!='' and flag!=null">
+  				 and flag=#{flag}
+  			</if>
+  			<if test="deptId!='' and deptId!=null">
+  				 and dept_Id=#{deptId}
+  			</if>
+  			<if test="deptName!='' and deptName!=null">
+  				 and dept_name=#{deptName}
+  			</if>
+  			<if test="deptType!='' and deptType!=null">
+  				 and dept_Type=#{deptType}
+  			</if>
+  		</where>
+	</select>
+	
+	<select id="findStandDeptCount" parameterType="standDept" resultType="int">
+		select count(*) from ZG001_BZKS
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="standDept">
+		select <include refid="commCols"/> from ZG001_BZKS
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St008BcjlDao">
+
+	<sql id="commCols_mysql">
+		anal_at analAt,anal_result analResult,upd_date updDate,id id,zyid zyid,patient_id patientId,visit_id visitId,enter_date enterDate,case_class caseClass,bc_code bcCode,bc_name bcName,create_at createAt,course_content courseContent,anal_flag analFlag
+	</sql>
+
+	<select id="findSt008Bcjl_mysql" parameterType="st008Bcjl" resultType="st008Bcjl">
+		select <include refid="commCols_mysql"/> from st008_bcjl
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

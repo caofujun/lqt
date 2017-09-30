@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkMessageDao">
+
+	<sql id="commCols">
+		ID id,MSG_TYPE msgType,MSG_CONTENT msgContent,FLAG flag,CREATE_TIME createTime,MSG_RETURN msgReturn
+	</sql>
+
+	<insert id="save" parameterType="jkMessage" flushCache="true">
+		 insert into JK_MESSAGE(ID,MSG_TYPE,MSG_CONTENT,FLAG,CREATE_TIME,MSG_RETURN)
+		 values(#{id},#{msgType},#{msgContent},#{flag},#{createTime},#{msgReturn})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_MESSAGE
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkMessage" flushCache="true">
+		update JK_MESSAGE
+		<set>
+			ID=#{id},MSG_TYPE=#{msgType},MSG_CONTENT=#{msgContent},FLAG=#{flag},CREATE_TIME=#{createTime},MSG_RETURN=#{msgReturn}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkMessage">
+		select <include refid="commCols"/> from JK_MESSAGE
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkMessageCount" parameterType="jkMessage" resultType="int">
+		select count(*) from JK_MESSAGE
+		<where>
+			<if test="createTime!=null">
+				and CREATE_TIME = #{createTime}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getSyncTotalByTable" resultType="int">
+		select count(1) from ${tableName}
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="findJkSyncLogCount" parameterType="jkSyncLog" resultType="int">
+		select count(1) from (
+		  select UPD_TIME,WM_CONCAT(table_name),
+		         (select count(1) from jk_message where jk.UPD_TIME = jk_message.CREATE_TIME) syncStatus
+		  from (
+		      SELECT DISTINCT 'JK_DIC_DISEASE' table_name,UPD_TIME FROM JK_DIC_DISEASE T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_DIC_DOCTOR' table_name,UPD_TIME FROM JK_DIC_DOCTOR T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_DIC_DRUG' table_name,UPD_TIME FROM JK_DIC_DRUG T WHERE UPD_FLAG = 0
+          	  UNION SELECT DISTINCT 'JK_DIC_OFFICE' table_name,UPD_TIME FROM JK_DIC_OFFICE T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_BC' table_name,UPD_TIME FROM JK_PATIENT_BC T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_CLINIC' table_name,UPD_TIME FROM JK_PATIENT_CLINIC T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_DIAGNOSE' table_name,UPD_TIME FROM JK_PATIENT_DIAGNOSE T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_LAB_ITEMS' table_name,UPD_TIME FROM JK_PATIENT_LAB_ITEMS T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_LAB_PATHO' table_name,UPD_TIME FROM JK_PATIENT_LAB_PATHO T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_OPERATION' table_name,UPD_TIME FROM JK_PATIENT_OPERATION T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_ROUTINE' table_name,UPD_TIME FROM JK_PATIENT_ROUTINE T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_TEMPRATURE' table_name,UPD_TIME FROM JK_PATIENT_TEMPRATURE T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_VISIT' table_name,UPD_TIME FROM JK_PATIENT_VISIT T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_YX',UPD_TIME FROM JK_PATIENT_YX T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_YZ',UPD_TIME FROM JK_PATIENT_YZ T WHERE UPD_FLAG = 0
+		      UNION SELECT DISTINCT 'JK_PATIENT_ZKMX',UPD_TIME FROM JK_PATIENT_ZKMX T WHERE UPD_FLAG = 0
+		      ) jk
+		  where UPD_TIME is not null
+		  group by UPD_TIME
+		)
+	</select>
+	
+	<select id="getAll" resultType="jkMessage">
+		select <include refid="commCols"/> from JK_MESSAGE
+		<where>
+		</where>
+	</select>
+</mapper>

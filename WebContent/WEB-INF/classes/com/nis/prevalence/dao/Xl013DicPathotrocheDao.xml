@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl013DicPathotrocheDao">
+
+	<sql id="commCols">
+		pathotrocheid pathotrocheid,year year,pathoname pathoname,trochename trochename,pathoid pathoid,trocheid trocheid
+	</sql>
+
+	<insert id="save" parameterType="xl013DicPathotroche" flushCache="true">
+		 insert into xl013_dic_pathotroche(pathotrocheid,year,pathoname,trochename,pathoid,trocheid)
+		 values(#{pathotrocheid},#{year},#{pathoname},#{trochename},#{pathoid},#{trocheid})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl013_dic_pathotroche
+		<where>pathotrocheid=#{pathotrocheid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl013DicPathotroche" flushCache="true">
+		update xl013_dic_pathotroche
+		<set>
+			pathotrocheid=#{pathotrocheid},year=#{year},pathoname=#{pathoname},trochename=#{trochename},pathoid=#{pathoid},trocheid=#{trocheid}
+		</set>
+		<where>pathotrocheid=#{pathotrocheid}</where>
+	</update>
+	
+	<select id="get" resultType="xl013DicPathotroche">
+		select <include refid="commCols"/> from xl013_dic_pathotroche
+  		<where>pathotrocheid=#{pathotrocheid}</where>
+	</select>
+	
+	
+	<select id="findXl013DicPathotrocheCount" parameterType="xl013DicPathotroche" resultType="int">
+		select count(*) from xl013_dic_pathotroche
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl013DicPathotroche">
+		select <include refid="commCols"/> from xl013_dic_pathotroche
+		<where>
+		</where>
+	</select>
+</mapper>

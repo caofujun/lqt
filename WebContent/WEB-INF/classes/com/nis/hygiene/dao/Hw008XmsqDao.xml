@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw008XmsqDao">
+
+	<sql id="commCols">
+		dept_id deptId,user_id userId,class_id classId,self_view selfView,self_add selfAdd,self_result selfResult,other_view otherView,other_add otherAdd,other_result otherResult
+	</sql>
+
+	<insert id="save" parameterType="hw008Xmsq" flushCache="true">
+		 insert into hw008_xmsq(dept_id,user_id,class_id,self_view,self_add,self_result,other_view,other_add,other_result)
+		 values(#{deptId},#{userId},#{classId},#{selfView},#{selfAdd},#{selfResult},#{otherView},#{otherAdd},#{otherResult})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw008_xmsq
+		<where> user_id=#{userId} and class_id=#{classId} </where>
+	</delete>
+	
+	<delete id="delByUserIdAndDeptId" flushCache="true">
+		delete from hw008_xmsq
+		<where> user_id=#{userId} </where>
+	</delete>
+	
+	<update id="update" parameterType="hw008Xmsq" flushCache="true">
+		update hw008_xmsq
+		<set>
+			dept_id=#{deptId},user_id=#{userId},class_id=#{classId},self_view=#{selfView},self_add=#{selfAdd},self_result=#{selfResult},other_view=#{otherView},other_add=#{otherAdd},other_result=#{otherResult}
+		</set>
+		<where> user_id=#{userId} and class_id=#{classId} </where>
+	</update>
+	
+	<select id="get" resultType="hw008Xmsq">
+		select <include refid="commCols"/> from hw008_xmsq
+  		<where> user_id=#{userId} and class_id=#{classId} </where>
+	</select>
+	
+	
+	<select id="findHw008XmsqCount" parameterType="hw008Xmsq" resultType="int">
+		select count(*) from hw008_xmsq
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw008Xmsq">
+		select <include refid="commCols"/> from hw008_xmsq
+		<where>
+		</where>
+	</select>
+	
+	<select id="findXmsqList" parameterType="hw008Xmsq" resultType="hw008Xmsq">
+		select hw1.class_id classId,hw1.class_name className,nvl(xmsq.self_view, 0) selfView,nvl(xmsq.self_add, 0) selfAdd,nvl(xmsq.self_result, 0) selfResult,nvl(xmsq.other_view, 0) otherView,
+		nvl(xmsq.other_add, 0) otherAdd,nvl(xmsq.other_result, 0) otherResult from ( select class_name,class_id from hw001_jcxm where pclass_id = '0') hw1 left join (
+		select user_id,class_id,max(self_view) self_view,max(self_add) self_add,max(self_result) self_result,max(other_view) other_view,max(other_add) other_add,max(other_result) other_result
+		from (select h18.user_id,h17.class_id,h17.self_view,h17.self_add,h17.self_result,h17.other_view,h17.other_add,h17.other_result from hw018_role_user h18 
+		inner join hw017_role_right h17 on h17.role_id = h18.role_id union all select user_id,class_id,self_view,self_add,self_result,other_view,other_add,other_result from hw008_xmsq)
+		group by user_id, class_id) xmsq on (hw1.class_id = xmsq.class_id and user_id=#{userId})
+	</select>
+	
+	<select id="judgeResultsPermissions" resultType="int">
+		select count(*) from view_xmsq 
+		<where>
+			user_id=#{userId} and class_id=#{classId} and decode(#{deptId}, #{djDeptId}, self_result, other_result)=decode(#{deptId}, #{djDeptId}, 1, 1)
+		</where>
+	</select>
+	
+	<select id="judgeReportPermissions" resultType="int">
+		select count(*) from view_xmsq 
+		<where>
+			user_id=#{userId} and class_id=#{classId} and decode(#{deptId}, #{djDeptId}, self_add, other_add)=decode(#{deptId}, #{djDeptId}, 1, 1)
+		</where>
+	</select>
+	
+</mapper>

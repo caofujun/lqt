@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw104JcdjgXjDao">
+
+	<sql id="commCols">
+		id id,report_id reportId,patho_id pathoId,patho_num pathoNum,memo memo,hw102_id hw102Id
+	</sql>
+
+	<insert id="save" parameterType="hw104JcdjgXj" flushCache="true">
+		 insert into hw104_jcdjg_xj(id,report_id,patho_id,patho_num,memo,hw102_id)
+		 values(#{id},#{reportId},#{pathoId},#{pathoNum},#{memo},#{hw102Id})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw104_jcdjg_xj
+		<where>id=#{id}</where>
+	</delete>
+	
+	<delete id="delByHw102Id"  flushCache="true">
+		delete from hw104_jcdjg_xj
+		<where>hw102_id=#{hw102Id}</where>
+	</delete>
+	
+	<delete id="delHw104" flushCache="true">
+		delete from hw104_jcdjg_xj
+		<where>
+			hw102_id=#{hw102Id}
+			<if test="pathoIdNotIn!=null and pathoIdNotIn.size!=0">
+		    	and patho_id not in 
+				<foreach collection="pathoIdNotIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="hw104JcdjgXj" flushCache="true">
+		update hw104_jcdjg_xj
+		<set>
+			id=#{id},report_id=#{reportId},patho_id=#{pathoId},patho_num=#{pathoNum},memo=#{memo},hw102_id=#{hw102Id}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="hw104JcdjgXj">
+		select <include refid="commCols"/> from hw104_jcdjg_xj
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findHw104JcdjgXjCount" parameterType="hw104JcdjgXj" resultType="int">
+		select count(*) from hw104_jcdjg_xj
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw104JcdjgXj">
+		select <include refid="commCols"/> from hw104_jcdjg_xj
+		<where>
+		</where>
+	</select>
+	
+	<select id="findPathoIdByHw102Id" resultType="string">
+		select patho_id from hw104_jcdjg_xj 
+		<where>
+			hw102_id=#{hw102Id}
+		</where>
+	</select>
+	
+	<select id="findListByHw102Id" parameterType="hw104JcdjgXj" resultType="hw104JcdjgXj">
+		select <include refid="commCols"/> from hw104_jcdjg_xj
+		<where>
+			hw102_id=#{hw102Id}
+		</where>
+	</select>
+	
+	<select id="findPathoNameByHw102Id" resultType="string">
+		select patho_name from 
+		hw104_jcdjg_xj hw104 left join hw007_xjlb hw107 on hw104.patho_id=hw107.patho_id
+		<where>
+			hw104.hw102_id=#{hw102Id}
+		</where>
+	</select>
+</mapper>

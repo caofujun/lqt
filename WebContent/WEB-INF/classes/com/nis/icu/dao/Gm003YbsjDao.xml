@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm003YbsjDao">
+
+	<sql id="commCols">
+		IN_DEPT_COUNT inDeptCount,CREATIONDATE creationdate,DT_YEAR dtYear,DT_MONTH dtMonth,DT_DAY dtDay,TYPE_ID typeId,DEPT_ID deptId,SURVEY_COUNT surveyCount
+	</sql>
+
+	<insert id="save" parameterType="gm003Ybsj"  flushCache="true">
+		 insert into GM003_YBSJ(IN_DEPT_COUNT,CREATIONDATE,DT_YEAR,DT_MONTH,DT_DAY,TYPE_ID,DEPT_ID,SURVEY_COUNT)
+		 values(#{inDeptCount},#{creationdate},#{dtYear},#{dtMonth},#{dtDay},#{typeId},#{deptId},#{surveyCount})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  GM003_YBSJ
+		<where>CREATIONDATE=#{creationdate}</where>
+	</delete>
+	
+	<update id="update" parameterType="gm003Ybsj" flushCache="true">
+		update GM003_YBSJ
+		<set>
+			IN_DEPT_COUNT=#{inDeptCount},CREATIONDATE=#{creationdate},DT_YEAR=#{dtYear},DT_MONTH=#{dtMonth},DT_DAY=#{dtDay},TYPE_ID=#{typeId},DEPT_ID=#{deptId},SURVEY_COUNT=#{surveyCount}
+		</set>
+		<where>CREATIONDATE=#{creationdate}</where>
+	</update>
+	
+	<select id="get" resultType="gm003Ybsj">
+		select <include refid="commCols"/> from GM003_YBSJ
+  		<where>CREATIONDATE=#{creationdate}</where>
+	</select>
+	
+	
+	<select id="findGm003YbsjCount" parameterType="gm003Ybsj" resultType="int">
+		select count(*) from GM003_YBSJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<delete id="kfjcDelete" flushCache="true">
+		delete from  GM003_YBSJ t
+		<where>t.CREATIONDATE=#{creationdate} 
+		and t.dept_id = #{deptId}
+		<if test="typeId != null and typeId != '' ">
+		and t.type_id = #{typeId}
+		</if>
+		</where>
+	</delete>
+	
+	<select id="findGm003YbsjKfjcCount" parameterType="gm003Ybsj" resultType="int">
+		select count(*) from GM003_YBSJ t
+		 <where> t.type_id in (13, 14, 15, 16) 
+		 <if test="queryStartDate!=null">
+			and t.creationdate &gt;= #{queryStartDate}
+		</if>
+		<if test="queryEndDate!=null">
+			and t.creationdate &lt;= #{queryEndDate}
+		</if>
+		 <if test="deptId != null and deptId != '' ">
+		 	and t.dept_id = #{deptId}
+		 </if>
+		 </where>
+	</select>
+	
+	<select id="getAll"  resultType="gm003Ybsj">
+		select <include refid="commCols"/> from GM003_YBSJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findIcuCount" resultType="icuCount">
+		select to_char(nvl(a.creationdate, d.everyDay),'yyyy-MM-dd') strDate,
+	       nvl(a.new_count, 0) newCount,
+	       nvl(a.in_count, 0) inCount,
+	       nvl(a.out_count, 0) outCount,
+	       nvl(a.outbreak_count3, 0) mndCount,
+	       nvl(a.outbreak_count2, 0) zxjmCount,
+	       nvl(a.outbreak_count1, 0) hxjCount,
+	       nvl(a.outbreak_count20, 0) tsyCount,
+	       nvl(aa.outbreak_count13, 0) ywryksCount,
+	       nvl(aa.outbreak_count14, 0) ywryfxCount,
+	       nvl(aa.outbreak_count15, 0) bhksCount ,
+	       nvl(aa.outbreak_count16, 0) bhfxCount, 
+	       nvl(aa.outbreak_count17, 0) ywryfrCount, 
+	       nvl(b.frCount, 0) frCount
+		from (select to_date(#{startDate},'yyyy-MM-dd') + level - 1 as everyDay from dual
+	        connect by level &lt; = (to_date(#{endDate},'yyyy-MM-dd') - to_date(#{startDate},'yyyy-MM-dd') + 1)
+	    ) d
+		left join (
+			select t.creationdate,
+                <if test="deptId!=null and deptId!=''">
+                t.deptid,
+                </if>
+                Min(t1.dept_name) dept_name,
+                sum(case when t.typeid = '01' then 1 else 0 end) new_count,
+                sum(case when t.typeid = '02' then 1 else 0 end) in_count,
+                sum(case when t.typeid = '03' then 1 else 0 end) out_count,
+                sum(case when t.typeid = '04' then 1 else 0 end) outbreak_count3,
+                sum(case when t.typeid = '05' then 1 else 0 end) outbreak_count2,
+                sum(case when t.typeid = '06' then 1 else 0 end) outbreak_count1,
+                sum(case when t.typeid = '20' then 1 else 0 end) outbreak_count20
+             from gm004_jcmx t
+             left join zg002_byks t1 on t1.dept_id = t.deptid
+             where  t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+             and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+	             <if test="unitId!=null and unitId!=''">
+	             	and z2.HOSP_ID = #{unitId}
+	             </if>
+             )
+             <if test="deptId!=null and deptId!=''">
+             and t.deptid = #{deptId}
+             </if>
+             Group by t.creationdate
+             <if test="deptId!=null and deptId!=''">
+             ,T.DEPTID
+             </if>
+	    ) a on a.creationdate = d.everyDay
+	     left join (
+	  	select t.creationdate,
+             sum(decode(t.type_id, '13', t.survey_count, 0)) outbreak_count13,
+             sum(decode(t.type_id, '14', t.survey_count, 0)) outbreak_count14,
+             sum(decode(t.type_id, '15', t.survey_count, 0)) outbreak_count15,
+             sum(decode(t.type_id, '16', t.survey_count, 0)) outbreak_count16,
+             sum(decode(t.type_id, '17', t.survey_count, 0)) outbreak_count17
+        from GM003_YBSJ t
+         where t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+         and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+         <if test="deptId!=null and deptId!=''">
+         	   and t.dept_id = #{deptId} 
+         </if> 
+        Group by T.creationdate
+      ) aa on aa.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		a.creationdate, count(distinct b.zyid)  frCount
+	  		from gm004_jcmx a
+	    	LEFT JOIN (
+	    		SELECT distinct ZYID,RECORDING_AT FROM ST006_TWXX WHERE TW_VALUES &gt;= #{tw}
+               	AND RECORDING_AT between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+            ) b ON a.ZYID = b.ZYID and to_char(a.creationdate,'yyyy-MM-dd')=to_char(b.RECORDING_AT,'yyyy-MM-dd')
+	 		where a.typeid = '02'
+            and a.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+	             <if test="unitId!=null and unitId!=''">
+	             	and z2.HOSP_ID = #{unitId}
+	             </if>
+             )
+	   		and a.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+		    <if test="deptId!=null and deptId!=''">
+		    and a.deptid=#{deptId}
+		    </if>
+	 		group by a.creationdate
+	 	) b on b.creationdate=d.everyDay
+	 	order by strDate
+	</select>
+	
+	<select id="findMonitorByMonth" resultType="icuCount">
+		select 
+		   d.everyDay strDate,startDate,endDate,
+	       nvl(a.new_count, 0) newCount,
+	       nvl(a2.in_count, 0) inCount,
+	       nvl(a3.out_count, 0) outCount,
+	       nvl(a4.outbreak_count3, 0) mndCount,
+	       nvl(a5.outbreak_count2, 0) zxjmCount,
+	       nvl(a6.outbreak_count1, 0) hxjCount,
+	       nvl(a20.outbreak_count20, 0) tsyCount,
+	       nvl(a13.outbreak_count13, 0) ywryksCount,
+	       nvl(a14.outbreak_count14, 0) ywryfxCount,
+	       nvl(a15.outbreak_count15, 0) bhksCount ,
+	       nvl(a16.outbreak_count16, 0) bhfxCount, 
+	       nvl(a17.outbreak_count17, 0) ywryfrCount,
+	       nvl(b.frCount, 0) frCount
+	    from (
+			select  
+				to_char(everyDay, 'yyyy-MM') everyDay,min(everyDay) startDate, max(everyDay) endDate
+			from (
+				select to_date(#{startDate},'yyyy-MM-dd') + level - 1 as everyDay from dual
+		        connect by level &lt; = (to_date(#{endDate},'yyyy-MM-dd') - to_date(#{startDate},'yyyy-MM-dd') + 1)
+	        )
+			group by to_char(everyDay, 'yyyy-MM')
+	    ) d
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) new_count
+			from gm004_jcmx t
+			where t.typeid = '01'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a on a.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) in_count
+			from (
+				select zyid,creationdate from gm004_jcmx t
+				where t.typeid = '02'
+					and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+					and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+			             <if test="unitId!=null and unitId!=''">
+			             	and z2.HOSP_ID = #{unitId}
+			             </if>
+		             )
+					<if test="deptId!=null and deptId!=''">
+						and	t.deptid = #{deptId}
+					</if>
+			) t
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a2 on a2.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) out_count
+			from gm004_jcmx t
+			where t.typeid = '03'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a3 on a3.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) outbreak_count3
+			from gm004_jcmx t
+			where t.typeid = '04'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a4 on a4.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) outbreak_count2
+			from gm004_jcmx t
+			where t.typeid = '05'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a5 on a5.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) outbreak_count1
+			from gm004_jcmx t
+			where t.typeid = '06'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a6 on a6.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) outbreak_count20
+			from gm004_jcmx t
+			where t.typeid = '20'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a20 on a20.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, sum(t.survey_count) outbreak_count13
+			from GM003_YBSJ t
+			where t.type_id = '13'
+			 and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				<if test="deptId!=null and deptId!=''">
+					and	t.dept_id = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM') 
+	    ) a13 on a13.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, sum(t.survey_count) outbreak_count14
+			from GM003_YBSJ t
+			where t.type_id = '14'
+			 and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				<if test="deptId!=null and deptId!=''">
+					and	t.dept_id = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a14 on a14.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, sum(t.survey_count) outbreak_count15
+			from GM003_YBSJ t
+			where t.type_id = '15'
+			 and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				<if test="deptId!=null and deptId!=''">
+					and	t.dept_id = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a15 on a15.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, sum(t.survey_count) outbreak_count16
+			from GM003_YBSJ t
+			where t.type_id = '16'
+			 and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				<if test="deptId!=null and deptId!=''">
+					and	t.dept_id = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a16 on a16.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, sum(t.survey_count) outbreak_count17
+			from GM003_YBSJ t
+			where t.type_id = '17'
+			 and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				<if test="deptId!=null and deptId!=''">
+					and	t.dept_id = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a17 on a17.creationdate = d.everyDay
+	    left join (
+	   		select 
+	   			to_char(a.creationdate, 'yyyy-MM') creationdate, count(distinct b.zyid)  frCount
+	  		from gm004_jcmx a
+	    	LEFT JOIN (
+	    		SELECT distinct ZYID,RECORDING_AT
+              	FROM ST006_TWXX
+             	WHERE TW_VALUES &gt;= #{tw}
+                AND trunc(RECORDING_AT) between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+            ) b ON a.ZYID = b.ZYID and a.creationdate=trunc(b.RECORDING_AT)
+	        where a.typeid = '02'
+				and a.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+	            and a.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+	   			<if test="deptId!=null and deptId!=''">
+	   				and a.deptid=#{deptId}
+	   			</if>
+	 		group by to_char(a.creationdate, 'yyyy-MM')
+	    ) b on b.creationdate=d.everyDay
+	    order by strDate
+	</select>
+	
+	
+	<select id="findBedMonitorByMonth" resultType="icuCount">
+		select 
+		   d.everyDay strDate,startDate,endDate,
+	       nvl(a.new_count, 0) newCount,
+	       nvl(a2.in_count, 0) inCount,
+	       nvl(a3.out_count, 0) outCount,
+	       nvl(a4.outbreak_count3, 0) mndCount,
+	       nvl(a5.outbreak_count2, 0) zxjmCount,
+	       nvl(a6.outbreak_count1, 0) hxjCount,
+	       nvl(b.frCount, 0) frCount
+	    from (
+			select  
+				to_char(everyDay, 'yyyy-MM') everyDay,min(everyDay) startDate, max(everyDay) endDate
+			from (
+				select to_date(#{startDate},'yyyy-MM-dd') + level - 1 as everyDay from dual
+		        connect by level &lt; = (to_date(#{endDate},'yyyy-MM-dd') - to_date(#{startDate},'yyyy-MM-dd') + 1)
+	        )
+			group by to_char(everyDay, 'yyyy-MM')
+	    ) d
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) new_count
+			from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) t
+			where t.typeid = '01'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a on a.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) in_count
+			from (
+				select zyid,creationdate from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) t
+				where t.typeid = '02'
+					and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+					and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+			             <if test="unitId!=null and unitId!=''">
+			             	and z2.HOSP_ID = #{unitId}
+			             </if>
+		             )
+					
+					<if test="deptId!=null and deptId!=''">
+						and	t.deptid = #{deptId}
+					</if>
+			) t
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a2 on a2.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) out_count
+			from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) t
+			where t.typeid = '03'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a3 on a3.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) outbreak_count3
+			from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) t
+			where t.typeid = '04'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a4 on a4.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) outbreak_count2
+			from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) t
+			where t.typeid = '05'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )		
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a5 on a5.creationdate = d.everyDay
+	    left join (
+	    	select 
+	    		to_char(t.creationdate, 'yyyy-MM') creationdate, count(distinct zyid) outbreak_count1
+			from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) t
+			where t.typeid = '06'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )			
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	        group by to_char(t.creationdate, 'yyyy-MM')
+	    ) a6 on a6.creationdate = d.everyDay
+	    left join (
+	   		select 
+	   			to_char(a.creationdate, 'yyyy-MM') creationdate, count(distinct b.zyid)  frCount
+	  		from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) a
+	    	LEFT JOIN (
+	    		SELECT distinct ZYID,RECORDING_AT
+              	FROM ST006_TWXX
+             	WHERE TW_VALUES &gt;= #{tw}
+                AND trunc(RECORDING_AT) between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+            ) b ON a.ZYID = b.ZYID and a.creationdate=trunc(b.RECORDING_AT)
+	        where a.typeid = '02'
+				and a.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+	            and a.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+	   			<if test="deptId!=null and deptId!=''">
+	   				and a.deptid=#{deptId}
+	   			</if>
+	 		group by to_char(a.creationdate, 'yyyy-MM')
+	    ) b on b.creationdate=d.everyDay
+	    order by strDate
+	</select>
+	
+	<select id="findMonitorByMonthSum" resultType="icuCount">
+		select 
+	       nvl(a.new_count, 0) newCount,
+	       nvl(a2.in_count, 0) inCount,
+	       nvl(a3.out_count, 0) outCount,
+	       nvl(a4.outbreak_count3, 0) mndCount,
+	       nvl(a5.outbreak_count2, 0) zxjmCount,
+	       nvl(a6.outbreak_count1, 0) hxjCount,
+	       nvl(b.frCount, 0) frCount
+	    from (
+	    	select 
+	    		count(distinct zyid) new_count
+			from gm004_jcmx t
+			where t.typeid = '01'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	    ) a ,(
+	    	select 
+	    		count(distinct zyid) in_count
+			from (
+				select zyid,creationdate from gm004_jcmx t
+				where t.typeid = '02'
+					and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+					and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+			             <if test="unitId!=null and unitId!=''">
+			             	and z2.HOSP_ID = #{unitId}
+			             </if>
+		             )
+					<if test="deptId!=null and deptId!=''">
+						and	t.deptid = #{deptId}
+					</if>
+			) t
+	    ) a2,(
+	    	select 
+	    		count(distinct zyid) out_count
+			from gm004_jcmx t
+			where t.typeid = '03'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	    ) a3,(
+	    	select 
+	    		count(distinct zyid) outbreak_count3
+			from gm004_jcmx t
+			where t.typeid = '04'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	    ) a4,(
+	    	select 
+	    		count(distinct zyid) outbreak_count2
+			from gm004_jcmx t
+			where t.typeid = '05'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	    ) a5,(
+	    	select 
+	    		count(distinct zyid) outbreak_count1
+			from gm004_jcmx t
+			where t.typeid = '06'
+				and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+				<if test="deptId!=null and deptId!=''">
+					and	t.deptid = #{deptId}
+				</if>
+	    ) a6,(
+	   		select 
+	   			count(distinct b.zyid)  frCount
+	  		from gm004_jcmx a
+	    	LEFT JOIN (
+	    		SELECT distinct ZYID,RECORDING_AT
+              	FROM ST006_TWXX
+             	WHERE TW_VALUES &gt;= #{tw}
+                AND trunc(RECORDING_AT) between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+            ) b ON a.ZYID = b.ZYID and a.creationdate=trunc(b.RECORDING_AT)
+	        where a.typeid = '02'
+	            and a.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+				and a.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	             )
+	   			<if test="deptId!=null and deptId!=''">
+	   				and a.deptid=#{deptId}
+	   			</if>
+	    ) b
+	</select>
+	
+	<select id="findDayCount" resultType="icuCount">
+		select d.dept_id deptId,
+        	d.dept_name deptName,
+	       nvl(a.new_count, 0) newCount,
+	       nvl(a.in_count, 0) inCount,
+	       nvl(a.out_count, 0) outCount,
+	       nvl(a.outbreak_count3, 0) mndCount,
+	       nvl(a.outbreak_count2, 0) zxjmCount,
+	       nvl(a.outbreak_count1, 0) hxjCount,
+		   nvl(aa.outbreak_count13, 0) ywryksCount,
+	       nvl(aa.outbreak_count14, 0) ywryfxCount,
+	       nvl(aa.outbreak_count17, 0) ywryfrCount,
+	       nvl(aa.outbreak_count15, 0) bhksCount ,
+	       nvl(aa.outbreak_count16, 0) bhfxCount, 
+	       nvl(a.outbreak_count20, 0) tsyCount, 
+         nvl(b.frCount,0) frCount
+	  from (
+	  	select  z.dept_id,z.dept_name,z.show_order from zg002_byks z where z.ifcaseoffice='1'
+          <if test="unitId!=null and unitId!=''">
+          	and z.HOSP_ID = #{unitId}
+          </if>
+         
+		  <if test="deptId!=null and deptId!=''"> 
+		   and z.dept_id=#{deptId}
+		  </if>
+		  <if test="deptType=='icu'">
+		  and z.ificu=1
+		  </if>
+		  <if test="deptType=='nicu'">
+		  and z.ifchildoffice=1
+		  </if>
+		  <if test="deptType=='focus'">
+		  and z.iffocus=1
+		  </if>
+	  ) d
+	  left join (
+	  	select t.deptid,
+           sum(case when t.typeid = '01' then 1 else 0 end) new_count,
+           sum(case when t.typeid = '02' then 1 else 0 end) in_count,
+           sum(case when t.typeid = '03' then 1 else 0 end) out_count,
+           sum(case when t.typeid = '04' then 1 else 0 end) outbreak_count3,
+           sum(case when t.typeid = '05' then 1 else 0 end) outbreak_count2,
+           sum(case when t.typeid = '06' then 1 else 0 end) outbreak_count1,
+           sum(case when t.typeid = '20' then 1 else 0 end) outbreak_count20
+        from gm004_jcmx t
+         where t.creationdate &gt;= to_date(#{startDate},'yyyy-MM-dd') and t.creationdate &lt; to_date(#{endDate},'yyyy-MM-dd')+1
+         <if test="deptId!=null and deptId!=''">
+         	   and t.deptid = #{deptId} 
+         </if> 
+        Group by T.DEPTID
+      ) a on a.deptid = d.dept_id      
+	  left join (
+	  	select t.dept_id,
+             sum(decode(t.type_id, '13', t.survey_count, 0)) outbreak_count13,
+             sum(decode(t.type_id, '14', t.survey_count, 0)) outbreak_count14,
+             sum(decode(t.type_id, '15', t.survey_count, 0)) outbreak_count15,
+             sum(decode(t.type_id, '16', t.survey_count, 0)) outbreak_count16,
+             sum(decode(t.type_id, '17', t.survey_count, 0)) outbreak_count17
+        from GM003_YBSJ t
+         where t.creationdate &gt;= to_date(#{startDate},'yyyy-MM-dd') and t.creationdate &lt; to_date(#{endDate},'yyyy-MM-dd')+1
+         <if test="deptId!=null and deptId!=''">
+         	   and t.dept_id = #{deptId} 
+         </if> 
+        Group by T.dept_id
+      ) aa on aa.dept_id = d.dept_id
+      left join (
+      	select 
+      		a.deptid,
+			count(distinct b.zyid)  frCount
+    	from gm004_jcmx a
+      	LEFT JOIN (
+      		SELECT distinct ZYID,RECORDING_AT FROM ST006_TWXX WHERE TW_VALUES &gt;= #{tw}
+               AND  recording_at &gt;=to_date(#{startDate},'yyyy-MM-dd') and recording_at &lt; to_date(#{endDate},'yyyy-MM-dd')+1
+        ) b ON a.ZYID = b.ZYID and to_char(a.creationdate,'yyyy-MM-dd')=to_char(b.RECORDING_AT,'yyyy-MM-dd')
+   		where a.typeid = '02'
+    		and a.creationdate &gt;=to_date(#{startDate},'yyyy-MM-dd') and a.creationdate &lt; to_date(#{endDate},'yyyy-MM-dd')+1
+	      	<if test="deptId!=null and deptId!=''"> 
+		   	and a.deptid=#{deptId}
+		   	</if>
+   		group by a.deptid
+   	  ) b on b.deptid=d.dept_id
+      order by d.show_order
+	</select>
+</mapper>

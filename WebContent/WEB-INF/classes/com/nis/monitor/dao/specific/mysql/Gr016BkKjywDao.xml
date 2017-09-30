@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr016BkKjywDao">
+
+	<sql id="commCols_mysql">
+		RELID relid,REFID refid,ISSELECT isselect,ORDER_TYPE orderType,ORDER_AT orderAt,STOP_AT stopAt,ORDER_NAME orderName,DOSE dose,DOSAGE_UNIT dosageUnit,QTY qty,FREQUENCY frequency,DAILY_TIMES dailyTimes,ADMIN_ROUTE_NAME adminRouteName,EXECUTE_NAME executeName,EXECUTE_TIME executeTime,DATE_SECTION dateSection,MEMO memo,YZ_ID yzId,PRE_YYMD preYymd
+	</sql>
+
+	<select id="findGr016BkKjyw_mysql" parameterType="gr016BkKjyw" resultType="gr016BkKjyw">
+		select <include refid="commCols_mysql"/> from GR016_BK_KJYW
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

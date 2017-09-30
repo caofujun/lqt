@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk004SjbbDao">
+
+	<sql id="commCols_oracle">
+		id id,card_relid cardRelid,refid refid,sn sn,patient_id patientId,zyid zyid,visit_id visitId,patient_name patientName,sex sex,age age,test_no testNo,test_type_id testTypeId,test_type_name testTypeName,submi_at submiAt,sample_id sampleId,sample_name sampleName,patho_id pathoId,patho_name pathoName,memo memo,create_date createDate,is_select isSelect,submi_dept_id submiDeptId,oper_id operId,pathogen_sn pathogenSn
+	</sql>
+
+	<select id="findBk004Sjbb_oracle" parameterType="bk004Sjbb" resultType="bk004Sjbb">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from bk004_sjbb
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getInfectTypeByTestNo_oracle" resultType="integer">
+		select bk2.infect_type from bk004_sjbb bk4 left join bk002_grzd bk2 on bk4.refid=bk2.relid 
+		<where>
+			bk2.auth_status=1 and bk4.test_no=#{testNo} and rownum=1
+		</where>
+	</select>
+</mapper>

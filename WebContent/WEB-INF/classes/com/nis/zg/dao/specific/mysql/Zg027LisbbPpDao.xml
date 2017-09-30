@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg027LisbbPpDao">
+
+	<sql id="commCols_mysql">
+		BBID bbid,BBMC bbmc,ITEM_CODE itemCode,ITEM_NAME itemName,BBPP_ID bbppId
+	</sql>
+
+	<select id="findZg027LisbbPp_mysql" parameterType="zg027LisbbPp" resultType="zg027LisbbPp">
+		select <include refid="commCols_mysql"/> from ZG027_LISBB_PP
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

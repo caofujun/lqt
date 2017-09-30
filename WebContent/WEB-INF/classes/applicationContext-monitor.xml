@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!--
+		define the SqlSessionFactory, notice that configLocation is not needed
+		when you use MapperFactoryBean
+	-->
+	<bean id="monitor_sqlSessionFactory" class="com.nis.mybatis.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="dialectManager" ref="dialectManager" />
+		<property name="typeAliasesPackage" value="com.nis.comm.entity,com.nis.monitor.entity,com.nis.prevalence.entity,com.nis.icu.entity,com.nis.bl.entity,com.nis.mdr.entity,com.nis.hygiene.entity,com.nis.hand.entity,com.nis.outbreak,com.nis.zb.entity,com.nis.mkzb.entity,com.nis.patient.entity"/>
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:com/nis/monitor/dao/*.xml</value>
+				<value>classpath*:com/nis/monitor/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/monitor/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/prevalence/dao/*.xml</value>
+				<value>classpath*:com/nis/prevalence/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/prevalence/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/icu/dao/*.xml</value>
+				<value>classpath*:com/nis/icu/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/icu/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/bl/dao/*.xml</value>
+				<value>classpath*:com/nis/bl/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/bl/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/mdr/dao/*.xml</value>
+				<value>classpath*:com/nis/mdr/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/mdr/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/hygiene/dao/*.xml</value>
+				<value>classpath*:com/nis/hygiene/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/hygiene/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/hand/dao/*.xml</value>
+				<value>classpath*:com/nis/hand/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/hand/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/outbreak/dao/*.xml</value>
+				<value>classpath*:com/nis/outbreak/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/outbreak/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/zb/dao/*.xml</value>
+				<value>classpath*:com/nis/zb/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/zb/dao/specific/oracle/*.xml</value>
+				<value>classpath*:com/nis/mkzb/dao/*.xml</value>
+				<value>classpath*:com/nis/mkzb/dao/specific/mysql/*.xml</value>
+				<value>classpath*:com/nis/mkzb/dao/specific/oracle/*.xml</value>
+				<value>classpath*:ibatis/mapper/*Mapper.xml</value>
+			</list>
+		</property>	
+		<property name="plugins">
+			<list>
+                <ref bean="sqlLogInterceptor"/>
+			</list>
+        </property>
+	</bean>
+
+	<!-- scan for mappers and let them be autowired -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.nis.monitor.dao,com.nis.prevalence.dao,com.nis.icu.dao,com.nis.bl.dao,com.nis.mdr.dao,com.nis.hygiene.dao,com.nis.hand.dao,com.nis.outbreak.dao,com.nis.zb.dao,com.nis.mkzb.dao"></property>
+		<property name="sqlSessionFactory" ref="monitor_sqlSessionFactory"></property>
+	</bean>
+</beans>

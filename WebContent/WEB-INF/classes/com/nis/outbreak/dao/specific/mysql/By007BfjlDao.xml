@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007BfjlDao">
+
+	<sql id="commCols_mysql">
+		id id,show_id showId,audit_flag auditFlag,break_start_date breakStartDate,break_end_date breakEndDate,break_count breakCount,create_date createDate,moni_date moniDate,dept_id deptId,break_type breakType,read_flag readFlag,audit_id auditId,audit_date auditDate,line line,observe_line observeLine,mulriple mulriple,observe_day observeDay,is_warn isWarn,audit_name auditName
+	</sql>
+
+	<select id="findBy007Bfjl_mysql" parameterType="by007Bfjl" resultType="by007Bfjl">
+		select <include refid="commCols_mysql"/> from by007_bfjl
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

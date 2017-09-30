@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbafpcardDao">
+
+	<sql id="commCols">
+		MASTERID masterid,SUBID subid,AFP_AREATYPE afpAreatype,PALSYDATE palsydate,PALSYSYMPTOM palsysymptom,DOCTORAREATYPEID doctorareatypeid,DOCTORAREATYPENAME doctorareatypename,DOCTORDATE doctordate,DOCTORADDRCODE doctoraddrcode,DOCTORADDRVALUE doctoraddrvalue,DOCTORADDR doctoraddr,CLINICALDIAGNOSIS1 clinicaldiagnosis1,CLINICALDIAGNOSIS2 clinicaldiagnosis2,SAMPLEDATE sampledate,SAMPLEPLACE sampleplace,CONTACTFLAG contactflag
+	</sql>
+
+	<insert id="save" parameterType="ctgBk001Crbafpcard"  flushCache="true">
+		 insert into CTG_BK001_CRBAFPCARD(MASTERID,SUBID,AFP_AREATYPE,PALSYDATE,PALSYSYMPTOM,DOCTORAREATYPEID,DOCTORAREATYPENAME,DOCTORDATE,DOCTORADDRCODE,DOCTORADDRVALUE,DOCTORADDR,CLINICALDIAGNOSIS1,CLINICALDIAGNOSIS2,SAMPLEDATE,SAMPLEPLACE,CONTACTFLAG)
+		 values(#{masterid},#{subid},#{afpAreatype},#{palsydate},#{palsysymptom},#{doctorareatypeid},#{doctorareatypename},#{doctordate},#{doctoraddrcode},#{doctoraddrvalue},#{doctoraddr},#{clinicaldiagnosis1},#{clinicaldiagnosis2},#{sampledate},#{sampleplace},#{contactflag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK001_CRBAFPCARD
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk001Crbafpcard" flushCache="true">
+		update CTG_BK001_CRBAFPCARD
+		<set>
+			MASTERID=#{masterid},SUBID=#{subid},AFP_AREATYPE=#{afpAreatype},PALSYDATE=#{palsydate},PALSYSYMPTOM=#{palsysymptom},DOCTORAREATYPEID=#{doctorareatypeid},DOCTORAREATYPENAME=#{doctorareatypename},DOCTORDATE=#{doctordate},DOCTORADDRCODE=#{doctoraddrcode},DOCTORADDRVALUE=#{doctoraddrvalue},DOCTORADDR=#{doctoraddr},CLINICALDIAGNOSIS1=#{clinicaldiagnosis1},CLINICALDIAGNOSIS2=#{clinicaldiagnosis2},SAMPLEDATE=#{sampledate},SAMPLEPLACE=#{sampleplace},CONTACTFLAG=#{contactflag}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk001Crbafpcard">
+		select <include refid="commCols"/> from CTG_BK001_CRBAFPCARD
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk001CrbafpcardCount" parameterType="ctgBk001Crbafpcard" resultType="int">
+		select count(*) from CTG_BK001_CRBAFPCARD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk001Crbafpcard">
+		select <include refid="commCols"/> from CTG_BK001_CRBAFPCARD
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

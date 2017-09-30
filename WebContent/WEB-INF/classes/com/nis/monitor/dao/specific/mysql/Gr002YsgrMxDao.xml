@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr002YsgrMxDao">
+
+	<sql id="commCols_mysql">
+		exclude_name excludeName,yj_infect_code yjInfectCode,infect_dept_id infectDeptId,reg_id regId,zyid zyid,infect_code infectCode,infect_name infectName,cause cause,count count,start_at startAt,stop_at stopAt,fever_days feverDays,blood_test_unusual_count bloodTestUnusualCount,blood_test_count bloodTestCount,relid relid,state state,moni_at moniAt,operator operator,suspected_degree suspectedDegree,report_type reportType,infect_type_id infectTypeId,dept_id deptId,is_dc isDc,conf_date confDate,standard_no standardNo,custom_infect_code customInfectCode,custom_infect_name customInfectName,remark remark,lastoper_date lastoperDate,gr2_relid gr2Relid
+	</sql>
+
+	<select id="findGr002YsgrMx_mysql" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select <include refid="commCols_mysql"/> from gr002_ysgr_mx
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

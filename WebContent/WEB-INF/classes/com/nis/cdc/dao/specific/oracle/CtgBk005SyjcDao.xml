@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk005SyjcDao">
+
+	<sql id="commCols_oracle">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,ISINHOSPITAL isinhospital,PATIENT_NAME patientName,SEXID sexid,SEXNAME sexname,PARENT_NAME parentName,ID_TYPE idType,ID_TYPE_NAME idTypeName,ID id,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,UNIT unit,TELP telp,TELH telh,AREATYPE_ID areatypeId,AREATYPE_NAME areatypeName,ADDR addr,ADDRCODE addrcode,ADDRCODEVALUE addrcodevalue,REGISTERAREATYPE_ID registerareatypeId,REGISTERAREATYPE_NAME registerareatypeName,REGISTERAREA registerarea,REGISTERAREACODE registerareacode,REGISTERAREAVALUE registerareavalue,PROFESSION profession,START_DATE startDate,DIAGNOSE_DATE diagnoseDate,DEADDATE deaddate,SYMPTOMS symptoms,SYMPTOMS_FR symptomsFr,SYMPTOMS_OTHER symptomsOther,DIGESTIVES digestives,DIGESTIVE_OT digestiveOt,DIGESTIVE_FX digestiveFx,DIGESTIVE_FXXZ digestiveFxxz,DIGESTIVE_OTHER digestiveOther,RESPIRATORYS respiratorys,RESPIRATORY_OTHER respiratoryOther,CARDIOVASCULARS cardiovasculars,CARDIOVASCULAR_OTHER cardiovascularOther,URINARYS urinarys,URINARY_OTHER urinaryOther,NERVOUS nervous,NERVOU_YC nervouYc,NERVOU_OTHER nervouOther,SKINS skins,SKIN_OTHER skinOther,ISUSEDANTIBIOTIC isusedantibiotic,ANTIBIOTIC antibiotic,INITDIAGNOSIS initdiagnosis,INITDIAGNOSIS_OTHER initdiagnosisOther,PREVIOUSHISTORY previoushistory,PREVIOUSHISTORY_OTHER previoushistoryOther,ISFOODCAUSED isfoodcaused,ISBIOLOGICALSAMPLES isbiologicalsamples,REPORTDT reportdt,SAVEDT savedt,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,FLAG flag,VALID_DATE validDate,DOCTORID doctorid,DOCTORNAME doctorname,DEPTID deptid,DEPTNAME deptname,REJECT_REASON rejectReason,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,VALIDPERSON validperson,VALIDPERSONNAME validpersonname,NOTES notes,ISEMPTYCARD isemptycard,ISRETURNVISIT isreturnvisit
+	</sql>
+
+	
+	<select id="findCtgBk005Syjc_oracle" parameterType="ctgBk005Syjc" resultType="ctgBk005Syjc">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_BK005_SYJC
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

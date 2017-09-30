@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys005Dictdept1Dao">
+
+	<sql id="commCols_oracle">
+		DEPTID deptid,DEPTNAME deptname,SPM spm
+	</sql>
+
+	
+	<select id="findCtgSys005Dictdept1_oracle" parameterType="ctgSys005Dictdept1" resultType="ctgSys005Dictdept1">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_SYS005_DICTDEPT1
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientYzDao">
+
+	<sql id="commCols_mysql">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,ORDER_TYPE orderType,ORDER_AT orderAt,STOP_AT stopAt,ORDER_ID orderId,ORDER_NAME orderName,DRUG_SPECI drugSpeci,DOSAGE dosage,DOSAGE_UNIT dosageUnit,USE_COUNT useCount,SYPC sypc,ADMIN_ROUTE_ID adminRouteId,ADMIN_ROUTE_NAME adminRouteName,USE_PURPOSE usePurpose,FREQUENCY frequency,EXECOFFICE_CODE execofficeCode,EXECOFFICE_NAME execofficeName,BDOC_ID bdocId,BDOC_NAME bdocName,BNRS_ID bnrsId,BNRS_NAME bnrsName,EDOC_ID edocId,EDOC_NAME edocName,YZ_STATUS yzStatus,MEMO memo,USEDRUG_DAYS usedrugDays,ORDER_CLASS orderClass,YPDJ ypdj,QTY_DAY qtyDay,TOTAL_QTY totalQty,IS_KJYW isKjyw,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientYz_mysql" parameterType="jkPatientYz" resultType="jkPatientYz">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_YZ
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

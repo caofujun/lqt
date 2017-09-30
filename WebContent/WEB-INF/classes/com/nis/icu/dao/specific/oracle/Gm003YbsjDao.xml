@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm003YbsjDao">
+
+	<sql id="commCols_oracle">
+		IN_DEPT_COUNT inDeptCount,CREATIONDATE creationdate,DT_YEAR dtYear,DT_MONTH dtMonth,DT_DAY dtDay,TYPE_ID typeId,DEPT_ID deptId,SURVEY_COUNT surveyCount
+	</sql>
+
+	
+	<select id="findGm003Ybsj_oracle" parameterType="gm003Ybsj" resultType="gm003Ybsj">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from GM003_YBSJ
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findMainKs_oracle" resultType="map">
+		    select t.datetime "datetime",nvl(t1.fever, 0) "ywks",nvl(t2.fever48, 0) "bhks" from 
+		       (select trunc(#{startDate}) + level - 1 as datetime from dual
+		connect by level &lt;=(ceil((trunc(#{endDate}) - trunc(#{startDate}) + 1)))) t left join 
+		       (select  trunc(t.creationdate) datetime, sum(t.survey_count) fever from GM003_YBSJ t 
+           where t.type_id='13' and trunc(t.creationdate) between #{startDate} and #{endDate}
+            and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+            group by trunc(t.creationdate)
+            ) t1 on t.datetime=t1.datetime
+		left join (select  trunc(t.creationdate) datetime, sum(t.survey_count) fever48 from GM003_YBSJ t inner join zg002_byks z on z.dept_id=t.dept_id and z.ifcaseoffice='1' 
+           where t.type_id='15' and trunc(t.creationdate) between #{startDate} and #{endDate}
+            and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+             group by trunc(t.creationdate)
+            ) t2 on t1.datetime=t2.datetime
+		order by t.datetime asc
+	</select>
+	
+	<select id="findMainFx_oracle" resultType="map">
+		    select t.datetime "datetime",nvl(t1.fever, 0) "ywFx",nvl(t2.fever48, 0) "bhFx" from 
+		       (select trunc(#{startDate}) + level - 1 as datetime from dual
+		connect by level &lt;=(ceil((trunc(#{endDate}) - trunc(#{startDate}) + 1)))) t left join 
+		       (select  trunc(t.creationdate) datetime, sum(t.survey_count) fever from GM003_YBSJ t  
+           where t.type_id='14' and trunc(t.creationdate) between #{startDate} and #{endDate}
+            and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+            group by trunc(t.creationdate)
+            ) t1 on t.datetime=t1.datetime
+		left join (select  trunc(t.creationdate) datetime, sum(t.survey_count) fever48 from GM003_YBSJ t  
+           where t.type_id='16' and trunc(t.creationdate) between #{startDate} and #{endDate} 
+           and t.dept_id in (select z.dept_id from  zg002_byks z where z.ifcaseoffice='1')
+           group by trunc(t.creationdate) 
+            ) t2 on t1.datetime=t2.datetime
+		order by t.datetime asc
+	</select>
+	
+	<select id="findGm003YbsjKfjc_oracle" parameterType="gm003Ybsj" resultType="gm003Ybsj">
+		select * from ( select a.*, rownum rn from (
+		  select d.dept_id deptId,
+         d.dept_name deptName,
+         a.creationdate,
+         nvl(a.outbreak_count1, 0) ywryksCount,
+         nvl(a.outbreak_count2, 0) ywryfxCount,
+         nvl(a.outbreak_count3, 0) bhksCount ,
+         nvl(a.outbreak_count4, 0) bhfxCount ,
+         nvl(a.outbreak_count5, 0) ywryfrCount
+    from (select  z.dept_id,z.dept_name,z.show_order from zg002_byks z 
+    ) d
+    right join (select t.dept_id,t.creationdate,
+                      sum(decode(t.type_id, '13', t.survey_count, 0)) outbreak_count1,
+                      sum(decode(t.type_id, '14', t.survey_count, 0)) outbreak_count2,
+                      sum(decode(t.type_id, '15', t.survey_count, 0)) outbreak_count3,
+                      sum(decode(t.type_id, '16', t.survey_count, 0)) outbreak_count4,
+                      sum(decode(t.type_id, '17', t.survey_count, 0)) outbreak_count5
+                 from GM003_YBSJ t
+                  <where> 1=1 
+		            <if test="queryStartDate!=null">
+						and t.creationdate &gt;= #{queryStartDate}
+					</if>
+					<if test="queryEndDate!=null">
+						and t.creationdate &lt;= #{queryEndDate}
+					</if>
+					<if test="deptId != null and deptId != '' ">
+					 	and t.dept_id = #{deptId}
+					</if>
+				 </where>
+                Group by T.DEPT_ID,t.creationdate) a
+		      on a.dept_id = d.dept_id
+		     order by a.creationdate desc
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findkfjcByCreationdate_oracle" parameterType="gm003Ybsj" resultType="gm003Ybsj">
+	     select d.dept_id deptId,
+        d.dept_name deptName,
+        a.creationdate,
+         nvl(a.outbreak_count1, 0) ywryksCount,
+         nvl(a.outbreak_count2, 0) ywryfxCount,
+         nvl(a.outbreak_count3, 0) bhksCount ,
+         nvl(a.outbreak_count4, 0) bhfxCount ,
+         nvl(a.outbreak_count5, 0) ywryfrCount 
+    from (select  z.dept_id,z.dept_name,z.show_order from zg002_byks z 
+    ) d
+    right join (select t.dept_id,t.creationdate,
+                      sum(decode(t.type_id, '13', t.survey_count, 0)) outbreak_count1,
+                      sum(decode(t.type_id, '14', t.survey_count, 0)) outbreak_count2,
+                      sum(decode(t.type_id, '15', t.survey_count, 0)) outbreak_count3,
+                      sum(decode(t.type_id, '16', t.survey_count, 0)) outbreak_count4,
+                      sum(decode(t.type_id, '17', t.survey_count, 0)) outbreak_count5
+                 from GM003_YBSJ t
+                  <where> 1=1 
+                  <if test="creationdate != null">
+						and t.creationdate = #{creationdate}
+					</if>
+					<if test="deptId != null and deptId != '' ">
+					 	and t.dept_id = #{deptId}
+					</if>
+				 </where>
+                Group by T.DEPT_ID,t.creationdate) a
+		      on a.dept_id = d.dept_id
+		     order by a.creationdate desc
+	</select>
+	
+	
+	
+</mapper>

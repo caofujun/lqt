@@ -1,0 +1,2372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zb.dao.ZbRecordDao">
+
+	<sql id="commCols_oracle">
+		ID id,REPORT_YEAR reportYear,REPORT_MONTH reportMonth,ITEM_CODE itemCode,ITEM_NAME itemName,
+		USER_ID userId,USER_NAME userName,REPORT_DATE reportDate,REPORT_RESULT reportResult,
+		REPORT_STATUS reportStatus,REPORT_AMOUNT reportAmount
+	</sql>
+	
+	<select id="findZbRecordList_oracle" parameterType="zbRecord" resultType="zbRecord">
+		select 
+		  DICT.DICT_CODE itemCode,DICT.DICT_NAME itemName,reportAmount,unReportAmount
+		from SYS_DICT DICT
+		inner join (
+		   --感染病例（1）
+			select '1' itemCode,count(1) reportAmount from (select  infect_date,  b2.TranFlag, row_number() over(partition by zyid, nvl(b1.report_visit, 0), nvl(z22.infect_code, z5.infect_code) order by b2.auth_at) rn
+			from bk002_grzd b2 inner join bk001_sbk b1 on b1.relid = b2.refid  inner join zg002_byks z2 on b2.infect_dept_id = z2.dept_id
+			inner join zg001_bzks z1  on z1.dept_id = z2.stand_dept_id  left join zg005_yygrzd z5  on b2.infect_diagn_id = z5.infect_code
+			left join zg022_yygrzd_diy z22 on b2.custom_diagn_id = z22.infect_code where b2.auth_status = 1 and infect_date is not null) a
+			where rn = 1 and nvl(TranFlag,0) = 1 and trunc(INFECT_DATE) between #{startDate} and #{endDate}
+		   --出院患者数（2）
+		   union
+		   select '2' itemCode,count(1) reportAmount from outhospitalinput where nvl(TranFlag,0) = 1
+		   and trunc(outdate) between #{startDate} and #{endDate}
+		   --外科手术感染（5）
+           union
+           select '5' itemCode, count(1) reportAmount from st005_ssxxb s5 inner join zg002_byks z2 on s5.dept_id = z2.dept_id
+ 			inner join zg001_bzks z1 on z2.stand_dept_id = z1.dept_id
+            where nvl(TranFlag, 0) = 1 AND s5.oper_id IS NOT null  and s5.status=4  and trunc(oper_at)  between #{startDate} and #{endDate} 
+            --针刺伤监测（6）
+            union
+            select '6' itemCode, count(1) reportAmount  from BL002_SJDJ b2 inner join (select csd_id, csd_name
+             from BL004_CS_DETAILINFO t where csm_id = '001') b4 on b2.d_gw = b4.csd_id inner join zg002_byks z2
+     		 on b2.d_dept = z2.dept_id left join zg001_bzks z1 on z1.dept_id = z2.stand_dept_id
+		   where nvl(b2.Tranflag, 0) = 1 and b2.d_name is not null and b2.d_gl is not null  and b2.d_gw is not null
+		     and b2.d_sex is not null and b2.d_age is not null and trunc(b2.dj_time) between #{startDate} and #{endDate} 
+		    --ICU病人感染监测（7）
+            union 
+            select '7' itemCode, count(1) reportAmount from (select  infect_date,  b2.Tran1Flag, row_number() over(partition by zyid, nvl(b1.report_visit, 0), nvl(z22.infect_code, z5.infect_code), b2.infect_date order by b2.tran1flag desc nulls last, b2.auth_at) rn
+			 from bk002_grzd b2  inner join bk001_sbk b1  on b1.relid = b2.refid  inner join zg002_byks z2 on b2.infect_dept_id = z2.dept_id  inner join zg001_bzks z1
+			 on z1.dept_id = z2.stand_dept_id  left join zg005_yygrzd z5 on b2.infect_diagn_id = z5.infect_code left join zg022_yygrzd_diy z22  on b2.custom_diagn_id = z22.infect_code
+			 where b2.auth_status = 1 and infect_date is not null and z2.ificu = 1) a where a.rn = 1  and nvl(a.Tran1Flag,0) = 1  and trunc(a.infect_date) between #{startDate} and #{endDate}
+            --NICU病人感染监测（9）
+            union 
+	        select '9' itemCode, count(1) reportAmount from (select infect_date, b2.Tran2Flag,  row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0) order by b2.tran2flag desc nulls last, b2.infect_date, b2.auth_at) rn
+	          from bk002_grzd b2 inner join bk001_sbk b1 on b1.relid = b2.refid inner join zg002_byks z2 on b2.infect_dept_id = z2.dept_id
+	         inner join zg001_bzks z1 on z1.dept_id = z2.stand_dept_id left join zg005_yygrzd z5 on b2.infect_diagn_id = z5.infect_code
+	          left join zg022_yygrzd_diy z22 on b2.custom_diagn_id = z22.infect_code where b2.auth_status = 1
+	           and infect_date is not null and z2.ifchildoffice = 1) a where nvl(a.Tran2Flag,0) = 1 and trunc(a.infect_date) between #{startDate} and #{endDate}
+  		  --抗菌药物监测（10）
+          union 
+	      select '10' itemCode, count(1) reportAmount  from (select jl.calc_date,row_number() over(partition by jl.zyid order by jl.use_antib_type desc nulls last, jl.calc_date, s15.order_at) rn
+          from jk_yz_lhyy jl left join st015_yzxxb_kjyw s15  on jl.zyid = s15.zyid  and jl.dept_id = s15.execoffice_code
+          left join zg002_byks z2 on jl.dept_id = z2.dept_id  where nvl(jl.tranflag,0) = 1 and not exists (select 1 from jk_yz_lhyy jy where jy.zyid = jl.zyid and nvl(jy.tranflag,0) = 0))
+		  where rn = 1 and trunc(calc_date) between #{startDate} and #{endDate}
+		  --消毒灭菌监测结果（11）
+          union 
+   		 select '11' itemCode, count(1) reportAmount  from hw101_jcdj h1  inner join (select *  from (select dj_id, take_type_name, test_at, take_at, take_by, row_number() over(partition by dj_id order by take_at) rn
+		 from hw102_jcdmx) where rn = 1) h2 on h2.dj_id = h1.dj_id left join (select employee_id, employee_name  from zg003_yyzg  union  select employee_id, employee_name
+		 from hw010_zzry) h10 on h10.employee_id = h2.take_by where nvl(h1.tranflag,0) = 1 and   trunc(h1.report_at) between #{startDate} and #{endDate}
+		  and h1.type = 1  and not exists (select 1 from hw102_jcdmx h  where h.dj_id = h1.dj_id and h.result_flag = -1)
+   		 --一次性用品监测（12）
+          union 	
+   		select '12' itemCode, count(1) reportAmount   from hw101_jcdj h1 inner join (select * from (select dj_id, take_type_name,  test_at,  take_at, take_by, row_number() over(partition by dj_id order by take_at) rn
+		from hw102_jcdmx) where rn = 1) h2 on h2.dj_id = h1.dj_id left join (select employee_id, employee_name  from zg003_yyzg  union select employee_id, employee_name from hw010_zzry) h10
+		 on h10.employee_id = h2.take_by  where nvl(h1.tranflag,0) = 1 and   trunc(h1.report_at) between #{startDate} and #{endDate} and h1.type = 2 and not exists (select 1  from hw102_jcdmx h where h.dj_id = h1.dj_id  and h.result_flag = -1)
+   		--污水监测（13）
+          union 	
+		select '13' itemCode, count(1) reportAmount from hw101_jcdj h1  inner join (select * from (select dj_id,  take_type_name,  test_at, take_at, take_by, row_number() over(partition by dj_id order by take_at) rn
+		 from hw102_jcdmx) where rn = 1) h2 on h2.dj_id = h1.dj_id left join (select employee_id, employee_name from zg003_yyzg  union select employee_id, employee_name
+		 from hw010_zzry) h10 on h10.employee_id = h2.take_by where nvl(h1.tranflag,0) = 1  and trunc(h1.report_at) between #{startDate} and #{endDate} and h1.type = 3 and not exists (select 1  from hw102_jcdmx h where h.dj_id = h1.dj_id and h.result_flag = -1)
+
+		) a on DICT.DICT_CODE = a.itemCode
+		inner join (
+		   --感染病例（1）
+		select '1' itemCode,count(1) unReportAmount from (select   infect_date, b2.TranFlag, row_number() over(partition by zyid, nvl(b1.report_visit, 0), nvl(z22.infect_code, z5.infect_code) order by b2.auth_at) rn
+         from bk002_grzd b2 inner join bk001_sbk b1 on b1.relid = b2.refid inner join zg002_byks z2 on b2.infect_dept_id = z2.dept_id
+        inner join zg001_bzks z1 on z1.dept_id = z2.stand_dept_id left join zg005_yygrzd z5  on b2.infect_diagn_id = z5.infect_code
+         left join zg022_yygrzd_diy z22 on b2.custom_diagn_id = z22.infect_code where b2.auth_status = 1
+          and infect_date is not null) a where rn = 1 and nvl(TranFlag,0) = 0  and trunc(INFECT_DATE) between #{startDate} and #{endDate}
+		   --出院患者数（2）
+		   union
+		    select '2' itemCode,count(1) unReportAmount from outhospitalinput where nvl(TranFlag,0) = 0
+		   and trunc(outdate) between #{startDate} and #{endDate}
+		   --外科手术感染（5）
+           union
+           select '5' itemCode, count(1) unReportAmount from st005_ssxxb s5 inner join zg002_byks z2 on s5.dept_id = z2.dept_id
+ 			inner join zg001_bzks z1 on z2.stand_dept_id = z1.dept_id  where nvl(TranFlag, 0) = 0  AND s5.oper_id IS NOT null  and s5.status=4
+           and trunc(oper_at) between #{startDate} and #{endDate}
+		  --针刺伤监测（6）
+            union
+		   select '6' itemCode, count(1) unReportAmount  from BL002_SJDJ b2 inner join (select csd_id, csd_name
+             from BL004_CS_DETAILINFO t where csm_id = '001') b4 on b2.d_gw = b4.csd_id inner join zg002_byks z2
+     		 on b2.d_dept = z2.dept_id left join zg001_bzks z1 on z1.dept_id = z2.stand_dept_id
+		   where nvl(b2.Tranflag, 0) = 0 and b2.d_name is not null and b2.d_gl is not null  and b2.d_gw is not null
+		     and b2.d_sex is not null and b2.d_age is not null and trunc(b2.dj_time) between #{startDate} and #{endDate} 
+		  --ICU病人感染监测（7）
+		    union
+		    select '7' itemCode, count(1) unReportAmount from (select  infect_date,  b2.Tran1Flag, row_number() 
+		    over(partition by zyid, nvl(b1.report_visit, 0), nvl(z22.infect_code, z5.infect_code), b2.infect_date order by b2.tran1flag desc nulls last, b2.auth_at) rn
+			 from bk002_grzd b2  inner join bk001_sbk b1  on b1.relid = b2.refid  inner join zg002_byks z2 on b2.infect_dept_id = z2.dept_id  inner join zg001_bzks z1
+			 on z1.dept_id = z2.stand_dept_id  left join zg005_yygrzd z5 on b2.infect_diagn_id = z5.infect_code left join zg022_yygrzd_diy z22  on b2.custom_diagn_id = z22.infect_code
+			 where b2.auth_status = 1 and infect_date is not null and z2.ificu = 1) a where a.rn = 1  and nvl(a.Tran1Flag,0) = 0  and trunc(a.infect_date) between #{startDate} and #{endDate}
+		   --NICU病人感染监测（9）
+            union 
+	        select '9' itemCode, count(1) unReportAmount from (select infect_date, b2.Tran2Flag,  row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0) order by b2.tran2flag desc nulls last, b2.infect_date, b2.auth_at) rn
+	          from bk002_grzd b2 inner join bk001_sbk b1 on b1.relid = b2.refid inner join zg002_byks z2 on b2.infect_dept_id = z2.dept_id
+	         inner join zg001_bzks z1 on z1.dept_id = z2.stand_dept_id left join zg005_yygrzd z5 on b2.infect_diagn_id = z5.infect_code
+	          left join zg022_yygrzd_diy z22 on b2.custom_diagn_id = z22.infect_code where b2.auth_status = 1
+	           and infect_date is not null and z2.ifchildoffice = 1) a where nvl(a.Tran2Flag,0) = 0 and trunc(a.infect_date) between #{startDate} and #{endDate}
+   		  --抗菌药物监测（10）
+          union 
+	      select '10' itemCode, count(1) unReportAmount  from (select jl.calc_date,row_number() over(partition by jl.zyid order by jl.use_antib_type desc nulls last, jl.calc_date, s15.order_at) rn
+          from jk_yz_lhyy jl left join st015_yzxxb_kjyw s15  on jl.zyid = s15.zyid  and jl.dept_id = s15.execoffice_code
+          left join zg002_byks z2 on jl.dept_id = z2.dept_id  where nvl(jl.tranflag,0) = 0 and not exists (select 1 from jk_yz_lhyy jy where jy.zyid = jl.zyid and nvl(jy.tranflag,0) = 1))
+		  where rn = 1 and trunc(calc_date) between #{startDate} and #{endDate}
+   		 --消毒灭菌监测结果（11）
+          union 
+   		 select '11' itemCode, count(1) unReportAmount  from hw101_jcdj h1  inner join (select *  from (select dj_id, take_type_name, test_at, take_at, take_by, row_number() over(partition by dj_id order by take_at) rn
+		 from hw102_jcdmx) where rn = 1) h2 on h2.dj_id = h1.dj_id left join (select employee_id, employee_name  from zg003_yyzg  union  select employee_id, employee_name
+		 from hw010_zzry) h10 on h10.employee_id = h2.take_by where nvl(h1.tranflag,0) = 0 and   trunc(h1.report_at) between #{startDate} and #{endDate}
+		  and h1.type = 1  and not exists (select 1 from hw102_jcdmx h  where h.dj_id = h1.dj_id and h.result_flag = -1)
+   		--一次性用品监测（12）
+        union 	
+   		select '12' itemCode, count(1) unReportAmount  from hw101_jcdj h1 inner join (select * from (select dj_id, take_type_name,  test_at,  take_at, take_by, row_number() over(partition by dj_id order by take_at) rn
+		from hw102_jcdmx) where rn = 1) h2 on h2.dj_id = h1.dj_id left join (select employee_id, employee_name  from zg003_yyzg  union select employee_id, employee_name from hw010_zzry) h10
+		 on h10.employee_id = h2.take_by  where nvl(h1.tranflag,0) = 0 and   trunc(h1.report_at) between #{startDate} and #{endDate} and h1.type = 2 and not exists (select 1  from hw102_jcdmx h where h.dj_id = h1.dj_id  and h.result_flag = -1)
+   		--污水监测（13）
+          union 	
+		select '13' itemCode, count(1) unReportAmount from hw101_jcdj h1  inner join (select * from (select dj_id,  take_type_name,  test_at, take_at, take_by, row_number() over(partition by dj_id order by take_at) rn
+		 from hw102_jcdmx) where rn = 1) h2 on h2.dj_id = h1.dj_id left join (select employee_id, employee_name from zg003_yyzg  union select employee_id, employee_name
+		 from hw010_zzry) h10 on h10.employee_id = h2.take_by where nvl(h1.tranflag,0) = 0  and trunc(h1.report_at) between #{startDate} and #{endDate} and h1.type = 3 and not exists (select 1  from hw102_jcdmx h where h.dj_id = h1.dj_id and h.result_flag = -1)
+   			
+		) b on DICT.DICT_CODE = b.itemCode
+		where DICT.DICT_TYPE_CODE = 'zb_type'
+		<if test="itemCode!=null and itemCode!=''">
+	    	and DICT.DICT_CODE=#{itemCode} 
+	    </if>
+		order by DICT.Sequence_Number
+	</select>
+	
+	<select id="findCaseRegistCount_oracle" parameterType="zbRecord" resultType="zbRecord">
+	select  '直报患者数' itemName, '0' itemCode ,reportAmount,unReportAmount
+		from (select '0' itemCode, count(1) unReportAmount from st003_cryxxb s3
+      left join st001_jbxxb s1
+        on s1.patient_id = s3.patient_id
+      left join (select *  from (select b1.* , row_number() over(partition by b1.zyid order by b1.report_at, b2.auth_at) rn
+                           from bk001_sbk b1  inner join bk002_grzd b2   on b1.relid = b2.refid
+                           left join st005_ssxxb s5s  on s5s.relid = b2.ope_relid
+                          inner join zg002_byks z2b on z2b.dept_id = b2.infect_dept_id
+                          where b2.auth_status = 1)   where rn = 1) gr  on gr.zyid = s3.zyid
+      left join (select * from (select 1 isoper, zyid, z1.dept_id,  row_number() over(partition by s5.zyid order by s5.oper_at_start) rn
+                           from st005_ssxxb s5 inner join zg002_byks z2  on z2.dept_id = s5.dept_id
+                          inner join zg001_bzks z1 on z1.dept_id = z2.stand_dept_id)  where rn = 1) ss on ss.zyid = s3.zyid
+     where s3.TranFlag = 0 and trunc(s3.OUT_AT) between date'2015-01-01' and date'2017-01-01') a left join 
+   (select '0' itemCode, count(1) reportAmount from st003_cryxxb s3
+      left join st001_jbxxb s1
+        on s1.patient_id = s3.patient_id
+      left join (select *  from (select b1.* , row_number() over(partition by b1.zyid order by b1.report_at, b2.auth_at) rn
+                           from bk001_sbk b1  inner join bk002_grzd b2   on b1.relid = b2.refid
+                           left join st005_ssxxb s5s  on s5s.relid = b2.ope_relid
+                          inner join zg002_byks z2b on z2b.dept_id = b2.infect_dept_id
+                          where b2.auth_status = 1)   where rn = 1) gr  on gr.zyid = s3.zyid
+      left join (select *
+                   from (select 1 isoper,
+                                zyid,
+                                z1.dept_id,
+                                row_number() over(partition by s5.zyid order by s5.oper_at_start) rn
+                           from st005_ssxxb s5
+                          inner join zg002_byks z2
+                             on z2.dept_id = s5.dept_id
+                          inner join zg001_bzks z1
+                             on z1.dept_id = z2.stand_dept_id)
+                  where rn = 1) ss
+        on ss.zyid = s3.zyid
+     where s3.TranFlag = 1
+   and trunc(s3.OUT_AT) between date'2015-01-01' and date'2017-01-01') b on a.itemCode = b.itemCode
+	</select>
+	
+	<select id="findInfectstatusZBList_oracle" parameterType="zbRecord" resultType="java.util.HashMap">
+	select * from ( select a.*, rownum rn from (
+	   select
+		'Infectstatus' as "TABLE",
+		relid as key_id,
+       (select hosp_id from zg004_yyxx) HospitalID,
+       a.zyid as RegistId,
+       a.report_visit as OrderId,
+       a.infect_date as InfectDate,
+       a.infect_code as InDiagId,
+       a.infect_name as InDiagName,
+       a.infect_dept_id as OfficeId,
+       a.infect_dept_name Office,
+       a.dept_id as StandOfficeId,
+       a.dept_name as ICUOffice,
+       '' as DeathRelation,
+       a.auth_at as inputDate,
+       sysdate as TranDate,
+       rownum id
+  from (select zyid,
+               b2.relid,
+               nvl(b1.report_visit, 0) report_visit,
+               infect_date,
+               nvl(z22.infect_code, z5.infect_code) infect_code,
+               nvl(z22.infect_name, z5.infect_name) infect_name,
+               z2.dept_id infect_dept_id,
+               z2.dept_name infect_dept_name,
+               z1.dept_id,
+               z1.dept_name,
+               b2.auth_at,
+               b2.TranFlag,
+               row_number() over(partition by zyid, nvl(b1.report_visit, 0), nvl(z22.infect_code, z5.infect_code) order by b2.auth_at) rn
+          from bk002_grzd b2
+         inner join bk001_sbk b1
+            on b1.relid = b2.refid
+         inner join zg002_byks z2
+            on b2.infect_dept_id = z2.dept_id
+         inner join zg001_bzks z1
+            on z1.dept_id = z2.stand_dept_id
+          left join zg005_yygrzd z5
+            on b2.infect_diagn_id = z5.infect_code
+          left join zg022_yygrzd_diy z22
+            on b2.custom_diagn_id = z22.infect_code
+         where b2.auth_status = 1
+           and infect_date is not null) a
+	 where rn = 1
+	   and TranFlag = 0
+	   and trunc(a.infect_date) between #{startDate} and #{endDate}
+   ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findInfectFactorZBList_oracle"  resultType="java.util.HashMap">
+		select
+		  'InfectFactor' as "TABLE",
+		   id as key_id,
+	       rownum as id,       
+	       (select hosp_id from zg004_yyxx) as hospitalid,
+	       zyid as RegistId,
+	       factor_id as factorid,
+	       factor_name as infactor,
+	       is_flag as isrelation,
+	       indiagid,
+	       orderid,
+	       auth_at as inputdate,
+	       sysdate as TranDate       
+	  from (select b1.zyid,
+	               b3.factor_id,
+	               b3.factor_name,
+	               b3.is_flag,
+	               nvl(b2.custom_diagn_id, b2.infect_diagn_id) as indiagid,
+	               nvl(b1.report_visit, 0) as orderid,
+	               b2.auth_at,
+	               b3.id,
+	               b3.tranflag,
+	               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), b3.factor_id, nvl(b2.custom_diagn_id, b2.infect_diagn_id) order by b3.tranflag desc nulls last, b2.auth_at) rn
+	          from bk003_ygys b3
+	         inner join bk002_grzd b2
+	            on b2.relid = b3.refid
+	           and b2.refid = b3.card_relid
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         where b2.auth_status = 1
+	           and b3.factor_id is not null
+	           and b2.relid in 
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	           
+	           )
+	 where rn = 1 and TranFlag = 0
+	</select>
+	
+	<select id="findExemplarZBMapList_oracle"  resultType="java.util.HashMap">
+		select 
+		   'Exemplar' as "TABLE",
+		   id as key_id,
+	       rn as id,
+	       (select hosp_id from zg004_yyxx) Hid,
+	       zyid as RegistId,
+	       sample_id as ExemplarId,
+	       sample_name as ExemplarName,
+	       indiagid,
+	       submi_at as SendDate,
+	       orderid,
+	       auth_at as inputDate,
+	       sysdate TranDate
+	  from (select b4.id,
+	               b1.zyid,
+	               nvl(b1.report_visit, 0) as OrderId,
+	               b4.sample_id,
+	               b4.sample_name,
+	               b4.submi_at,
+	               nvl(b2.custom_diagn_id, b2.infect_diagn_id) as InDiagId,
+	               b2.auth_at,
+	               b4.Tranflag,
+	               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), nvl(b2.custom_diagn_id, b2.infect_diagn_id), b4.sample_id, b4.submi_at order by b4.Tranflag desc nulls last, b2.auth_at, b4.create_date) rn
+	          from bk004_sjbb b4
+	         inner join bk002_grzd b2
+	            on b2.relid = b4.refid
+	           and b2.refid = b4.card_relid
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         where b4.sample_id is not null
+	           and b2.auth_status = 1
+	           and b2.relid  in 
+ 				<foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				)
+	 where TranFlag = 0
+	</select>
+	
+	<select id="findPathogenyZBMapList_oracle"  resultType="java.util.HashMap">
+	select 
+			'pathogeny' as "TABLE",
+			id as key_id,
+	       rownum as id,
+	       (select hosp_id from zg004_yyxx) as Hid,
+	       zyid as RegistId,
+	       null as EorderId,
+	       patho_name as PathName,
+	       patho_id as PathId,
+	       '' as Gnsrs,
+	       sample_id as ExemplarId,
+	       InDiagId,
+	       1 IsBAK,
+	       OrderId,
+	       submi_at as SendDate,
+	       auth_at as inputDate,
+	       sysdate as TranDate
+	  from (select b4.id,
+	               b1.zyid,
+	               nvl(b1.report_visit, 0) as OrderId,
+	               b4.sample_id,
+	               b4.submi_at,
+	               b4.patho_id,
+	               b4.patho_name,
+	               nvl(b2.custom_diagn_id, b2.infect_diagn_id) as InDiagId,
+	               b4.create_date,
+	               b4.Tran1flag,
+	               b2.auth_at,
+	               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), nvl(b2.custom_diagn_id, b2.infect_diagn_id), b4.sample_id, b4.submi_at, b4.patho_id order by b4.tran1flag desc nulls last, b2.auth_at) rn
+	          from bk004_sjbb b4
+	         inner join bk002_grzd b2
+	            on b2.relid = b4.refid
+	           and b2.refid = b4.card_relid
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         where b4.sample_id is not null
+	           and b4.patho_name not like '%无%生长'
+	           and b4.patho_name not like '%阴性'
+	           and b2.auth_status = 1
+	           and b2.relid in 
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				)
+	 where rn = 1 and Tran1Flag = 0
+	</select>
+	
+	
+	<select id="findUseAntibZBMapList_oracle"  resultType="java.util.HashMap">
+	select 
+			'useantib' as "TABLE",
+			id as key_id,
+       rn as id,
+       (select hosp_id from zg004_yyxx) as Hid,
+       zyid as RegistId,
+       anti_code as AntibId,
+       patho_id as PorderId,
+       anti_name as AntibName,
+       yaomin_result as Result,
+       patho_id as Pathid,
+       InDiagId,
+       OrderId,
+       sample_id as ExemplarId,
+       submi_at as senddate,
+       auth_at as inputDate,
+       sysdate as TranDate
+  from (select b4.id,
+               b1.zyid,
+               nvl(b1.report_visit, 0) as OrderId,
+               s11.anti_code,
+               s11.anti_name,
+               s11.yaomin_result,
+               b4.patho_id,
+               nvl(b2.custom_diagn_id, b2.infect_diagn_id) as InDiagId,
+               b4.sample_id,
+               b4.submi_at,
+               b2.auth_at,
+               b4.Tran2flag,
+               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), nvl(b2.custom_diagn_id, b2.infect_diagn_id), b4.sample_id, b4.patho_id, s11.anti_code order by b4.Tran2flag desc nulls last, b2.auth_at, s11.result_date) rn
+          from bk004_sjbb b4
+         inner join bk002_grzd b2
+            on b2.relid = b4.refid
+           and b2.refid = b4.card_relid
+         inner join bk001_sbk b1
+            on b1.relid = b2.refid
+         inner join st010_jcbyt s10
+            on s10.patho_code = b4.patho_id
+           and s10.test_order_no = b4.test_no
+         inner join st011_syjgb s11
+            on s11.test_order_no = s10.test_order_no
+           and s11.pathogen_sn = s10.pathogen_sn
+           and s11.zyid = b4.zyid
+         where b4.sample_id is not null
+           and s11.anti_code is not null
+           and s11.anti_name is not null
+           and b2.auth_status = 1
+	       and b2.relid in 
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				)
+	 where Tran2Flag = 0
+	</select>
+	
+	<select id="excutePrOut_oracle" statementType="CALLABLE" parameterType="map">
+		{call PR_OUTHOSPITALINPUT(#{startDate,mode=IN,jdbcType=DATE},#{endDate,mode=IN,jdbcType=DATE})}
+	</select>
+	
+	<select id="findOuthospitalinputZBList_oracle" parameterType="zbRecord" resultType="java.util.HashMap">
+		select * from ( select a.*, rownum rn from (
+				select 
+				'Outhospitalinput' as "TABLE",
+				id as key_id,
+		       hid,
+		       flagid,
+		       kindid,
+		       kindname,
+		       outdate,
+		       outmuch,
+		       remark,
+		       zero,
+		       i,
+		       ii,
+		       iii,
+		       iv,
+		       noops,
+		       ifbak as isbak,
+		       sysdate as inputdate,
+		       sysdate as trandate
+		  from outhospitalinput t
+		 where outdate is not null
+		   and tranflag = 0
+		 and trunc(outdate) between #{startDate} and #{endDate}
+		 order by outdate
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findSt005SsxxbZBMapList_oracle"  resultType="java.util.HashMap">
+		select * from ( select a.*, rownum rn from (
+		select 
+				'chiinfect' as "TABLE",
+				s5.relid key_id,
+		      s5.relid as Id, --编号(外科手术感染主记录)
+       (select hosp_id from zg004_yyxx) as HID, --医院编号
+       s5.zyid as RegistID, --病例序号       
+       s5.opedoc_name as OpsDoc, --手术医生
+       s5.opedoc_id as OpsDocID, --手术医生编号
+       s5.oper_name as OpsName, --手术名称
+       s5.oper_id as OpsID, -- 是否急诊手术
+       s5.oper_at_start as OpsDate, --手术日期
+       s5.incision_grade as CutGrade, --切口分级
+       s5.asa as ASA, --ASA评分
+       decode(s5.urgent_ope, '否', 'false', '是', 'true', '0', 'false', '1', 'true', 'false') as UrgentOps, -- 是否急诊手术
+       s5.narc_kind as NarcKind, --麻醉类型
+       s5.oper_leng_time as OpsTime, --手术时间
+       decode(s5.replant, '否', 'false', '是', 'true', '0', 'false', '1', 'true', 'false') Replant, --是否植入物
+       decode(s5.glass_ope, '否', 'false', '是', 'true', '0', 'false', '1', 'true', 'false') QJOps, --内镜手术       
+       (select case
+                 when count(*) > 1 then
+                  1
+                 else
+                  0
+               end
+          from st004_yzxxb s4
+         where s4.zyid = s5.zyid
+           and s4.is_kjyw = 1
+           and s4.order_at between s5.oper_at_start and s5.oper_at_end) WSQYY,
+       --'1' as WSQYY, --围术期用药
+       gr.infect_name as InfectPart, --感染部位
+       gr.infect_code as InfectPartID, --感染部位编号
+       gr.infect_date as InfectDate, --感染日期
+       (select d.employee_name
+          from zg003_yyzg d
+         where d.employee_id = s5.last_mod_userid) as InVestor, --调查者
+       nvl(s5.monitor_date, sysdate) as RegistDate, --登记日期
+       z2.dept_id as OfficeID, --科室编号
+       z2.dept_name as Office, --科室名
+       z1.dept_id as StandOfficeID, --标准科室编号
+       z1.dept_name as StandOffice, --标准科室名       
+       sysdate as inputDate,
+       sysdate TranDate
+  from st005_ssxxb s5
+  left join (select *
+               from (select z5.infect_code,
+                            z5.infect_name,
+                            b1.zyid,
+                            b2.infect_date,
+                            ss.relid,
+                            row_number() over(partition by b1.zyid, ss.relid order by ss.Tran1flag desc nulls last, b2.infect_date, b2.auth_at) rn
+                       from bk002_grzd b2
+                      inner join bk001_sbk b1
+                         on b1.relid = b2.refid
+                      inner join zg005_yygrzd z5
+                         on z5.infect_code = b2.infect_diagn_id
+                      inner join st005_ssxxb ss
+                         on ss.zyid = b1.zyid
+                      where b2.auth_status = 1
+                        and b2.infect_diagn_id in
+                            (select t.infect_code
+                               from zg005_yygrzd t
+                              start with t.infect_code = 'SSI'
+                             connect by prior t.infect_code = t.p_infect_code)
+                        and b2.infect_date &lt;
+                            nvl(ss.oper_at_end, ss.oper_at_start))
+              where rn = 1) gr
+    on gr.zyid = s5.zyid
+   and gr.relid = s5.relid
+ inner join zg002_byks z2
+    on s5.dept_id = z2.dept_id
+ inner join zg001_bzks z1
+    on z2.stand_dept_id = z1.dept_id
+ where s5.tranflag = 0
+  and s5.status=4
+   AND s5.oper_id IS NOT null 
+		  and trunc(s5.oper_at) between #{startDate} and #{endDate}
+		 ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+		</select>
+		
+		<select id="findSt005SsxxbZBMapListDatail_oracle"  resultType="java.util.HashMap">
+		select
+		 'chiinfect_detail' as "TABLE",
+		  relid as key_id,
+	       rn as Id,
+	       (select hosp_id from zg004_yyxx) as Hid,
+	       relid as ChiId,
+	       zyid as RegistId,
+	       infect_date as InfectDate,
+	       infect_code as InfectDiagId,
+	       infect_name as InfectDiag,
+	       auth_at as inputDate,
+	       sysdate as TranDate
+	  from (select s5.relid,
+	               b1.zyid,
+	               b2.infect_date,
+	               z5.infect_code,
+	               z5.infect_name,
+	               b2.auth_at,
+	               s5.tran1flag,
+	               row_number() over(partition by s5.zyid, s5.relid order by s5.Tran1flag desc nulls last, b2.infect_date, b2.auth_at) as rn
+	          from bk002_grzd b2
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         inner join zg005_yygrzd z5
+	            on z5.infect_code = b2.infect_diagn_id
+	         inner join st005_ssxxb s5
+	            on s5.zyid = b1.zyid
+	         where b2.auth_status = 1
+	          and s5.relid in 
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+				 and s5.status=4
+	           and b2.infect_diagn_id in
+	               (select t.infect_code
+	                  from zg005_yygrzd t
+	                 start with t.infect_code = 'SSI'
+	                connect by prior t.infect_code = t.p_infect_code)
+	           and b2.infect_date &lt; nvl(s5.oper_at_end, s5.oper_at_start))
+	 where tran1flag = 0
+	
+	 </select>
+	 
+	 <select id="caseRegist_oracle" parameterType="zbRecord" resultType="java.util.HashMap">
+		select * from ( select a.*, rownum rn from (
+		select 
+				'caseregist' as "TABLE",
+				s3.zyid as key_id,
+		       (select hosp_id from zg004_yyxx) hospitalid,
+		       (select hosp_name from zg004_yyxx) Hospital,
+		       s3.zyid as RegistId,
+		       s3.in_hosp_at as RegistDate,
+		       s3.patient_id as CaseId,
+		       s3.visit_id as InHospitalTimes,
+		       s3.in_dept_name as InOffice,
+		       s3.patient_name as name,
+		       s3.in_hosp_at as InDate,
+		       s3.out_dept_name as OutOffice,
+		       s3.sex as sex,
+		       decode(s3.age_unit, '岁', s3.age, 0) AgeYear,
+		       decode(s3.age_unit, '月', s3.age, 0) AgeMonth,
+		       decode(s3.age_unit, '天', s3.age, 0) AgeDay,
+		       s3.out_at as OutDate,
+		       s3.in_days as HospitalDays,
+		       s3.cost as InHospitalCost,
+		       s3.charge_dr_name as GroupName,
+		       s3.charge_dr_name as OpsDocMaster,
+		       s3.upd_date as inputDate,
+		       s1.weight as weight,
+		       0       as IsOps,
+		       null    as DeathRelation,
+		       0       IsExemplar,
+		       0       as IsFailReport,
+		       0       as IsOutDiag,
+		       0       as IsInfectDiag,
+		       0       as IsInfectFactor,
+		       0       as isHcxse,
+		       0       as isKss,
+		       null    as ManyUnite,
+		       null    as UseAim,
+		       0       as InReason,
+		       sysdate as TranDate,
+		       gr.jbzdmc         as Diagnose,
+		       gr.jbzg           as OutStatus,
+		       gr.report_dr_name as Register,
+		       gr.jbzdmc         as OldBaseDisease,
+		       nvl(gr.isicu, 0) as IsIcu,
+		       nvl(gr.isnicu, 0) as IsNicu,
+		       nvl(gr.isantib, 0) as Isantib,
+		       nvl(gr.iscase, 0) as Iscase,
+		       nvl(gr.grade, '未手术') as Opscute,
+		       ss.isoper  as IsSurgical,
+		       ss.dept_id as StandOfficeId
+		  from st003_cryxxb s3
+		  left join st001_jbxxb s1
+		    on s1.patient_id = s3.patient_id
+		  left join (select *
+		               from (select b1.zyid,
+		                            b2.jbzg,
+		                            b1.jbzd jbzdmc,
+		                            b1.report_dr_name,
+		                            b1.report_at,
+		                            s5s.incision_grade grade,
+		                            case
+		                              when z2b.ificu = 1 or exists
+		                               (select 1
+		                                      from gm009_brcwrz g9
+		                                     inner join zg030_kscw z30
+		                                        on g9.deptid = z30.dept_id
+		                                       and g9.bed_id = z30.bed_id
+		                                     where g9.deptid = z2b.dept_id
+		                                       and z2b.ifbedicu = 1
+		                                       and g9.zyid = b1.zyid
+		                                       and g9.creationdate =
+		                                           trunc(b2.infect_date)) then
+		                               1
+		                              else
+		                               0
+		                            end isicu,
+		                            decode(z2b.ifchildoffice, 1, 1, 0) isnicu,
+		                            0 isantib,
+		                            1 iscase,
+		                            row_number() over(partition by b1.zyid order by b1.report_at, b2.auth_at) rn
+		                       from bk001_sbk b1
+		                      inner join bk002_grzd b2
+		                         on b1.relid = b2.refid
+		                       left join st005_ssxxb s5s
+		                         on s5s.relid = b2.ope_relid
+		                      inner join zg002_byks z2b
+		                         on z2b.dept_id = b2.infect_dept_id
+		                      where b2.auth_status = 1)
+		              where rn = 1) gr
+		    on gr.zyid = s3.zyid
+		  left join (select *
+		               from (select 1 isoper,
+		                            zyid,
+		                            z1.dept_id,
+		                            row_number() over(partition by s5.zyid order by s5.oper_at_start) rn
+		                       from st005_ssxxb s5
+		                      inner join zg002_byks z2
+		                         on z2.dept_id = s5.dept_id
+		                      inner join zg001_bzks z1
+		                         on z1.dept_id = z2.stand_dept_id)
+		              where rn = 1) ss
+		    on ss.zyid = s3.zyid
+		 where s3.TranFlag = 0
+	 and trunc(s3.OUT_AT) between #{startDate} and #{endDate}
+	  ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	 </select>
+	 
+	 <select id="findNeedLeMasterZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap">
+	 select * from ( select a.*, rownum rn from (
+	 select 
+			'needlemaster' as "TABLE",
+	 		b2.bl_id as key_id,
+	       (select hosp_id from zg004_yyxx) as Hid, --医院编号
+	       b2.bl_id as RegistId, --病例序号
+	       b2.d_name as Name, --姓名
+	       b2.d_sex as Sex, --性别
+	       b4.csd_id as WorkKindId, --工别编号
+	       b4.csd_name as WorkKind, --工别
+	       b2.d_age as Age, --年龄
+	       b2.d_gl as WorkAge, --工龄
+	       z2.dept_id as OfficeId, --科室编号
+	       z2.dept_name as Office, --科室
+	       z1.dept_id as StandOfficeId,
+	       z1.dept_name as StandOfficeName,
+	       '' as HealthNo, --保健号
+	       nvl(b2.ip_tel, '未') as Tell, --电话
+	       b2.dj_time as inputDate, --输入日期
+	       sysdate as TranDate
+	  from BL002_SJDJ b2
+	 inner join (select csd_id, csd_name
+	               from BL004_CS_DETAILINFO t
+	              where csm_id = '001') b4
+	    on b2.d_gw = b4.csd_id
+	 inner join zg002_byks z2
+	    on b2.d_dept = z2.dept_id
+	  left join zg001_bzks z1
+	    on z1.dept_id = z2.stand_dept_id
+	 where b2.Tranflag = 0
+	   and b2.d_name is not null
+	   and b2.d_gl is not null
+	   and b2.d_gw is not null
+	   and b2.d_sex is not null
+	   and b2.d_age is not null
+	   and trunc(b2.dj_time) between #{startDate} and #{endDate}
+	   ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+ 	 </select>
+ 
+  <select id="findNeedlestickZBMapList_oracle"  resultType="java.util.HashMap">
+	select 
+		'Needlestick' as "TABLE",
+		b2.bl_id as key_id,
+       rownum as Id,
+       (select hosp_id from zg004_yyxx) as Hid, --医院编号
+       b2.bl_id as RegistId, --病例序号
+       nvl(b2.enter_time, sysdate) as NeedlestickDate, --针刺伤日期(暴露时间)
+       decode((select c.sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.st_id = '10'
+                 and c.bl_id = b2.bl_id),
+              '01',
+              '是',
+              '02',
+              '否',
+			  '否') ifVaccine, --是否接种乙肝疫苗
+       null VaccineDate, --接种乙肝疫苗日期
+       decode((select c.sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.st_id = '320'
+                 and c.bl_id = b2.bl_id),
+              '01',
+              '是',
+              '02',
+              '否') ifReaction, --有无反应
+       '' as ifThere, --
+       '' as CheckDate, --检查日期
+       '' as HBsAg, --hbsag检测结果
+       decode((select c.sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.st_id = '15'
+                 and c.bl_id = b2.bl_id),
+              '01',
+              '阴性',
+              '02',
+              '阳性') as HBsAb, --hbsab检测结果
+       decode((select c.sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.st_id = '305'
+                 and c.bl_id = b2.bl_id),
+              '01',
+              '阳性',
+              '02',
+              '阴性') as HCV, --hcv检测结果
+       decode((select c.sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.st_id = '300'
+                 and c.bl_id = b2.bl_id),
+              '01',
+              '阳性',
+              '02',
+              '阴性') as HIV, --hiv检测结果
+       '' as Approach, --处理方法
+       '' as Treatment, --接受治疗
+       (select c.sh_text
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '110') as PatientName, --关联病人姓名
+       (select c.sh_text
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '120') PatientOffice, --关联病人住院科室
+       '' as SendDate, --血标本送检日期
+       '' as PatientHBsAg, --病人hbsag检查结果
+       '' as PatientHBsAb, --病人hbsab检查结果
+       decode((select max(sh_text)
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '130'
+                 and c.sh_text in ('06', '07')),
+              '06',
+              '阳性',
+              '07',
+              '阳性',
+              '阴性') PatientHCV, --病人的hcv检查结果
+       decode((select max(sh_text)
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '130'
+                 and c.sh_text in ('02', '03')),
+              '02',
+              '阳性',
+              '03',
+              '阳性',
+              '阴性') PatientHIV, --病人的hiv检查结果
+       '' as HIVDrug, --是否静脉吸毒
+       '' as Hemophilia, --血友病检查
+       '' as Behavior, --相关性行为
+       (select max(e.csd_name)
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '34') as SharpType, --锐器类型
+       '' as SharpClean, --清洁情况
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '60') Sharp, --锐器名称
+       (select sh_text
+          from (select c.sh_text,
+                       c.bl_id,
+                       row_number() over(partition by bl_id order by c.sh_text) rn
+                  from bl005_wtjg c
+                 where c.sh_type = 1
+                   and c.st_id = '65')
+         where rn = 1
+           and bl_id = b2.bl_id) OperId, --关联操作编号
+       (select csd_name
+          from (select e.csd_name,
+                       c.bl_id,
+                       row_number() over(partition by c.bl_id order by c.sh_text) rn
+                  from bl005_wtjg c
+                 inner join bl001_problem d
+                    on d.st_id = c.st_id
+                 inner join bl004_cs_detailinfo e
+                    on e.csm_id = d.st_sf_id
+                   and e.csd_id = c.sh_type
+                 where c.sh_type = 1
+                   and c.st_id = '65')
+         where rn = 1
+           and bl_id = b2.bl_id) OperName, --关联操作名
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '75') Contacts, --接触物质
+       '' ContOperId, --关联操作编号
+       '' ContOper, --关联操作
+       (select case
+                 when instr(sh_memo, '鼻') > 0 then
+                  1
+                 else
+                  0
+               end
+          from (select wm_concat(e.csd_name || ',' || c.sh_memo) sh_memo,
+                       c.bl_id
+                  from bl005_wtjg c
+                 inner join bl001_problem d
+                    on d.st_id = c.st_id
+                 inner join bl004_cs_detailinfo e
+                    on e.csm_id = d.st_sf_id
+                   and e.csd_id = c.sh_type
+                 where c.sh_type = 1
+                   and c.st_id = '52'
+                 group by c.bl_id)
+         where bl_id = b2.bl_id) ifBi, --鼻
+       (select case
+                 when instr(sh_memo, '口腔') > 0 then
+                  1
+                 else
+                  0
+               end
+          from (select wm_concat(e.csd_name || ',' || c.sh_memo) sh_memo,
+                       c.bl_id
+                  from bl005_wtjg c
+                 inner join bl001_problem d
+                    on d.st_id = c.st_id
+                 inner join bl004_cs_detailinfo e
+                    on e.csm_id = d.st_sf_id
+                   and e.csd_id = c.sh_type
+                 where c.sh_type = 1
+                   and c.st_id = '52'
+                 group by c.bl_id)
+         where bl_id = b2.bl_id) ifKq, --口腔
+       (select case
+                 when instr(sh_memo, '眼') > 0 then
+                  1
+                 else
+                  0
+               end
+          from (select wm_concat(e.csd_name || ',' || c.sh_memo) sh_memo,
+                       c.bl_id
+                  from bl005_wtjg c
+                 inner join bl001_problem d
+                    on d.st_id = c.st_id
+                 inner join bl004_cs_detailinfo e
+                    on e.csm_id = d.st_sf_id
+                   and e.csd_id = c.sh_type
+                 where c.sh_type = 1
+                   and c.st_id = '52'
+                 group by c.bl_id)
+         where bl_id = b2.bl_id) ifYan, --眼
+       (select case
+                 when instr(',' || wm_concat(c.sh_text) || ',', ',99,') > 0 then
+                  1
+                 else
+                  0
+               end
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '52') ifQt, --其它
+       '' as ifFhyz, --保护性眼罩
+       '' as ifFhy, --防护衣
+       '' as ifSt, --手套
+       '' as ifQtFy, --其它措施
+       b2.dj_time inputDate, --输入日期
+			 sysdate as trandate
+  from bl002_sjdj b2
+ where b2.tran1flag = 0
+    and b2.bl_id in 
+     <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach>
+  </select>
+ 
+ <select id="findBloodZBMapList_oracle"  resultType="java.util.HashMap"> 
+select * from (
+select
+	'blood' as "TABLE",
+	b2.bl_id as key_id,
+       rownum as id, --编号
+       (select hosp_id from zg004_yyxx) as Hid, --医院编号
+       b2.bl_id as RegistId, --病例序号
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '20') YlActive, ---暴露时从事医疗活动
+       decode((select c.sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '1'),
+              '01',
+              '是',
+              '02',
+              '否') ifHIVPlant, ---是否HIV培训
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '40') divulgePart, ---暴露部位
+       (select wm_concat(e.csd_name)
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id in ('50', '51')) divulgeTime, ---暴露时间
+       (select max(e.csd_name)
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '34') SharpType, ---器械类型
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '75') InfectSouce, --污染物来源
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '70') MarGrade, ---损伤程度
+       (select c.sh_memo
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '110') as PatientName, ---病人姓名
+       (select c.sh_memo
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '115') as PatientId, ---住院号
+       (select max(e.csd_name)
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on d.st_id = c.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_type
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '130') Symptom, ---病情
+       (select c.sh_memo
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '135') as Virus, ---病毒载量
+       (select c.sh_memo
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '125') as Cd4s, --CD4细胞计数       
+       decode((select max(sh_text)
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '130'
+                 and c.sh_text in ('04', '05')),
+              '04',
+              '阳性',
+              '05',
+              '阳性',
+              '阴性') PatientHBV, --病人HBV检查
+       decode((select max(sh_text)
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '130'
+                 and c.sh_text in ('06', '07')),
+              '06',
+              '阳性',
+              '07',
+              '阳性',
+              '阴性') PatientHCV, --病人HCV检查
+       decode((select sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '185'),
+              '01',
+              '1级',
+              '02',
+              '2级',
+              '03',
+              '3级') as divulgeLevel, --暴露级别
+       decode((select sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '190'),
+              '01',
+              '轻度',
+              '02',
+              '重度',
+              '03',
+              '不明确') as Graveness, --严重程度
+       b2.pg_r as EvalUser, --评估人
+       decode((select sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '140'),
+              '01',
+              '是',
+              '02',
+              '否') Rinsing, --是否清水冲洗
+       decode((select sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '150'),
+              '01',
+              '是',
+              '02',
+              '否') ifSoap, --是否用肥皂
+       decode((select sh_text
+                from bl005_wtjg c
+               where c.sh_type = 1
+                 and c.bl_id = b2.bl_id
+                 and c.st_id = '155'),
+              '01',
+              '是',
+              '02',
+              '否') BearBlood, --是否挤出血液
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on c.st_id = d.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_text
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '165') Antisepsis, --清毒剂名称
+       (select sh_text
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '145') RinseTime, --冲洗时间
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on c.st_id = d.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_text
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '170') Liquor, --冲洗溶液
+       (select sh_text
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '175') RinseTime2, --冲洗时间
+       b2.s_memo as Remark, --备注
+       (select dict_name
+          from sys_dict
+         where dict_type_code = 'blyfxyy'
+           and dict_code = b2.pg_yyname1) as UseDrug1, --使用药物1
+       b2.pg_yyjl1 as Dose1, --剂量
+       (select dict_name
+          from sys_dict
+         where dict_type_code = 'blyfxyy'
+           and dict_code = b2.pg_yyname2) as UseDrug2, --使用药物2
+       b2.pg_yyjl2 as Dose2, --剂量
+       (select dict_name
+          from sys_dict
+         where dict_type_code = 'blyfxyy'
+           and dict_code = b2.pg_yyname3) as UseDrug3, --使用药物3
+       b2.pg_yyjl3 as Dose3, --剂量
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on c.st_id = d.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_text
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '200') ChangeDrug, --更改用药情况
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on c.st_id = d.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_text
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '205') Reaction, --不良反应
+       null LiverFun, --肝功能检查
+       b2.pg_yystime1 as BeginUseDrug, --开始用药时间
+       b2.pg_yyetime1 as Abidance, --持续用药时间
+       (select e.csd_name
+          from bl005_wtjg c
+         inner join bl001_problem d
+            on c.st_id = d.st_id
+         inner join bl004_cs_detailinfo e
+            on e.csm_id = d.st_sf_id
+           and e.csd_id = c.sh_text
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '220') as UrgentInfect, --四周内是否出现急性感染症状
+       (select c.sh_text
+          from bl005_wtjg c
+         where c.sh_type = 1
+           and c.bl_id = b2.bl_id
+           and c.st_id = '230') as SymptomTime, --具体症状及持续时间
+       '' as Other, --其他
+       '' as ShortlyDay, --即刻日期
+       '' as ShortHIV, --即刻HIV检查
+       '' as ShortHBV, --即刻HBV检查
+       '' as ShortHCV, --即刻HCV检查
+       '' as Week4Day, --4周后日期
+       '' as Week4HIV, --四周后HIV检查
+       '' as Week4HBV, -- 四周后HBV检查
+       '' as Week4HCV, -- 四周后HCV检查
+       '' as Week8Day, -- 8周后日期
+       '' as Week8HIV, -- 四周后HIV检查
+       '' as Week8HBV, -- 四周后HBV检查
+       '' as Week8HCV, --- 四周后HCV检查
+       '' as Week12Day, -- 12周后日期
+       '' as Week12HIV, -- 12周后HIV检查
+       '' as Week12HBV, -- 12周后HBV检查
+       '' as Week12HCV, -- 12周后HCV检查
+       '' as Month6Day, -- 6月后日期
+       '' as Month6HIV, -- 6月后HIV检查
+       '' as Month6HBV, ---6月后HBV检查
+       '' as Month6HCV, -- 6月后HCV检查
+       '' as Month12Day, -- 12月后日期
+       '' as Month12HIV, -- 12月后HIV检查
+       '' as Month12HBV, -- 12月后HBV检查
+       '' as Month12HCV, -- 12月后HCV检查
+       '' as ifInfectHIV, ---暴露后是否感染HIV
+       '' as HBVHCV, ---HBV与HCV感染情况
+       b2.dj_time as inputDate, --输入日期
+       sysdate as TranDate
+  from bl002_sjdj b2
+ where b2.Tran2Flag = 0
+   and b2.bl_id in 
+	<foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+		#{item}
+	</foreach> 
+	) where YlActive is not null
+	
+  </select>
+ 
+  <select id="findIcuInfectZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 
+  select * from ( select a.*, rownum rn from (
+	select 
+			'icuinfect' as "TABLE",
+			relid as key_id,
+	       rownum as ID,
+	       (select hosp_id from zg004_yyxx) HID,
+	       a.zyid as Registid,
+	       a.report_visit as InfectID,
+	       a.dept_id as StandOfficeID,
+	       a.infect_dept_id as InfectOfficeID,
+	       a.infect_dept_name as InfectOffice,
+	       a.infect_date as InfectDate,
+	       a.infect_code as InfectPartID,
+	       a.infect_name as InfectPart,
+	       a.relation as Relation,
+	       a.dept_name as StandOffice,
+	       a.auth_at as inputDate,
+	       sysdate as TranDate
+	  from (select b2.relid,
+	               b1.zyid,
+	               nvl(b1.report_visit, 0) report_visit,
+	               infect_date,
+	               nvl(z22.infect_code, z5.infect_code) infect_code,
+	               nvl(z22.infect_name, z5.infect_name) infect_name,
+	               z2.dept_id infect_dept_id,
+	               z2.dept_name infect_dept_name,
+	               z1.dept_id,
+	               z1.dept_name,
+	               b2.relation,
+	               b2.auth_at,
+	               b2.Tran1Flag,
+	               row_number() over(partition by zyid, nvl(b1.report_visit, 0), nvl(z22.infect_code, z5.infect_code), b2.infect_date order by b2.tran1flag desc nulls last, b2.auth_at) rn
+	          from bk002_grzd b2
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         inner join zg002_byks z2
+	            on b2.infect_dept_id = z2.dept_id
+	         inner join zg001_bzks z1
+	            on z1.dept_id = z2.stand_dept_id
+	          left join zg005_yygrzd z5
+	            on b2.infect_diagn_id = z5.infect_code
+	          left join zg022_yygrzd_diy z22
+	            on b2.custom_diagn_id = z22.infect_code
+	         where b2.auth_status = 1
+	           and infect_date is not null
+	           and z2.ificu = 1) a
+	 where a.rn = 1
+	    and a.Tran1Flag = 0
+	    and trunc(a.infect_date) between #{startDate} and #{endDate}
+	   ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+ </select>
+ 
+ <select id="findIcuSampleZBMapList_oracle"  resultType="java.util.HashMap"> 
+	select 
+			'IcuSample' as "TABLE",
+			id as key_id,
+	       rownum as id,
+	       (select hosp_id from zg004_yyxx) as Hid,
+	       zyid as RegistID,
+	       report_visit as InfectID,
+	       sample_id as SampleID,
+	       sample_name as Sample,
+	       submi_at as SampleDate,
+	       auth_at as inputDate,
+	       sysdate as TranDate
+	  from (select b4.id,
+	               b1.zyid,
+	               nvl(b1.report_visit, 0) as report_visit,
+	               b4.sample_id,
+	               b4.sample_name,
+	               b4.submi_at,
+	               b2.auth_at,
+	               b4.Tran5flag,
+	               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), b4.sample_id, b4.submi_at order by b4.Tran5flag desc nulls last, b2.auth_at, b4.create_date) rn
+	          from bk004_sjbb b4
+	         inner join bk002_grzd b2
+	            on b2.relid = b4.refid
+	           and b2.refid = b4.card_relid
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         inner join zg002_byks z2
+	            on z2.dept_id = b2.infect_dept_id
+	         where b4.sample_id is not null
+	           and b2.auth_status = 1
+	            and b4.refid in 
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	           and z2.ificu = 1)
+	 where rn = 1
+	   and Tran5flag = 0 
+ </select>
+ 
+  <select id="findIcuIllBodyZBMapList_oracle"  resultType="java.util.HashMap"> 
+	select 
+		  'IcuIllBody' as "TABLE",
+		   id as key_id,
+	       rownum as ID,
+	       (select hosp_id from zg004_yyxx) Hid,
+	       a.zyid as RegistId,
+	       a.patho_name as IllBody,
+	       a.patho_id as IllBodyID,
+	       a.sample_id as SampleID,
+	       a.report_visit as InfectID,
+	       a.submi_at as senddate,
+	       a.auth_at as inputDate,
+	       sysdate as TranDate
+	  from (select b4.id,
+	               b1.zyid,
+	               nvl(b1.report_visit, 0) as report_visit,
+	               b4.sample_id,
+	               b4.submi_at,
+	               b4.patho_id,
+	               b4.patho_name,
+	               b2.auth_at,
+	               b4.tran3flag,
+	               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), b4.sample_id, b4.submi_at, b4.patho_id order by tran3flag desc nulls last, b2.auth_at) rn
+	          from bk004_sjbb b4
+	         inner join bk002_grzd b2
+	            on b2.relid = b4.refid
+	           and b2.refid = b4.card_relid
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         inner join zg002_byks z2
+	            on z2.dept_id = b2.infect_dept_id
+	         where b4.sample_id is not null
+	           and b4.patho_name not like '%无%生长'
+	           and b4.patho_name not like '%阴性'
+	           and b2.auth_status = 1
+	           and b4.refid in 
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	           and z2.ificu = 1) a
+	 where a.rn = 1
+	   and a.tran3flag = 0
+ </select>
+ 
+   <select id="findIcuAntiZBMapList_oracle"  resultType="java.util.HashMap"> 
+	select 
+			'IcuAnti' as "TABLE",
+			id as key_id,
+       rn as id,
+       (select hosp_id from zg004_yyxx) Hid,
+       zyid as RegistID,
+       report_visit as InfectID,
+       sample_id as SampleID,
+       patho_id as illBodyID,
+       anti_code as AntiID,
+       anti_name as Anti,
+       yaomin_result as Result,
+       auth_at as inputDate,
+       sysdate as TranDate
+  from (select b4.id,
+               b1.zyid,
+               nvl(b1.report_visit, 0) as report_visit,
+               s11.anti_code,
+               s11.anti_name,
+               s11.yaomin_result,
+               b4.patho_id,
+               b4.sample_id,
+               b4.submi_at,
+               b2.auth_at,
+               b4.Tran4flag,
+               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), b4.sample_id, b4.patho_id, s11.anti_code order by b4.Tran4flag desc nulls last, b2.auth_at, b4.create_date, s11.result_date) rn
+          from bk004_sjbb b4
+         inner join bk002_grzd b2
+            on b2.relid = b4.refid
+           and b2.refid = b4.card_relid
+         inner join bk001_sbk b1
+            on b1.relid = b2.refid
+         inner join st010_jcbyt s10
+            on s10.patho_code = b4.patho_id
+           and s10.test_order_no = b4.test_no
+         inner join st011_syjgb s11
+            on s11.test_order_no = s10.test_order_no
+           and s11.pathogen_sn = s10.pathogen_sn
+           and s11.zyid = b4.zyid
+         inner join zg002_byks z2
+            on z2.dept_id = b2.infect_dept_id
+         where b4.sample_id is not null
+           and s11.anti_code is not null
+           and s11.anti_name is not null
+           and b2.auth_status = 1
+	           and b4.refid in 
+	            <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	           and z2.ificu = 1)
+	 where Tran4Flag = 0
+   </select>
+   
+   
+   <select id="findIcuPotiantLogZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 
+	select 
+			'IcuPotiantLog' as "TABLE",
+			to_char(a.creationdate, 'yyyymmdd') || dept_id key_id,
+	       (select hosp_id from zg004_yyxx) HID, ---医院编号
+	       a.creationdate RQ, --监测月份
+	       nvl(a.new_count, 0) LiveIN, ---新住进人数
+	       nvl(a.in_count, 0) AtIN, --住在病人数
+	       nvl(a.outbreak_count3, 0) Cathe, --留置导尿管人数
+	       nvl(a.outbreak_count2, 0) ActVein, --动静脉插馆人数
+	       nvl(a.outbreak_count1, 0) Breath, --使用呼吸机人数
+	       a.dept_id as Officeid, ---ICU科室编号
+	       a.stand_dept_id as standOfficeid, --标准科室编号
+	       a.creationdate as inputDate,
+	       sysdate TranDate,
+	       0 as Shangymzzbrs
+	  from (select g3.creationdate,
+	               g3.dt_year,
+	               g3.dt_month,
+	               g3.dt_day,
+	               z2.dept_id,
+	               z1.dept_id stand_dept_id,
+	               sum(decode(g3.type_id, '01', g3.survey_count, 0)) new_count,
+	               sum(decode(g3.type_id, '02', g3.survey_count, 0)) in_count,
+	               sum(decode(g3.type_id, '03', g3.survey_count, 0)) out_count,
+	               sum(decode(g3.type_id, '04', g3.survey_count, 0)) outbreak_count3,
+	               sum(decode(g3.type_id, '05', g3.survey_count, 0)) outbreak_count2,
+	               sum(decode(g3.type_id, '06', g3.survey_count, 0)) outbreak_count1,
+	               sum(decode(g3.type_id, '11', g3.survey_count, 0)) inDEPT_count,
+	               sum(decode(g3.type_id, '12', g3.survey_count, 0)) outDEPT_count
+	          from gm003_ybsj g3
+	         inner join zg002_byks z2
+	            on z2.dept_id = g3.dept_id
+	         inner join zg001_bzks z1
+	            on z1.dept_id = z2.stand_dept_id
+	         where z2.ificu = 1
+	           and g3.tranflag = 0
+	          and trunc(g3.creationdate) between #{startDate} and #{endDate}
+	         Group by g3.creationdate,
+	                  g3.dt_year,
+	                  g3.dt_month,
+	                  g3.dt_day,
+	                  z2.dept_id,
+	                  z1.dept_id) a
+   </select>
+   
+   <select id="findIcuDangerGradeZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 
+	select	
+			'IcuDangerGrade' as "TABLE",
+			 to_char(y.enddt, 'yyyymm') || z2.dept_id key_id,
+	       (select hosp_id from zg004_yyxx) as hid,
+	       z2.dept_id as officeid,
+	       z1.dept_id as standofficeid,
+	       max(y.enddt) as rq,
+	       y.IllGrade,
+	       y.Grade,
+	       sum(decode(y.weeknumber, 1, y.week, 0)) week1,
+	       sum(decode(y.weeknumber, 2, y.week, 0)) week2,
+	       sum(decode(y.weeknumber, 3, y.week, 0)) week3,
+	       sum(decode(y.weeknumber, 4, y.week, 0)) week4,
+	       sum(nvl(y.week, 0) * y.Grade) week,
+	       max(evaluatedt) as inputdate,
+	       sysdate TranDate
+	  from (select g1.startdt,
+	               g1.enddt,
+	               g1.weeknumber,
+	               g1.dept_id,
+	               max(g1.evaluatedt) evaluatedt,
+	               sum(decode(g1.acount, null, 0, g1.acount)) as week,
+	               'A' as IllGrade,
+	               1 as Grade
+	          from gm001_djpdm g1
+	         where g1.acount is not null
+	           and g1.bcount is not null
+	           and g1.ccount is not null
+	           and g1.dcount is not null
+	           and g1.ecount is not null
+	           and  trunc(g1.evaluatedt) between #{startDate} and #{endDate}
+	           and g1.TranFlag = 0
+	         group by g1.startdt, g1.enddt, g1.weeknumber, g1.dept_id
+	        union all
+	        select g1.startdt,
+	               g1.enddt,
+	               g1.weeknumber,
+	               g1.dept_id,
+	               max(g1.evaluatedt) evaluatedt,
+	               sum(decode(g1.bcount, null, 0, g1.bcount)) as week,
+	               'B' as IllGrade,
+	               2 as Grade
+	          from gm001_djpdm g1
+	         where g1.acount is not null
+	           and g1.bcount is not null
+	           and g1.ccount is not null
+	           and g1.dcount is not null
+	           and g1.ecount is not null
+	           and  trunc(g1.evaluatedt) between #{startDate} and #{endDate}
+	           and g1.TranFlag = 0
+	         group by g1.startdt, g1.enddt, g1.weeknumber, g1.dept_id
+	        union all
+	        select g1.startdt,
+	               g1.enddt,
+	               g1.weeknumber,
+	               g1.dept_id,
+	               max(g1.evaluatedt) evaluatedt,
+	               sum(decode(g1.ccount, null, 0, g1.ccount)) as week,
+	               'C' as IllGrade,
+	               3 as Grade
+	          from gm001_djpdm g1
+	         where g1.acount is not null
+	           and g1.bcount is not null
+	           and g1.ccount is not null
+	           and g1.dcount is not null
+	           and g1.ecount is not null
+	           and  trunc(g1.evaluatedt) between #{startDate} and #{endDate}
+	           and g1.TranFlag = 0
+	         group by g1.startdt, g1.enddt, g1.weeknumber, g1.dept_id
+	        union all
+	        select g1.startdt,
+	               g1.enddt,
+	               g1.weeknumber,
+	               g1.dept_id,
+	               max(g1.evaluatedt) evaluatedt,
+	               sum(decode(g1.dcount, null, 0, g1.dcount)) as week,
+	               'D' as IllGrade,
+	               4 as Grade
+	          from gm001_djpdm g1
+	         where g1.acount is not null
+	           and g1.bcount is not null
+	           and g1.ccount is not null
+	           and g1.dcount is not null
+	           and g1.ecount is not null
+	           and  trunc(g1.evaluatedt) between #{startDate} and #{endDate}
+	           and g1.TranFlag = 0
+	         group by g1.startdt, g1.enddt, g1.weeknumber, g1.dept_id
+	        union all
+	        select g1.startdt,
+	               g1.enddt,
+	               g1.weeknumber,
+	               g1.dept_id,
+	               max(g1.evaluatedt) evaluatedt,
+	               sum(decode(g1.ecount, null, 0, g1.ecount)) as week,
+	               'E' as IllGrade,
+	               5 as Grade
+	          from gm001_djpdm g1
+	         where g1.acount is not null
+	           and g1.bcount is not null
+	           and g1.ccount is not null
+	           and g1.dcount is not null
+	           and g1.ecount is not null
+	           and  trunc(g1.evaluatedt) between #{startDate} and #{endDate}
+	           and g1.TranFlag = 0
+	         group by g1.startdt, g1.enddt, g1.weeknumber, g1.dept_id) y
+	 inner join zg002_byks z2
+	    on z2.dept_id = y.dept_id
+	 inner join zg001_bzks z1
+	    on z1.dept_id = z2.stand_dept_id
+	 group by z2.dept_id,
+	          z1.dept_id,
+	          to_char(y.enddt, 'yyyymm'),
+	          y.IllGrade,
+	          y.Grade
+   </select>
+  
+   <select id="findNicuInfectZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 
+	select * from ( select a.*, rownum rn from (
+	select 
+			'NicuInfect' as "TABLE",
+			relid as key_id,
+	       rn as id,
+	       (select hosp_id from zg004_yyxx) hid,
+	       a.zyid as Registid,
+	       a.dept_id as StandOfficeID,
+	       a.report_visit as InfectID,
+	       a.infect_date as InfectDate,
+	       a.infect_code as InfectPartID,
+	       a.infect_name as InfectPart,
+	       a.relation as Relation,
+	       a.auth_at as inputDate,
+	       sysdate as TranDate
+	  from (select b2.relid,
+	               b1.zyid,
+	               nvl(b1.report_visit, 0) report_visit,
+	               infect_date,
+	               nvl(z22.infect_code, z5.infect_code) infect_code,
+	               nvl(z22.infect_name, z5.infect_name) infect_name,
+	               z1.dept_id,
+	               b2.relation,
+	               b2.auth_at,
+	               b2.Tran2Flag,
+	               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0) order by b2.tran2flag desc nulls last, b2.infect_date, b2.auth_at) rn
+	          from bk002_grzd b2
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         inner join zg002_byks z2
+	            on b2.infect_dept_id = z2.dept_id
+	         inner join zg001_bzks z1
+	            on z1.dept_id = z2.stand_dept_id
+	          left join zg005_yygrzd z5
+	            on b2.infect_diagn_id = z5.infect_code
+	          left join zg022_yygrzd_diy z22
+	            on b2.custom_diagn_id = z22.infect_code
+	         where b2.auth_status = 1
+	           and infect_date is not null
+	           and z2.ifchildoffice = 1) a
+	 where a.Tran2Flag = 0
+	 	and trunc(a.infect_date) between #{startDate} and #{endDate}
+	 	   ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+   </select> 
+   
+   <select id="findNicuSampleZBMapList_oracle"  resultType="java.util.HashMap"> 
+	select 
+			'NicuSample' as "TABLE",
+			id as key_id,
+	       rownum as id,
+	       (select hosp_id from zg004_yyxx) as Hid,
+	       zyid as RegistID,
+	       report_visit as InfectID,
+	       sample_id as SampleID,
+	       sample_name as Sample,
+	       submi_at as SampleDate,
+	       auth_at as inputDate,
+	       sysdate TranDate
+	  from (select b4.id,
+	               b1.zyid,
+	               nvl(b1.report_visit, 0) as report_visit,
+	               b4.sample_id,
+	               b4.sample_name,
+	               b4.submi_at,
+	               b2.auth_at,
+	               b4.Tran6flag,
+	               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), b4.sample_id, b4.submi_at order by Tran6flag desc nulls last, b2.auth_at, b4.create_date) rn
+	          from bk004_sjbb b4
+	         inner join bk002_grzd b2
+	            on b2.relid = b4.refid
+	           and b2.refid = b4.card_relid
+	         inner join bk001_sbk b1
+	            on b1.relid = b2.refid
+	         inner join zg002_byks z2
+	            on z2.dept_id = b2.infect_dept_id
+	         where b4.sample_id is not null
+	           and b2.auth_status = 1
+	           and b4.refid in 
+	            <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	           and z2.ifchildoffice = 1)
+	 where rn = 1 and Tran6flag = 0
+	</select>   
+	
+	<select id="findNicuIllBodyZBMapList_oracle"  resultType="java.util.HashMap"> 
+		select 
+				'NicuIllBody' as "TABLE",
+				id as key_id,
+		       rownum as id,
+		       (select hosp_id from zg004_yyxx) Hid,
+		       a.zyid as RegistId,
+		       a.patho_name as IllBody,
+		       a.patho_id as IllBodyID,
+		       a.sample_id as SampleID,
+		       a.report_visit as InfectID,
+		       a.submi_at as senddate,
+		       a.auth_at as inputDate,
+		       sysdate as TranDate
+		  from (select b4.id,
+		               b1.zyid,
+		               nvl(b1.report_visit, 0) as report_visit,
+		               b4.sample_id,
+		               b4.submi_at,
+		               b4.patho_id,
+		               b4.patho_name,
+		               b2.auth_at,
+		               b4.Tran7flag,
+		               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), b4.sample_id, b4.patho_id order by b4.tran7flag desc nulls last, b2.auth_at, b4.create_date) rn
+		          from bk004_sjbb b4
+		         inner join bk002_grzd b2
+		            on b2.relid = b4.refid
+		           and b2.refid = b4.card_relid
+		         inner join bk001_sbk b1
+		            on b1.relid = b2.refid
+		         inner join zg002_byks z2
+		            on z2.dept_id = b2.infect_dept_id
+		         where b4.sample_id is not null
+		           and b4.patho_name not like '%无%生长'
+		           and b4.patho_name not like '%阴性'
+		           and b2.auth_status = 1
+		           and b4.refid in 
+		            <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+		           and z2.ifchildoffice = 1) a
+		 where a.rn = 1
+		   and a.Tran7flag = 0
+	</select>
+	
+	<select id="findNicuAntiZBMapList_oracle"  resultType="java.util.HashMap"> 
+		select 
+				'NicuAnti' as "TABLE",
+				id as key_id,
+			       rownum as id,
+			       (select hosp_id from zg004_yyxx) as Hid,
+			       zyid as RegistID,
+			       report_visit as InfectID,
+			       anti_code as AntiID,
+			       anti_name as Anti,
+			       yaomin_result as Result,
+			       patho_id as illBodyID,
+			       sample_id as SampleID,
+			       auth_at as inputDate,
+			       sysdate as TranDate
+			  from (select b4.id,
+			               b1.zyid,
+			               nvl(b1.report_visit, 0) as report_visit,
+			               s11.anti_code,
+			               s11.anti_name,
+			               s11.yaomin_result,
+			               b4.patho_id,
+			               b4.sample_id,
+			               b4.submi_at,
+			               b2.auth_at,
+			               b4.Tran8flag,
+			               row_number() over(partition by b1.zyid, nvl(b1.report_visit, 0), b4.sample_id, b4.patho_id, s11.anti_code order by b4.tran8flag desc nulls last, b2.auth_at, b4.create_date) rn
+			          from bk004_sjbb b4
+			         inner join bk002_grzd b2
+			            on b2.relid = b4.refid
+			           and b2.refid = b4.card_relid
+			         inner join bk001_sbk b1
+			            on b1.relid = b2.refid
+			         inner join st010_jcbyt s10
+			            on s10.patho_code = b4.patho_id
+			           and s10.test_order_no = b4.test_no
+			         inner join st011_syjgb s11
+			            on s11.test_order_no = s10.test_order_no
+			           and s11.pathogen_sn = s10.pathogen_sn
+			           and s11.zyid = b4.zyid
+			         inner join zg002_byks z2
+			            on z2.dept_id = b2.infect_dept_id
+			         where b4.sample_id is not null
+			           and s11.anti_code is not null
+			           and s11.anti_name is not null
+			           and b2.auth_status = 1
+		          and b4.refid in 
+	            <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		           and z2.ifchildoffice = 1)
+		 where rn = 1
+		   and Tran8Flag = 0
+	</select>
+	
+	<select id="findNicuLogZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 
+		select 
+			'NicuLog' as "TABLE",
+			to_char(creationdate, 'yyyymmdd') as key_id,
+	       (select hosp_id from zg004_yyxx) as hid,
+	       bb.creationdate as HRNDate, --监测日期
+				 sysdate as trandate, 
+	       nvl(sum(decode(bb.neonatebw, '01', bb.new_count, 0)), 0) as BW1LiveIN, --第一组体重新住进人数
+	       nvl(sum(decode(bb.neonatebw, '01', bb.in_count, 0)), 0) as BW1AtIN, --第一组体重住在病人数
+	       nvl(sum(decode(bb.neonatebw, '01', bb.outbreak_count1, 0)), 0) as BW1Cathe, --第一组体重脐/静脉插管使用人数
+	       nvl(sum(decode(bb.neonatebw, '01', bb.outbreak_count2, 0)), 0) as BW1Breath, --第一组体重使用呼吸机人数
+	       nvl(sum(decode(bb.neonatebw, '02', bb.new_count, 0)), 0) as BW2LiveIN, -- 第二组体重新住进人数
+	       nvl(sum(decode(bb.neonatebw, '02', bb.in_count, 0)), 0) as BW2AtIN, -- 第二组体重住在病人数
+	       nvl(sum(decode(bb.neonatebw, '02', bb.outbreak_count1, 0)), 0) as BW2Cathe, -- 第二组体重脐/静脉插管使用人数
+	       nvl(sum(decode(bb.neonatebw, '02', bb.outbreak_count2, 0)), 0) as BW2Breath, -- 第二组体重使用呼吸机人数
+	       nvl(sum(decode(bb.neonatebw, '03', bb.new_count, 0)), 0) as BW3LiveIN, -- 第三组体重新住进人数
+	       nvl(sum(decode(bb.neonatebw, '03', bb.in_count, 0)), 0) as BW3AtIN, -- 第三组体重住在病人数
+	       nvl(sum(decode(bb.neonatebw, '03', bb.outbreak_count1, 0)), 0) as BW3Cathe, -- 第三组体重脐/静脉插管使用人数
+	       nvl(sum(decode(bb.neonatebw, '03', bb.outbreak_count2, 0)), 0) as BW3Breath, -- 第三组体重使用呼吸机人数
+	       nvl(sum(decode(bb.neonatebw, '04', bb.new_count, 0)), 0) as BW4LiveIN, -- 第四组体重新住进人数
+	       nvl(sum(decode(bb.neonatebw, '04', bb.in_count, 0)), 0) as BW4AtIN, -- 第四组体重住在病人数
+	       nvl(sum(decode(bb.neonatebw, '04', bb.outbreak_count1, 0)), 0) as BW4Cathe, -- 第四组体重脐/静脉插管使用人数
+	       nvl(sum(decode(bb.neonatebw, '04', bb.outbreak_count2, 0)), 0) as BW4Breath -- 第四组体重使用呼吸机人数
+	  from (select aa.creationdate,
+	               sum(decode(aa.typeid, '11', aa.pcount, 0)) as new_count,
+	               sum(decode(aa.typeid, '02', aa.pcount, 0)) as in_count,
+	               sum(decode(aa.typeid, '05', aa.pcount, 0)) as outbreak_count1,
+	               sum(decode(aa.typeid, '06', aa.pcount, 0)) as outbreak_count2,
+	               aa.neonatebw
+	          from (select g4.creationdate,
+	                       g4.typeid,
+	                       count(distinct g4.zyid) as pcount,
+	                       g4.neonatebw
+	                  from gm004_jcmx g4
+	                 inner join zg002_byks z2
+	                    on z2.dept_id = g4.deptid
+	                 where g4.TranFlag = 0
+	                   and z2.ifchildoffice = 1
+	                   and trunc(g4.creationdate) between #{startDate} and #{endDate}  
+	                 group by g4.creationdate,
+	                          g4.typeid,
+	                          z2.dept_id,
+	                          g4.neonatebw) aa
+	         group by creationdate, neonatebw) bb
+	 group by creationdate
+	</select>
+	
+	<select id="findAntibInputZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 
+	select * from ( select a.*, rownum rn from (
+		select 
+				'AntibInput' as "TABLE",
+				zyid as key_id,
+		       (select hosp_id from zg004_yyxx) as Hid, --医院编号,
+		       zyid as RegistId, --病例序号
+		       1 as IsUseAntib, --是否使用抗菌药物
+		       admin_route_name as UseManner, --用药方式
+		       use_purpose as UsePurpose, --用药目的
+		       use_antib_type as UnitUseAntib, --联合用药
+		       IsDefend, --是否用于预防
+		       IsCure, --是否用于治疗
+		       IsGermic, --是否细菌培养
+		       stand_dept_id as StandOffice, --标准科室编号
+		       calc_date as inputDate,
+					 sysdate as trandate 
+		  from (select jl.zyid,
+		               s15.admin_route_name,
+		               s15.use_purpose,
+		               jl.use_antib_type,
+		               (case
+		                 when (instr(s15.use_purpose, '预防') > 0 or
+		                      s15.use_purpose = 'yf') then
+		                  1
+		                 else
+		                  0
+		               end) as IsDefend,
+		               (case
+		                 when (instr(s15.use_purpose, '治疗') > 0 or
+		                      s15.use_purpose = 'zl') then
+		                  1
+		                 else
+		                  0
+		               end) as IsCure,
+		               (select case
+		                         when count(*) &gt; 0 then
+		                          1
+		                         else
+		                          0
+		                       end
+		                  from st009_sjbb s9
+		                 where s9.zyid = jl.zyid
+		                   and s9.submi_at &gt;= jl.calc_date
+		                   and s9.item_type = 1) as IsGermic,
+		               z2.stand_dept_id,
+		               jl.calc_date,
+		               row_number() over(partition by jl.zyid order by jl.use_antib_type desc nulls last, jl.calc_date, s15.order_at) rn
+		          from jk_yz_lhyy jl
+		          left join st015_yzxxb_kjyw s15
+		            on jl.zyid = s15.zyid
+		           and jl.dept_id = s15.execoffice_code
+		          left join zg002_byks z2
+		            on jl.dept_id = z2.dept_id
+		         where jl.tranflag = 0
+		           and not exists (select 1
+		                  from jk_yz_lhyy jy
+		                 where jy.zyid = jl.zyid
+		                   and jy.tranflag = 1))
+		 where rn = 1 and trunc(calc_date) between #{startDate} and #{endDate} 
+		 ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findNowUseAntibZBMapList_oracle"  resultType="java.util.HashMap"> 
+	select 
+			'NowUseAntib' as "TABLE",
+			id as key_id,
+	       rn as AntibId,
+	       (select hosp_id from zg004_yyxx) as Hid, ---医院编号
+	       zyid as RegistId,
+	       order_id as TrocheId,
+	       order_name as TrocheCName,
+	       dosage as DoseDay,
+	       admin_route_name as Channels,
+	       usedrug_days as UseDay,
+	       dosage_unit as DoseUnit,
+	       isCase,
+	       sysdate as inputDate,
+				 sysdate as trandate
+	  from (select s15.id,
+	               s15.zyid, --病例序号,
+	               s15.order_id, --抗菌药物编号
+	               s15.order_name, --抗菌药物名称
+	               s15.dosage, --使用抗菌药物剂量
+	               s15.admin_route_name, --使用抗菌药物方式
+	               trunc(s15.usedrug_days) usedrug_days, --使用天数
+	               s15.dosage_unit, --用药单位
+	               (select case
+	                         when count(*) &gt; 0 then
+	                          1
+	                         else
+	                          0
+	                       end
+	                  from bk002_grzd b2
+	                 inner join bk001_sbk b1
+	                    on b1.relid = b2.refid
+	                 where b1.zyid = s15.zyid
+	                   and b2.auth_status = 1
+	                   and b2.infect_date &lt;= s15.order_at) as isCase,
+	               tranflag,
+	               row_number() over(order by tranflag desc nulls last, id) rn
+	          from st015_yzxxb_kjyw s15 where
+	          s15.zyid in 
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	           )
+	 where tranflag = 0
+	</select>	
+		
+	<select id="findJcReportMasterZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 	
+	select * from ( select a.*, rownum rn from (
+	select 
+		'JcReportMaster' as "TABLE",
+		dj_id as key_id,
+       (select hosp_id from zg004_yyxx) as HospitalID, --医院编号
+       (select hosp_name from zg004_yyxx) as HospitalName, --医院名称
+       dj_id as Id, --编号
+       dept_name as Ks, --科室
+       '医院消毒卫生监测' as TestKind, --监测类型
+       take_type_name as TestJb, --监测级别
+       employee_name as Csr, --采样者
+       take_at as Cyrq, --采样日期
+       test_at as TestDate, --检验日期
+       report_at as ReportDate, --报告日期
+       '' as TotalPj, --评价
+       report_at as inputDate, --输入日期
+       sysdate TranDate
+  from (select h1.dj_id,
+               h1.dept_name,
+               h2.take_type_name,
+               h10.employee_name,
+               h2.take_at,
+               h2.test_at,
+               h1.report_at
+          from hw101_jcdj h1
+         inner join (select *
+                      from (select dj_id,
+                                   take_type_name,
+                                   test_at,
+                                   take_at,
+                                   take_by,
+                                   row_number() over(partition by dj_id order by take_at) rn
+                              from hw102_jcdmx)
+                     where rn = 1) h2
+            on h2.dj_id = h1.dj_id
+          left join (select employee_id, employee_name
+                      from zg003_yyzg
+                    union
+                    select employee_id, employee_name
+                      from hw010_zzry) h10
+            on h10.employee_id = h2.take_by
+         where h1.tranflag = 0
+         and   trunc(h1.report_at) between #{startDate} and #{endDate}
+           and h1.type = 1
+           and not exists (select 1
+                  from hw102_jcdmx h
+                 where h.dj_id = h1.dj_id
+                   and h.result_flag = -1))
+	 ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>	
+	
+	<select id="findJcReportDetailZBMapList_oracle"  resultType="java.util.HashMap"> 	
+	select 
+			'JcReportDetail' as "TABLE",
+			dj_id || report_id as key_id,
+	       rn as NoId,
+	       rn Sxh,
+	       (select hosp_id from zg004_yyxx) as HospitalID, --医院编号
+	       dj_id as Id, --检字号
+	       place_name as Place, --检测场所
+	       place_id as Placebh, --场所编号
+	       sample_name as Ypmc, --样品名称
+	       sample_id as Ypmcbh, --样品编号
+	       class_id as XdyKind, --项目类型编号
+	       result as Xjzs, --细菌总数
+	       '未检出' as Ybgj, --生物学检测
+	       '--' as Hbsag, ----HBSAG检查结果
+	       '--' as Smsj, --沙门氏菌
+	       '--' as Rxxnqj, --溶血性链球菌
+	       Dcgj, --金黄色葡萄球菌
+	       Zwxqd, --紫外线强度
+	       '' as Pj,
+	       memo as Remark, --备注
+	       spj, ----评价结果
+	       inputDate,
+	       sysdate as TranDate
+	  from (select h2.dj_id,
+	               h2.report_id,
+	               h2.place_name,
+	               h2.place_id,
+	               h2.sample_name,
+	               h2.sample_id,
+	               h2.result,
+	               (select case
+	                         when count(1) > 0 then
+	                          '检出'
+	                         else
+	                          '未检出'
+	                       end
+	                  from HW104_JCDJG_XJ t
+	                 where t.patho_id = '0001'
+	                   and t.report_id = h2.report_id) as Dcgj,
+	               (select m.result
+	                  from HW102_JCDMX m
+	                 where m.report_id = h2.report_id
+	                   and m.sample_id = '0808') as Zwxqd,
+	               h2.memo,
+	               (case h2.result_flag
+	                 when -1 then
+	                  '待处理'
+	                 when 0 then
+	                  '不合格'
+	                 when 1 then
+	                  '合格'
+	               end) as spj,
+	               trunc(h2.report_at) as inputDate,
+	               decode(h4.class_id,
+	                      '01',
+	                      '05',
+	                      '02',
+	                      '02',
+	                      '03',
+	                      '04',
+	                      '04',
+	                      '01',
+	                      '05',
+	                      '07',
+	                      '06',
+	                      '07',
+	                      '07',
+	                      '08',
+	                      '08',
+	                      '16',
+	                      '09',
+	                      '07',
+	                      '10',
+	                      '07',
+	                      '11',
+	                      '11',
+	                      '12',
+	                      '12',
+	                      '') class_id,
+	               row_number() over(partition by h2.dj_id order by h2.tranflag desc nulls last, h2.take_at) rn
+	          from hw102_jcdmx h2
+	          left join (select employee_id, employee_name
+	                      from zg003_yyzg
+	                    union
+	                    select employee_id, employee_name
+	                      from hw010_zzry) h10
+	            on h10.employee_id = h2.take_by
+	          left join hw004_cybb h4
+	            on h4.sample_id = h2.sample_id
+	         inner join hw101_jcdj h1
+	            on h1.dj_id = h2.dj_id
+	         where 
+	            h2.tranflag = 0
+	           and h1.type = 1
+	           and h2.dj_id in
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+	           and not exists (select 1
+	                  from hw102_jcdmx h
+	                 where h.dj_id = h1.dj_id
+	                   and h.result_flag = -1))
+	</select>
+	
+	<select id="findYcxjymasterZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 	
+	select * from ( select a.*, rownum rn from (
+	select 
+		'Ycxjymaster' as "TABLE",
+		dj_id as key_id,
+       (select hosp_id from zg004_yyxx) as HospitalID, --医院编号
+       (select hosp_name from zg004_yyxx) as HospitalName, --医院名称
+       dj_id as Id, --编号
+       dept_name as sjks, --科室
+       take_type_name as jcjb, --监测级别       
+       take_at as cjrq, --抽检日期
+       test_at as jyrq, --检验日期
+       employee_name as cyr, --采样者
+       report_at as inputdate,
+       sysdate TranDate
+  from (select h1.dj_id,
+               h1.dept_name,
+               h2.take_type_name,
+               h10.employee_name,
+               h2.take_at,
+               h2.test_at,
+               h1.report_at
+          from hw101_jcdj h1
+         inner join (select *
+                      from (select dj_id,
+                                   take_type_name,
+                                   test_at,
+                                   take_at,
+                                   take_by,
+                                   row_number() over(partition by dj_id order by take_at) rn
+                              from hw102_jcdmx)
+                     where rn = 1) h2
+            on h2.dj_id = h1.dj_id
+          left join (select employee_id, employee_name
+                      from zg003_yyzg
+                    union
+                    select employee_id, employee_name
+                      from hw010_zzry) h10
+            on h10.employee_id = h2.take_by
+         where h1.tranflag = 0
+           and trunc(h1.report_at) between #{startDate} and #{endDate}
+           and h1.type = 2
+           and not exists (select 1
+                  from hw102_jcdmx h
+                 where h.dj_id = h1.dj_id
+                   and h.result_flag = -1))
+	) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findycxjydetailZBMapList_oracle"  resultType="java.util.HashMap"> 	
+		select
+				'ycxjydetail' as "TABLE",
+				 dj_id || report_id as key_id,
+		       rn as NoId,
+		       rn sxh,
+		       (select hosp_id from zg004_yyxx) as HospitalID, --医院编号
+		       dj_id as Id, --检字号
+		       sample_name as Ypmc, --样品名称
+		       sample_id as Ypmcbh, --样品编号
+		       sample_gg as gg, --规格
+		       sample_cj as cj, --厂家
+		       sample_ph as cpph, --产品批号
+		       sample_xdrq as xdrq, --消毒日期
+		       result as xjzs, --细菌总数
+		       jyjg, --检验结果
+		       nvl(sample_nds, '--') as lds, --内毒素
+		       inputDate,
+		       sysdate as TranDate
+		  from (select h2.dj_id,
+		               h2.report_id,
+		               h2.place_name,
+		               h2.place_id,
+		               h2.sample_name,
+		               h2.sample_id,
+		               h2.result,
+		               h2.sample_gg,
+		               h2.sample_cj,
+		               h2.sample_ph,
+		               h2.sample_xdrq,
+		               (case h2.result_flag
+		                 when -1 then
+		                  '待处理'
+		                 when 0 then
+		                  '不合格'
+		                 when 1 then
+		                  '合格'
+		               end) as jyjg,
+		               h2.sample_nds,
+		               trunc(h2.report_at) as inputDate,
+		               row_number() over(partition by h2.dj_id order by h2.tranflag desc nulls last, h2.take_at) rn
+		          from hw102_jcdmx h2
+		          left join (select employee_id, employee_name
+		                      from zg003_yyzg
+		                    union
+		                    select employee_id, employee_name
+		                      from hw010_zzry) h10
+		            on h10.employee_id = h2.take_by
+		         inner join hw101_jcdj h1
+		            on h1.dj_id = h2.dj_id
+		         where 
+		            h2.tranflag = 0
+		           and h1.type = 2
+		            and h2.dj_id in
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+		           and not exists (select 1
+		                  from hw102_jcdmx h
+		                 where h.dj_id = h1.dj_id
+		                   and h.result_flag = -1))
+	</select>
+	
+	<select id="findWsclmasterZBMapList_oracle" parameterType="zbRecord" resultType="java.util.HashMap"> 	
+	select * from ( select a.*, rownum rn from (
+	select 
+			'Wsclmaster' as "TABLE",
+			dj_id as key_id,
+	       (select hosp_id from zg004_yyxx) as HospitalID, --医院编号
+	       (select hosp_name from zg004_yyxx) as HospitalName, --医院名称
+	       dj_id as jcid, --编号
+	       dept_name as sjks, --科室
+	       take_type_name as jcjb, --监测级别       
+	       take_at as cyrq, --抽检日期
+	       test_at as testrq, --检验日期
+	       employee_name as csr, --采样者
+	       null pjjg,
+	       report_at as inputdate,
+	       sysdate TranDate
+	  from (select h1.dj_id,
+	               h1.dept_name,
+	               h2.take_type_name,
+	               h10.employee_name,
+	               h2.take_at,
+	               h2.test_at,
+	               h1.report_at
+	          from hw101_jcdj h1
+	         inner join (select *
+	                      from (select dj_id,
+	                                   take_type_name,
+	                                   test_at,
+	                                   take_at,
+	                                   take_by,
+	                                   row_number() over(partition by dj_id order by take_at) rn
+	                              from hw102_jcdmx)
+	                     where rn = 1) h2
+	            on h2.dj_id = h1.dj_id
+	          left join (select employee_id, employee_name
+	                      from zg003_yyzg
+	                    union
+	                    select employee_id, employee_name
+	                      from hw010_zzry) h10
+	            on h10.employee_id = h2.take_by
+	         where h1.tranflag = 0
+	         and trunc(h1.report_at) between #{startDate} and #{endDate}
+	           and h1.type = 3
+	           and not exists (select 1
+	                  from hw102_jcdmx h
+	                 where h.dj_id = h1.dj_id
+	                   and h.result_flag = -1))
+	) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findWscldetailZBMapList_oracle"  resultType="java.util.HashMap"> 	
+select 
+		'Wscldetail' as "TABLE",
+		dj_id || report_id as key_id,
+       rn id,
+       (select hosp_id from zg004_yyxx) as HospitalID, --医院编号
+       dj_id as jcid, --检字号
+       place_id as cyddid, --采样场所编号
+       place_name as cydd, --采样场所
+       sample_name as cydx, --采样对象    
+       item_id as jcxmid,
+       item_name as jcxm,
+       jg as jg,
+       rn as ypbh,
+       trunc(report_at) as inputDate,
+       sysdate as TranDate
+  from (select h2.dj_id,
+               h2.report_id,
+               h2.place_name,
+               h2.place_id,
+               h2.sample_name,
+               h2.report_at,
+               row_number() over(partition by h2.dj_id order by h2.tranflag desc nulls last, h2.take_at) rn,
+               hj.item_id,
+               hj.item_name,
+               case
+                 when hj.condition is null then
+                  decode(h3.result, hj.criterion, '合格', '不合格')
+                 when hj.condition = '=' then
+                  case
+                    when h3.result = hj.criterion then
+                     '合格'
+                    else
+                     '不合格'
+                  end
+                 when hj.condition = '≤' then
+                  case
+                    when h3.result &lt;= hj.criterion then
+                     '合格'
+                    else
+                     '不合格'
+                  end
+                 when <![CDATA[ hj.condition = '<' ]]>then    
+                  case
+                    when h3.result &lt; hj.criterion then
+                     '合格'
+                    else
+                     '不合格'
+                  end
+                 when hj.condition = '≥' then
+                  case
+                    when h3.result >= hj.criterion then
+                     '合格'
+                    else
+                     '不合格'
+                  end
+                 when hj.condition = '>' then
+                  case
+                    when h3.result > hj.criterion then
+                     '合格'
+                    else
+                     '不合格'
+                  end
+               end jg
+          from hw102_jcdmx h2
+          left join (select employee_id, employee_name
+                      from zg003_yyzg
+                    union
+                    select employee_id, employee_name
+                      from hw010_zzry) h10
+            on h10.employee_id = h2.take_by
+         inner join hw101_jcdj h1
+            on h1.dj_id = h2.dj_id
+         inner join hw103_jcdjg h3
+            on h3.report_id = h2.report_id
+         inner join hw002_jsbz hj
+            on h3.class_id = hj.class_id
+           and h3.item_id = hj.item_id
+         where 
+            h2.tranflag = 0
+            and h2.dj_id in
+	           <foreach collection="idTemps" index="index" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+           and h1.type = 3
+           and not exists (select 1
+                  from hw102_jcdmx h
+                 where h.dj_id = h1.dj_id
+                   and h.result_flag = -1))
+	</select>
+	<select id="getRate_oracle"  resultType="java.util.HashMap"> 	
+	 
+	</select>
+	
+</mapper>

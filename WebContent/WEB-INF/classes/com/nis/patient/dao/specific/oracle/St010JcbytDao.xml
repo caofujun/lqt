@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St010JcbytDao">
+
+	<sql id="commCols_oracle">
+		id id,zyid zyid,patient_id patientId,visit_id visitId,test_order_no testOrderNo,test_date testDate,isyang isyang,patho_code pathoCode,patho_name pathoName,isym isym,yaomin_no yaominNo,pathogen_sn pathogenSn,memo memo,create_at createAt,upd_date updDate,calculate_tag calculateTag,calculate_dt calculateDt,bacteria_amount bacteriaAmount
+	</sql>
+
+	<select id="findSt010Jcbyt_oracle" parameterType="st010Jcbyt" resultType="st010Jcbyt">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from st010_jcbyt
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<update id="batchUpdAnalFlag_oracle" parameterType="java.util.List" flushCache="true">
+        <foreach collection="st010List" item="item" index="index" open="begin" close=";end;" separator=";">
+        	update st010_jcbyt
+			<set>
+				calculate_tag=#{item.calculateTag},calculate_dt=#{item.calculateDt}
+			</set>
+			<where>id=#{item.id}</where>
+        </foreach>  
+    </update>
+</mapper>

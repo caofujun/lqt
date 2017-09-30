@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw006CydsDao">
+
+	<sql id="commCols_oracle">
+		pos_id posId,pos_name posName,pos_value posValue,class_id classId,bh_code bhCode,sp_code spCode,wb_code wbCode,last_at lastAt,flag flag
+	</sql>
+
+	<select id="findHw006Cyds_oracle" parameterType="hw006Cyds" resultType="hw006Cyds">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw006_cyds
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

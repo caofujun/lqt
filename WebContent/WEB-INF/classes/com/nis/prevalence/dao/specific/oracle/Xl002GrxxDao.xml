@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl002GrxxDao">
+
+	<sql id="commCols_oracle">
+		grid grid,brid brid,infect_type infectType,infect_code infectCode,infect_name infectName,last_at lastAt
+	</sql>
+
+	<select id="findXl002Grxx_oracle" parameterType="xl002Grxx" resultType="xl002Grxx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from xl002_grxx
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

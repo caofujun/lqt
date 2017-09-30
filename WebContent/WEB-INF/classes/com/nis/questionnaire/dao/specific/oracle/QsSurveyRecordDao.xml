@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsSurveyRecordDao">
+
+	<sql id="commCols_oracle">
+		qsr.RID rid,qsr.QID qid,qsr.UNIT_ID unitId,qsr.PATIENT_ID patientId,qsr.PATIENT_NAME patientName,qsr.PATIENT_PHONE patientPhone,qsr.VISIT_ID visitId,qsr.USERNAME username,qsr.SURVEY_TIME surveyTime,qsr.SURVEY_TYPE surveyType,qsr.DEP_TYPE depType,qsr.DEP_NO depNo,qsr.IS_FINISH isFinish,qsr.DT_NUM dtNum,qsr.DT_SCORE dtScore,qsr.STATUS status,qsr.EXT1 ext1,qsr.EXT2 ext2
+	</sql>
+
+	<select id="findQsSurveyRecord_oracle" parameterType="qsSurveyRecord" resultType="qsSurveyRecord">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>,qq.TITLE title,qq.TM_COUNT tmCount from QS_SURVEY_RECORD qsr
+		inner join QS_QUESTIONNAIRE qq on (qsr.QID=qq.QID)
+		<where>
+			qsr.UNIT_ID=#{unitId}
+			<if test="qid!=null">and qsr.QID=#{qid}</if>
+			and qsr.STATUS=0
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="sumScoreTrendAnalyze_oracle" resultType="map" parameterType="qsSurveyRecord">
+		SELECT CAST(SUBSTR(SURVEY_TIME, 9) as NUMBER) DAY, SUMSCORE, QID,COUNT FROM (
+			SELECT SUM(DT_SCORE) SUMSCORE,COUNT(1) COUNT,TO_CHAR(SURVEY_TIME,'YYYY-MM-DD') SURVEY_TIME,QID FROM QS_SURVEY_RECORD 
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="surveyType != null and surveyType != ''">
+				AND SURVEY_TYPE = #{surveyType}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and queryEndDate != null">
+				AND SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</if>
+			GROUP BY TO_CHAR(SURVEY_TIME,'YYYY-MM-DD'),QID  ORDER BY SURVEY_TIME
+		</where>
+		) T
+	</select>
+	
+	<select id="sumScoreAnalyzeGroupDep_oracle" resultType="map" parameterType="qsSurveyRecord">
+		SELECT * FROM ( select a.*, rownum rn FROM (
+		SELECT SUM(DT_SCORE) SUMSCORE,COUNT(1) COUNT,DEP_NO DEPNO,QID FROM QS_SURVEY_RECORD 
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="surveyType != null and surveyType != ''">
+				AND SURVEY_TYPE = #{surveyType}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and queryEndDate != null">
+				AND SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</if>
+			GROUP BY DEP_NO,QID ORDER BY DEP_NO
+		</where>
+		) a WHERE rownum &lt;= #{orclEndNum} ) WHERE rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="zhiBiaoCount_oracle" resultType="qsReportTopic" parameterType="qsReportTopic">
+		select sd.dict_code cat_id,sd.dict_name title,nvl(t.allQsCount,0) allQsCount  
+		from sys_dict sd left join (
+		  <!--指标数据统计数据 -->
+		  select qs.cat_id,count(qr.rid) allQsCount   
+		  from qs_questionnaire qs inner join qs_survey_record qr on qs.qid = qr.qid 
+		  and qs.unit_id = ${unitId} and qr.unit_id = ${unitId} and qs.cat_id is not null 
+		  <if test="queryStartDate != null and queryEndDate == null">
+				AND qr.SURVEY_TIME &gt;= #{queryStartDate} 
+		  </if>
+		  <if test="queryStartDate == null and queryEndDate != null">
+				AND qr.SURVEY_TIME &lt;= #{queryEndDate} 
+		  </if>
+		  <if test="queryStartDate != null and queryEndDate != null">
+				AND qr.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+		  </if>
+		  group by qs.cat_id 
+		) t on sd.dict_code = t.cat_id 
+		where sd.dict_type_code = 'qs_type' and (sd.unit_id = 0 or sd.unit_id = ${unitId})  
+		<if test="ttype != null and ttype != '' ">
+			<!--二级指标-->
+			and sd.parent_code is not null 
+		</if>
+		<if test="ttype == null">
+			<!--一级指标-->
+			and sd.parent_code is null 
+		</if>
+	</select>
+	
+	<select id="findQsQuestionnaireFeedback_oracle" resultType="qsQuestionnaireFeedback" parameterType="qsSurveyRecord">
+		select * from ( select a.*, rownum rn from (
+		select  qs_survey_result.id id,qs_survey_record.rid rid,qs_topic.tid tid,qs_topic.title ttitle,qs_survey_record.survey_time surveyTime,patient_id patientId, patient_name patientName, patient_phone patientPhone,input_value inputValue,QS_QUESTIONNAIRE.cat_id catId,QS_QUESTIONNAIRE.cat_name catName,qs_survey_record.UNIT_ID unitId,qs_survey_record.dep_no depNo,qs_survey_record.dep_type depType,qs_survey_record.USERNAME userName,qs_topic_option.opt_name optName
+		  from qs_survey_result left join qs_survey_record on qs_survey_result.rid = qs_survey_record.rid
+		  left join qs_topic on qs_survey_result.tid=qs_topic.tid
+		   left join QS_QUESTIONNAIRE on qs_survey_result.qid=QS_QUESTIONNAIRE.qid
+		     left join qs_topic_option on qs_topic_option.opt_id=qs_survey_result.opt_id
+		   where 1=1
+ 		   <choose>
+		   <when test="dcValue != null and dcValue != ''">and (qs_topic_option.opt_value &lt;= #{dcValue} or qs_topic.TTYPE='3' )</when>
+		   <otherwise>
+		  		and (qs_topic.TTYPE='3' or qs_topic.TTYPE='1')
+		   </otherwise>
+		   </choose> 
+		   <if test="qid != null and qid != ''">
+				AND qs_survey_record.qid = #{qid}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND qs_survey_record.SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND qs_survey_record.SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+</mapper>

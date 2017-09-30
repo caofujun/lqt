@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw103JcdjgDao">
+
+	<sql id="commCols_oracle">
+		id id,report_id reportId,result_id resultId,class_id classId,item_id itemId,result result,result_condition resultCondition,result_criterion resultCriterion,result_unit resultUnit,result_flag resultFlag,memo memo,hw102_id hw102Id 
+	</sql>
+
+	<select id="findHw103Jcdjg_oracle" parameterType="hw103Jcdjg" resultType="hw103Jcdjg">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw103_jcdjg
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

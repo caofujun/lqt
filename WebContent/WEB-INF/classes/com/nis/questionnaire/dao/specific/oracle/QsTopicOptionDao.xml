@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsTopicOptionDao">
+
+	<sql id="commCols_oracle">
+		OPT_ID optId,OPT_NAME optName,ALLOW_INPUT allowInput,OPT_VALUE optValue,TID tid,UNIT_ID unitId,SORT_NO sortNo,STATUS status
+	</sql>
+
+	<select id="findQsTopicOption_oracle" parameterType="qsTopicOption" resultType="qsTopicOption">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from QS_TOPIC_OPTION
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

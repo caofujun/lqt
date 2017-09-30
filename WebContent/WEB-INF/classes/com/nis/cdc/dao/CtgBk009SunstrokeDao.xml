@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk009SunstrokeDao">
+
+	<sql id="commCols">
+		MASTERID masterid,REPORT_TYPE reportType,CARD_ID cardId,PATIENT_ID patientId,ZYID zyid,MZID mzid,VISIT_ID visitId,PATIENT_NAME patientName,ID_NO idNo,SEX sex,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,NOWADDRAREACODE nowaddrareacode,NOWADDR nowaddr,NOWADDR_VILLAGE nowaddrVillage,NOWADDR_GROUP nowaddrGroup,SUNSTROKE_DIAGNOSIS sunstrokeDiagnosis,PATIENT_STATUS patientStatus,SUNSTROKE_DT sunstrokeDt,DIAGNOSIS_UNIT diagnosisUnit,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDT reportdt,FLAG flag,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,VALIDDT validdt,DELREASON delreason,ISEMPTYCARD isemptycard,ISPRINT isprint
+	</sql>
+
+	<insert id="save" parameterType="ctgBk009Sunstroke"  flushCache="true">
+		 insert into CTG_BK009_SUNSTROKE(MASTERID,REPORT_TYPE,CARD_ID,PATIENT_ID,ZYID,MZID,VISIT_ID,PATIENT_NAME,ID_NO,SEX,BIRTHDAY,AGE,AGE_UNIT,NOWADDRAREACODE,NOWADDR,NOWADDR_VILLAGE,NOWADDR_GROUP,SUNSTROKE_DIAGNOSIS,PATIENT_STATUS,SUNSTROKE_DT,DIAGNOSIS_UNIT,REPORTDEPTID,REPORTDEPTNAME,REPORTDOCTORID,REPORTDOCTORNAME,REPORTDT,FLAG,VALIDPERSONID,VALIDPERSONNAME,VALIDDT,DELREASON,ISEMPTYCARD)
+		 values(#{masterid},#{reportType},#{cardId},#{patientId},#{zyid},#{mzid},#{visitId},#{patientName},#{idNo},#{sex},#{birthday},#{age},#{ageUnit},#{nowaddrareacode},#{nowaddr},#{nowaddrVillage},#{nowaddrGroup},#{sunstrokeDiagnosis},#{patientStatus},#{sunstrokeDt},#{diagnosisUnit},#{reportdeptid},#{reportdeptname},#{reportdoctorid},#{reportdoctorname},#{reportdt},#{flag},#{validpersonid},#{validpersonname},#{validdt},#{delreason},#{isemptycard})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK009_SUNSTROKE
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK009_SUNSTROKE
+		<set>
+			MASTERID=#{masterid},REPORT_TYPE=#{reportType},CARD_ID=#{cardId},PATIENT_ID=#{patientId},ZYID=#{zyid},MZID=#{mzid},VISIT_ID=#{visitId},PATIENT_NAME=#{patientName},ID_NO=#{idNo},SEX=#{sex},BIRTHDAY=#{birthday},AGE=#{age},AGE_UNIT=#{ageUnit},NOWADDRAREACODE=#{nowaddrareacode},NOWADDR=#{nowaddr},NOWADDR_VILLAGE=#{nowaddrVillage},NOWADDR_GROUP=#{nowaddrGroup},SUNSTROKE_DIAGNOSIS=#{sunstrokeDiagnosis},PATIENT_STATUS=#{patientStatus},SUNSTROKE_DT=#{sunstrokeDt},DIAGNOSIS_UNIT=#{diagnosisUnit},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},REPORTDT=#{reportdt},FLAG=#{flag},VALIDPERSONID=#{validpersonid},VALIDPERSONNAME=#{validpersonname},VALIDDT=#{validdt},DELREASON=#{delreason},ISEMPTYCARD=#{isemptycard}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk009Sunstroke">
+		select <include refid="commCols"/> from CTG_BK009_SUNSTROKE
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk009SunstrokeCount" parameterType="ctgBk009Sunstroke" resultType="int">
+		select count(*) from CTG_BK009_SUNSTROKE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk009Sunstroke">
+		select <include refid="commCols"/> from CTG_BK009_SUNSTROKE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findCardsForAdmin" resultType="ctgBk009Sunstroke" parameterType="ctgBk001Crbmaster">
+		select <include refid="commCols"/>,unReadMsg from
+       		(select m.* , (select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = m.zyid
+		             ) and user_id = #{userid} and is_read = 0) unReadMsg 
+		from CTG_BK009_SUNSTROKE m )m
+		<where>
+			1=1
+			<if test="reportdoctorid!=null and reportdoctorid!=''">
+				and m.reportdoctorid in (#{reportdoctorid})
+			</if>
+			<if test="reportdeptid!=null and reportdeptid!=''">
+		        and m.reportdeptid in (#{reportdeptid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+			</if>
+			<if test="dateType==1">
+				and trunc(m.reportdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+				and trunc(m.validdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="cardStates>=0">
+				and m.flag=#{cardStates}
+			</if>
+			<choose>
+				<when test="isprint==1">
+					and m.isprint = 1
+				</when>
+				<when test="isprint==2">
+					 and ( m.isprint is null or m.isprint !=1 ) 
+				</when>
+			</choose>
+			<if test="unReadMsg==1">
+				and m.unReadMsg>0
+			</if>
+			<choose>
+				<when test="cardStates==1">
+					order by validdt desc
+				</when>
+				<when test="cardStates!=1">
+					order by reportdt desc
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="audit" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK009_SUNSTROKE c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="retreat" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK009_SUNSTROKE c set c.flag=2,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.delreason=#{delreason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="cancel" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK009_SUNSTROKE c set c.flag=0,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.delreason='' where c.masterid=#{masterid}
+	</update>
+	
+	<update id="remove" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK009_SUNSTROKE c set c.flag=3,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname}, c.delreason=#{delreason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="batchAudit" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK009_SUNSTROKE c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid in (${masterid})
+	</update>
+	
+	<update id="updatePrintFlag" parameterType="String" flushCache="true">
+		update CTG_BK009_SUNSTROKE set isprint=1
+		<where>
+			MASTERID=#{masterid}
+		</where>
+	</update>
+	
+	<update id="updateNotes" parameterType="String" flushCache="true">
+		update CTG_BK008_CCVD c set c.notes=#{notes} where c.masterid=#{masterid}
+	</update>
+</mapper>

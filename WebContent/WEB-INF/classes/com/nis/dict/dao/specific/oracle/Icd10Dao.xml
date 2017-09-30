@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Icd10Dao">
+
+	<sql id="commCols_oracle">
+		ICD_ID icdId,ICD_CODE icdCode,ICD_NAME icdName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,FLAG flag,
+		ZJ_CODE zjCode,LAST_AT lastAt,SCODE scode
+	</sql>
+
+	
+	<select id="findIcd10_oracle" parameterType="icd10" resultType="icd10">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from ZG012_ICD10
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (ICD_CODE like CONCAT( CONCAT('%',#{searchString}),'%') or ICD_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or upper(SP_CODE) like CONCAT( CONCAT('%',#{searchString}),'%') or lower(SP_CODE) like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+		order by ICD_CODE
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

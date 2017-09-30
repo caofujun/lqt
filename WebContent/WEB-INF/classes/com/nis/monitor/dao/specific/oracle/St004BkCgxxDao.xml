@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.St004BkCgxxDao">
+
+	<sql id="commCols_oracle">
+		RELID relid,REFID refid,CREATE_DATE createDate,YZ_ID yzId
+	</sql>
+	
+	<select id="findSt004BkCgxx_oracle" parameterType="st004BkCgxx" resultType="st004BkCgxx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ST004_BK_CGXX
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findCgsybyZyid_oracle" parameterType="st004BkCgxx" resultType="st004BkCgxx">
+		select s4.order_name orderName,s4.order_at orderAt,s4.stop_at stopAt, s4.id id 
+		  from st004_yzxxb s4
+		 where s4.order_name in
+		       (select jk.order_name
+		          from JK_DIC_ALL jk
+		         where jk.class_code in ('001', '002', '003','004'))
+		   and s4.zyid = #{zyid}
+	</select>
+	
+	<select id="findcgsyByRefid_oracle" parameterType="st004BkCgxx" resultType="st004BkCgxx">
+		select s4.order_name orderName,
+       s4.order_at   orderAt,
+       s4.stop_at    stopAt,
+       s4.id         id,
+       t.refid refid
+	  from st004_yzxxb s4 left join st004_bk_cgxx t on t.yz_id=s4.id
+	  <if test="refid != null">
+		and t.refid=#{refid}
+	 </if>
+	 where s4.order_name in
+	       (select jk.order_name
+	          from JK_DIC_ALL jk
+	         where jk.class_code in ('001', '002', '003','004'))
+	   and s4.zyid = #{zyid}
+	</select>
+	
+	<select id="findCgsyInfo_oracle" parameterType="st004BkCgxx" resultType="st004BkCgxx">
+		select t4.order_name orderName, t4.order_at orderAt, t4.stop_at stopAt
+	  from st004_bk_cgxx t
+	  left join st004_yzxxb t4
+	    on t4.id = t.yz_id
+	 where t.refid = #{refid}
+	</select>
+	
+
+</mapper>

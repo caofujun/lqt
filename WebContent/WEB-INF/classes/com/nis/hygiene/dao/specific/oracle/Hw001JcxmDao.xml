@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw001JcxmDao">
+
+	<sql id="commCols_oracle">
+		class_id classId,class_name className,pclass_id pclassId,material material,take_area takeArea,take_mode takeMode,test_mode testMode,default_mode_id defaultModeId,default_sample_id defaultSampleId,default_pos_id defaultPosId,bh_code bhCode,sp_code spCode,wb_code wbCode,memo memo,last_at lastAt,type type,flag flag
+	</sql>
+
+	<select id="findHw001Jcxm_oracle" parameterType="hw001Jcxm" resultType="hw001Jcxm">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw001_jcxm
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="queryTree_oracle" parameterType="hw001Jcxm" resultType="hw001Jcxm">
+		select class_id id,class_name text,pclass_id pclassId from hw001_jcxm 
+		<where>
+			<if test="flag!=null">
+				and flag=#{flag}
+			</if>
+			<if test="type!=null">
+				and type=#{type}
+			</if>
+			<if test="isSee == 1 and djDeptId!=null and deptId!=null and userId!=null">
+				and substr(class_id, 1, 2) in (select class_id from hw008_xmsq where user_id=#{userId}
+           			and decode(#{deptId}, #{djDeptId}, self_view, other_view) = decode(#{deptId}, #{djDeptId}, 1, 1))
+			</if>
+			<if test="isAdd == 1 and djDeptId!=null">
+				and substr(class_id, 1, 2) in (select class_id from view_xmsq where user_id=#{userId}
+           			and decode(#{deptId}, #{djDeptId}, self_add, other_add) = decode(#{deptId}, #{djDeptId}, 1, 1))
+			</if>
+		</where>
+		order by class_id
+	</select>
+	
+	<select id="findList_oracle" parameterType="hw001Jcxm" resultType="hw001Jcxm">
+		select class_id classId,class_name className,pclass_id pclassId,material material,take_area takeArea,take_mode takeMode,test_mode testMode,sp_code spCode,memo memo,last_at lastAt,type type,flag flag
+		from hw001_jcxm 
+		<where>
+			<if test="type!=null">
+				and type=#{type}
+			</if>
+		</where>
+		order by class_id
+	</select>
+</mapper>

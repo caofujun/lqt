@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys009YjDao">
+
+	<sql id="commCols">
+		MASTERID masterid,PATIENT_TYPE patientType,PATIENT_ID patientId,MZZYID mzzyid,PATIENT_NAME patientName,YJ_CODE yjcode,YJ_NAME yjname,YJ_DT yjdt,YJ_SOURCE yjsource,YJ_CONTENT yjcontent,SOURCE_ID sourceId,MEMO memo
+	</sql>
+
+	<insert id="save" parameterType="ctgSys009Yj"  flushCache="true">
+		 insert into CTG_SYS009_YJ(MASTERID,PATIENT_TYPE,PATIENT_ID,MZZYID,PATIENT_NAME,YJ_CODE,YJ_NAME,YJ_DT,YJ_SOURCE,YJ_CONTENT,SOURCE_ID,MEMO)
+		 values(#{masterid},#{patientType},#{patientId},#{mzzyid},#{patientName},#{yjcode},#{yjname},#{yjdt},#{yjsource},#{yjcontent},#{sourceId},#{memo})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS009_YJ
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys009Yj" flushCache="true">
+		update CTG_SYS009_YJ
+		<set>
+			MASTERID=#{masterid},PATIENT_TYPE=#{patientType},PATIENT_ID=#{patientId},MZZYID=#{mzzyid},PATIENT_NAME=#{patientName},YJ_CODE=#{yjcode},YJ_NAME=#{yjname},YJ_DT=#{yjdt},YJ_SOURCE=#{yjsource},YJ_CONTENT=#{yjcontent},SOURCE_ID=#{sourceId},MEMO=#{memo}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys009Yj">
+		select <include refid="commCols"/> from CTG_SYS009_YJ
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgSys009YjCount" parameterType="ctgSys009Yj" resultType="int">
+		select count(*) from CTG_SYS009_YJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys009Yj">
+		select <include refid="commCols"/> from CTG_SYS009_YJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="isExit"  resultType="ctgSys009Yj">
+		select <include refid="commCols"/> from CTG_SYS009_YJ
+		<where>
+			patient_type=#{patientType} 
+		    and mzzyid=#{mzzyid} 
+			and yj_code=#{yjcode}
+		</where>
+	</select>
+	
+</mapper>

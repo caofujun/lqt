@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicDoctorDao">
+
+	<sql id="commCols_mysql">
+		ID id,DR_NO drNo,DR_NAME drName,DR_JOB drJob,DEPT_ID deptId,DEPT_NAME deptName,DOC_LINE docLine,DR_TYPE drType,DR_SPELL drSpell,DR_STATUS drStatus,DR_TITLE drTitle,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkDicDoctor_mysql" parameterType="jkDicDoctor" resultType="jkDicDoctor">
+		select <include refid="commCols_mysql"/> from JK_DIC_DOCTOR
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DoctorDao">
+
+	<sql id="commCols_mysql">
+		DOCTOR_ID doctorId,DOC_NO docNo,DOCTOR_NAME doctorName,DEP_NO depNo,SEX sex,ILL_IDS illIds,SYMPTOM_IDS symptomIds,URL url,PHONE phone,HEADSHIP headship,EMAIL email,IMAGE image,DETAIL detail,EXPERT expert,ZCID zcid,EDU_LEVEL eduLevel,CREATE_TIME createTime,UNIT_ID unitId,SPEC_ALLOWANCE specAllowance,DOC_SPEC docSpec,DOC_SORT docSort,CITY_ID cityId,UPD_USER updUser,UPD_TIME updTime,DOC_ACTIVE docActive,TREAT_LIMIT treatLimit,DOC_SPELL docSpell,MOBILE mobile,ADMIN_DEP_ID adminDepId,IS_EXPERT isExpert,GUAHAO_AM guahaoAm,GUAHAO_PM guahaoPm,GUAHAO_HOUR guahaoHour,COMMENTS comments,POSITION position,KIND_ID_PATH kindIdPath,FAX fax,WORK_AM workAm,IS_PAIBAN isPaiban,UPDATE_TIME updateTime,DOC_DELETED docDeleted,WORK_PM workPm,WORK_HOUR workHour,USER_ID userId,IS_CLOSED isClosed,LEVEL_CODE levelCode,DEP_ID depId
+	</sql>
+
+	<select id="findDoctor_mysql" parameterType="doctor" resultType="doctor">
+		select <include refid="commCols_mysql"/> from DOCTOR
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

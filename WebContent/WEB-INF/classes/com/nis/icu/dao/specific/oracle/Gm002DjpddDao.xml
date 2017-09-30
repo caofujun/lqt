@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm002DjpddDao">
+
+	<sql id="commCols_oracle">
+		DT_YEAR dtYear,DT_MONTH dtMonth,WEEKNUMBER weeknumber,ZYID zyid,GRADEA gradea,GRADEB gradeb,GRADEC gradec,GRADED graded,GRADEE gradee,WEEK1 week1,WEEK2 week2,WEEK3 week3,WEEK4 week4,WEEK5 week5,WEEK6 week6,WEEK7 week7,DEPT_ID deptId
+	</sql>
+
+	
+	<select id="findGm002Djpdd_oracle" parameterType="gm002Djpdd" resultType="gm002Djpdd">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from GM002_DJPDD
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<insert id="saveList_oracle" parameterType="java.util.List">
+        <foreach collection="djpddList" item="item" index="index" open="begin" close=";end;" separator=";">
+         insert into GM002_DJPDD(DT_YEAR,DT_MONTH,WEEKNUMBER,ZYID,GRADEA,GRADEB,GRADEC,GRADED,GRADEE,WEEK1,WEEK2,WEEK3,WEEK4,WEEK5,WEEK6,WEEK7,DEPT_ID)
+		 values(#{item.dtYear},#{item.dtMonth},#{item.weeknumber},#{item.zyid},#{item.gradea},#{item.gradeb},#{item.gradec},#{item.graded},#{item.gradee},#{item.week1},#{item.week2},#{item.week3},#{item.week4},#{item.week5},#{item.week6},#{item.week7},#{item.deptId})
+        </foreach>  
+    </insert>
+</mapper>

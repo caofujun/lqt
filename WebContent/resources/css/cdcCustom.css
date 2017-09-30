@@ -1,0 +1,166 @@
+/* CSS Document */
+.divs{display: inline;height: 40px;}
+.rightSplit{border-right: 1px solid black;margin-right: 20px;padding-right: 20px;}
+.leftSplit{border-left: 1px solid black;margin-left: 20px;padding-left: 20px;}
+.cards{padding: 5px;}
+.card{float:left;width: 280px;border: 2px solid #cbcbcb;font-size: 14px;margin:5px; }
+.card:HOVER{border: 2px solid #7eb3bb;}
+.title{font-weight: bold;padding: 7px 5px;background-color: #edf8fd;}
+.info{border-top: 1px solid #cbcbcb;border-bottom: 1px solid #cbcbcb;height: 125px;}
+.opts{padding: 5px;height: 25px;text-align: right;background-color: #f9f9f9;}
+.optsButt{
+	padding:5px;
+	border:0px;
+    border-radius: 4px;
+    color:#fff;
+    vertical-align: middle;
+    background:#2489d9;
+   /* background-clip: padding-box;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #fff;
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
+    background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
+    background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
+    background-image: linear-gradient(to top, #eee 0%, #fff 50%);*/
+}
+.table_btn_gray .optsButt{background:#eee; color:#555}
+.infos .optsButt{margin-bottom:6px;}
+.item{padding: 3px 0px;}
+.bt_one{background: url("${webroot}/resources/images_org/admin/btn.gif");}
+.yj_tip{color: red;border: 1px solid #fff;border-radius: 5px;padding:0px 5px;cursor: pointer;}
+.yj_tip:HOVER{border: 1px solid red;color: red;}
+.success{text-align: center; font-size: 16px; border: 1px solid #0fbb0f; background-color: rgb(233, 251, 221);
+    border-radius: 5px; padding: 10px; margin: 100px 10px; color: #3e9c06;}
+.error{text-align: center; font-size: 16px; border: 1px solid #f51c1c; background-color: rgb(252, 230, 230);
+    border-radius: 5px; padding: 10px; margin: 100px 10px; color: #e44a0c;}
+.emptyListTip{text-align: center;font-size: 16px;color:gray;padding-top: 50px;}    
+.gyTip{
+	position: relative;
+    left: -30px;
+    top: -5px;
+	width:20px;
+	height:18px;
+	display:inline;
+	background-color: #ff6600;
+	border-radius: 10px;
+	text-align:center;
+	color:#fff;    
+	padding: 1px;
+	font-size: 12px;
+}
+.butt{
+	margin: 0px;
+    height: 28px;
+    line-height: 28px;
+    cursor: pointer;
+    padding:0px 5px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    vertical-align: middle;
+    background-clip: padding-box;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: #fff;
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(0.5, #fff));
+    background-image: -webkit-linear-gradient(center bottom, #eee 0%, #fff 50%);
+    background-image: -moz-linear-gradient(center bottom, #eee 0%, #fff 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#ffffff', endColorstr = '#eeeeee', GradientType = 0);
+    background-image: linear-gradient(to top, #eee 0%, #fff 50%);
+}
+.curM{
+	color:#000;
+}
+.cdtOn{
+	background-color: #54c8f5;
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #54c8f5), color-stop(0.5, #488fd8));
+    background-image: -webkit-linear-gradient(center bottom, #54c8f5 0%, #488fd8 50%);
+    background-image: -moz-linear-gradient(center bottom, #54c8f5 0%, #488fd8 50%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#488fd8', endColorstr = '#54c8f5', GradientType = 0);
+    background-image: linear-gradient(to top, #54c8f5 0%, #488fd8 50%);
+    color:#fff;
+}
+.searchButt{background-color:#23c0fa;background-image:none;color:#fff;padding: 0px 15px;}
+.move-bg{
+	position:absolute;
+	background-color: #000;
+	width: 0px;
+	height: 3px;
+}
+.cdtBox{padding: 5px 15px;border: 1px solid #dddddd;background-color: #fbfbfb;display: none;}
+.cdtBox div{display: none;}
+.CDTSpace{padding-left: 15px;}
+.CDTSpace2{padding-left: 50px;}
+.leftTextAlign{text-align: left;}
+.rightTextAlign{text-align: right;}
+.divSpliter{height:inherit ;border-right: 1px solid #e6e6e6;margin-left: 10px;margin-right: 10px;}
+.split{border-left: 1px solid #070707;}
+.green-tag{background-color: #ff5101;padding: 3px 5px;border-radius:3px;font-size: 12px;}
+.tag-name{color: #fff;}
+.del-icon{}
+table.gridtable {
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+table.gridtable th {
+	border-width: 1px;
+	padding: 2px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #dedede;
+}
+table.gridtable td {
+	text-align:center;
+	border-width: 1px;
+	padding: 2px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ffffff;
+}
+.fkPages{padding-top:35px;display: none;}
+.normalTip{background-color: #ff6600;padding-left:1px;padding-right:1px;padding-top:1px;padding-button:1px;border-radius: 10px;color:white;}
+.tofuButt{border: 1px solid #ddd;border-bottom:none;padding: 3px 5px;padding-bottom:5px;font-size: 14px;}
+
+.curSelect{background-color: #2aa8e0 !important;color:#fff !important;font-weight: bold;}
+.cdts{padding: 5px 15px;border: 1px solid #ddd;background-color: #fbfbfb;}
+
+/*page:cardsTable.jsp */
+.ptitle{background-color: #efefef;line-height: 26px;}
+.pname{color: #ff6600;font-size: 14px;font-weight: bold;}
+.tables{border:none;border-bottom: 1px solid #ddd; width: 100%;margin-top: 5px;}
+.BothSidesSpace{padding-left:6px;padding-right: 6px;}
+.topBottomSpace{padding-top:15px;padding-bottom: 15px;}
+.borderStyle{width: 0px;height: 100px;border-left: 1px solid #ddd;}
+.Space{padding-left: 5px;}
+.topSpace{padding-top: 2px;}
+.vat{vertical-align: top;}
+.toolBar{float:right; margin-right:20px;}
+.toolBar a{ cursor: pointer;}
+table.infos td{padding-top: 2px;padding-bottom: 2px;word-break: break-all; color:#333;}
+table.infos th{color:#333; text-align:center;}
+.tableTitle{/*position:absolute; top:0px; right:0px; */width: 100%;}
+.sexPlace{margin-right:10px;padding-right:10px;border-right: 1px solid #ddd;}
+.PInfor{ margin-top:6px;}
+.PInfor .pAge{ color:#666;}
+.yellow, a.yellow, a.yellow:hover{color:#fbbc46;}
+.infos .orange,.infos .blue,.infos .gray,.infos .red,.infos .yellow{font-weight:bold; margin-bottom:8px;}
+.infos .table_a a{line-height:20px; color:#666;}
+a.green{color:#1E981E;}
+a.green:hover{color:green; }
+a.red{color:red;}
+a.orange{color:#ff6600;}
+.infos .table_a a:hover{text-decoration: underline; color:#169BD5;}
+.infos .table_btn{}
+table.table_childer{table-layout:fixed; width:100%;}
+table.table_childer tr td, table.table_childer tr th{vertical-align: top; color:#333;}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw201JcdmbDao">
+
+	<sql id="commCols_mysql">
+		templet_id templetId,templet_name templetName,dept_id deptId,class_id classId,place_id placeId,take_mode_id takeModeId,sample_id sampleId,pos_id posId,last_at lastAt,flag flag,take_type takeType,take_by takeBy
+	</sql>
+
+	<select id="findHw201Jcdmb_mysql" parameterType="hw201Jcdmb" resultType="hw201Jcdmb">
+		select <include refid="commCols_mysql"/> from hw201_jcdmb
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

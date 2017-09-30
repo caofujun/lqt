@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientLabItemsDao">
+
+	<sql id="commCols">
+		ID id,MZID mzid,ZYID zyid,VISIT_ID visitId,PATIENT_ID patientId,PATIENT_NAME patientName,TEST_ORDER_NO testOrderNo,ITEM_TYPE itemType,ITEM_TYPE_NAME itemTypeName,ITEM_CODE itemCode,ITEM_NAME itemName,SUBMIT_AT submitAt,RESULT_DATE resultDate,DEPT_ID deptId,DEPT_NAME deptName,SEX sex,AGE age,AGE_UNIT ageUnit,CREATE_AT createAt,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientLabItems" flushCache="true">
+		 insert into JK_PATIENT_LAB_ITEMS(ID,MZID,ZYID,VISIT_ID,PATIENT_ID,PATIENT_NAME,TEST_ORDER_NO,ITEM_TYPE,ITEM_TYPE_NAME,ITEM_CODE,ITEM_NAME,SUBMIT_AT,RESULT_DATE,DEPT_ID,DEPT_NAME,SEX,AGE,AGE_UNIT,CREATE_AT,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{mzid},#{zyid},#{visitId},#{patientId},#{patientName},#{testOrderNo},#{itemType},#{itemTypeName},#{itemCode},#{itemName},#{submitAt},#{resultDate},#{deptId},#{deptName},#{sex},#{age},#{ageUnit},#{createAt},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_LAB_ITEMS
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientLabItems" flushCache="true">
+		update JK_PATIENT_LAB_ITEMS
+		<set>
+			ID=#{id},MZID=#{mzid},ZYID=#{zyid},VISIT_ID=#{visitId},PATIENT_ID=#{patientId},PATIENT_NAME=#{patientName},TEST_ORDER_NO=#{testOrderNo},ITEM_TYPE=#{itemType},ITEM_TYPE_NAME=#{itemTypeName},ITEM_CODE=#{itemCode},ITEM_NAME=#{itemName},SUBMIT_AT=#{submitAt},RESULT_DATE=#{resultDate},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},SEX=#{sex},AGE=#{age},AGE_UNIT=#{ageUnit},CREATE_AT=#{createAt},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientLabItems" flushCache="true">
+		update JK_PATIENT_LAB_ITEMS
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientLabItems">
+		select <include refid="commCols"/> from JK_PATIENT_LAB_ITEMS
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientLabItemsCount" parameterType="jkPatientLabItems" resultType="int">
+		select count(*) from JK_PATIENT_LAB_ITEMS
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG=#{updFlag}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientLabItems">
+		select <include refid="commCols"/> from JK_PATIENT_LAB_ITEMS
+		<where>
+		</where>
+	</select>
+</mapper>

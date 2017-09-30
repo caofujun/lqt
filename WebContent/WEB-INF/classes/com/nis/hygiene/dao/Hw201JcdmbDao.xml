@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw201JcdmbDao">
+
+	<sql id="commCols">
+		templet_id templetId,templet_name templetName,dept_id deptId,class_id classId,place_id placeId,take_mode_id takeModeId,sample_id sampleId,pos_id posId,last_at lastAt,flag flag,take_type takeType,take_by takeBy
+	</sql>
+
+	<insert id="save" parameterType="hw201Jcdmb" flushCache="true">
+		 insert into hw201_jcdmb(templet_id,templet_name,dept_id,class_id,place_id,take_mode_id,sample_id,pos_id,last_at,flag,take_type,take_by)
+		 values(#{templetId},#{templetName},#{deptId},#{classId},#{placeId},#{takeModeId},#{sampleId},#{posId},#{lastAt},#{flag},#{takeType},#{takeBy})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw201_jcdmb
+		<where>templet_id=#{templetId}</where>
+	</delete>
+	
+	<delete id="delByTempletName" parameterType="hw201Jcdmb" flushCache="true">
+		delete from hw201_jcdmb 
+		<where>
+			templet_name=#{templetName} and dept_id=#{deptId}
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="hw201Jcdmb" flushCache="true">
+		update hw201_jcdmb
+		<set>
+			templet_id=#{templetId},templet_name=#{templetName},dept_id=#{deptId},class_id=#{classId},place_id=#{placeId},take_mode_id=#{takeModeId},sample_id=#{sampleId},pos_id=#{posId},last_at=#{lastAt},flag=#{flag},take_type=#{takeType},take_by=#{takeBy}
+		</set>
+		<where>templet_id=#{templetId}</where>
+	</update>
+	
+	<select id="get" resultType="hw201Jcdmb">
+		select <include refid="commCols"/> from hw201_jcdmb
+  		<where>templet_id=#{templetId}</where>
+	</select>
+	
+	<select id="findHw201JcdmbCount" parameterType="hw201Jcdmb" resultType="int">
+		select count(*) from hw201_jcdmb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw201Jcdmb">
+		select <include refid="commCols"/> from hw201_jcdmb
+		<where>
+		</where>
+	</select>
+	
+	<select id="findTempletList" parameterType="hw201Jcdmb" resultType="hw201Jcdmb">
+		select distinct hw201.dept_id deptId,z2.dept_name deptName,hw201.templet_name templetName 
+		from hw201_jcdmb hw201 left join hw001_jcxm h1 on h1.class_id = hw201.class_id
+		left join zg002_byks z2 on z2.dept_id=hw201.dept_id
+		<where>
+			substr(hw201.class_id, 1, 2) in (select class_id from view_xmsq where user_id=#{userId} and decode(#{deptId}, hw201.dept_id, self_add, other_add)=decode(#{deptId}, hw201.dept_id, 1, 1))
+			<if test="type!=null and type!=''">
+				and h1.type=#{type}
+			</if>
+			<if test="isCurrDept == 1 and deptId!=null and deptId!=''">
+				and hw201.dept_id=#{deptId}
+			</if>
+		</where>
+		order by z2.dept_name,hw201.templet_name
+	</select>
+	
+	<select id="findSampleList" parameterType="hw201Jcdmb" resultType="hw201Jcdmb">
+		select hw201.templet_id templetId,hw201.class_id classId,h1.class_name className,hw201.place_id placeId,h3.place_name placeName,hw201.sample_id sampleId,h4.sample_name sampleName,
+		hw201.take_mode_id takeModeId,h5.take_mode_name takeModeName,hw201.pos_id posId,h6.pos_name posName,hw201.take_type takeType,hw201.take_by takeBy,dic.dict_name takeTypeName,h10.employee_name takeByName
+  		from hw201_jcdmb hw201 left join hw001_jcxm h1 on h1.class_id = hw201.class_id
+  		left join hw003_cycs h3 on h3.place_id = hw201.place_id
+  		left join hw004_cybb h4 on h4.sample_id = hw201.sample_id
+  		left join hw005_cyff h5 on h5.take_mode_id = hw201.take_mode_id
+  		left join hw006_cyds h6 on h6.pos_id = hw201.pos_id
+  		left join hw010_zzry h10 on h10.employee_id = hw201.take_by
+  		left join sys_dict dic on dic.dict_code = hw201.take_type and dic.dict_type_code = 'sampe_monitor_type'
+  		<where>
+  			1=1
+  			<if test="djDeptId!=null and djDeptId!=''">
+  			and hw201.dept_id=#{djDeptId}
+  			</if>
+  			 and hw201.templet_name=#{templetName}
+  			and substr(hw201.class_id, 1, 2) in (select class_id from view_xmsq where user_id=#{userId} and decode(#{deptId}, #{djDeptId}, self_add, other_add)=decode(#{deptId}, #{djDeptId}, 1, 1))
+  			<if test="type!=null and type!=''">
+				and h1.type=#{type}
+			</if>
+  		</where>
+  		order by hw201.class_id 
+	</select>
+	
+	<select id="findByTempletName" parameterType="hw201Jcdmb" resultType="int">
+		select count(*) from hw201_jcdmb 
+		<where>
+			templet_name=#{templetName} and dept_id=#{deptId}
+		</where>
+	</select>
+</mapper>

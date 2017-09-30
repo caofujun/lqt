@@ -1,0 +1,1299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St003CryxxbDao">
+
+	<sql id="commCols">
+		st003_cryxxb.zyid zyid,st003_cryxxb.patient_id patientId,visit_id
+    visitId,st003_cryxxb.patient_name patientName,age age, age_unit ageUnit,st003_cryxxb.sex
+    sex,dept_code deptCode,dept_name deptName,in_dept_id inDeptId,in_dept_name inDeptName,
+    out_dept_id outDeptId,out_dept_name outDeptName,in_hosp_at inHospAt,out_at outAt,
+    in_days inDays, bed_no bedNo,charge_dr_id chargeDrId,charge_dr_name chargeDrName,cost
+    cost,memo memo,st003_cryxxb.upd_date updDate, bed_no_index bedNoIndex,fx_status fxStatus,
+    fx_date fxDate,GY_STATUS gyStatus,PDCA_STATUS pdcaStatus,hosp_id hospId,marriage marriage,
+    lxr_name lxrName,lxr_phone lxrPhone,work_addr workAddr,charge_nr_id chargeNrId,charge_nr_name chargeNrName
+	</sql>
+
+	<insert id="save" parameterType="st003Cryxxb" flushCache="true">
+		insert into
+		st003_cryxxb(id,zyid,patient_id,visit_id,patient_name,age,age_unit,sex,dept_code,dept_name,in_dept_id,
+		in_dept_name,out_dept_id,out_dept_name,in_hosp_at,out_at,in_days,bed_no,charge_dr_id,charge_dr_name,
+		cost,memo,upd_date,bed_no_index,fx_status,fx_date,GY_STATUS,PDCA_STATUS,hosp_id,marriage,lxr_name,
+		lxr_phone,work_addr,charge_nr_id,charge_nr_name)
+		values(#{id},#{zyid},#{patientId},#{visitId},#{patientName},#{age},#{ageUnit},#{sex},#{deptCode},#{deptName},
+		#{inDeptId},#{inDeptName},#{outDeptId},#{outDeptName},#{inHospAt},#{outAt},#{inDays},#{bedNo},#{chargeDrId},
+		#{chargeDrName},#{cost},#{memo},#{updDate},#{bedNoIndex},#{fxStatus},#{fxDate},#{gyStatus},#{pdcaStatus},
+		#{hospId},#{marriage},#{lxrName},#{lxrPhone},#{workAddr},#{chargeNrId},#{chargeNrName})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from st003_cryxxb
+		<where>zyid=#{zyid}</where>
+	</delete>
+
+	<update id="update" parameterType="st003Cryxxb" flushCache="true">
+		update st003_cryxxb
+		<set>
+			zyid=#{zyid},patient_id=#{patientId},visit_id=#{visitId},patient_name=#{patientName},age=#{age},
+			age_unit=#{ageUnit},sex=#{sex},dept_code=#{deptCode},dept_name=#{deptName},in_dept_id=#{inDeptId},
+			in_dept_name=#{inDeptName},out_dept_id=#{outDeptId},out_dept_name=#{outDeptName},in_hosp_at=#{inHospAt},
+			out_at=#{outAt},in_days=#{inDays},bed_no=#{bedNo},charge_dr_id=#{chargeDrId},charge_dr_name=#{chargeDrName},
+			cost=#{cost},memo=#{memo},upd_date=#{updDate},bed_no_index=#{bedNoIndex},fx_status=#{fxStatus},
+			fx_date=#{fxDate},GY_STATUS=#{gyStatus},PDCA_STATUS=#{pdcaStatus},hosp_id=#{hospId},marriage=#{marriage},
+			lxr_name=#{lxrName},lxr_phone=#{lxrPhone},work_addr=#{workAddr},charge_nr_id=#{chargeNrId},charge_nr_name=#{chargeNrName}
+		</set>
+		<where>zyid=#{zyid}</where>
+	</update>
+
+	<select id="get" resultType="st003Cryxxb">
+		select
+		<include refid="commCols" />,ST001_JBXXB.birth_date birthDate
+		from st003_cryxxb left join ST001_JBXXB on st003_cryxxb.patient_id=ST001_JBXXB.patient_id
+		<where>st003_cryxxb.zyid=#{zyid}</where>
+	</select>
+
+	<select id="getLastSt003CryxxbByPatientId" resultType="st003Cryxxb">
+		select <include refid="commCols" /> from ST003_CRYXXB 
+		where patient_id = #{patientId} 
+        and visit_id = (select max(visit_id) from ST003_CRYXXB where patient_id = #{patientId})
+	</select>
+
+	<select id="findSt003CryxxbCount" parameterType="st003Cryxxb"
+		resultType="int">
+		select count(*) from st003_cryxxb
+		<where>
+			<if test="searchString!=null and searchString!=''">
+				and (zyid like concat( concat('%',#{searchString}),'%') or patient_id
+				like concat( concat('%',#{searchString}),'%') or patient_name like
+				concat( concat('%',#{searchString}),'%'))
+			</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="st003Cryxxb">
+		select
+		<include refid="commCols" />
+		from st003_cryxxb
+		<where>
+		</where>
+	</select>
+
+	<select id="getPatientRecords" resultType="st003Cryxxb">
+		select s3.zyid zyid,s3.patient_id patientId,s3.visit_id
+		visitId,s3.patient_name patientName,s3.age age,s3.age_unit ageUnit,s3.sex sex,s3.dept_name
+		deptName,trunc(nvl(s3.out_at, sysdate)-s3.in_hosp_at)
+		inDays,s3.in_hosp_at inHospAt,s3.out_at outAt,s3.charge_dr_name
+		chargeDrName,s3.bed_no bedNo,s1.weight weight,s1.birth_date
+		birthDate,s2.diagnosis_name diagnosisName
+		from st003_cryxxb s3 left
+		join st001_jbxxb s1 on s1.patient_id = s3.patient_id left join (select
+		zyid, diagnosis_name from st002_zdxxb where diagnosis_type = '1') s2
+		on s3.zyid = s2.zyid
+		<where>
+			s3.zyid=#{zyid} and rownum &lt;=1
+		</where>
+	</select>
+
+	<select id="findCryxxByPatientId" resultType="st003Cryxxb">
+		select s3.zyid zyid,s3.patient_id patientId,s3.in_dept_name
+		inDeptName,s3.in_hosp_at inHospAt,s3.out_dept_name
+		outDeptName,s3.out_at outAt,(select wm_concat(diagnosis_name) from
+		st002_zdxxb s2 where diagnosis_type = '1' and s2.zyid=s3.zyid)
+		diagnosisName,s3.visit_id visitId
+		from st003_cryxxb s3 
+		<where>
+			s3.patient_id=#{patientId}
+		</where>
+		order by s3.visit_id
+	</select>
+
+
+	<select id="findCryxxByFX" resultType="st003Cryxxb">
+		select a.* from (select
+		<include refid="commCols" />
+		from st003_cryxxb
+		<where>
+			fx_status=0 or fx_status is null or upd_date>fx_date
+		</where>
+		) a where rownum &lt;= 500
+	</select>
+
+	<select id="findCountbyDate" resultType="int" parameterType="st003Cryxxb">
+		select count(*) from st003_cryxxb
+		<where>
+			<if test="dgsType==0">
+				<choose>
+					<when test="deptCode!=null and deptCode!=''">
+						(<![CDATA[out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>
+						and st003_cryxxb.dept_code = #{deptCode})
+						or (<![CDATA[out_at is null and in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1)]]>
+						and st003_cryxxb.dept_code = #{deptCode})
+						or (<![CDATA[in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1) and in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]>
+						and st003_cryxxb.dept_code = #{deptCode})
+					</when>
+					<otherwise>
+						(<![CDATA[out_at < (to_date(#{endDate}, 'yyyy-MM-dd')+1) and out_at >= to_date(#{startDate}, 'yyyy-MM-dd')]]>)
+						or (<![CDATA[out_at is null and in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1)]]>)
+						or (<![CDATA[in_hosp_at < (to_date(#{endDate}, 'yyyy-MM-dd') +1) and in_hosp_at >= to_date(#{startDate}, 'yyyy-MM-dd') ]]>)
+					</otherwise>
+				</choose>
+			</if>
+			<if test="dgsType==1">
+				<if test="startDate!=null and startDate!=''"> <![CDATA[and OUT_AT >= to_date(#{startDate},'yyyy-MM-dd')]]></if>
+				<if test="endDate!=null and endDate!=''"> <![CDATA[and OUT_AT < (to_date(#{endDate},'yyyy-MM-dd')+1)]]></if>
+				<if test="deptCode!=null and deptCode!=''"> and st003_cryxxb.dept_code = #{deptCode} </if>
+			</if>
+		</where>
+	</select>
+
+	<select id="findByTypeIdAndDeptIdCount" resultType="int">
+		select 
+			count(distinct zyid) 
+		from gm004_jcmx a 
+		where a.creationdate between #{startdate} and #{enddate} 
+			and a.typeid=#{typeid}
+			and a.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+	             <if test="unitId!=null and unitId!=''">
+	             	and z2.HOSP_ID = #{unitId}
+	             </if>
+             )
+		<if test="deptid!=null and deptid!=''">
+			and a.deptid=#{deptid}
+		</if>
+		<if test="typeid=='06'.toString()">
+			and  a.isshow is null
+		</if>
+		<if test="neonatebw!=null and neonatebw!=''">
+			<choose>
+				<when test="neonatebw=='01'.toString()"> and a.neonatebw in ('00','01')</when>
+				<otherwise> and a.neonatebw=#{neonatebw}</otherwise>
+			</choose>
+		</if>
+	</select>
+	
+	
+	<select id="findBedByTypeIdAndDeptIdCount" resultType="int">
+		select 
+			count(distinct zyid) 
+		from (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) a 
+		where a.creationdate between #{startdate} and #{enddate} 
+			and a.typeid=#{typeid}
+			and a.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+	             <if test="unitId!=null and unitId!=''">
+	             	and z2.HOSP_ID = #{unitId}
+	             </if>
+             )
+		<if test="deptid!=null and deptid!=''">
+			and a.deptid=#{deptid}
+		</if>
+		<if test="typeid=='06'.toString()">
+			and  a.isshow is null
+		</if>
+		<if test="neonatebw!=null and neonatebw!=''">
+			<choose>
+				<when test="neonatebw=='01'.toString()"> and a.neonatebw in ('00','01')</when>
+				<otherwise> and a.neonatebw=#{neonatebw}</otherwise>
+			</choose>
+		</if>
+	</select>
+
+	<select id="getMonitorPatientCountByInAt" resultType="date">
+		select
+		max(in_hosp_at) from st003_cryxxb where in_hosp_at&lt;sysdate
+		<if test="deptId!=null and deptId!=''">
+			AND in_dept_id = #{deptId}
+		</if>
+	</select>
+
+	<select id="getMonitorPatientCountByOutAt" resultType="date">
+		select
+		max(out_at) from st003_cryxxb where out_at&lt;sysdate
+		<if test="deptId!=null and deptId!=''">
+			AND out_dept_id = #{deptId}
+		</if>
+	</select>
+
+	<select id="findByDateAndDeptIdCount" resultType="int">
+		SELECT 
+			count(distinct a.zyid)
+		FROM gm004_jcmx b
+		  inner join ST006_TWXX a
+		  on trunc(a.RECORDING_AT) = b.creationdate and a.zyid = b.zyid
+		WHERE TW_VALUES &gt;= #{tw}
+		and b.creationdate between #{startdate} and #{enddate} and b.typeid='02'
+			and b.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+	             <if test="unitId!=null and unitId!=''">
+	             	and z2.HOSP_ID = #{unitId}
+	             </if>
+             )
+		<if test="deptid!=null and deptid!=''">
+			and b.deptid=#{deptid}
+		</if>
+	</select>
+	
+	
+	<select id="findBedByDateAndDeptIdCount" resultType="int">
+		SELECT 
+			count(distinct a.zyid)
+		FROM (select distinct g4.* from st004_yzxxb s4 inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+                       and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+                      where  s4.order_name in
+                            (select jk.order_name
+                               from jk_dic_all jk
+                              where jk.class_code = '110')) b
+		left join (
+			select distinct ZYID from ST006_TWXX WHERE TW_VALUES &gt;= #{tw}
+			AND trunc(RECORDING_AT) between #{startdate} and #{enddate}
+		) a on a.zyid=b.zyid
+		where b.creationdate between #{startdate} and #{enddate} and b.typeid='02'
+			and b.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+	             <if test="unitId!=null and unitId!=''">
+	             	and z2.HOSP_ID = #{unitId}
+	             </if>
+             )
+		<if test="deptid!=null and deptid!=''">
+			and b.deptid=#{deptid}
+		</if>
+	</select>
+
+	<select id="findPatientListCount" parameterType="st003Cryxxb"
+		resultType="int">
+		select count(*) from st003_cryxxb st3 left join zg004_yyxx zg4 on
+		st3.hosp_id=zg4.hosp_id 
+		<if test="orderName!=null and orderName!=''">
+		  inner join st004_yzxxb st4 on st4.zyid=st3.zyid
+	    </if> 
+		<where>
+			<if test="hospName!=null and hospName!=''">
+				and (zg4.hosp_name like concat( concat('%',#{hospName}),'%') or
+				lower(zg4.sp_code) like concat( concat('%',#{hospName}),'%'))
+			</if>
+			<if test="hospId!=null and hospId!=''">
+				and st3.hosp_id=#{hospId}
+			</if>
+			<choose>
+				<when test="isInHosp==1">
+					and st3.out_at is not null
+					<if test="deptCode!=null and deptCode!=''">
+						and (st3.out_dept_id=#{deptCode} or st3.in_dept_id=#{deptCode})
+					</if>
+				</when>
+				<when test="isInHosp==0">
+					and st3.out_at is null
+					<if test="deptCode!=null and deptCode!=''">
+						and st3.dept_code=#{deptCode}
+					</if>
+				</when>
+				<otherwise>
+					<if test="deptCode!=null and deptCode!=''">
+						and (st3.dept_code=#{deptCode} or st3.out_dept_id=#{deptCode} or
+						st3.in_dept_id=#{deptCode})
+					</if>
+				</otherwise>
+			</choose>
+			<if test="searchString!=null and searchString!=''">
+				and (st3.zyid like concat( concat('%',#{searchString}),'%') or
+				st3.patient_id like concat( concat('%',#{searchString}),'%') or
+				st3.patient_name like concat( concat('%',#{searchString}),'%'))
+			</if>
+			<if test="queryStartDate!=null">
+				and st3.out_at &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and st3.out_at &lt;= #{queryEndDate}
+			</if>
+			<if test="orderName!=null and orderName!=''">
+	   			and st4.order_name like concat(concat('%', #{orderName}), '%')
+	    	</if>
+		</where>
+	</select>
+
+	<select id="findOutHospPatientListByDeptId" resultType="st003Cryxxb"
+		parameterType="String">
+		select
+		<include refid="commCols" />
+		,yjb.yj fhyj,
+		(select max(diagnosis_name) from st002_zdxxb st2 where
+		st2.diagnosis_type = '1' and st003_cryxxb.zyid = st2.zyid)
+		diagnosisName,
+		(select count(*) from bk001_sbk bk1 left join bk002_grzd bk2 on bk1.relid=bk2.refid where bk1.is_ok=1 and bk2.infect_type=1 and zyid=st003_cryxxb.zyid) bkCount,
+		(select count(*) from ctg_bk001_crbdisease r where r.masterid in (select
+		cm.masterid from ctg_bk001_crbmaster cm where cm.zyid is not null and
+		cm.zyid=st003_cryxxb.zyid)
+		<if test="showCrb=='0'.toString()"> and (r.flag=0 or r.flag=1)</if>
+		) crbCount,
+		(select count(*) from ctg_bk002_sybk ctgBk2 where
+		ctgBk2.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk2.flag=0 or ctgBk2.flag=1)</if>
+		) syCount,
+		(select count(*) from ctg_bk005_syjc ctgBk5 where
+		ctgBk5.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk5.flag=0 or ctgBk5.flag=1)</if>
+		) jcCount,
+		(select count(*) from ctg_bk006_tumour ctgBk6 where
+		ctgBk6.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk6.flag=0 or ctgBk6.flag=1)</if>
+		) tmCount,
+		(select count(*) from ctg_bk004_syycbk ctgBk4 where
+		ctgBk4.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk4.flag=0 or ctgBk4.flag=1)</if>
+		) ycCount,
+		(select count(*) from ctg_bk008_ccvd ctgBk8 where
+		ctgBk8.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk8.flag=0 or ctgBk8.flag=1)</if>
+		) xnCount,
+	    (select count(*) from ctg_bk009_sunstroke ctgBk9 where
+	    ctgBk9.zyid=st003_cryxxb.zyid
+	     and (ctgBk9.flag=0 or ctgBk9.flag=1)
+	    ) zsCount
+		from st003_cryxxb
+		left join (select b.zyid,count(*) as yj from
+		gr002_ysgr_mx b
+		where b.suspected_degree >= #{qzValue} and b.infect_type_id = '1' and b.state = '1'
+		and b.dept_id = #{deptId} group by b.zyid ) yjb
+		on st003_cryxxb.zyid = yjb.zyid
+		where st003_cryxxb.out_at is not null and
+		(st003_cryxxb.out_dept_id=#{deptId} or
+		st003_cryxxb.in_dept_id=#{deptId})
+		<if test="searchString!=null and searchString!=''">
+			and (st003_cryxxb.zyid like concat( concat('%',#{searchString}),'%') or
+			st003_cryxxb.patient_id like concat( concat('%',#{searchString}),'%')
+			or st003_cryxxb.patient_name like concat(
+			concat('%',#{searchString}),'%'))
+		</if>
+		<if test="startDate!=null and startDate!=''">
+			<![CDATA[and st003_cryxxb.out_at >= to_date(#{startDate},'yyyy-MM-dd hh24:mi:ss')]]>
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			<![CDATA[and st003_cryxxb.out_at < to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')+1]]>
+		</if>
+		order by st003_cryxxb.bed_no asc
+	</select>
+	
+	<select id="findOutHospPatientListByDeptIdNew" resultType="st003Cryxxb"
+		parameterType="String">
+		SELECT * FROM (
+		select
+		<include refid="commCols" />
+		,yjb.yj fhyj,
+		(select max(diagnosis_name) from st002_zdxxb st2 where
+		st2.diagnosis_type = '1' and st003_cryxxb.zyid = st2.zyid)
+		diagnosisName,
+		(select count(*) from bk001_sbk bk1 left join bk002_grzd bk2 on bk1.relid=bk2.refid where bk1.is_ok=1 and bk2.infect_type=1 and zyid=st003_cryxxb.zyid) bkCount,
+		(select count(*) from ctg_bk001_crbdisease r where r.masterid in (select
+		cm.masterid from ctg_bk001_crbmaster cm where cm.zyid is not null and
+		cm.zyid=st003_cryxxb.zyid)
+		<if test="showCrb=='0'.toString()"> and (r.flag=0 or r.flag=1)</if>
+		) crbCount,
+		(select count(*) from ctg_sys009_yj j where j.mzzyid = st003_cryxxb.zyid) cyjCount, 
+		(select count(*) from ctg_bk002_sybk ctgBk2 where
+		ctgBk2.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk2.flag=0 or ctgBk2.flag=1)</if>
+		) syCount,
+		 (select count(*) from view_mdr a
+    where
+      1=1 and nvl(a.FinalResProp, 0)  in (1, 2, 3) and
+            a.isyang = 1 and a.ISYM = 1 and
+            nvl(a.infect_type_id, 0) != 4 
+<!--             and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) is null -->
+    	 	 and a.zyid = st003_cryxxb.zyid
+    	 	 <if test="key=='1'.toString()">
+    	 	 and (
+	        	a.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or a.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(a.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = a.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 </if>
+    	 	 ) mdroCount,
+    	 (select count(*) from view_mdr a
+    where
+      1=1 and nvl(a.FinalResProp, 0)  in (1, 2, 3) and
+            a.isyang = 1 and a.ISYM = 1 and
+            nvl(a.infect_type_id, 0) != 4 
+            and a.INFECT_TYPE_ID is null
+            and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) is null 
+    	 	 and a.zyid = st003_cryxxb.zyid
+    	 	 <if test="key=='1'.toString()">
+    	 	 and (
+	        	a.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or a.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(a.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = a.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 </if>
+    	 	 ) mdroYCount,
+    	 (select count(*) from view_mdr a
+    where
+      1=1 and nvl(a.FinalResProp, 0)  in (1, 2, 3) and
+            a.isyang = 1 and a.ISYM = 1 and
+            nvl(a.infect_type_id, 0) != 4 
+<!--             and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) is null -->
+    	 	 and a.zyid = st003_cryxxb.zyid
+    	 	 and (
+	        	a.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or a.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(a.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = a.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 ) zdCount,
+    	 (select count(*) from view_mdr a
+    where
+      1=1 and nvl(a.FinalResProp, 0)  in (1, 2, 3) and
+            a.isyang = 1 and a.ISYM = 1 and
+            nvl(a.infect_type_id, 0) != 4 
+            and a.INFECT_TYPE_ID is null
+            and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) is null 
+    	 	 and a.zyid = st003_cryxxb.zyid
+    	 	 and (
+	        	a.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or a.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(a.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = a.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 ) zdYCount,
+		(select count(*) from ctg_bk005_syjc ctgBk5 where
+		ctgBk5.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk5.flag=0 or ctgBk5.flag=1)</if>
+		) jcCount,
+		(select count(*) from ctg_bk006_tumour ctgBk6 where
+		ctgBk6.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk6.flag=0 or ctgBk6.flag=1)</if>
+		) tmCount,
+		(select count(*) from ctg_bk004_syycbk ctgBk4 where
+		ctgBk4.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk4.flag=0 or ctgBk4.flag=1)</if>
+		) ycCount,
+		(select count(*) from ctg_bk008_ccvd ctgBk8 where
+		ctgBk8.zyid=st003_cryxxb.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk8.flag=0 or ctgBk8.flag=1)</if>
+		) xnCount,
+	    (select count(*) from ctg_bk009_sunstroke ctgBk9 where
+	    ctgBk9.zyid=st003_cryxxb.zyid
+	    <if test="showCrb=='0'.toString()"> and (ctgBk9.flag=0 or ctgBk9.flag=1)</if>
+	    ) zsCount,
+	    (select count(*) from ctg_bk010_pesticide ctgBk10 where
+	    ctgBk10.zyid=st003_cryxxb.zyid
+	    <if test="showCrb=='0'.toString()"> and (ctgBk10.flag=0 or ctgBk10.flag=1)</if>
+	    ) nyCount,
+	    (select case when count(*)>0 then 1 else 0 end from ctg_sys014_todolist td where st003_cryxxb.zyid=td.mzzyid and td.patient_type='ZY') isdb
+		from st003_cryxxb
+		left join (select b.zyid,count(*) as yj from
+		gr002_ysgr_mx b
+		where b.suspected_degree >=#{qzValue}  and b.infect_type_id = '1' and b.state = '1'
+		and b.dept_id = #{deptId} group by b.zyid ) yjb
+		on st003_cryxxb.zyid = yjb.zyid
+		where st003_cryxxb.out_at is not null and
+		(st003_cryxxb.out_dept_id=#{deptId} or
+		st003_cryxxb.in_dept_id=#{deptId})
+		<if test="searchString!=null and searchString!=''">
+			and (st003_cryxxb.zyid like concat( concat('%',#{searchString}),'%') or
+			st003_cryxxb.patient_id like concat( concat('%',#{searchString}),'%')
+			or st003_cryxxb.patient_name like concat(
+			concat('%',#{searchString}),'%'))
+		</if>
+		<if test="patientRange=='2'.toString()">
+			and st003_cryxxb.charge_dr_id=#{docNo}
+		</if>
+		<if test="ygyj=='1'.toString()">
+			and yjb.yj is not null
+		</if>
+		<if test="startDate!=null and startDate!=''">
+			<![CDATA[and st003_cryxxb.out_at >= to_date(#{startDate},'yyyy-MM-dd hh24:mi:ss')]]>
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			<![CDATA[and st003_cryxxb.out_at < to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')+1]]>
+		</if>
+		order by st003_cryxxb.bed_no asc
+		) t 
+		<where> 
+		1=1
+			<if test="ygqr=='1'.toString()">
+			and	t.bkCount>0
+			</if>
+			<if test="dnlx==null or dnlx==''">
+			and t.mdroCount >0
+			</if>
+			<if test="ydnlx==null or ydnlx==''">
+			and t.zdCount >0
+			</if>
+		</where>
+	</select>
+
+	<select id="findInHospPatientListByDeptId" resultType="st003Cryxxb"
+		parameterType="String">
+		SELECT a.zyid zyid,a.patient_id patientId,a.visit_id
+		visitId,a.patient_name patientName,a.age age,a.age_unit ageUnit,a.sex
+		sex,a.dept_code deptCode,a.dept_name deptName,a.in_dept_id
+		inDeptId,a.in_dept_name inDeptName,a.out_dept_id
+		outDeptId,a.out_dept_name outDeptName,a.in_hosp_at inHospAt,a.out_at
+		outAt,in_days inDays,a.bed_no bedNo,a.charge_dr_id
+		chargeDrId,a.charge_dr_name chargeDrName,a.cost cost,a.memo
+		memo,a.upd_date updDate,a.bed_no_index bedNoIndex,a.fx_status
+		fxStatus,a.fx_date fxDate,a.GY_STATUS gyStatus,a.PDCA_STATUS
+		pdcaStatus,a.hosp_id hospId,
+		b.birth_date birthDate,
+		(select max(diagnosis_name) from st002_zdxxb st2 where st2.diagnosis_type =
+		'1' and a.zyid = st2.zyid) diagnosisName,
+		(select count(*) from bk001_sbk bk1 left join bk002_grzd bk2 on bk1.relid=bk2.refid where bk1.is_ok=1 and bk2.infect_type=1 and zyid=a.zyid)
+		bkCount,
+		(select count(*) from ctg_bk001_crbdisease r where r.masterid in (select
+		cm.masterid from ctg_bk001_crbmaster cm where cm.zyid is not null and
+		cm.zyid=a.zyid)
+		<if test="showCrb=='0'.toString()"> and (r.flag=0 or r.flag=1)</if>
+		) crbCount,
+		(select count(*) from ctg_bk002_sybk ctgBk2 where
+		ctgBk2.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk2.flag=0 or ctgBk2.flag=1)</if>
+		) syCount,
+		(select count(*) from ctg_bk005_syjc ctgBk5 where
+		ctgBk5.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk5.flag=0 or ctgBk5.flag=1)</if>
+		) jcCount,
+		(select count(*) from ctg_bk006_tumour ctgBk6 where
+		ctgBk6.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk6.flag=0 or ctgBk6.flag=1)</if>
+		) tmCount,
+		(select count(*) from ctg_bk004_syycbk ctgBk4 where
+		ctgBk4.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk4.flag=0 or ctgBk4.flag=1)</if>
+		) ycCount,
+		(select count(*) from ctg_bk008_ccvd ctgBk8 where
+		ctgBk8.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk8.flag=0 or ctgBk8.flag=1)</if>
+		) xnCount,
+		(select count(*) from ctg_bk009_SUNSTROKE ctgBk9 where
+		ctgBk9.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk9.flag=0 or ctgBk9.flag=1)</if>
+		) zsCount,
+		yjb.yj fhyj,
+		case
+		when gr20.YG_NEW_COUNT is null then
+		0
+		else
+		gr20.YG_NEW_COUNT
+		end YG_NEW_COUNT,
+		case
+		when gr20.LC_NEW_COUNT is null then
+		0
+		else
+		gr20.LC_NEW_COUNT
+		end LC_NEW_COUNT,
+		case
+		when gr20.YG_TOTAL is null then
+		0
+		else
+		gr20.YG_TOTAL
+		end YG_TOTAL,
+		case
+		when gr20.LC_TOTAL is null then
+		0
+		else
+		gr20.LC_TOTAL
+		end LC_TOTAL,
+		(select case
+		when max(report_visit) is null then
+		0
+		else
+		1
+		end
+		from bk001_sbk bk01
+		where a.zyid = bk01.zyid
+		and a.visit_id = bk01.visit_id
+		and (bk01.is_ok = 0)) isReport,
+		(select case
+		when max(report_visit) is null then
+		0
+		else
+		1
+		end
+		from bk001_sbk bk01
+		where a.zyid = bk01.zyid
+		and a.visit_id = bk01.visit_id
+		and (bk01.is_ok = 1)) isOK,
+		(select case
+		when max(report_visit) is null then
+		0
+		else
+		1
+		end
+		from bk001_sbk bk01
+		where a.zyid = bk01.zyid
+		and a.visit_id = bk01.visit_id
+		and (bk01.is_ok = 2)) isNOOK
+		FROM st003_cryxxb a
+		left join st001_jbxxb b
+		on a.Patient_Id = b.patient_id
+		left join GR020_XXTJ gr20
+		on gr20.zyid = a.zyid
+		left join (select b.zyid,count(*) as yj
+		from gr002_ysgr_mx b
+		where b.suspected_degree >= #{qzValue}
+		and b.infect_type_id = '1'
+		and b.state = '1'
+		and b.dept_id = #{deptId}
+		group by b.zyid ) yjb
+		on a.zyid = yjb.zyid
+		where dept_code = #{deptId}
+		<if test="searchString!=null and searchString!=''">
+			and (a.zyid like concat( concat('%',#{searchString}),'%') or
+			a.patient_id like concat( concat('%',#{searchString}),'%') or
+			a.patient_name like concat( concat('%',#{searchString}),'%'))
+		</if>
+		and out_at is null
+		order by a.bed_no asc
+		<!-- <if test="orderBy==1"> order by yjb.yj,a.bed_no </if> <if test="orderBy==2"> 
+			order by yjb.yj,a.in_hosp_at </if> <if test="orderBy==3"> order by yjb.yj,a.patient_name 
+			</if> -->
+	</select>
+	
+	<select id="findInHospPatientListByDeptIdNew" resultType="st003Cryxxb"
+		parameterType="String">
+		select * from (
+		SELECT a.zyid zyid,a.patient_id patientId,a.visit_id
+		visitId,a.patient_name patientName,a.age age,a.age_unit ageUnit,a.sex
+		sex,a.dept_code deptCode,a.dept_name deptName,a.in_dept_id
+		inDeptId,a.in_dept_name inDeptName,a.out_dept_id
+		outDeptId,a.out_dept_name outDeptName,a.in_hosp_at inHospAt,a.out_at
+		outAt,in_days inDays,a.bed_no bedNo,a.charge_dr_id
+		chargeDrId,a.charge_dr_name chargeDrName,a.cost cost,a.memo
+		memo,a.upd_date updDate,a.bed_no_index bedNoIndex,a.fx_status
+		fxStatus,a.fx_date fxDate,a.GY_STATUS gyStatus,a.PDCA_STATUS
+		pdcaStatus,a.hosp_id hospId,
+		b.birth_date birthDate,
+		(select count(*) from view_mdr t
+    where
+      1=1 and nvl(t.FinalResProp, 0)  in (1, 2, 3) and
+            t.isyang = 1 and t.ISYM = 1 and
+            nvl(t.infect_type_id, 0) != 4 
+<!--             and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) is null -->
+    	 	and t.zyid = a.zyid
+    	 	 <if test="key=='1'.toString()">
+    	 	 and (
+	        	t.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or t.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 </if>
+    	 	 ) mdroCount,
+    			(select count(*) from view_mdr t
+    where
+      1=1 and nvl(t.FinalResProp, 0)  in (1, 2, 3) and
+            t.isyang = 1 and t.ISYM = 1 and
+            nvl(t.infect_type_id, 0) != 4
+            and t.INFECT_TYPE_ID is  null 
+            and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) is null 
+    	 	and t.zyid = a.zyid
+    	 	 <if test="key=='1'.toString()">
+    	 	 and (
+	        	t.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or t.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 </if>
+    	 	 ) mdroYCount,
+    	 	 
+    	 (select count(*) from view_mdr t
+    where
+      1=1 and nvl(t.FinalResProp, 0)  in (1, 2, 3) and
+            t.isyang = 1 and t.ISYM = 1 and
+            nvl(t.infect_type_id, 0) != 4 
+<!--             and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) is null -->
+    	 	and t.zyid = a.zyid
+    	 	 and (
+	        	t.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or t.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 ) zdCount,
+    			(select count(*) from view_mdr t
+    where
+      1=1 and nvl(t.FinalResProp, 0)  in (1, 2, 3) and
+            t.isyang = 1 and t.ISYM = 1 and
+            nvl(t.infect_type_id, 0) != 4
+            and t.INFECT_TYPE_ID is  null 
+            and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) is null 
+    	 	and t.zyid = a.zyid
+    	 	 and (
+	        	t.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or t.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in (select dict_code
+                                    from sys_dict
+                                   where dict_type_code = 'spec_describes'
+                                     and dict_status = 1)))
+    	 	 ) zdYCount,
+		(select max(diagnosis_name) from st002_zdxxb st2 where st2.diagnosis_type =
+		'1' and a.zyid = st2.zyid) diagnosisName,
+		(select count(*) from bk001_sbk bk1 left join bk002_grzd bk2 on bk1.relid=bk2.refid where bk1.is_ok=1 and bk2.infect_type=1 and zyid=a.zyid)
+		bkCount,
+		(select count(*) from ctg_bk001_crbdisease r where r.masterid in (select
+		cm.masterid from ctg_bk001_crbmaster cm where cm.zyid is not null and
+		cm.zyid=a.zyid)
+		<if test="showCrb=='0'.toString()"> and (r.flag=0 or r.flag=1)</if>
+		) crbCount,
+		(select count(*) from ctg_sys009_yj j where j.mzzyid = a.zyid) cyjCount, 
+		(select count(*) from ctg_bk002_sybk ctgBk2 where
+		ctgBk2.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk2.flag=0 or ctgBk2.flag=1)</if>
+		) syCount,
+		(select count(*) from ctg_bk005_syjc ctgBk5 where
+		ctgBk5.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk5.flag=0 or ctgBk5.flag=1)</if>
+		) jcCount,
+		(select count(*) from ctg_bk006_tumour ctgBk6 where
+		ctgBk6.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk6.flag=0 or ctgBk6.flag=1)</if>
+		) tmCount,
+		(select count(*) from ctg_bk004_syycbk ctgBk4 where
+		ctgBk4.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk4.flag=0 or ctgBk4.flag=1)</if>
+		) ycCount,
+		(select count(*) from ctg_bk008_ccvd ctgBk8 where
+		ctgBk8.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk8.flag=0 or ctgBk8.flag=1)</if>
+		) xnCount,
+		(select count(*) from ctg_bk009_SUNSTROKE ctgBk9 where
+		ctgBk9.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk9.flag=0 or ctgBk9.flag=1)</if>
+		) zsCount,
+		(select count(*) from ctg_bk010_pesticide ctgBk10 where
+		ctgBk10.zyid=a.zyid
+		<if test="showCrb=='0'.toString()"> and (ctgBk10.flag=0 or ctgBk10.flag=1)</if>
+		) nyCount,
+		yjb.yj fhyj,
+		case
+		when gr20.YG_NEW_COUNT is null then
+		0
+		else
+		gr20.YG_NEW_COUNT
+		end YG_NEW_COUNT,
+		case
+		when gr20.LC_NEW_COUNT is null then
+		0
+		else
+		gr20.LC_NEW_COUNT
+		end LC_NEW_COUNT,
+		case
+		when gr20.YG_TOTAL is null then
+		0
+		else
+		gr20.YG_TOTAL
+		end YG_TOTAL,
+		case
+		when gr20.LC_TOTAL is null then
+		0
+		else
+		gr20.LC_TOTAL
+		end LC_TOTAL,
+		(select case
+		when max(report_visit) is null then
+		0
+		else
+		1
+		end
+		from bk001_sbk bk01
+		where a.zyid = bk01.zyid
+		and a.visit_id = bk01.visit_id
+		and (bk01.is_ok = 0)) isReport,
+		(select case
+		when max(report_visit) is null then
+		0
+		else
+		1
+		end
+		from bk001_sbk bk01
+		where a.zyid = bk01.zyid
+		and a.visit_id = bk01.visit_id
+		and (bk01.is_ok = 1)) isOK,
+		(select case
+		when max(report_visit) is null then
+		0
+		else
+		1
+		end
+		from bk001_sbk bk01
+		where a.zyid = bk01.zyid
+		and a.visit_id = bk01.visit_id
+		and (bk01.is_ok = 2)) isNOOK,
+		(select case when count(*)>0 then 1 else 0 end from ctg_sys014_todolist td where a.zyid=td.mzzyid and td.patient_type='ZY') isdb
+		FROM st003_cryxxb a
+		left join st001_jbxxb b
+		on a.Patient_Id = b.patient_id
+		left join GR020_XXTJ gr20
+		on gr20.zyid = a.zyid
+		left join (select b.zyid,count(*) as yj
+		from gr002_ysgr_mx b
+		where b.suspected_degree >= #{qzValue}
+		and b.infect_type_id = '1'
+		and b.state = '1'
+		and b.dept_id = #{deptId}
+		group by b.zyid ) yjb
+		on a.zyid = yjb.zyid
+		
+		where a.zyid in (select zyid from gm004_jcmx where typeid='02' and deptid=#{deptId})
+		
+		<if test="searchString!=null and searchString!=''">
+			and (a.zyid like concat( concat('%',#{searchString}),'%') or
+			a.patient_id like concat( concat('%',#{searchString}),'%') or
+			a.patient_name like concat( concat('%',#{searchString}),'%'))
+		</if>
+		
+		<if test="patientRange=='2'.toString()">
+			and a.charge_dr_id=#{docNo}
+		</if>
+		<if test="ygyj=='1'.toString()">
+			and yjb.yj is not null
+		</if>
+		and out_at is null
+		order by a.bed_no asc
+		<!-- <if test="orderBy==1"> order by yjb.yj,a.bed_no </if> <if test="orderBy==2"> 
+			order by yjb.yj,a.in_hosp_at </if> <if test="orderBy==3"> order by yjb.yj,a.patient_name 
+			</if> -->
+		) t 
+		<where>
+		 	1=1
+			<if test="ygqr=='1'.toString()">
+			and	t.bkCount>0
+			</if>
+			<if test="dnlx==null or dnlx==''">
+			and t.mdroCount >0
+			</if>
+			<if test="ydnlx==null or ydnlx==''">
+			and t.zdCount >0
+			</if>
+			<if test="dbhz=='1'.toString()">
+			and t.isdb >0
+			</if>
+		</where>
+	</select>
+
+	<select id="findNewbornListCount" parameterType="st003Cryxxb"
+		resultType="int">
+		select count(*)
+		from st003_cryxxb a left join st001_jbxxb b on
+		a.patient_id = b.patient_id left join gm005_xsrtz d on a.zyid = d.zyid
+		<where>
+			(exists (select 1 from gm004_jcmx g4 inner join zg002_byks z2 on
+			g4.deptid=z2.dept_id
+			<where>
+				g4.typeid = '02' and z2.ifchildoffice = 1 and g4.zyid = a.zyid
+				<if test="queryStartDate!=null">
+					and g4.creationdate &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate!=null">
+					and g4.creationdate &lt;= #{queryEndDate}
+				</if>
+			</where>
+			) or ((a.in_hosp_at - b.birth_date) &lt; 28))
+			<if test="queryStartDate!=null">
+				and a.in_hosp_at &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and a.in_hosp_at &lt;= #{queryEndDate}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (a.zyid like concat( concat('%',#{searchString}),'%') or
+				a.patient_name like concat( concat('%',#{searchString}),'%'))
+			</if>
+			<if test="neonatebw!=null and neonatebw=='not_null'">
+				and d.neonatebw is not null
+			</if>
+			<if test="neonatebw!=null and neonatebw=='null'">
+				and d.neonatebw is null
+			</if>
+		</where>
+	</select>
+
+	<select id="getSuspectedCaseZyCount" parameterType="st020ClinicPatients"
+		resultType="int">
+		select count(*) from (
+		select * from (
+		select xx.*, (select wm_concat(diagnosis_name) from st002_zdxxb b where
+		diagnosis_type=1 and b.zyid = xx.zyid) IHD,
+		(select wm_concat(diagnosis_name) from st002_zdxxb b where diagnosis_type=2
+		and b.zyid = xx.zyid) OHD,
+		(select wm_concat(diagnosis_name) from st002_zdxxb b where diagnosis_type=3
+		and b.zyid = xx.zyid) OD,
+		(select remark from CTG_SYS008_MARKEDCASE where data_TypeId=1 
+		<if test="hospId!=null and hospId!='' and hospId!='null'" >
+			and hosp_id=#{hospId} 
+		</if>
+		 and id= xx.zyid) isMarked,
+		(select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		select theme_id from NY_MESSAGE_THEME th where th.zyid = xx.zyid
+		) and user_id = #{userId} and is_read = 0) unReadMsg
+
+		from st003_cryxxb xx
+		where 1=1
+		<!-- 医院编码 -->
+		<if test="hospId!=null and hospId!='' and hospId!='null'" >
+		xx.hosp_id = #{hospId}
+		</if>
+		<!-- 患者关键字 -->
+		<if test="patientName!=null and patientName!=''">
+			and (xx.patient_name like CONCAT(CONCAT('%',#{patientName}),'%') or
+			xx.zyid like CONCAT(CONCAT('%',#{patientName}),'%') or xx.patient_id
+			like CONCAT(CONCAT('%',#{patientName}),'%'))
+		</if>
+		<!-- 科室类型 -->
+		<choose>
+			<when test="deptType==2 and deptId!=null and deptId!=''">
+				/*入院科室*/
+				and xx.in_dept_id = #{deptId}
+			</when>
+			<when test="deptType==3 and deptId!=null and deptId!=''">
+				/*出院科室*/
+				and xx.out_dept_id = #{deptId}
+			</when>
+			<when test="deptType==4 and deptId!=null and deptId!=''">
+				/*所在科室*/
+				and xx.dept_code = #{deptId}
+			</when>
+		</choose>
+
+		<!-- 时间类型 -->
+		<choose>
+			<when test="dateType==2 and startTime!=null and endTime!=null">
+				/*入院时间*/
+				and trunc(xx.in_hosp_at) between date'${startTime}' and
+				date'${endTime}'
+			</when>
+			<when test="dateType==3 and startTime!=null and endTime!=null">
+				/*出院时间*/
+				and trunc(xx.out_at) between date'${startTime}' and date'${endTime}'
+			</when>
+		</choose>
+		<if test="hideExclude==1">
+			<!-- 过滤已排除的记录 -->
+			and XX.zyid not in (select id from CTG_SYS008_MARKEDCASE where remark
+			= -1 and data_TypeId=1 <if test="hospId!=null and hospId!=''"> and hosp_id=#{hospId}</if>)
+		</if>
+		) a
+		where 1=1
+		<if test="diagnosisName!=null and diagnosisName!=''">
+			/*诊断关键字 */
+			and (OHD like CONCAT(CONCAT('%',#{diagnosisName}),'%') or IHD like
+			CONCAT(CONCAT('%',#{diagnosisName}),'%'))
+		</if>
+		<!-- <if test="hideExclude==1"> /*过滤已排除的记录*/ and isMarked is null or isMarked 
+			!=-1 </if> -->
+		<if test="unReadMsg!=null and unReadMsg!=''">
+			unReadMsg >0
+		</if>
+		) a
+		<if test="imageQueryStr!=null and imageQueryStr!=''">
+			inner join
+			/*影像关键字*/
+			(select izyid from
+			(select distinct f.zyid izyid from st014_pacs f
+			where zyid in (
+			select xx.zyid from st003_cryxxb xx
+			where 1=1
+			<!-- 医院编码 -->
+			<if test="hospId!=null and hospId!='' and hospId!='null'" >
+			and xx.hosp_id = #{hospId}
+			</if>
+			<!-- 患者关键字 -->
+			<if test="patientName!=null and patientName!=''">
+				and (xx.patient_name like CONCAT(CONCAT('%',#{patientName}),'%') or
+				xx.zyid like CONCAT(CONCAT('%',#{patientName}),'%') or xx.patient_id
+				like CONCAT(CONCAT('%',#{patientName}),'%'))
+			</if>
+			<!-- 科室类型 -->
+			<if test="deptType==2 and deptId!=null and deptId!=''">
+				/*入院科室*/
+				and xx.in_dept_id = #{deptId}
+			</if>
+			<if test="deptType==3 and deptId!=null and deptId!=''">
+				/*出院科室*/
+				and xx.out_dept_id = #{deptId}
+			</if>
+			<if test="deptType==4 and deptId!=null and deptId!=''">
+				/*所在科室*/
+				and xx.dept_code = #{deptId}
+			</if>
+			<!-- 时间类型 -->
+			<if test="dateType==2 and startTime!=null and endTime!=null">
+				/*入院时间*/
+				and trunc(xx.in_hosp_at) between date'${startTime}' and
+				date'${endTime}'
+			</if>
+			<if test="dateType==3 and startTime!=null and endTime!=null">
+				/*出院时间*/
+				and trunc(xx.out_at) between date'${startTime}' and date'${endTime}'
+			</if>
+			)
+			and ( f.check_impr like CONCAT(CONCAT('%', #{imageQueryStr}), '%') or
+			f.check_desc like CONCAT(CONCAT('%', #{imageQueryStr}), '%') )
+			) ) f
+			on a.zyid = f.izyid
+		</if>
+		<if test="JYZBConditions!=null and JYZBConditions!=''">
+			inner join
+			(
+			${JYZBConditions}
+			) bb
+			on bb.jyzyid = a.zyid
+
+		</if>
+	</select>
+
+	<!-- 查询预警计算信息 -->
+	<select id="findYjCalInfo" resultType="st003Cryxxb">
+		SELECT b.zyid zyid,b.patient_id patientId,b.age age,b.age_unit
+		ageUnit,b.sex sex,b.in_hosp_at inHospAt,b.out_at outAt,C.BIRTH_DATE
+		BirthDate
+		FROM (SELECT distinct ZYID FROM GR018_YSGRYS WHERE STATE = 0) a
+		left join ST003_CRYXXB b on a.zyid = b.zyid
+		LEFT JOIN ST001_JBXXB C ON b.patient_id = C.PATIENT_ID
+		<where>
+			rownum &lt;#{rownum}
+		</where>
+	</select>
+
+	<select id="getSCSZyCount" parameterType="st020ClinicPatients"
+		resultType="int">
+		select count(*) from (
+		select t.Patient_Type patientType,
+		t.MZZYID mzzyid,
+		t.patient_name patientName,
+		t.sex sex,
+		t.age age,
+		t.age_unit ageUnit,
+		t.age || t.age_unit as rage,
+		t.dept_code deptId,
+		t.dept_name deptName,
+		t.DoctorID doctorId,
+		t.DoctorName doctorName,
+		t1.yj_code yjdisease,
+		t1.yj_name yjdiseaseName,
+		t1.yj_source yjsource,
+		t1.yj_content yjcontent,
+		t.in_hosp_at inhospat,
+		t.in_dept_name indeptname,
+		t2.RY_diagnosis_name indiagnosis ,
+		t.out_at outAt,
+		t.out_dept_name outdeptname,
+		t2.CY_diagnosis_name outdiagnosis,
+		t.diagnosis_dt diagnosisDt,
+		nvl(t.MZ_diagnosis_name, t2.MZ_diagnosis_name) as diagnosisName,
+		t5.CardCount cardCount,
+		t10.scopetime scopetime, /*疾病规定上报时限(小时)*/
+		t10.repeatcycle repeatcycle, /*疾病规定重报时限(月)*/
+		t9.diseaseid diseaseid,
+		t9.filldate filldate, /*-最近疾病的报卡时间 */
+		t9.diagnosedate diagnosisDt, /*最近疾病的报卡诊断时间 */
+		floor((t9.filldate - t9.diagnosedate) * 24) as BKJG, /*报卡时间间隔 */
+		case
+		when floor((t9.filldate - t9.diagnosedate) * 24) > t10.scopetime then
+		1
+		else
+		0
+		end as iscb, /*-如果报卡时间间隔大于规定的上报时限，则为迟报 */
+		case
+		when t1.yj_name is not null and t9.filldate is null then
+		/*若没有上报时间，即未报，则视为漏报*/
+		1
+		when t1.yj_name is not null and t9.filldate is not null and
+		months_between(sysdate, t9.filldate) > t10.repeatcycle then
+		/*-若有上报时间，但已过重报周期，也视为漏报*/
+		1
+		else
+		0
+		end as islb,
+		t11.flag flag
+		from
+		(select * from view_Patients t where t.Patient_Type=#{patientType}) t
+		left join ctg_sys009_yj t1
+		on t1.MZZYID = t.mzzyid
+		and t.patient_type = t1.Patient_Type
+		/*获取住院患者的诊断*/
+		left join (select zyid,
+		max(decode(diagnosis_type, 1, diagnosis_name)) as RY_diagnosis_name,
+		max(decode(diagnosis_type, 2, diagnosis_name)) as CY_diagnosis_name,
+		max(decode(diagnosis_type, 3, diagnosis_name)) as QT_diagnosis_name,
+		max(decode(diagnosis_type, 4, diagnosis_name)) as MZ_diagnosis_name
+		from (select tt.zyid,
+		tt.diagnosis_type,
+		to_char(wm_concat(tt.diagnosis_name)) as diagnosis_name
+		from st002_zdxxb tt
+		group by tt.zyid, tt.diagnosis_type)
+		group by zyid) t2
+		on t2.zyid = t.mzzyid
+		/*获取患者报数量(只取未审核和已审核状态的报卡)*/
+		left join (select nvl(t3.zyid, t3.mzid) as MZZYID, count(1) as CardCount
+		from ctg_bk001_crbmaster t3
+		left join ctg_bk001_crbdisease t4
+		on t4.masterid = t3.masterid
+		and t4.flag in (0, 1)
+		group by nvl(t3.zyid, t3.mzid)) t5
+		on t5.MZZYID = t.mzzyid
+		/*取预警对应疾病的"最近"报卡信息*/
+		left join (select nvl(t7.zyid, t7.mzid) as MZZYID,
+		t8.diseaseid,
+		max(t7.filldate) as filldate,
+		max(t8.diagnosedate) as diagnosedate
+		from ctg_bk001_crbmaster t7
+		left join ctg_bk001_crbdisease t8
+		on t8.masterid = t7.masterid
+		and t8.flag in (0, 1)
+		group by nvl(t7.zyid, t7.mzid), t8.diseaseid) t9
+		on t9.MZZYId = t.mzzyid
+		and t9.diseaseid = t1.yj_code
+		/*传染病字典*/
+		left join ctg_sys007_dictcontagion t10
+		on t10.diseaseid = t9.diseaseid
+		left join CTG_SYS011_Mark t11
+		on t11.mzzyid = t.MZZYID
+		and t11.diseaseid = t1.yj_code
+
+		where 1=1
+		/*t.MZZYID = 'MZ1602150409'*/
+		<if test="dateType==2">
+			/*入院时间*/
+			and t.in_hosp_at between #{queryStartDate} and #{queryEndDate}
+		</if>
+		<if test="dateType==3">
+			/*出院时间*/
+			and t.out_at between #{queryStartDate} and #{queryEndDate}
+		</if>
+		/*就诊科室*/
+		<choose>
+			<when test="deptType==2 and deptId!=''">
+				/*入院科室*/
+				and t.in_dept_id = #{deptId}
+			</when>
+			<when test="deptType==3 and deptId!=''">
+				/*出院科室*/
+				and t.out_dept_id = #{deptId}
+			</when>
+			<when test="deptType==4 and deptId!=''">
+				/*所在科室*/
+				and t.dept_code = #{deptId}
+			</when>
+		</choose>
+		/*患者关键字*/
+		<if test="patientName!=null and patientName!=''">
+			and ( t.patient_name like CONCAT('%',CONCAT(#{patientName},'%')) or
+			t.MZZYID like CONCAT('%',CONCAT(#{patientName},'%')) )
+		</if>
+		/*预警疾病*/
+		<if test="yjdisease!=null and yjdisease!=''">
+			and t1.yj_code = #{yjdisease}
+		</if>
+		/*隐藏“排除”*/
+		<if test="hideExclude==1">
+			and flag != 2
+		</if>
+		/*显示有预警疾病*/
+		<if test="showEWP==1">
+			and t1.yj_name is not null
+		</if>
+		/*显示未报卡*/
+		<if test="showURP==1">
+			and t5.CardCount = 0
+		</if>
+		/*有未读消息*/
+		<if test="unReadMsg==1">
+			and unReadMsg>0
+		</if>
+		)
+
+	</select>
+
+	<select id="findByPatientIdAndVisitId" resultType="st003Cryxxb">
+		select
+		<include refid="commCols" />
+		from st003_cryxxb
+		<where>
+			1=1
+			<if test="patientId!=null"> and patient_id=#{patientId}</if>
+			<if test="visitId!=null"> and visit_id=#{visitId}</if>
+		</where>
+		order by in_hosp_at desc
+	</select>
+
+	<select id="findPatentCryxxbWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST003_CRYXXB where PATIENT_ID ='''||PATIENT_ID||'''' sql,
+			'ST003_CRYXXB表中患者ID（'||PATIENT_ID||'）在st001_jbxxb表中未找到！' as warning from ST003_CRYXXB t
+			where t.PATIENT_ID not in(select PATIENT_ID from st001_jbxxb )
+			and in_hosp_at BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST003_CRYXXB where DEPT_CODE ='''||DEPT_CODE||'''' sql,
+			'ST003_CRYXXB表中当前科室编号（'||DEPT_CODE||'）在ZG002_BYKS表中未找到！' as warning from ST003_CRYXXB t
+			where t.DEPT_CODE not in(select dept_id from ZG002_BYKS )
+			and in_hosp_at BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST003_CRYXXB where IN_DEPT_ID ='''||IN_DEPT_ID||'''' sql,
+			'ST003_CRYXXB表中入院科室编号（'||IN_DEPT_ID||'）在ZG002_BYKS表中未找到！' as warning from ST003_CRYXXB t
+			where t.IN_DEPT_ID not in(select dept_id from ZG002_BYKS )
+			and in_hosp_at BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST003_CRYXXB where OUT_DEPT_ID ='''||OUT_DEPT_ID||'''' sql,
+			'ST003_CRYXXB表中出院科室编号（'||OUT_DEPT_ID||'）在ZG002_BYKS表中未找到！' as warning from ST003_CRYXXB t
+			where t.OUT_DEPT_ID not in(select dept_id from ZG002_BYKS )
+			and in_hosp_at BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST003_CRYXXB where CHARGE_DR_ID ='''||CHARGE_DR_ID||'''' sql,
+			'ST003_CRYXXB表中主管医生编号（'||CHARGE_DR_ID||'）在ZG003_YYZG表中未找到！' as warning from ST003_CRYXXB t
+			where t.CHARGE_DR_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and in_hosp_at BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST003_CRYXXB where CHARGE_NR_ID ='''||CHARGE_NR_ID||'''' sql,
+			'ST003_CRYXXB表中主管护士编号（'||CHARGE_NR_ID||'）在ZG003_YYZG表中未找到！' as warning from ST003_CRYXXB t
+			where t.CHARGE_NR_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and in_hosp_at BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+
+</mapper>

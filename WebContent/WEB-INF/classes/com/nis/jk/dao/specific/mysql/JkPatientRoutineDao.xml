@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientRoutineDao">
+
+	<sql id="commCols_mysql">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,STOOL_DATE stoolDate,RECORDING_AT recordingAt,ROUTINE_VALUES routineValues,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientRoutine_mysql" parameterType="jkPatientRoutine" resultType="jkPatientRoutine">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_ROUTINE
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

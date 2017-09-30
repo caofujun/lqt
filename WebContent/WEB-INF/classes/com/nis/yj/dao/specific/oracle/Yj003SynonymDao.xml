@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.yj.dao.Yj003SynonymDao">
+
+	<sql id="commCols_oracle">
+		YJ003_SYNONYM.ID id,STANDARD_ID standardId,SYNONYMS synonyms,COMPARE_TYPE compareType,COMPARE_USER_ID compareUserId,COMPARE_TIME compareTime
+	</sql>
+
+	
+	<select id="findYj003Synonym_oracle" parameterType="yj003Synonym" resultType="yj003Synonym">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>,YJ003_STANDARD.NAME standardName  from YJ003_SYNONYM left join YJ003_STANDARD on YJ003_STANDARD.ID=YJ003_SYNONYM.STANDARD_ID
+		<where>
+			STANDARD_ID is not null
+			<if test="searchString!=null and searchString!=''">
+				and (SYNONYMS like CONCAT( CONCAT('%',#{searchString}),'%') or YJ003_STANDARD.NAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findYj003SynonymList_oracle" parameterType="yj003Synonym" resultType="yj003Synonym">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>,YJ003_STANDARD.NAME standardName  from YJ003_SYNONYM left join YJ003_STANDARD on YJ003_STANDARD.ID=YJ003_SYNONYM.STANDARD_ID
+		<where>
+			STANDARD_ID is null
+			<if test="searchString!=null and searchString!=''">
+				and (SYNONYMS like CONCAT( CONCAT('%',#{searchString}),'%') or YJ003_STANDARD.NAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicDrugDao">
+
+	<sql id="commCols">
+		ID id,DRUG_CODE drugCode,DRUG_NAME drugName,SPEC spec,DRUG_LINE drugLine,PRICE price,IS_ANTIBIOTIC isAntibiotic,UNITS units,DRUG_FORM drugForm,TOXI_PROPERTY toxiProperty,DOSE_PER_UNIT dosePerUnit,DOSE_UNITS doseUnits,DRUG_INDICATOR drugIndicator,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkDicDrug" flushCache="true">
+		 insert into JK_DIC_DRUG(ID,DRUG_CODE,DRUG_NAME,SPEC,DRUG_LINE,PRICE,IS_ANTIBIOTIC,UNITS,DRUG_FORM,TOXI_PROPERTY,DOSE_PER_UNIT,DOSE_UNITS,DRUG_INDICATOR,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{drugCode},#{drugName},#{spec},#{drugLine},#{price},#{isAntibiotic},#{units},#{drugForm},#{toxiProperty},#{dosePerUnit},#{doseUnits},#{drugIndicator},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_DIC_DRUG
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkDicDrug" flushCache="true">
+		update JK_DIC_DRUG
+		<set>
+			ID=#{id},DRUG_CODE=#{drugCode},DRUG_NAME=#{drugName},SPEC=#{spec},DRUG_LINE=#{drugLine},PRICE=#{price},IS_ANTIBIOTIC=#{isAntibiotic},UNITS=#{units},DRUG_FORM=#{drugForm},TOXI_PROPERTY=#{toxiProperty},DOSE_PER_UNIT=#{dosePerUnit},DOSE_UNITS=#{doseUnits},DRUG_INDICATOR=#{drugIndicator},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkDicDrug" flushCache="true">
+		update JK_DIC_DRUG
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkDicDrug">
+		select <include refid="commCols"/> from JK_DIC_DRUG
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkDicDrugCount" parameterType="jkDicDrug" resultType="int">
+		select count(*) from JK_DIC_DRUG
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkDicDrug">
+		select <include refid="commCols"/> from JK_DIC_DRUG
+		<where>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageThemeDao">
+
+	<sql id="commCols">
+		THEME_ID themeId,THEME theme,CREATE_USER createUser,CREATE_TIME createTime,ZYID zyid,LAST_MID lastMid,MZID mzid
+	</sql>
+
+	<insert id="save" parameterType="nyMessageTheme"  flushCache="true">
+		 insert into NY_MESSAGE_THEME(THEME_ID,THEME,CREATE_USER,CREATE_TIME,ZYID,LAST_MID,MZID)
+		 values(#{themeId},#{theme},#{createUser},#{createTime},#{zyid},#{lastMid},#{mzid})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  NY_MESSAGE_THEME
+		<where>THEME_ID=#{themeId}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyMessageTheme" flushCache="true">
+		update NY_MESSAGE_THEME
+		<set>
+			THEME_ID=#{themeId},THEME=#{theme},CREATE_USER=#{createUser},CREATE_TIME=#{createTime},ZYID=#{zyid},LAST_MID=#{lastMid},MZID=#{mzid}
+		</set>
+		<where>THEME_ID=#{themeId}</where>
+	</update>
+	
+	<select id="get" resultType="nyMessageTheme">
+		select <include refid="commCols"/> from NY_MESSAGE_THEME
+  		<where>THEME_ID=#{themeId}</where>
+	</select>
+	
+	
+	<select id="findNyMessageThemeCount" parameterType="nyMessageTheme" resultType="int">
+		select count(*) from NY_MESSAGE_THEME left join NY_MESSAGE_DETAIL on NY_MESSAGE_DETAIL.MID=NY_MESSAGE_THEME.LAST_MID 
+		<where>
+			NY_MESSAGE_DETAIL.MID is not null
+			<if test="startDate!=null and startDate!=''">
+				<![CDATA[and NY_MESSAGE_DETAIL.SEND_TIME >= to_date(#{startDate},'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				<![CDATA[and NY_MESSAGE_DETAIL.SEND_TIME < to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')+1]]>
+			</if>
+			<if test="searchString!=null and searchString!=''"> 
+				and ( NY_MESSAGE_THEME.THEME like CONCAT(CONCAT('%', #{searchString}), '%')
+				or NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_DETAIL WHERE NY_MESSAGE_DETAIL.SEND_USER_NAME like CONCAT(CONCAT('%', #{searchString}), '%'))
+				or NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_DETAIL WHERE NY_MESSAGE_DETAIL.CONTENT like CONCAT(CONCAT('%', #{searchString}), '%'))
+				or NY_MESSAGE_THEME.ZYID IN (SELECT ZYID FROM ST003_CRYXXB WHERE ST003_CRYXXB.PATIENT_NAME like CONCAT(CONCAT('%', #{searchString}), '%')))
+			</if>
+			<if test="userId!=null and userId!=''">
+				and NY_MESSAGE_THEME.THEME_ID IN(SELECT THEME_ID FROM NY_MESSAGE_USER_DETAIL WHERE USER_ID = #{userId} and is_read=#{isRead})
+			</if>
+			<if test="uid!=null and uid!=''">
+				and (NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_USER_DETAIL WHERE USER_ID = #{uid})
+				or	NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_DETAIL WHERE SEND_USER_ID = #{uid}))
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="nyMessageTheme">
+		select <include refid="commCols"/> from NY_MESSAGE_THEME
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByZyid"  resultType="nyMessageTheme">
+		select <include refid="commCols"/> from NY_MESSAGE_THEME
+		<where>
+			ZYID=#{zyid} and rownum &lt;=1
+		</where>
+	</select>
+	
+	<select id="getByMzid"  resultType="nyMessageTheme">
+		select <include refid="commCols"/> from NY_MESSAGE_THEME
+		<where>
+			MZID=#{mzid} and rownum &lt;=1
+		</where>
+	</select>
+	
+	<select id="getByCreateUser"  resultType="nyMessageTheme">
+		select <include refid="commCols"/> from NY_MESSAGE_THEME
+		<where>
+			CREATE_USER=#{createUser} and zyid is null
+			and rownum = 1
+		</where>
+	</select>
+</mapper>

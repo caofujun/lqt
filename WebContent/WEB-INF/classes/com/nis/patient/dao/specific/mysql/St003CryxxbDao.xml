@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St003CryxxbDao">
+
+	<sql id="commCols_mysql">
+		zyid zyid,patient_id patientId,visit_id visitId,patient_name patientName,age age,age_unit ageUnit,sex sex,dept_code deptCode,dept_name deptName,in_dept_id inDeptId,in_dept_name inDeptName,out_dept_id outDeptId,out_dept_name outDeptName,in_hosp_at inHospAt,out_at outAt,in_days inDays,bed_no bedNo,charge_dr_id chargeDrId,charge_dr_name chargeDrName,cost cost,memo memo,upd_date updDate,bed_no_index bedNoIndex,hosp_id hospId
+	</sql>
+
+	<select id="findSt003Cryxxb_mysql" parameterType="st003Cryxxb" resultType="st003Cryxxb">
+		select <include refid="commCols_mysql"/> from st003_cryxxb
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

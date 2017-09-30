@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St020ClinicPatientsDao">
+
+	<sql id="commCols_oracle">
+		ID id,HOSP_ID hospId,MZID mzid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,IDNUMBER idnumber,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,PARENT_NAME parentName,TEL tel,MARRIAGE marriage,NATION nation,WORK_UNIT workUnit,EDUCATION education,REGISTERADDR registeraddr,PRESENTADDR presentaddr,DIAGNOSIS_NAME diagnosisName,DEPT_ID deptId,DEPT_NAME deptName,DOCTOR_ID doctorId,DOCTOR_NAME doctorName,DIAGNOSIS_DT diagnosisDt,START_DT startDt,DEATH_DT deathDt,ISRETURNVISIT isreturnvisit,CREATE_AT createAt,UPD_DATE updDate,CDC_ANAL_FLAG cdcanalflag, CDC_ANAL_DT cdcanaldt
+	</sql>
+
+	
+	<select id="findSt020ClinicPatients_oracle" parameterType="st020ClinicPatients" resultType="st020ClinicPatients">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ST020_CLINIC_PATIENTS
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getSuspectedCaseMz_oracle" parameterType="st020ClinicPatients" resultType="st020ClinicPatients">
+	select * from ( select a.*, rownum rn from (
+		 select * from (
+			select <include refid="commCols"/>,UNREADMSG unReadMsg,isMarked isMarked, (crbc+syjcc+syc) cardCount from 
+				(select d.*,
+					(select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = d.mzid
+		             ) and user_id = #{userId} and is_read = 0) unReadMsg,
+		             (select remark from CTG_SYS008_MARKEDCASE where data_TypeId=2 <if test="hospId!=null and hospId!=''"> and hosp_id=#{hospId} </if> and id=d.mzid) isMarked,
+					(select count(*) crbc from ctg_bk001_crbdisease r  where r.masterid in (
+       						select cm.masterid from ctg_bk001_crbmaster cm where cm.mzid is not null and cm.mzid = d.mzid)) crbc,
+ 					(select count(*) syjcc from ctg_bk005_syjc c where c.mzid = d.mzid) syjcc,
+ 					(select count(*) syc from ctg_bk002_sybk sy where sy.mzid = d.mzid) syc
+				
+				 from st020_clinic_patients d where 1=1
+			        /*医院编码*/
+			        <if test="hospId!=null and hospId!=''">
+			        and d.hosp_id=#{hospId}
+			        </if>
+		        <if test="patientName!=null and patientName!=''">
+			        /*患者关键字*/
+			        and (d.patient_name like CONCAT(CONCAT('%',#{patientName}),'%') or d.mzid like CONCAT(CONCAT('%',#{patientName}),'%') or d.patient_id like CONCAT(CONCAT('%',#{patientName}),'%')) 
+		        </if>
+		        <if test="diagnosisName!=null and diagnosisName!=''">
+			        /*诊断关键字  */
+			        and (d.diagnosis_name like CONCAT(CONCAT('%',#{diagnosisName}),'%'))
+		        </if>
+		        <if test="deptId!=null and deptId!=''">
+			        /*科室*/
+			        and d.dept_id=#{deptId}
+		        </if>
+		        <if test="startTime!=null and endTime!=null">
+			        /*就诊日期*/
+			        and trunc(d.diagnosis_dt) between date'${startTime}' and date'${endTime}'
+		        </if>
+		        <if test="JYZBConditions!=null and JYZBConditions!=''">
+					and d.mzid in (
+						 ${JYZBConditions}
+					)
+				</if>
+		        )d
+		        where 1=1
+		        <if test="hideExclude==1">
+		        	/*过滤已排除的记录*/
+	        		and isMarked is null or isMarked !=-1
+		        </if>
+		        <if test="unReadMsg!=null and unReadMsg!=''">
+			        and unReadMsg >0
+				</if>
+				) d
+		<if test="imageQueryStr!=null and imageQueryStr!=''">
+			inner join     
+		     /*影像关键字*/
+		     (select distinct imzid from
+		             (select distinct f.mzid imzid from st014_pacs f 
+		                   where mzid in (
+		                   		select d.mzid from st020_clinic_patients d
+		                         	where 1=1
+		                        	/*医院编码*/
+		                        	<if test="hospId!=null and hospId!=''">
+							        and d.hosp_id=#{hospId}
+							        </if>
+							        <if test="patientName!=null and patientName!=''">
+								        /*患者关键字*/
+								        and (d.patient_name like CONCAT(CONCAT('%',#{patientName}),'%') or d.mzid like CONCAT(CONCAT('%',#{patientName}),'%') or d.patient_id like CONCAT(CONCAT('%',#{patientName}),'%')) 
+							        </if>
+							        <if test="diagnosisName!=null and diagnosisName!=''">
+								        /*诊断关键字  */
+								        and (d.diagnosis_name like CONCAT(CONCAT('%',#{diagnosisName}),'%'))
+							        </if>
+							        <if test="deptId!=null and deptId!=''">
+								        /*科室*/
+								        and d.dept_id='${deptId}'
+							        </if>
+							        <if test="startTime!=null and endTime!=null">
+								        /*就诊日期*/
+								        and trunc(d.diagnosis_dt) between date'${startTime}' and date'${endTime}'
+							        </if>
+		             	) 
+					and ( f.check_impr like CONCAT(CONCAT('%', #{imageQueryStr}), '%') or f.check_desc like CONCAT(CONCAT('%', #{imageQueryStr}), '%')  )
+		     ) ) f    
+		on d.mzid = f.imzid 
+		</if>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	
+	<select id="getSCSMz" parameterType="st020ClinicPatients" resultType="st020ClinicPatients">
+			select Patient_Type patientType,
+		       MZZYID mzzyid,
+		       patient_name patientName,
+		       sex sex,
+		       age age,
+		       age_unit ageUnit,
+		       RAge rage,
+		       dept_code deptId,
+		       dept_name deptName,
+		       DoctorID doctorId,
+		       DoctorName doctorName,
+		       yj_code yjdisease,
+		       yj_name yjdiseaseName,
+		       yj_source yjsource,
+               yj_content yjcontent,
+		       in_hosp_at inhospat,
+		       in_dept_name indeptname,
+		       RY_diagnosis_name indiagnosis,
+		       out_at outAt,
+		       out_dept_name outdeptname,
+		       CY_diagnosis_name outdiagnosis,
+		       diagnosis_dt diagnosisDt,
+		       diagnosisName diagnosisName,
+		       CardCount cardCount,
+		       scopetime scopetime,
+		       repeatcycle repeatcycle,
+		       diseaseid diseaseid,
+		       filldate filldate,
+		       diagnosedate diagnosisDt,
+		       bkjg bkjg,
+		       iscb iscb,
+		       islb islb,
+		       flag flag,
+		       unReadMsg unReadMsg,
+		       rn rn
+		from (
+		 select * from (
+          select rownum rn,
+               t.Patient_Type,
+               t.MZZYID,
+               t.patient_name,
+               t.sex,
+               t.age,
+               t.age_unit,
+               t.age || t.age_unit as rage,
+               t.dept_code,
+               t.dept_name,
+               t.DoctorID,
+               t.DoctorName,
+               t1.yj_code,
+               t1.yj_name,
+               t1.yj_source,
+               t1.yj_content,
+               t.in_hosp_at,
+               t.in_dept_name,
+               t.out_at,
+               t.out_dept_name,
+               t.diagnosis_dt,
+               (select diagnosis_name
+                  from st002_zdxxb
+                 where diagnosis_type = 1
+                   and zyid = t.MZZYID) as RY_diagnosis_name,
+               (select to_char(wm_concat(diagnosis_name))
+                  from st002_zdxxb
+                 where diagnosis_type = 2
+                   and zyid = t.MZZYID) as CY_diagnosis_name,
+               (select to_char(wm_concat(diagnosis_name))
+                  from st002_zdxxb
+                 where diagnosis_type = 3
+                   and zyid = t.MZZYID) as QT_diagnosis_name,
+               nvl(t.MZ_diagnosis_name,
+                   (select to_char(wm_concat(diagnosis_name))
+                      from st002_zdxxb
+                     where diagnosis_type = 4
+                       and zyid = t.MZZYID)) as diagnosisname,
+               t5.CardCount,
+               t10.scopetime, /*疾病规定上报时限(小时)*/
+               t10.repeatcycle, /*疾病规定重报时限(月)*/
+               t9.diseaseid,
+               t9.filldate, /*-最近疾病的报卡时间 */
+               t9.diagnosedate, /*最近疾病的报卡诊断时间 */
+               floor((t9.filldate - t9.diagnosedate) * 24) as bkjg, /*报卡时间间隔 */
+               case
+                 when floor((t9.filldate - t9.diagnosedate) * 24) >
+                      t10.scopetime then
+                  1
+                 else
+                  0
+               end as iscb, /*-如果报卡时间间隔大于规定的上报时限，则为迟报*/
+               case
+                 when t1.yj_name is not null and t9.filldate is null then /*若没有上报时间，即未报，则视为漏报*/
+                  1
+                 when t1.yj_name is not null and t9.filldate is not null and
+                      months_between(sysdate, t9.filldate) > t10.repeatcycle then /*-若有上报时间，但已过重报周期，也视为漏报*/
+                  1
+                 else
+                  0
+               end as islb,
+               (select count(*) from NY_MESSAGE_USER_DETAIL ts where ts.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid =  t.MZZYID
+		             ) and user_id = #{userId} and is_read = 0) unReadMsg,
+               t11.flag
+          from (select * from view_Patients t where t.Patient_Type = #{patientType}) t
+          left join ctg_sys009_yj t1
+            on t1.mzzyid = t.MZZYID
+           and t1.patient_type = t.Patient_Type 
+			/*获取患者报数量(只取未审核和已审核状态的报卡)*/
+			  left join (select nvl(t3.zyid, t3.mzid) as MZZYID, count(1) as CardCount
+			               from ctg_bk001_crbmaster t3
+			               left join ctg_bk001_crbdisease t4
+			                 on t4.masterid = t3.masterid
+			                and t4.flag in (0, 1)
+			              group by nvl(t3.zyid, t3.mzid)) t5
+			    on t5.MZZYID = t.mzzyid
+			/*取预警对应疾病的"最近"报卡信息*/
+			  left join (select nvl(t7.zyid, t7.mzid) as MZZYID,
+			                    t8.diseaseid,
+			                    max(t7.filldate) as filldate,
+			                    max(t8.diagnosedate) as diagnosedate
+			               from ctg_bk001_crbmaster t7
+			               left join ctg_bk001_crbdisease t8
+			                 on t8.masterid = t7.masterid
+			                and t8.flag in (0, 1)
+			              group by nvl(t7.zyid, t7.mzid), t8.diseaseid) t9
+			    on t9.MZZYId = t.mzzyid
+			   and t9.diseaseid = t1.yj_code
+			/*传染病字典*/
+			  left join ctg_sys007_dictcontagion t10
+			    on t10.diseaseid = t9.diseaseid
+			  left join CTG_SYS011_Mark t11
+			    on t11.mzzyid = t.MZZYID
+			   and t11.diseaseid = t1.yj_code
+			   
+			 where 1=1 
+			 <if test="dateType==1">
+			 /*就诊日期*/
+			 and t.diagnosis_dt between #{queryStartDate} and #{queryEndDate}
+			 </if>
+			 <if test="dateType==2">
+		      /*入院时间*/
+		       and t.in_hosp_at between #{queryStartDate} and #{queryEndDate}
+	     	</if>
+	     	<if test="dateType==3">
+		      /*出院时间*/
+		      and t.out_at between #{queryStartDate} and #{queryEndDate}
+	     	</if>
+	     	<choose>
+     			<when test="deptType==1 and deptId!=null and deptId!=''">
+					 and t.dept_code=#{deptId}
+     			</when>
+		      	<when test="deptType==2 and deptId!=null and deptId!=''">
+		      		/*入院科室*/
+		      		and t.in_dept_id = #{deptId}
+		      	</when>
+		      	<when test="deptType==3 and deptId!=null and deptId!=''">
+		      		/*出院科室*/
+		      		and t.out_dept_id = #{deptId}
+		      	</when>
+		      	<when test="deptType==4 and deptId!=null and deptId!=''">
+			      	/*所在科室*/
+		      		and t.dept_code = #{deptId}
+		      	</when>
+		     </choose>
+			 /*患者关键字*/
+			 <if test="patientName!=null and patientName!=''">
+			 and ( t.patient_name like CONCAT('%',CONCAT(#{patientName},'%')) or t.MZZYID like CONCAT('%',CONCAT(#{patientName},'%')) )
+			 </if>
+			 /*预警疾病*/
+			 <if test="yjdisease!=null and yjdisease!=''">
+				 and t1.yj_code = #{yjdisease}
+			 </if>
+			 /*隐藏“排除”*/
+			 <if test="hideExclude==1">
+				 and flag != 2
+			 </if>
+			 /*显示有预警疾病*/
+			 <if test="showEWP==1">
+				 and t1.yj_name is not null
+			 </if>
+			 /*显示未报卡*/
+			 <if test="showURP==1">
+				 and t5.CardCount = 0
+			 </if>
+			) t where 1=1
+			 <if test="unReadMsg==1">
+				/*有未读消息*/
+			 	and t.unReadMsg>0
+			 </if>
+			)a  
+			where rn &gt;= #{orclBegNum}  and rn &lt;= #{orclEndNum}
+	</select>
+	
+	<select id="getNewSCS" parameterType="st020ClinicPatients" resultType="st020ClinicPatients">
+		with aa as
+     (select t.*,
+             t1.yj_code,
+             t1.yj_name,
+             t1.yj_dt,
+             t1.yj_source,
+             t1.yj_content
+        from view_Patients t
+       inner join ctg_sys009_yj t1
+          on t1.mzzyid = t.MZZYID
+         and t1.patient_type = t.Patient_Type),
+    bb as
+     (select nvl(t3.zyid, t3.mzid) as MZZYID, count(1) as CardCount
+        from ctg_bk001_crbmaster t3
+        left join ctg_bk001_crbdisease t4
+          on t4.masterid = t3.masterid
+         and t4.flag in (0, 1)
+       group by nvl(t3.zyid, t3.mzid)),
+    cc as
+     (select nvl(t7.zyid, t7.mzid) as MZZYID,
+             t8.diseaseid,
+             max(t7.filldate) as filldate,
+             max(t8.diagnosedate) as diagnosedate
+        from ctg_bk001_crbmaster t7
+        left join ctg_bk001_crbdisease t8
+          on t8.masterid = t7.masterid
+         and t8.flag in (0, 1)
+       group by nvl(t7.zyid, t7.mzid), t8.diseaseid)
+
+    select Patient_Type  patientType,
+           MZZYID        mzzyid,
+           patient_name  patientName,
+           sex           sex,
+           age           age,
+           age_unit      ageUnit,
+           RAge          rage,
+           dept_code     deptId,
+           dept_name     deptName,
+           DoctorID      doctorId,
+           DoctorName    doctorName,
+           yj_code       yjdisease,
+           yj_name       yjdiseaseName,
+           yj_source     yjsource,
+           yj_content    yjcontent,
+           in_hosp_at    inhospat,
+           in_dept_name  indeptname,
+           out_at        outAt,
+           out_dept_name outdeptname,
+           diagnosis_dt  diagnosisDt,
+           isreturnvisit isreturnvisit,
+           CardCount     cardCount,
+           scopetime     scopetime,
+           repeatcycle   repeatcycle,
+           diseaseid     diseaseid,
+           filldate      filldate,
+           diagnosedate  diagnosisDt,
+           bkjg          bkjg,
+           iscb          iscb,
+           islb          islb,
+           unReadMsg     unReadMsg,
+           flag			 flag,
+           optId     optId,
+           optName   optName,
+           optDate   optDate,
+           rn  			 rn
+      from (select rownum rn,
+                   aa.Patient_Type,
+                   aa.MZZYID,
+                   aa.patient_name,
+                   aa.sex,
+                   aa.age,
+                   aa.age_unit,
+                   aa.age || aa.age_unit as rage,
+                   aa.dept_code,
+                   aa.dept_name,
+                   aa.DoctorID,
+                   aa.DoctorName,
+                   aa.yj_code,
+                   aa.yj_name,
+                   aa.yj_source,
+                   aa.yj_content,
+                   aa.in_hosp_at,
+                   aa.in_dept_name,
+                   aa.out_at,
+                   aa.out_dept_name,
+                   aa.diagnosis_dt,
+                   aa.isreturnvisit,
+                   bb.CardCount,
+                   cc.diseaseid,
+                   cc.filldate,
+                   cc.diagnosedate,
+                   dd.scopetime,
+                   dd.repeatcycle,
+                   dd.isimportant,
+                   ff.flag,
+                   ff.optId,
+                   ff.optName,
+                   ff.optDate,
+                   floor((cc.filldate - cc.diagnosedate) * 24) as bkjg, /*报卡时间间隔 */
+                   case
+                     when floor((cc.filldate - cc.diagnosedate) * 24) >
+                          dd.scopetime then
+                      1
+                     else
+                      0
+                   end as iscb, /*-如果报卡时间间隔大于规定的上报时限，则为迟报*/
+                   case
+                     when aa.yj_name is not null and cc.filldate is null then /*若没有上报时间，即未报，则视为漏报*/
+                      1
+                     when aa.yj_name is not null and cc.filldate is not null and
+                          months_between(sysdate, cc.filldate) >
+                          dd.repeatcycle then /*-若有上报时间，但已过重报周期，也视为漏报*/
+                      1
+                     else
+                      0
+                   end as islb,
+                   (select count(*)
+                      from NY_MESSAGE_USER_DETAIL ts
+                     where ts.theme_id in
+                           (select theme_id
+                              from NY_MESSAGE_THEME th
+                             where th.zyid = aa.MZZYID)
+                          and user_id = #{userId}
+                       and is_read = 0) unReadMsg
+              from aa
+              left join bb
+                on aa.mzzyid = bb.mzzyid
+              left join cc
+                on aa.yj_code = cc.diseaseid
+               and aa.mzzyid = cc.mzzyid
+              left join ctg_sys007_dictcontagion dd
+                on dd.diseaseid = aa.yj_code
+              left join CTG_SYS011_Mark ff
+                on ff.mzzyid=aa.mzzyid
+                and ff.diseaseid=aa.yj_code 
+           where aa.Patient_Type = #{patientType} 
+           <if test="dateType==1">
+			 /*就诊日期*/
+			 and trunc(aa.diagnosis_dt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+		      /*入院时间*/
+		       and trunc(aa.in_hosp_at) between #{queryStartDate} and #{queryEndDate}
+	     	</if>
+	     	<if test="dateType==3">
+		      /*出院时间*/
+		      and trunc(aa.out_at) between #{queryStartDate} and #{queryEndDate}
+	     	</if>
+	     	<if test="dateType==4">
+		      /*预警时间*/
+		      and trunc(aa.yj_dt) between #{queryStartDate} and #{queryEndDate}
+	     	</if>
+            <choose>
+     			<when test="deptType==1 and deptId!=null and deptId!=''">
+					 and aa.dept_code=#{deptId}
+     			</when>
+		      	<when test="deptType==2 and deptId!=null and deptId!=''">
+		      		/*入院科室*/
+		      		and aa.in_dept_id = #{deptId}
+		      	</when>
+		      	<when test="deptType==3 and deptId!=null and deptId!=''">
+		      		/*出院科室*/
+		      		and aa.out_dept_id = #{deptId}
+		      	</when>
+		      	<when test="deptType==4 and deptId!=null and deptId!=''">
+			      	/*所在科室*/
+		      		and aa.dept_code = #{deptId}
+		      	</when>
+		     </choose> 
+		     /*患者关键字*/
+			 <if test="patientName!=null and patientName!=''">
+			 	and ( aa.patient_id like CONCAT('%',CONCAT(#{patientName},'%')) or aa.patient_name like CONCAT('%',CONCAT(#{patientName},'%')) or aa.MZZYID like CONCAT('%',CONCAT(#{patientName},'%')) )
+			 </if>  
+			 /*预警疾病*/
+			 <if test="yjdisease!=null and yjdisease!=''">
+				and aa.yj_code = #{yjdisease}
+			 </if>
+			 /*隐藏“排除”*/
+			 <if test="hideExclude==1">
+				 /*and ff.flag != 2*/
+				 and (decode(ff.flag,null,0,ff.flag) != 2)
+			 </if>
+			 /*显示未报卡*/
+			 <if test="showURP==1">
+				 /*and bb.CardCount = 0*/
+				 and (decode(bb.CardCount , null , 0 ,bb.CardCount) = 0)
+			 </if>
+         )
+         <where>
+		  	1=1
+			 <if test="unReadMsg==1">
+			 /*有未读消息*/
+			 	and unReadMsg>0
+			 </if>
+			  	and rn &gt;= #{orclBegNum}  and rn &lt;= #{orclEndNum}
+		  </where> 
+	</select>
+	
+</mapper>

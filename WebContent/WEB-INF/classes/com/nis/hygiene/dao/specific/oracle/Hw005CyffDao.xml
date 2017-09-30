@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw005CyffDao">
+
+	<sql id="commCols_oracle">
+		take_mode_id takeModeId,take_mode_name takeModeName,class_id classId,bh_code bhCode,sp_code spCode,wb_code wbCode,last_at lastAt,flag flag
+	</sql>
+
+	<select id="findHw005Cyff_oracle" parameterType="hw005Cyff" resultType="hw005Cyff">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw005_cyff
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+		
+	<select id="queryList_oracle" parameterType="hw005Cyff" resultType="hw005Cyff">
+		select take_mode_id takeModeId,take_mode_name takeModeName,rownum from hw005_cyff 
+		<where>
+			flag=1
+			<if test="classId!=null and classId!=''">
+				and class_id=#{classId} 
+			</if>
+		</where>
+		order by class_id, take_mode_id
+	</select>
+</mapper>

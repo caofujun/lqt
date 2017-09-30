@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St012KjywDao">
+
+	<sql id="commCols_oracle">
+		sy_drug_id syDrugId,id id,drug_id drugId,drug_name drugName,class_id classId,class_name className,pycode pycode,wbcode wbcode,bhcode bhcode,last_at lastAt,upd_date updDate,drug_line drugLine
+	</sql>
+
+	<select id="findSt012Kjyw_oracle" parameterType="st012Kjyw" resultType="st012Kjyw">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from st012_kjyw
+		<where>
+			1=1
+			<if test="isSys=='1'.toString()"> and sy_drug_id is not null</if>
+			<if test="isSys=='0'.toString()"> and sy_drug_id is null</if>
+			<if test="syDrugId!=null and syDrugId!=''"> and sy_drug_id=#{syDrugId}</if>
+			<if test="searchString!=null and searchString!=''"> and (drug_name like CONCAT( CONCAT('%',#{searchString}),'%') or drug_id like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getDrugLine_oracle" resultType="int">
+		select * from (select t.drug_line from st012_kjyw t
+		<where>
+			#{drugName} like t.drug_name || '%'
+			and t.drug_line is not null and t.drug_name is not null
+		</where>
+		order by t.drug_line desc) where rownum = 1
+	</select>
+</mapper>

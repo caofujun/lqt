@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientYzDao">
+
+	<sql id="commCols_oracle">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,ORDER_TYPE orderType,ORDER_AT orderAt,
+		STOP_AT stopAt,ORDER_ID orderId,ORDER_NAME orderName,DRUG_SPECI drugSpeci,DOSAGE dosage,DOSAGE_UNIT dosageUnit,
+		USE_COUNT useCount,SYPC sypc,ADMIN_ROUTE_ID adminRouteId,ADMIN_ROUTE_NAME adminRouteName,USE_PURPOSE usePurpose,
+		FREQUENCY frequency,EXECOFFICE_CODE execofficeCode,EXECOFFICE_NAME execofficeName,BDOC_ID bdocId,BDOC_NAME bdocName,
+		BNRS_ID bnrsId,BNRS_NAME bnrsName,EDOC_ID edocId,EDOC_NAME edocName,YZ_STATUS yzStatus,MEMO memo,USEDRUG_DAYS usedrugDays,
+		ORDER_CLASS orderClass,YPDJ ypdj,QTY_DAY qtyDay,TOTAL_QTY totalQty,IS_KJYW isKjyw,EXECUTE_TIME executeTime,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientYz_oracle" parameterType="jkPatientYz" resultType="jkPatientYz">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from JK_PATIENT_YZ
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG=#{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+		order by UPD_TIME desc
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

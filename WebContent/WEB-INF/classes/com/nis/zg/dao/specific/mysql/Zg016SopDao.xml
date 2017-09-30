@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg016SopDao">
+
+	<sql id="commCols_mysql">
+		FILE_ID fileId,P_FILE_ID pFileId,FILE_TITLE fileTitle,FILE_PATH filePath,FILE_NAME fileName,FILE_DATA fileData,WB_CODE wbCode,SP_CODE spCode,LAST_AT lastAt,FLAG flag,BH_CODE bhCode,URL url,P_FILE_NAME pFileName
+	</sql>
+
+	<select id="findZg016Sop_mysql" parameterType="zg016Sop" resultType="zg016Sop">
+		select <include refid="commCols_mysql"/> from ZG016_SOP
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

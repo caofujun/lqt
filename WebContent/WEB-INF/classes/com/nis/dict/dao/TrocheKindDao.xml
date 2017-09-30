@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.TrocheKindDao">
+
+	<sql id="commCols">
+		YEAR year,TROCHEKINDID thocheKindId,TROCHEKINDNAME thocheKindName,
+		MEMORYID memoryId,FLAG flag,LAST_AT lastAt
+	</sql>
+
+	<insert id="save" parameterType="trocheKind" flushCache="true">
+		insert into
+		XL014_DIC_TROCHE_KIND(YEAR,TROCHEKINDID,TROCHEKINDNAME,MEMORYID,FLAG,LAST_AT)
+		values(#{year},#{thocheKindId},#{thocheKindName},#{memoryId},#{flag},#{lastAt})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from XL014_DIC_TROCHE_KIND
+		<where>YEAR=#{year} and TROCHEKINDID=#{thocheKindId}</where>
+	</delete>
+
+	<update id="update" parameterType="trocheKind" flushCache="true">
+		update XL014_DIC_TROCHE_KIND
+		<set>
+			TROCHEKINDNAME=#{thocheKindName},
+			MEMORYID=#{memoryId},
+			FLAG=#{flag},
+			LAST_AT=#{lastAt}
+		</set>
+		<where>YEAR=#{year} and TROCHEKINDID=#{thocheKindId}</where>
+	</update>
+
+	<select id="get" resultType="trocheKind">
+		select
+		<include refid="commCols" />
+		from XL014_DIC_TROCHE_KIND
+		<where>YEAR=#{year} and TROCHEKINDID=#{thocheKindId}</where>
+	</select>
+
+
+	<select id="findTrocheKindCount" parameterType="trocheKind"
+		resultType="int">
+		select count(*) from XL014_DIC_TROCHE_KIND
+		<where>
+			1=1
+			<if test="year!=null">and YEAR=#{year}</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="trocheKind">
+		select
+		<include refid="commCols" />
+		from XL014_DIC_TROCHE_KIND
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

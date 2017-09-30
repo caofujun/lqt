@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys005LisruleMasterDao">
+
+	<sql id="commCols">
+		ORDERNO orderno,ITEMNAMEFIELD itemnamefield,ITEMNAMEOPER itemnameoper,ITEMNAMEVALUE itemnamevalue,YJ_WEIGHT yjWeight,ISALLITEMS isallitems,CALCULATEORDER calculateorder,TABLENAME tablename,YJ_RESULT yjresult
+	</sql>
+
+	<insert id="save" parameterType="ctgSys005LisruleMaster"  flushCache="true">
+		 insert into CTG_SYS005_LISRULEMASTER(ORDERNO,ITEMNAMEFIELD,ITEMNAMEOPER,ITEMNAMEVALUE,YJ_WEIGHT,ISALLITEMS,CALCULATEORDER,TABLENAME,YJ_RESULT)
+		 values(#{orderno},#{itemnamefield},#{itemnameoper},#{itemnamevalue},#{yjWeight},#{isallitems},#{calculateorder},#{tablename},#{yjresult})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS005_LISRULEMASTER
+		<where>ORDERNO=#{orderno}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys005LisruleMaster" flushCache="true">
+		update CTG_SYS005_LISRULEMASTER
+		<set>
+			ORDERNO=#{orderno},ITEMNAMEFIELD=#{itemnamefield},ITEMNAMEOPER=#{itemnameoper},ITEMNAMEVALUE=#{itemnamevalue},YJ_WEIGHT=#{yjWeight},ISALLITEMS=#{isallitems},CALCULATEORDER=#{calculateorder},TABLENAME=#{tablename},YJ_RESULT=#{yjresult}
+		</set>
+		<where>ORDERNO=#{orderno}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys005LisruleMaster">
+		select <include refid="commCols"/> from CTG_SYS005_LISRULEMASTER
+  		<where>ORDERNO=#{orderno}</where>
+	</select>
+	
+	
+	<select id="findCtgYjLisruleMasterCount" parameterType="ctgSys005LisruleMaster" resultType="int">
+		select count(*) from CTG_SYS005_LISRULEMASTER
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys005LisruleMaster">
+		select <include refid="commCols"/> from CTG_SYS005_LISRULEMASTER
+		<where>
+			1=1
+		</where>
+		order by calculateorder
+	</select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbafpcardDao">
+
+	<sql id="commCols_mysql">
+		MASTERID masterid,SUBID subid,AFP_AREATYPE afpAreatype,PALSYDATE palsydate,PALSYSYMPTOM palsysymptom,DOCTORAREATYPEID doctorareatypeid,DOCTORAREATYPENAME doctorareatypename,DOCTORDATE doctordate,DOCTORADDRCODE doctoraddrcode,DOCTORADDRVALUE doctoraddrvalue,DOCTORADDR doctoraddr,CLINICALDIAGNOSIS1 clinicaldiagnosis1,CLINICALDIAGNOSIS2 clinicaldiagnosis2,SAMPLEDATE sampledate,SAMPLEPLACE sampleplace,CONTACTFLAG contactflag
+	</sql>
+
+	<select id="findCtgBk001Crbafpcard_mysql" parameterType="ctgBk001Crbafpcard" resultType="ctgBk001Crbafpcard">
+		select <include refid="commCols_mysql"/> from CTG_BK001_CRBAFPCARD
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

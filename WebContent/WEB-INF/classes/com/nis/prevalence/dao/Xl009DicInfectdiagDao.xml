@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl009DicInfectdiagDao">
+
+	<sql id="commCols">
+		infect_id infectId,indiagid indiagid,indiagname indiagname,systemkindid systemkindid,remark remark,reportorder reportorder,torder torder,memoryid memoryid
+	</sql>
+
+	<insert id="save" parameterType="xl009DicInfectdiag" flushCache="true">
+		 insert into xl009_dic_infectdiag(infect_id,indiagid,indiagname,systemkindid,remark,reportorder,torder,memoryid)
+		 values(#{infectId},#{indiagid},#{indiagname},#{systemkindid},#{remark},#{reportorder},#{torder},#{memoryid})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl009_dic_infectdiag
+		<where>indiagid=#{indiagid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl009DicInfectdiag" flushCache="true">
+		update xl009_dic_infectdiag
+		<set>
+			infect_id=#{infectId},indiagid=#{indiagid},indiagname=#{indiagname},systemkindid=#{systemkindid},remark=#{remark},reportorder=#{reportorder},torder=#{torder},memoryid=#{memoryid}
+		</set>
+		<where>indiagid=#{indiagid}</where>
+	</update>
+	
+	<select id="get" resultType="xl009DicInfectdiag">
+		select <include refid="commCols"/> from xl009_dic_infectdiag
+  		<where>indiagid=#{indiagid}</where>
+	</select>
+	
+	
+	<select id="findXl009DicInfectdiagCount" parameterType="xl009DicInfectdiag" resultType="int">
+		select count(*) from xl009_dic_infectdiag
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl009DicInfectdiag">
+		select <include refid="commCols"/> from xl009_dic_infectdiag
+		<where>
+		</where>
+	</select>
+	
+	<select id="queryTree" resultType="xl009DicInfectdiag">
+		select g.indiagid id,g.indiagname text,g.systemkindid systemkindid,(select k.sysname from xl008_dic_infectsystemkind k where k.systemkindid=g.systemkindid) systemkindname  from xl009_dic_infectdiag g order by g.systemkindid
+	</select>
+</mapper>

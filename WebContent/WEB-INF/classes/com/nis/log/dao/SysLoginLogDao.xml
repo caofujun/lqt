@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.log.dao.SysLoginLogDao">
+
+	<sql id="commCols">
+		ID id,UNIT_ID unitId,USERNAME username,CONTENT content,SQLS sqls,IP ip,OPERATE_TIME operateTime,MAC_ADDRESS macAddress,USER_ID userId
+	</sql>
+
+	<insert id="save" parameterType="sysLoginLog" flushCache="true">
+		 insert into SYS_LOGIN_LOG(ID,UNIT_ID,USERNAME,CONTENT,SQLS,IP,OPERATE_TIME,MAC_ADDRESS,USER_ID)
+		 values(#{id},#{unitId},#{username},#{content},#{sqls},#{ip},#{operateTime},#{macAddress},#{userId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from SYS_LOGIN_LOG
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysLoginLog" flushCache="true">
+		update SYS_LOGIN_LOG
+		<set>
+			ID=#{id},UNIT_ID=#{unitId},USERNAME=#{username},CONTENT=#{content},SQLS=#{sqls},IP=#{ip},OPERATE_TIME=#{operateTime},MAC_ADDRESS=#{macAddress},USER_ID=#{userId}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="sysLoginLog">
+		select <include refid="commCols"/> from SYS_LOGIN_LOG
+		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findSysLoginLogCount" parameterType="sysLoginLog" resultType="int">
+		select count(*) from SYS_LOGIN_LOG
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="username!=null and username!=''"> and USERNAME LIKE CONCAT(CONCAT('%',#{username}),'%')</if>
+			<choose>
+			<when test="queryStartDate != null and queryEndDate == null">
+				and OPERATE_TIME &gt; #{queryStartDate}
+			</when>
+			<when test="queryStartDate == null and queryEndDate != null">
+				and OPERATE_TIME &lt; #{queryEndDate}
+			</when>
+			<when test="queryStartDate != null and queryEndDate != null">
+				and OPERATE_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</when>
+			</choose>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="sysLoginLog">
+		select <include refid="commCols"/> from SYS_LOGIN_LOG
+		<where>
+		</where>
+	</select>
+	
+	<select id="getByMacAddress" resultType="sysLoginLog">
+		select * from (select <include refid="commCols"/> from SYS_LOGIN_LOG
+		<where>
+			MAC_ADDRESS=#{macAddress}
+		</where>
+		order by OPERATE_TIME desc )where rownum &lt;=1 
+	</select>
+</mapper>

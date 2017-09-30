@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.param.dao.SysParamDao">
+
+	<sql id="commCols">
+		id id,param_code paramCode,param_name paramName,PARAM_TYPE paramType,param_value paramValue,scope_level scopeLevel,unit_id unitId,dep_no depNo,user_name userName,remark remark
+	</sql>
+
+	<insert id="save" parameterType="sysParam"  flushCache="true">
+		 insert into sys_param(id,param_code,param_name,PARAM_TYPE,param_value,scope_level,unit_id,dep_no,user_name,remark)
+		 values(#{id},#{paramCode},#{paramName},#{paramType},#{paramValue},#{scopeLevel},#{unitId},#{depNo},#{userName},#{remark})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from sys_param
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysParam" flushCache="true">
+		update sys_param
+		<set>
+			param_code=#{paramCode},param_name=#{paramName},PARAM_TYPE=#{paramType},param_value=#{paramValue},scope_level=#{scopeLevel},unit_id=#{unitId},dep_no=#{depNo},user_name=#{userName},remark=#{remark}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="sysParam">
+		select <include refid="commCols"/> from sys_param
+  		<where>id=#{id}</where>
+	</select>
+	
+	<select id="findSysParamList" parameterType="sysParam" resultType="sysParam" >
+		select <include refid="commCols"/> from sys_param
+		<where>
+			1=1
+			<if test="paramCode !=null and paramCode != '' "> and param_code=#{paramCode} </if>
+			<if test="scopeLevel !=null and scopeLevel != '' "> and scope_level=#{scopeLevel} </if>
+			<if test="unitId !=null and unitId != '' "> and unit_id=#{unitId} </if>
+			<if test="userName !=null and userName != '' "> and user_name=#{userName} </if>
+		</where>
+	</select>
+	
+	
+	<select id="findSysParamCount" parameterType="sysParam" resultType="int">
+		select count(*) from sys_param
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (param_code like concat( concat('%',#{searchString}),'%')  or param_name like concat( concat('%',#{searchString}),'%'))</if>
+			<if test="source == 'data_init' "> and param_code in('nis.http.url','nis.system.hospital.license','nis.gk.deptid','nis.hosptal.gbcode','nis.imc.is.show','nis.inspection.result.high','nis.inspection.result.low') </if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="sysParam">
+		select <include refid="commCols"/> from sys_param
+		<where>
+			1=1
+		</where>
+	</select>
+	
+</mapper>

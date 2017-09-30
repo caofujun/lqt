@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn005JszdDao">
+
+	<sql id="commCols">
+		BACT_GENUS_ID bactGenusId,BACT_GENUS_ID_NAME bactGenusIdName,PYCODE pycode,WBCODE wbcode,BHCODE bhcode,DESCRIBE describe,LAST_AT lastAt,FLAG flag
+	</sql>
+
+	<insert id="save" parameterType="xn005Jszd"  flushCache="true">
+		 insert into XN005_JSZD(BACT_GENUS_ID,BACT_GENUS_ID_NAME,PYCODE,WBCODE,BHCODE,DESCRIBE,LAST_AT,FLAG)
+		 values(#{bactGenusId},#{bactGenusIdName},#{pycode},#{wbcode},#{bhcode},#{describe},#{lastAt},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  XN005_JSZD
+		<where>BACT_GENUS_ID=#{bactGenusId}</where>
+	</delete>
+	
+	<update id="update" parameterType="xn005Jszd" flushCache="true">
+		update XN005_JSZD
+		<set>
+			BACT_GENUS_ID=#{bactGenusId},BACT_GENUS_ID_NAME=#{bactGenusIdName},PYCODE=#{pycode},WBCODE=#{wbcode},BHCODE=#{bhcode},DESCRIBE=#{describe},LAST_AT=#{lastAt},FLAG=#{flag}
+		</set>
+		<where>BACT_GENUS_ID=#{bactGenusId}</where>
+	</update>
+	
+	<select id="get" resultType="xn005Jszd">
+		select <include refid="commCols"/> from XN005_JSZD
+  		<where>BACT_GENUS_ID=#{bactGenusId}</where>
+	</select>
+	
+	
+	<select id="findXn005JszdCount" parameterType="xn005Jszd" resultType="int">
+		select count(*) from XN005_JSZD
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (upper(BACT_GENUS_ID) like CONCAT( CONCAT('%',upper(#{searchString})),'%') or upper(PYCODE) like CONCAT( CONCAT('%',upper(#{searchString})),'%') or BHCODE like CONCAT( CONCAT('%',#{searchString}),'%') or upper(WBCODE) like CONCAT( CONCAT('%',upper(#{searchString})),'%') or upper(BACT_GENUS_ID_NAME) like CONCAT( CONCAT('%',upper(#{searchString})),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xn005Jszd">
+		select <include refid="commCols"/> from XN005_JSZD
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

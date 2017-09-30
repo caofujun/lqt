@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl020XhlKjywDao">
+
+	<sql id="commCols_oracle">
+		drug_id drugId,drug_name drugName,pycode pycode,wbcode wbcode,bhcode bhcode
+	</sql>
+
+	<select id="findXl020XhlKjyw_oracle" parameterType="xl020XhlKjyw" resultType="xl020XhlKjyw">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from xl020_xhl_kjyw
+		<where>
+			<if test="searchString!=null and searchString!=''"> 
+				and (drug_id like concat( concat('%',#{searchString}),'%') or drug_name like concat( concat('%',#{searchString}),'%') or upper(PYCODE) like upper(concat( concat('%',#{searchString}),'%')))
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

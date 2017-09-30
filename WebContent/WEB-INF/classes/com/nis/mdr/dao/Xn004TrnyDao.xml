@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn004TrnyDao">
+
+	<sql id="commCols">
+		pathogen_id pathogenId,pathogen_name pathogenName,drug_id drugId,drug_name drugName,last_at lastAt
+	</sql>
+
+	<insert id="save" parameterType="xn004Trny" flushCache="true">
+		 insert into xn004_trny(pathogen_id,pathogen_name,drug_id,drug_name,last_at)
+		 values(#{pathogenId},#{pathogenName},#{drugId},#{drugName},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from XN004_TRNY
+		<where>1=1
+			and PATHOGEN_ID=#{pathogenId}
+			and drug_id=#{drugId}
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="xn004Trny" flushCache="true">
+		update xn004_trny
+		<set>
+			pathogen_id=#{pathogenId},pathogen_name=#{pathogenName},drug_id=#{drugId},drug_name=#{drugName},last_at=#{lastAt}
+		</set>
+		<where>1=1
+			and pathogen_id=#{pathogenId2}
+			and drug_id=#{drugId2}
+		</where>
+	</update>
+	
+	<select id="get" resultType="xn004Trny">
+		select <include refid="commCols"/> from XN004_TRNY
+  		<where>1=1
+  			and pathogen_id=#{pathogenId}
+  			and drug_id=#{drugId}
+  		</where>
+	</select>
+	
+	<select id="findXn004TrnyCount" parameterType="xn004Trny" resultType="int">
+		select count(*) from xn004_trny t
+		<where>1=1
+			<if test="searchString!=null and searchString!=''">
+				and t.pathogen_id like CONCAT( CONCAT('%',#{searchString}),'%')
+				or t.drug_id like CONCAT( CONCAT('%',#{searchString}),'%')
+				or t.pathogen_name like CONCAT( CONCAT('%',#{searchString}),'%')
+				or t.drug_name like CONCAT( CONCAT('%',#{searchString}),'%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xn004Trny">
+		select <include refid="commCols"/> from xn004_trny
+		<where>
+		</where>
+	</select>
+</mapper>

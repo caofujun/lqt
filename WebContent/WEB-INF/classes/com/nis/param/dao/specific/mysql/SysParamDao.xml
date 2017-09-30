@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.param.dao.SysParamDao">
+
+	<sql id="commCols_mysql">
+		id id,param_code paramCode,param_name paramName,param_value paramValue,scope_level scopeLevel,unit_id unitId,dep_no depNo,user_name userName,remark remark
+	</sql>
+
+	<select id="findSysParam_mysql" parameterType="sysParam" resultType="sysParam">
+		select <include refid="commCols_mysql"/> from sys_param
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (param_code like concat( concat('%',#{searchString}),'%')  or param_name like concat( concat('%',#{searchString}),'%'))</if>
+		</where>
+  		limit #{firstPage}, #{size}
+	</select>
+	
+	<select id="findByParamCode_mysql" resultType="sysParam">
+		select <include refid="commCols"/> from sys_param
+  		<where>
+  			param_code=#{paramCode} and (
+  			<choose>
+  				<when test="userName!=null and userName!=0">scope_level=9 or (scope_level=6 and unit_id=#{unitId}) or (scope_level=3 and dep_no=#{depNo}) or (scope_level=0 and user_name=#{userName})</when>
+  				<when test="depNo!=null and depNo!=''">scope_level=9 or (scope_level=6 and unit_id=#{unitId}) or (scope_level=3 and dep_no=#{depNo})</when>
+  				<when test="unitId!=null and unitId!=''">scope_level=9 or (scope_level=6 and unit_id=#{unitId})</when>
+  				<otherwise>scope_level=9</otherwise>
+  			</choose>
+  			)
+  		</where>
+  		order by scope_level asc limit 1
+	</select>
+</mapper>

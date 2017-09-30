@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg007GrysDao">
+
+	<sql id="commCols">
+		LAST_AT lastAt,ELEMENT_ID elementId,ELEMENT_NAME elementName,DATA_FROM dataFrom,LIS_ITEM lisItem,SAMPLE_NAME sampleName,ITEM_NAME itemName,VALUE_TYPE valueType,COMP_DATA compData,IF_FOLLOW ifFollow,RELAT_SYMBOLS relatSymbols,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,ENTER_AT enterAt,FLAG flag
+	</sql>
+
+	<insert id="save" parameterType="zg007Grys"  flushCache="true">
+		 insert into ZG007_GRYS(LAST_AT,ELEMENT_ID,ELEMENT_NAME,DATA_FROM,LIS_ITEM,SAMPLE_NAME,ITEM_NAME,VALUE_TYPE,COMP_DATA,IF_FOLLOW,RELAT_SYMBOLS,BH_CODE,SP_CODE,WB_CODE,ENTER_AT,FLAG)
+		 values(#{lastAt},#{elementId},#{elementName},#{dataFrom},#{lisItem},#{sampleName},#{itemName},#{valueType},#{compData},#{ifFollow},#{relatSymbols},#{bhCode},#{spCode},#{wbCode},#{enterAt},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG007_GRYS
+		<where>ELEMENT_ID=#{elementId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg007Grys" flushCache="true">
+		update ZG007_GRYS
+		<set>
+			LAST_AT=#{lastAt},ELEMENT_ID=#{elementId},ELEMENT_NAME=#{elementName},DATA_FROM=#{dataFrom},LIS_ITEM=#{lisItem},SAMPLE_NAME=#{sampleName},ITEM_NAME=#{itemName},VALUE_TYPE=#{valueType},COMP_DATA=#{compData},IF_FOLLOW=#{ifFollow},RELAT_SYMBOLS=#{relatSymbols},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},ENTER_AT=#{enterAt},FLAG=#{flag}
+		</set>
+		<where>ELEMENT_ID=#{elementId}</where>
+	</update>
+	
+	<select id="get" resultType="zg007Grys">
+		select <include refid="commCols"/> from ZG007_GRYS
+  		<where>ELEMENT_ID=#{elementId}</where>
+	</select>
+	
+	
+	<select id="findZg007GrysCount" parameterType="zg007Grys" resultType="int">
+		select count(*) from ZG007_GRYS
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg007Grys">
+		select <include refid="commCols"/> from ZG007_GRYS
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findByElementIdLike" resultType="zg007Grys">
+		select element_id elementId,element_name elementName from ZG007_GRYS
+		<where>
+			element_id like concat(#{elementId},'%')
+		</where>
+	</select>
+</mapper>

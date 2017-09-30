@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.By001BfgzDao">
+
+	<sql id="commCols">
+		QID qid,OUTBREAK_TYPE_ID outbreakTypeId,OUTBREAK_TYPE_NAME outbreakTypeName,OUTBREAK_CYCLE outbreakCycle,MIN_CASE_NUM minCaseNum,TOTAL_DATA_TYPE totalDataType,BH_CODE bhCode,WB_CODE wbCode,SP_CODE spCode,LAST_AT lastAt,ISOUTBREAK isoutbreak,TYPE_ID typeId,OUTBREAK_RATE outbreakRate,COMP_CYCLE compCycle,COMP_MODE compMode
+	</sql>
+
+	<insert id="save" parameterType="by001Bfgz"  flushCache="true">
+		 insert into BY001_BFGZ(QID,OUTBREAK_TYPE_ID,OUTBREAK_TYPE_NAME,OUTBREAK_CYCLE,MIN_CASE_NUM,TOTAL_DATA_TYPE,BH_CODE,WB_CODE,SP_CODE,LAST_AT,ISOUTBREAK,TYPE_ID,OUTBREAK_RATE,COMP_CYCLE,COMP_MODE)
+		 values(#{qid},#{outbreakTypeId},#{outbreakTypeName},#{outbreakCycle},#{minCaseNum},#{totalDataType},#{bhCode},#{wbCode},#{spCode},#{lastAt},#{isoutbreak},#{typeId},#{outbreakRate},#{compCycle},#{compMode})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  BY001_BFGZ
+		<where>OUTBREAK_TYPE_ID=#{outbreakTypeId}</where>
+	</delete>
+	
+	<update id="update" parameterType="by001Bfgz" flushCache="true">
+		update BY001_BFGZ
+		<set>
+			QID=#{qid},OUTBREAK_TYPE_ID=#{outbreakTypeId},OUTBREAK_TYPE_NAME=#{outbreakTypeName},OUTBREAK_CYCLE=#{outbreakCycle},MIN_CASE_NUM=#{minCaseNum},TOTAL_DATA_TYPE=#{totalDataType},BH_CODE=#{bhCode},WB_CODE=#{wbCode},SP_CODE=#{spCode},LAST_AT=#{lastAt},ISOUTBREAK=#{isoutbreak},TYPE_ID=#{typeId},OUTBREAK_RATE=#{outbreakRate},COMP_CYCLE=#{compCycle},COMP_MODE=#{compMode}
+		</set>
+		<where>OUTBREAK_TYPE_ID=#{outbreakTypeId}</where>
+	</update>
+	
+	<select id="get" resultType="by001Bfgz">
+		select <include refid="commCols"/> from BY001_BFGZ
+  		<where>OUTBREAK_TYPE_ID=#{outbreakTypeId}</where>
+	</select>
+	
+	
+	<select id="findBy001BfgzCount" parameterType="by001Bfgz" resultType="int">
+		select count(*) from BY001_BFGZ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="by001Bfgz">
+		select <include refid="commCols"/> from BY001_BFGZ
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

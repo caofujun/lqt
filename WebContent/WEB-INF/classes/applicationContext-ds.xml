@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- 业务库dataSource -->
+	<bean id="dataSource" class="com.nis.comm.utils.DesBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@dev.gklqt.com:51521/orcl" />
+		<property name="username" value="nisxy" />
+		<property name="password" value="aG5jc2xxdDk5" />	
+ 		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="3" />
+		<!-- 连接池最大使用连接数量 -->
+		<property name="maxActive" value="200" />
+		<!-- 连接池最大空闲 -->
+		<property name="maxIdle" value="30" />
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="3" />
+		<property name="logAbandoned" value="true" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="100" />
+		<!-- 获取连接最大等待时间 -->
+		<property name="maxWait" value="60000" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="true" />
+		<property name="testOnReturn" value="true" />
+		<property name="validationQuery" value="select 1 from dual " />
+		<property name="timeBetweenEvictionRunsMillis" value="5000" />
+		<property name="numTestsPerEvictionRun" value="1" />
+	</bean>
+
+	<!-- 中间库dataSource -->
+	<bean id="jk_dataSource" class="com.nis.comm.utils.DesBasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@dev.gklqt.com:51521/orcl" />
+		<property name="username" value="nis_jk_jl" />
+		<property name="password" value="aG5jc2xxdDk5" />
+		<property name="initialSize" value="3" />
+		<property name="maxActive" value="200" />
+		<property name="maxIdle" value="30" />
+		<property name="minIdle" value="6" />
+		<property name="logAbandoned" value="true" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="100" />
+		<property name="maxWait" value="60000" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="true" />
+		<property name="testOnReturn" value="true" />
+		<property name="validationQuery" value="select 1 from dual " />
+		<property name="timeBetweenEvictionRunsMillis" value="5000" />
+		<property name="numTestsPerEvictionRun" value="1" />
+	</bean>
+
+</beans>

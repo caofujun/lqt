@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw009KssqDao">
+
+	<sql id="commCols_mysql">
+		user_id userId,dept_id deptId
+	</sql>
+
+	<select id="findHw009Kssq_mysql" parameterType="hw009Kssq" resultType="hw009Kssq">
+		select <include refid="commCols_mysql"/> from hw009_kssq
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

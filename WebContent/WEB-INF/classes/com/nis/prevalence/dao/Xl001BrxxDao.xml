@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl001BrxxDao">
+
+	<sql id="commCols">
+		sqyykjyw sqyykjyw,sqjy sqjy,fszl fszl,hxzl hxzl,xytx xytx,myyzj myyzj,tpzjs tpzjs,djmcg djmcg,mndcg mndcg,syhxj syhxj,qgcg qgcg,qgqk qgqk,ywmndcg ywmndcg,ywdjmcg ywdjmcg,ywqgqqg ywqgqqg,ywsyychxj ywsyychxj,state state,spyshkjyw spyshkjyw,kjywmc1 kjywmc1,kjywmc2 kjywmc2,kjywmc3 kjywmc3,kjywmc4 kjywmc4,aiz aiz,tyb tyb,xyjb xyjb,yybl yybl,dlsykjyw dlsykjyw,brid brid,year year,month month,zyid zyid,patient_id patientId,patient_name patientName,visit_id visitId,dept_id deptId,dept_name deptName,bed_no bedNo,reg_id regId,sex sex,age age,age_unit ageUnit,diagnose_id diagnoseId,diagnose diagnose,is_oper isOper,is_grade1 isGrade1,is_grade2 isGrade2,is_grade3 isGrade3,is_grade4 isGrade4,is_infect isInfect,is_ca isCa,is_ha isHa,pop pop,sykjyw sykjyw,yymd yymd,lhyy lhyy,zlyyspy zlyyspy,voteid voteid,votename votename,votedate votedate,last_at lastAt,is_edit isEdit,syrsnj syrsnj,qtqxxcc qtqxxcc,wj wj,cj cj,xzj xzj,hj hj,sezcj sezcj,oper_name1 operName1,oper_name2 operName2,grade_type2 gradeType2
+	</sql>
+
+	<insert id="save" parameterType="xl001Brxx" flushCache="true">
+		 insert into xl001_brxx(sqyykjyw,sqjy,fszl,hxzl,xytx,myyzj,tpzjs,djmcg,mndcg,syhxj,qgcg,qgqk,ywmndcg,ywdjmcg,ywqgqqg,ywsyychxj,state,spyshkjyw,kjywmc1,kjywmc2,kjywmc3,kjywmc4,aiz,tyb,xyjb,yybl,dlsykjyw,brid,year,month,zyid,patient_id,patient_name,visit_id,dept_id,dept_name,bed_no,reg_id,sex,age,age_unit,diagnose_id,diagnose,is_oper,is_grade1,is_grade2,is_grade3,is_grade4,is_infect,is_ca,is_ha,pop,sykjyw,yymd,lhyy,zlyyspy,voteid,votename,votedate,last_at,is_edit,syrsnj,qtqxxcc,wj,cj,xzj,hj,sezcj,oper_name1,oper_name2,grade_type2)
+		 values(#{sqyykjyw},#{sqjy},#{fszl},#{hxzl},#{xytx},#{myyzj},#{tpzjs},#{djmcg},#{mndcg},#{syhxj},#{qgcg},#{qgqk},#{ywmndcg},#{ywdjmcg},#{ywqgqqg},#{ywsyychxj},#{state},#{spyshkjyw},#{kjywmc1},#{kjywmc2},#{kjywmc3},#{kjywmc4},#{aiz},#{tyb},#{xyjb},#{yybl},#{dlsykjyw},#{brid},#{year},#{month},#{zyid},#{patientId},#{patientName},#{visitId},#{deptId},#{deptName},#{bedNo},#{regId},#{sex},#{age},#{ageUnit},#{diagnoseId},#{diagnose},#{isOper},#{isGrade1},#{isGrade2},#{isGrade3},#{isGrade4},#{isInfect},#{isCa},#{isHa},#{pop},#{sykjyw},#{yymd},#{lhyy},#{zlyyspy},#{voteid},#{votename},#{votedate},#{lastAt},#{isEdit},#{syrsnj},#{qtqxxcc},#{wj},#{cj},#{xzj},#{hj},#{sezcj},#{operName1},#{operName2},#{gradeType2})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl001_brxx
+		<where>brid=#{brid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl001Brxx" flushCache="true">
+		update xl001_brxx
+		<set>
+			sqyykjyw=#{sqyykjyw},sqjy=#{sqjy},fszl=#{fszl},hxzl=#{hxzl},xytx=#{xytx},myyzj=#{myyzj},tpzjs=#{tpzjs},djmcg=#{djmcg},mndcg=#{mndcg},syhxj=#{syhxj},qgcg=#{qgcg},qgqk=#{qgqk},ywmndcg=#{ywmndcg},ywdjmcg=#{ywdjmcg},ywqgqqg=#{ywqgqqg},ywsyychxj=#{ywsyychxj},state=#{state},spyshkjyw=#{spyshkjyw},kjywmc1=#{kjywmc1},kjywmc2=#{kjywmc2},kjywmc3=#{kjywmc3},kjywmc4=#{kjywmc4},aiz=#{aiz},tyb=#{tyb},xyjb=#{xyjb},yybl=#{yybl},dlsykjyw=#{dlsykjyw},brid=#{brid},year=#{year},month=#{month},zyid=#{zyid},patient_id=#{patientId},patient_name=#{patientName},visit_id=#{visitId},dept_id=#{deptId},dept_name=#{deptName},bed_no=#{bedNo},reg_id=#{regId},sex=#{sex},age=#{age},age_unit=#{ageUnit},diagnose_id=#{diagnoseId},diagnose=#{diagnose},is_oper=#{isOper},is_grade1=#{isGrade1},is_grade2=#{isGrade2},is_grade3=#{isGrade3},is_grade4=#{isGrade4},is_infect=#{isInfect},is_ca=#{isCa},is_ha=#{isHa},pop=#{pop},sykjyw=#{sykjyw},yymd=#{yymd},lhyy=#{lhyy},zlyyspy=#{zlyyspy},voteid=#{voteid},votename=#{votename},votedate=#{votedate},last_at=#{lastAt},is_edit=#{isEdit},syrsnj=#{syrsnj},qtqxxcc=#{qtqxxcc},wj=#{wj},cj=#{cj},xzj=#{xzj},hj=#{hj},sezcj=#{sezcj},oper_name1=#{operName1},oper_name2=#{operName2},grade_type2=#{gradeType2}
+		</set>
+		<where>brid=#{brid}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update xl001_brxx
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='sqyykjyw'">sqyykjyw=#{xl001Brxx.sqyykjyw},</when>
+					<when test="item=='sqjy'">sqjy=#{xl001Brxx.sqjy},</when>
+					<when test="item=='fszl'">fszl=#{xl001Brxx.fszl},</when>
+					<when test="item=='hxzl'">hxzl=#{xl001Brxx.hxzl},</when>
+					<when test="item=='xytx'">xytx=#{xl001Brxx.xytx},</when>
+					<when test="item=='myyzj'">myyzj=#{xl001Brxx.myyzj},</when>
+					<when test="item=='tpzjs'">tpzjs=#{xl001Brxx.tpzjs},</when>
+					<when test="item=='djmcg'">djmcg=#{xl001Brxx.djmcg},</when>
+					<when test="item=='mndcg'">mndcg=#{xl001Brxx.mndcg},</when>
+					<when test="item=='syhxj'">syhxj=#{xl001Brxx.syhxj},</when>
+					<when test="item=='qgcg'">qgcg=#{xl001Brxx.qgcg},</when>
+					<when test="item=='qgqk'">qgqk=#{xl001Brxx.qgqk},</when>
+					<when test="item=='ywmndcg'">ywmndcg=#{xl001Brxx.ywmndcg},</when>
+					<when test="item=='ywdjmcg'">ywdjmcg=#{xl001Brxx.ywdjmcg},</when>
+					<when test="item=='ywqgqqg'">ywqgqqg=#{xl001Brxx.ywqgqqg},</when>
+					<when test="item=='ywsyychxj'">ywsyychxj=#{xl001Brxx.ywsyychxj},</when>
+					<when test="item=='state'">state=#{xl001Brxx.state},</when>
+					<when test="item=='spyshkjyw'">spyshkjyw=#{xl001Brxx.spyshkjyw},</when>
+					<when test="item=='kjywmc1'">kjywmc1=#{xl001Brxx.kjywmc1},</when>
+					<when test="item=='kjywmc2'">kjywmc2=#{xl001Brxx.kjywmc2},</when>
+					<when test="item=='kjywmc3'">kjywmc3=#{xl001Brxx.kjywmc3},</when>
+					<when test="item=='kjywmc4'">kjywmc4=#{xl001Brxx.kjywmc4},</when>
+					<when test="item=='aiz'">aiz=#{xl001Brxx.aiz},</when>
+					<when test="item=='tyb'">tyb=#{xl001Brxx.tyb},</when>
+					<when test="item=='xyjb'">xyjb=#{xl001Brxx.xyjb},</when>
+					<when test="item=='yybl'">yybl=#{xl001Brxx.yybl},</when>
+					<when test="item=='dlsykjyw'">dlsykjyw=#{xl001Brxx.dlsykjyw},</when>
+					<when test="item=='year'">year=#{xl001Brxx.year},</when>
+					<when test="item=='month'">month=#{xl001Brxx.month},</when>
+					<when test="item=='zyid'">zyid=#{xl001Brxx.zyid},</when>
+					<when test="item=='patientId'">patient_id=#{xl001Brxx.patientId},</when>
+					<when test="item=='patientName'">patient_name=#{xl001Brxx.patientName},</when>
+					<when test="item=='visitId'">visit_id=#{xl001Brxx.visitId},</when>
+					<when test="item=='deptId'">dept_id=#{xl001Brxx.deptId},</when>
+					<when test="item=='deptName'">dept_name=#{xl001Brxx.deptName},</when>
+					<when test="item=='bedNo'">bed_no=#{xl001Brxx.bedNo},</when>
+					<when test="item=='regId'">reg_id=#{xl001Brxx.regId},</when>
+					<when test="item=='sex'">sex=#{xl001Brxx.sex},</when>
+					<when test="item=='age'">age=#{xl001Brxx.age},</when>
+					<when test="item=='ageUnit'">age_unit=#{xl001Brxx.ageUnit},</when>
+					<when test="item=='diagnoseId'">diagnose_id=#{xl001Brxx.diagnoseId},</when>
+					<when test="item=='diagnose'">diagnose=#{xl001Brxx.diagnose},</when>
+					<when test="item=='isOper'">is_oper=#{xl001Brxx.isOper},</when>
+					<when test="item=='isGrade1'">is_grade1=#{xl001Brxx.isGrade1},</when>
+					<when test="item=='isGrade2'">is_grade2=#{xl001Brxx.isGrade2},</when>
+					<when test="item=='isGrade3'">is_grade3=#{xl001Brxx.isGrade3},</when>
+					<when test="item=='isGrade4'">is_grade4=#{xl001Brxx.isGrade4},</when>
+					<when test="item=='isInfect'">is_infect=#{xl001Brxx.isInfect},</when>
+					<when test="item=='isCa'">is_ca=#{xl001Brxx.isCa},</when>
+					<when test="item=='isHa'">is_ha=#{xl001Brxx.isHa},</when>
+					<when test="item=='pop'">pop=#{xl001Brxx.pop},</when>
+					<when test="item=='sykjyw'">sykjyw=#{xl001Brxx.sykjyw},</when>
+					<when test="item=='yymd'">yymd=#{xl001Brxx.yymd},</when>
+					<when test="item=='lhyy'">lhyy=#{xl001Brxx.lhyy},</when>
+					<when test="item=='zlyyspy'">zlyyspy=#{xl001Brxx.zlyyspy},</when>
+					<when test="item=='voteid'">voteid=#{xl001Brxx.voteid},</when>
+					<when test="item=='votename'">votename=#{xl001Brxx.votename},</when>
+					<when test="item=='votedate'">votedate=#{xl001Brxx.votedate},</when>
+					<when test="item=='lastAt'">last_at=#{xl001Brxx.lastAt},</when>
+					<when test="item=='isEdit'">is_edit=#{xl001Brxx.isEdit},</when>
+					<when test="item=='syrsnj'">syrsnj=#{xl001Brxx.syrsnj},</when>
+					<when test="item=='qtqxxcc'">qtqxxcc=#{xl001Brxx.qtqxxcc},</when>
+					<when test="item=='wj'">wj=#{xl001Brxx.wj},</when>
+					<when test="item=='cj'">cj=#{xl001Brxx.cj},</when>
+					<when test="item=='xzj'">xzj=#{xl001Brxx.xzj},</when>
+					<when test="item=='hj'">hj=#{xl001Brxx.hj},</when>
+					<when test="item=='sezcj'">sezcj=#{xl001Brxx.sezcj},</when>
+					<when test="item=='operName1'">oper_name1=#{xl001Brxx.operName1},</when>
+					<when test="item=='operName2'">oper_name2=#{xl001Brxx.operName2},</when>
+					<when test="item=='gradeType2'">grade_type2=#{xl001Brxx.gradeType2},</when>
+				</choose>
+			</foreach>
+			brid=#{xl001Brxx.brid}
+		</set>
+		<where>brid=#{xl001Brxx.brid}</where>
+	</update>
+	
+	<select id="get" resultType="xl001Brxx">
+		select <include refid="commCols"/> from xl001_brxx
+  		<where>brid=#{brid}</where>
+	</select>
+	
+	<select id="findXl001BrxxCount" parameterType="xl001Brxx" resultType="int">
+		select count(*) from xl001_brxx
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl001Brxx">
+		select <include refid="commCols"/> from xl001_brxx
+		<where>
+		</where>
+	</select>
+	
+	<select id="pageFindListCount" parameterType="xl001Brxx" resultType="int">
+		select count(*) from xl001_brxx xl1
+		<where>
+			<if test="searchString!=null and searchString!=''">
+		    	and (xl1.zyid like concat(concat('%',#{searchString}), '%') or xl1.patient_id like concat(concat('%',#{searchString}), '%')  or xl1.patient_name like concat(concat('%',#{searchString}), '%')) 
+		    </if>
+		    <if test="queryStartDate!=null">
+				and xl1.votedate &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and xl1.votedate &lt;= #{queryEndDate}
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and xl1.dept_id = #{deptId}
+			</if>
+			<if test="state!=null">
+				and xl1.state = #{state}
+			</if>
+			<if test="isCa!=null">
+				and xl1.is_ca = #{isCa}
+			</if>
+			<if test="isHa!=null">
+				and xl1.is_ha = #{isHa}
+			</if>
+		</where>
+	</select>
+	
+	<select id="callPNis6TaskXhl" statementType="CALLABLE" parameterType="map" resultType="map">
+		{call p_nis6_task_xhl(#{startDate,mode=IN,jdbcType=DATE},#{endDate,mode=IN,jdbcType=DATE},#{typeId,mode=IN,jdbcType=VARCHAR},#{status,mode=OUT,jdbcType=VARCHAR})}
+	</select>
+	
+	<select id="findWaitRegisterCount" parameterType="xl001Brxx" resultType="int">
+		select count(*) from xl001_brxx
+		<where>
+			state=0
+			<if test="deptId!=null and deptId!=''">
+				and dept_id = #{deptId}
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Gr018BcgrysTestDao">
+
+	<sql id="commCols_mysql">
+		ZYID zyid,BC_ID bcId,ELEMENT_ID elementId,ELEMENT_NAME elementName,DATA_FORM dataForm,ENTER_DATE enterDate,MONI_DATE moniDate
+	</sql>
+
+	<select id="findGr018BcgrysTest_mysql" parameterType="gr018BcgrysTest" resultType="gr018BcgrysTest">
+		select <include refid="commCols_mysql"/> from GR018_BCGRYS_TEST
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw002JcbzDao">
+
+	<sql id="commCols">
+		item_id itemId,item_name itemName,class_id classId,condition condition,criterion criterion,unit unit,bh_code bhCode,sp_code spCode,wb_code wbCode,memo memo,flag flag,last_at lastAt,pitem_id pitemId
+	</sql>
+
+	<insert id="save" parameterType="hw002Jcbz" flushCache="true">
+		 insert into hw002_jcbz(item_id,item_name,class_id,condition,criterion,unit,bh_code,sp_code,wb_code,memo,flag,last_at,pitem_id)
+		 values(#{itemId},#{itemName},#{classId},#{condition},#{criterion},#{unit},#{bhCode},#{spCode},#{wbCode},#{memo},#{flag},#{lastAt},#{pitemId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw002_jcbz
+		<where>item_id=#{itemId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw002Jcbz" flushCache="true">
+		update hw002_jcbz
+		<set>
+			item_id=#{itemId},item_name=#{itemName},class_id=#{classId},condition=#{condition},criterion=#{criterion},unit=#{unit},bh_code=#{bhCode},sp_code=#{spCode},wb_code=#{wbCode},memo=#{memo},flag=#{flag},last_at=#{lastAt},pitem_id=#{pitemId}
+		</set>
+		<where>item_id=#{itemId}</where>
+	</update>
+	
+	<select id="get" resultType="hw002Jcbz">
+		select <include refid="commCols"/> from hw002_jcbz
+  		<where>item_id=#{itemId}</where>
+	</select>
+	
+	
+	<select id="findHw002JcbzCount" parameterType="hw002Jcbz" resultType="int">
+		select count(*) from hw002_jcbz
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw002Jcbz">
+		select <include refid="commCols"/> from hw002_jcbz
+		<where>
+		</where>
+	</select>
+	
+</mapper>

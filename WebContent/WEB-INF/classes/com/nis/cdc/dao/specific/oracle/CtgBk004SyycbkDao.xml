@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk004SyycbkDao">
+
+	<sql id="commCols_oracle">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,PATIENT_NAME patientName,SEX sex,BIRTHDAY birthday,ID_TYPE idType,ID_TYPE_NAME idTypeName,ID id,ADDR addr,ADDRCODE addrcode,REGISTERADDR registeraddr,REGISTERAREACODE registerareacode,TELEPHONE telephone,MOBILE_PHONE mobilePhone,START_DATE startDate,DIAGNOSE_DATE diagnoseDate,SYMPTOMS symptoms,SYMPTOMS_OTHER symptomsOther,DIGESTIVES digestives,DIGESTIVE_OTHER digestiveOther,RESPIRATORYS respiratorys,RESPIRATORY_OTHER respiratoryOther,CARDIOVASCULARS cardiovasculars,CARDIOVASCULAR_OTHER cardiovascularOther,URINARYS urinarys,URINARY_OTHER urinaryOther,NERVOUS nervous,NERVOU_OTHER nervouOther,SKINS skins,SKIN_OTHER skinOther,OTHER_SYMPTOM otherSymptom,SIGN sign,LAB_RESULT labResult,ASSIST_RESULT assistResult,MAIN_DIAGNOSIS mainDiagnosis,PATHOGENESIS pathogenesis,FOODS foods,REPORT_REASON reportReason,REPORTDT reportdt,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,FLAG flag,VALIDDT validdt,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,REJECT_REASON rejectReason,PATHOGENESIS_OTHER pathogenesisOther,ISEMPTYCARD isemptycard,AGE age,AGEUNIT ageUnit
+	</sql>
+
+	
+	<select id="findCtgBk004Syycbk_oracle" parameterType="ctgBk004Syycbk" resultType="ctgBk004Syycbk">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_BK004_SYYCBK
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

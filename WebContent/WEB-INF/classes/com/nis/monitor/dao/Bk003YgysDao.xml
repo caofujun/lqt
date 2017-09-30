@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk003YgysDao">
+
+	<sql id="commCols">
+		card_relid cardRelid,refid refid,factor_id factorId,factor_name factorName,is_flag isFlag,id id
+	</sql>
+
+	<insert id="save" parameterType="bk003Ygys" flushCache="true">
+		 insert into bk003_ygys(card_relid,refid,factor_id,factor_name,is_flag,id)
+		 values(#{cardRelid},#{refid},#{factorId},#{factorName},#{isFlag},#{id})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from bk003_ygys
+		<where>id=#{id}</where>
+	</delete>
+	
+	<delete id="delByRefid" flushCache="true">
+		delete from bk003_ygys
+		<where>refid=#{refid}</where>
+	</delete>
+	
+	<delete id="delSusceptFactors" flushCache="true">
+		delete from bk003_ygys
+		<where>
+			refid=#{refid}
+			<if test="factorIdIn!=null and factorIdIn.size!=0">
+		    	and factor_id not in 
+				<foreach collection="factorIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="bk003Ygys" flushCache="true">
+		update bk003_ygys
+		<set>
+			card_relid=#{cardRelid},refid=#{refid},factor_id=#{factorId},factor_name=#{factorName},is_flag=#{isFlag},id=#{id}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="bk003Ygys">
+		select <include refid="commCols"/> from bk003_ygys
+  		<where>id=#{id}</where>
+	</select>
+	
+	<select id="findBk003YgysCount" parameterType="bk003Ygys" resultType="int">
+		select count(*) from bk003_ygys
+		<where>1=1
+			<if test="refid!=null and refid!=''">
+				and refid=#{refid}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findBk003YgysList" parameterType="bk003Ygys" resultType="bk003Ygys">
+		select <include refid="commCols"/> from bk003_ygys
+		<where>1=1
+			<if test="refid!=null and refid!=''">
+				and refid=#{refid}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="bk003Ygys">
+		select <include refid="commCols"/> from bk003_ygys
+		<where>
+		</where>
+	</select>
+	
+	<select id="findSusceptFactors" resultType="bk003Ygys">
+		select factor_id factorId,factor_name factorName,id id 
+  		from bk003_ygys
+		<where>
+			refid = #{refid}
+		</where>
+	</select>
+	
+	<select id="findByRefidAndFactorId" parameterType="bk003Ygys" resultType="bk003Ygys" >
+		select <include refid="commCols"/> from bk003_ygys
+		<where>
+			refid=#{refid} and factor_id=#{factorId}
+		</where>
+	</select>
+</mapper>

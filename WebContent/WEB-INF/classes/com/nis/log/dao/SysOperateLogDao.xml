@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.log.dao.SysOperateLogDao">
+
+	<sql id="commCols">
+		ID id,UNIT_ID unitId,USERNAME username,ACTION action,CONTENT content,SQLS sqls,IP ip,OPERATE_TIME operateTime
+	</sql>
+
+	<insert id="save" parameterType="sysOperateLog" flushCache="true">
+		 insert into SYS_OPERATE_LOG(ID,UNIT_ID,USERNAME,ACTION,CONTENT,SQLS,IP,OPERATE_TIME)
+		 values(#{id},#{unitId},#{username},#{action},#{content},#{sqls},#{ip},#{operateTime})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from SYS_OPERATE_LOG
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysOperateLog" flushCache="true">
+		update SYS_OPERATE_LOG
+		<set>
+			ID=#{id},UNIT_ID=#{unitId},USERNAME=#{username},ACTION=#{action},CONTENT=#{content},SQLS=#{sqls},IP=#{ip},OPERATE_TIME=#{operateTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="sysOperateLog">
+		select <include refid="commCols"/> from SYS_OPERATE_LOG
+		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findSysOperateLogCount" parameterType="sysOperateLog" resultType="int">
+		select count(*) from SYS_OPERATE_LOG
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="username!=null and username!=''"> and USERNAME LIKE CONCAT(CONCAT('%',#{username}),'%')</if>
+			<choose>
+			<when test="queryStartDate != null and queryEndDate == null">
+				and OPERATE_TIME &gt; #{queryStartDate}
+			</when>
+			<when test="queryStartDate == null and queryEndDate != null">
+				and OPERATE_TIME &lt; #{queryEndDate}
+			</when>
+			<when test="queryStartDate != null and queryEndDate != null">
+				and OPERATE_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</when>
+			</choose>
+			<if test="action != null">and ACTION=#{action}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="sysOperateLog">
+		select <include refid="commCols"/> from SYS_OPERATE_LOG
+		<where>
+		</where>
+	</select>
+</mapper>

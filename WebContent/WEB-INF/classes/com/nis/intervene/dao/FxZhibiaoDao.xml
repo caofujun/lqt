@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxZhibiaoDao">
+
+	<sql id="commCols">
+		ZB_ID zbId,ZB_NAME zbName,ZB_CLASS zbClass,ZB_VALUE zbValue,ZB_SCORE zbScore,IS_GY isGy,ZB_TYPE zbType,QID qid
+	</sql>
+
+	<insert id="save" parameterType="fxZhibiao"  flushCache="true">
+		 insert into FX_ZHIBIAO(ZB_ID,ZB_NAME,ZB_CLASS,ZB_VALUE,ZB_SCORE,IS_GY,ZB_TYPE,QID)
+		 values(#{zbId},#{zbName},#{zbClass},#{zbValue},#{zbScore},#{isGy},#{zbType},#{qid})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  FX_ZHIBIAO
+		<where>ZB_ID=#{zbId}</where>
+	</delete>
+	
+	<update id="update" parameterType="fxZhibiao" flushCache="true">
+		update FX_ZHIBIAO
+		<set>
+			ZB_ID=#{zbId},ZB_NAME=#{zbName},ZB_CLASS=#{zbClass},ZB_VALUE=#{zbValue},ZB_SCORE=#{zbScore},IS_GY=#{isGy},ZB_TYPE=#{zbType},QID=#{qid}
+		</set>
+		<where>ZB_ID=#{zbId}</where>
+	</update>
+	
+	<select id="get" resultType="fxZhibiao">
+		select <include refid="commCols"/> from FX_ZHIBIAO
+  		<where>ZB_ID=#{zbId}</where>
+	</select>
+	
+	
+	<select id="findFxZhibiaoCount" parameterType="fxZhibiao" resultType="int">
+		select count(*) from FX_ZHIBIAO
+		<where>
+			<if test="searchString!=null and searchString!=''">
+				ZB_NAME like CONCAT(CONCAT('%', #{searchString}), '%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="fxZhibiao">
+		select <include refid="commCols"/> from FX_ZHIBIAO
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByzbClass"  resultType="fxZhibiao">
+		select <include refid="commCols"/> from FX_ZHIBIAO
+		<where>
+			ZB_CLASS=#{zbClass}
+		</where>
+	</select>
+	
+</mapper>

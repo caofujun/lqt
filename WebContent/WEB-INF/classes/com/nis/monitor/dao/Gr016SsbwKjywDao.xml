@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr016SsbwKjywDao">
+
+	<sql id="commCols">
+		date_section dateSection,memo memo,yz_id yzId,relid relid,refid refid,oper_type_id operTypeId,isselect isselect,
+		order_type orderType,order_at orderAt,stop_at stopAt,order_name orderName,dose dose,dosage_unit dosageUnit,qty qty,
+		frequency frequency,daily_times dailyTimes,admin_route_name adminRouteName,execute_name executeName,
+		execute_time executeTime,pre_yymd preYymd,szyzjyyewzj szyzjyyewzj
+	</sql>
+
+	<insert id="save" parameterType="gr016SsbwKjyw" flushCache="true">
+		 insert into gr016_ssbw_kjyw(date_section,memo,yz_id,relid,refid,oper_type_id,isselect,order_type,order_at,stop_at,
+		 order_name,dose,dosage_unit,qty,frequency,daily_times,admin_route_name,execute_name,execute_time,pre_yymd,szyzjyyewzj)
+		 values(#{dateSection},#{memo},#{yzId},#{relid},#{refid},#{operTypeId},#{isselect},#{orderType},#{orderAt},
+		 #{stopAt},#{orderName},#{dose},#{dosageUnit},#{qty},#{frequency},#{dailyTimes},#{adminRouteName},#{executeName},
+		 #{executeTime},#{preYymd},#{szyzjyyewzj})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from gr016_ssbw_kjyw
+		<where>relid=#{relid}</where>
+	</delete>
+	
+	<update id="update" parameterType="gr016SsbwKjyw" flushCache="true">
+		update gr016_ssbw_kjyw
+		<set>
+			date_section=#{dateSection},memo=#{memo},yz_id=#{yzId},relid=#{relid},refid=#{refid},
+			oper_type_id=#{operTypeId},isselect=#{isselect},order_type=#{orderType},order_at=#{orderAt},stop_at=#{stopAt},
+			order_name=#{orderName},dose=#{dose},dosage_unit=#{dosageUnit},qty=#{qty},frequency=#{frequency},
+			daily_times=#{dailyTimes},admin_route_name=#{adminRouteName},execute_name=#{executeName},
+			pre_yymd=#{preYymd},szyzjyyewzj=#{szyzjyyewzj}
+		</set>
+		<where>relid=#{relid}</where>
+	</update>
+	
+	<select id="get" resultType="gr016SsbwKjyw">
+		select <include refid="commCols"/> from gr016_ssbw_kjyw
+  		<where>relid=#{relid}</where>
+	</select>
+	
+	
+	<select id="findGr016SsbwKjywCount" parameterType="gr016SsbwKjyw" resultType="int">
+		select count(*) from gr016_ssbw_kjyw
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="gr016SsbwKjyw">
+		select <include refid="commCols"/> from gr016_ssbw_kjyw
+		<where>
+		</where>
+	</select>
+	
+	<select id="findYzIdByRefid" resultType="string">
+		select yz_id yzId from gr016_ssbw_kjyw
+		<where>
+			refid=#{refid} and oper_type_id=#{operTypeId} 
+		</where>
+	</select>
+</mapper>

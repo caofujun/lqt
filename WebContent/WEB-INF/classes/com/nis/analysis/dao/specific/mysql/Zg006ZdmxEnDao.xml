@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Zg006ZdmxEnDao">
+
+	<sql id="commCols_mysql">
+		MX_ID mxId,INFECT_CODE infectCode,STANDARD_NO standardNo,NODE_LEVEL nodeLevel,NODE_ID nodeId,NODE_BODY nodeBody,IF_BASE_ELEMENT ifBaseElement,ELEMENT_ID elementId,ELEMENT_NAME elementName,IF_MUST ifMust,LIST_COUNT listCount,NEED_COUNT needCount,WEIGHT_VALUE weightValue,P_NODE_ID pNodeId,WEIGHT_RATIO weightRatio,NODE_TYPE nodeType,NODE_TYPE2 nodeType2
+	</sql>
+
+	<select id="findZg006ZdmxEn_mysql" parameterType="zg006ZdmxEn" resultType="zg006ZdmxEn">
+		select <include refid="commCols_mysql"/> from ZG006_ZDMX_EN
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

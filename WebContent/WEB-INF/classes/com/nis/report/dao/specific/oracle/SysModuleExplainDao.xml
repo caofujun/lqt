@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.report.dao.SysModuleExplainDao">
+
+	<sql id="commCols_oracle">
+		MID mid,MK_NAME mkName,MK_EXPLAIN mkExplain,UPDATE_TIME updateTime,CREATE_USER createUser,REALNAME createName
+	</sql>
+
+	
+	<select id="findSysModuleExplain_oracle" parameterType="sysModuleExplain" resultType="sysModuleExplain">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from SYS_MODULE_EXPLAIN join AC_ACCOUNT  
+        on CREATE_USER=USER_ID
+		<where>
+			1=1
+			
+		<if test="mkName!=null and mkName !='' ">
+			and MK_NAME LIKE CONCAT(CONCAT('%', #{mkName}),'%') 
+		</if>
+			
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr002YsgrMxDao">
+
+	<sql id="commCols">
+		exclude_name excludeName,yj_infect_code yjInfectCode,infect_dept_id infectDeptId,reg_id regId,zyid zyid,infect_code infectCode,infect_name infectName,cause cause,count count,start_at startAt,stop_at stopAt,fever_days feverDays,blood_test_unusual_count bloodTestUnusualCount,blood_test_count bloodTestCount,relid relid,state state,moni_at moniAt,operator operator,suspected_degree suspectedDegree,report_type reportType,infect_type_id infectTypeId,dept_id deptId,is_dc isDc,conf_date confDate,standard_no standardNo,custom_infect_code customInfectCode,custom_infect_name customInfectName,remark remark,lastoper_date lastoperDate,gr2_relid gr2Relid,TEST_ORDER_NOS testOrderNos
+	</sql>
+
+	<insert id="save" parameterType="gr002YsgrMx" flushCache="true">
+		 insert into gr002_ysgr_mx${tablename}(exclude_name,yj_infect_code,infect_dept_id,reg_id,zyid,infect_code,infect_name,cause,count,start_at,stop_at,fever_days,blood_test_unusual_count,blood_test_count,relid,state,moni_at,operator,suspected_degree,report_type,infect_type_id,dept_id,is_dc,conf_date,standard_no,custom_infect_code,custom_infect_name,remark,lastoper_date,gr2_relid,TEST_ORDER_NOS)
+		 values(#{excludeName},#{yjInfectCode},#{infectDeptId},#{regId},#{zyid},#{infectCode},#{infectName},#{cause},#{count},#{startAt},#{stopAt},#{feverDays},#{bloodTestUnusualCount},#{bloodTestCount},#{relid},#{state},#{moniAt},#{operator},#{suspectedDegree},#{reportType},#{infectTypeId},#{deptId},#{isDc},#{confDate},#{standardNo},#{customInfectCode},#{customInfectName},#{remark},#{lastoperDate},#{gr2Relid},#{testOrderNos})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from gr002_ysgr_mx
+		<where>reg_id=#{regId}</where>
+	</delete>
+	
+	<delete id="delByGr2Relid" flushCache="true">
+		delete from gr002_ysgr_mx
+		<where>gr2_relid=#{gr2Relid}</where>
+	</delete>
+	
+	<update id="update" parameterType="gr002YsgrMx" flushCache="true">
+		update gr002_ysgr_mx${tablename}
+		<set>
+			exclude_name=#{excludeName},yj_infect_code=#{yjInfectCode},infect_dept_id=#{infectDeptId},reg_id=#{regId},zyid=#{zyid},infect_code=#{infectCode},infect_name=#{infectName},cause=#{cause},count=#{count},start_at=#{startAt},stop_at=#{stopAt},fever_days=#{feverDays},blood_test_unusual_count=#{bloodTestUnusualCount},blood_test_count=#{bloodTestCount},relid=#{relid},state=#{state},moni_at=#{moniAt},operator=#{operator},suspected_degree=#{suspectedDegree},report_type=#{reportType},infect_type_id=#{infectTypeId},dept_id=#{deptId},is_dc=#{isDc},conf_date=#{confDate},standard_no=#{standardNo},custom_infect_code=#{customInfectCode},custom_infect_name=#{customInfectName},remark=#{remark},lastoper_date=#{lastoperDate},gr2_relid=#{gr2Relid}
+		</set>
+		<where>reg_id=#{regId}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update gr002_ysgr_mx
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='excludeName'">exclude_name=#{gr002YsgrMx.excludeName},</when>
+					<when test="item=='yjInfectCode'">yj_infect_code=#{gr002YsgrMx.yjInfectCode},</when>
+					<when test="item=='infectDeptId'">infect_dept_id=#{gr002YsgrMx.infectDeptId},</when>
+					<when test="item=='zyid'">zyid=#{gr002YsgrMx.zyid},</when>
+					<when test="item=='infectCode'">infect_code=#{gr002YsgrMx.infectCode},</when>
+					<when test="item=='infectName'">infect_name=#{gr002YsgrMx.infectName},</when>
+					<when test="item=='cause'">cause=#{gr002YsgrMx.cause},</when>
+					<when test="item=='count'">count=#{gr002YsgrMx.count},</when>
+					<when test="item=='startAt'">start_at=#{gr002YsgrMx.startAt},</when>
+					<when test="item=='stopAt'">stop_at=#{gr002YsgrMx.stopAt},</when>
+					<when test="item=='feverDays'">fever_days=#{gr002YsgrMx.feverDays},</when>
+					<when test="item=='bloodTestUnusualCount'">blood_test_unusual_count=#{gr002YsgrMx.bloodTestUnusualCount},</when>
+					<when test="item=='bloodTestCount'">blood_test_count=#{gr002YsgrMx.bloodTestCount},</when>
+					<when test="item=='relid'">relid=#{gr002YsgrMx.relid},</when>
+					<when test="item=='state'">state=#{gr002YsgrMx.state},</when>
+					<when test="item=='moniAt'">moni_at=#{gr002YsgrMx.moniAt},</when>
+					<when test="item=='operator'">operator=#{gr002YsgrMx.operator},</when>
+					<when test="item=='suspectedDegree'">suspected_degree=#{gr002YsgrMx.suspectedDegree},</when>
+					<when test="item=='reportType'">report_type=#{gr002YsgrMx.reportType},</when>
+					<when test="item=='infectTypeId'">infect_type_id=#{gr002YsgrMx.infectTypeId},</when>
+					<when test="item=='deptId'">dept_id=#{gr002YsgrMx.deptId},</when>
+					<when test="item=='isDc'">is_dc=#{gr002YsgrMx.isDc},</when>
+					<when test="item=='confDate'">conf_date=#{gr002YsgrMx.confDate},</when>
+					<when test="item=='standardNo'">standard_no=#{gr002YsgrMx.standardNo},</when>
+					<when test="item=='customInfectCode'">custom_infect_code=#{gr002YsgrMx.customInfectCode},</when>
+					<when test="item=='customInfectName'">custom_infect_name=#{gr002YsgrMx.customInfectName},</when>
+					<when test="item=='remark'">remark=#{gr002YsgrMx.remark},</when>
+					<when test="item=='lastoperDate'">lastoper_date=#{gr002YsgrMx.lastoperDate},</when>
+					<when test="item=='gr2Relid'">gr2_relid=#{gr002YsgrMx.gr2Relid},</when>
+					<when test="item=='testOrderNos'">TEST_ORDER_NOS=#{gr002YsgrMx.testOrderNos},</when>
+				</choose>
+			</foreach>
+			reg_id=#{gr002YsgrMx.regId}
+		</set>
+		<where>reg_id=#{gr002YsgrMx.regId}</where>
+	</update>
+	
+	<update id="updateForReport" parameterType="gr002YsgrMx" flushCache="true">
+		update gr002_ysgr_mx
+		<set>
+			state=3
+		</set>
+		<where>zyid=#{zyid} and (relid is null or relid = '' or relid=#{relid}) and infect_code in (select a.infect_diagn_id from bk002_grzd a where a.refid=#{relid})</where>
+	</update>
+	
+	<update id="updateForDiagnosis1" flushCache="true">
+		update gr002_ysgr_mx
+		<set>
+			state=3
+		</set>
+		<where>zyid=#{zyid} and gr2_relid=#{gr2Relid}</where>
+	</update>
+	
+	<update id="updateForDiagnosis2" parameterType="gr002YsgrMx" flushCache="true">
+		update gr002_ysgr_mx
+		<set>
+			state=3
+		</set>
+		<where>zyid=#{zyid} and infect_code in (select a.infect_diagn_id from bk002_grzd a where a.refid=#{zyid})</where>
+	</update>
+	
+	<update id="updateStateByGr2Relid" flushCache="true">
+		update gr002_ysgr_mx
+		<set>
+			state=#{state}
+		</set>
+		<where>gr2_relid=#{gr2Relid}</where>
+	</update>
+	
+	<update id="updateByGr2Relid" parameterType="gr002YsgrMx" flushCache="true">
+		update gr002_ysgr_mx
+		<set>
+			infect_type_id=#{infectTypeId},start_at=#{startAt},infect_name=#{infectName},infect_dept_id=#{infectDeptId},conf_date=#{confDate},operator=#{operator}
+		</set>
+		<where>gr2_relid=#{gr2Relid}</where>
+	</update>
+	
+	<update id="updGr2RelidNull" flushCache="true">
+		update gr002_ysgr_mx
+		<set>
+			gr2_relid=null
+		</set>
+		<where>gr2_relid=#{gr2Relid}</where>
+	</update>
+	
+	<update id="updSameInfectCode" flushCache="true">
+		update gr002_ysgr_mx m
+	    set (m.start_at, m.state) =
+	        (SELECT zd.infect_date, '2' state
+	           from bk002_grzd zd
+	           join bk001_sbk bk
+	             on zd.refid = bk.relid
+	           join gr002_ysgr_mx mx
+	             on bk.zyid = mx.zyid
+	            and zd.infect_diagn_id = mx.infect_code
+	          where zd.refid = #{refid} and zd.auth_status=1
+	            and zd.infect_type = mx.infect_type_id
+	            and mx.reg_id = m.reg_id) 
+	  	<where> 
+			m.zyid = #{zyid} and m.state = 1 and m.report_type is null
+			and m.infect_code in 
+			<foreach collection="infectCodeList" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach>
+		</where>
+	</update>
+	
+	<select id="findLiveInfect"  resultType="map">
+	select a.dept_id deptId,
+       a.dept_name deptName,
+       a.baseInfect baseInfect,
+       nvl(gm.patients, 0) patients,
+       nvl(bk.fbrc, 0) fbrc,
+       decode(nvl(gm.patients, 0),
+              0,
+              0,
+              round(nvl(bk.fbrc, 0) * 100 / gm.patients, 2)) fbl,
+       nvl(bk.fblc, 0) fblc,
+       decode(nvl(gm.patients, 0),
+              0,
+              0,
+              round(nvl(bk.fblc, 0) * 100 / gm.patients, 2)) fblcl
+  		from zg002_byks a
+  		left join (select deptid dept_id, count(distinct zyid) patients
+               from gm004_jcmx g4
+              where creationdate between TO_DATE(#{startDate}, 'YYYY-MM-DD') and
+                    TO_DATE(#{endDate}, 'YYYY-MM-DD')
+                and typeid = '02'   group by deptid) gm
+    	on a.dept_id = gm.dept_id
+  		left join (select dept_id,
+                    count(distinct zyid) fbrc,
+                    count(zyid) fblc
+                    
+               from (select b2.infect_dept_id dept_id,
+                            b1.zyid,
+                            b2.relation,
+                            b2.infect_diagn_id,
+                            cdc.fl_infect_code
+                       from bk002_grzd b2
+                      inner join bk001_sbk b1
+                         on b2.refid = b1.relid
+                      inner join st003_cryxxb s3
+                         on b1.zyid = s3.zyid
+                      inner join ny_jc_grzdfl_cdc cdc
+                         on b2.infect_diagn_id = cdc.cdc_infect_code
+                      WHERE (trunc(b2.infect_date) BETWEEN
+                            TO_DATE(#{startDate}, 'yyyy-mm-dd') and
+                            TO_DATE(#{endDate}, 'yyyy-mm-dd') or
+                            (b2.infect_date &lt; TO_DATE(#{startDate}, 'yyyy-mm-dd') and
+                            (((b2.jbzg = '未愈' or b2.jbzg is null) and
+                            (nvl(s3.out_at, sysdate) >
+                            TO_DATE(#{startDate}, 'yyyy-mm-dd'))) or
+                            (b2.jbzg in ('治愈', '好转', '死亡', '其它') and
+                            trunc(b2.jbzg_date) between
+                            TO_DATE(#{startDate}, 'yyyy-mm-dd') and
+                            TO_DATE(#{endDate}, 'yyyy-mm-dd')))))
+                        and b2.auth_status = 1)
+              group by dept_id) bk
+   			 on a.dept_id = bk.dept_id
+	<where> patients is not null </where>
+    order by fbl desc
+	</select>
+	
+	<select id="get" resultType="gr002YsgrMx">
+		select <include refid="commCols"/> from gr002_ysgr_mx
+  		<where>reg_id=#{regId}</where>
+	</select>
+	
+	<select id="getByGr2Relid" resultType="gr002YsgrMx">
+		select <include refid="commCols"/> from gr002_ysgr_mx
+  		<where>gr2_relid=#{gr2Relid}</where>
+	</select>
+	
+	<select id="getGr002YsgrMx" resultType="gr002YsgrMx">
+		select gr2.zyid zyid,gr2.reg_id regId,gr2.infect_type_id infectTypeId,gr2.start_at startAt,gr2.conf_date confDate,gr2.operator operator,zg5.infect_name infectName,gr2.infect_dept_id infectDeptId,ks.dept_name infectDeptName,gr2.infect_code infectCode,gr2.lastoper_date lastoperDate,gr2.gr2_relid gr2Relid  
+		from gr002_ysgr_mx gr2 left join zg005_yygrzd zg5 on gr2.infect_code=zg5.infect_code left join zg002_byks ks on gr2.infect_dept_id=ks.dept_id
+  		<where>gr2.reg_id=#{regId}</where>
+	</select>
+	
+	<select id="findGr002YsgrMxCount" parameterType="gr002YsgrMx" resultType="int">
+		select count(*) from gr002_ysgr_mx
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="gr002YsgrMx">
+		select <include refid="commCols"/> from gr002_ysgr_mx
+		<where>
+		</where>
+	</select>
+	
+	<select id="findWarningResults" resultType="gr002YsgrMx">
+		select zg5.infect_name infectName,gr2.infect_type_id infectTypeId,gr2.start_at startAt,gr2.report_type reportType,gr2.state state,dic.dict_name itemName,gr2.infect_code infectCode,gr2.zyid zyid,
+		st3.patient_name patientName,gr2.reg_id regId,gr2.gr2_relid gr2Relid,gr2.exclude_name excludeName,gr2.remark remark,
+		nvl2(gr2.REMARK, gr2.OPERATOR || '，' || to_char(gr2.LASTOPER_DATE, 'yyyy-MM-dd') || gr2.REMARK, '') pcName,  decode(zgb.employee_name,null,acc.realname,zgb.employee_name) pcr, gr2.LASTOPER_DATE lod,
+		nvl2(bk1.report_dr_name, bk1.report_dr_name || '，' || to_char(bk1.report_at, 'yyyy-MM-dd') || '上报', '') reportDrName,bk1.report_dr_name rdn,bk1.report_at ra,nvl2(bk2.auth_username, bk2.auth_username || '，' || to_char(bk2.auth_at, 'yyyy-MM-dd') || '确认', '') auditDrName, bk2.auth_username au,bk2.auth_at aa
+		from gr002_ysgr_mx gr2 left join sys_dict dic on dic.dict_code = gr2.state and dic.dict_type_code = 'infect_state'
+		left join zg005_yygrzd zg5 on zg5.infect_code=gr2.infect_code left join st003_cryxxb st3 on gr2.zyid=st3.zyid 
+		left join bk001_sbk bk1 on bk1.relid=gr2.relid left join bk002_grzd bk2 on bk2.relid=gr2.gr2_relid left join zg003_yyzg zgb on gr2.operator = zgb.employee_id left join ac_account acc on gr2.operator = acc.username
+		<where>
+			gr2.zyid=#{zyid} and gr2.suspected_degree >= #{qzValue}
+			<if test="infectTypeId!=null">
+				and gr2.infect_type_id=#{infectTypeId}
+			</if>
+			<if test="regId!=null and regId!=''">
+				and gr2.reg_id=#{regId}
+			</if>
+			<if test="gr2Relid!=null and gr2Relid!=''">
+				and gr2.gr2_relid=#{gr2Relid}
+			</if>
+		</where>
+		order by gr2.infect_type_id, gr2.state, gr2.start_at desc, gr2.suspected_degree desc
+	</select>
+	
+	<select id="findHasRuleOutCount" parameterType="gr002YsgrMx" resultType="int">
+		select count(*)
+		from (select t1.zyid,t1.lastoper_date,t2.operator,t2.infect_code,t2.report_type,t2.start_at,t2.infect_type_id,t2.dept_id,t2.relid
+			from (select zyid, max(lastoper_date) lastoper_date from gr002_ysgr_mx where infect_type_id = 1 and state = 3 group by zyid) t1
+         	left join gr002_ysgr_mx t2 on t1.zyid = t2.zyid and t1.lastoper_date = t2.lastoper_date) b
+        left join st003_cryxxb a on a.zyid = b.zyid
+		left join zg002_byks ks on b.dept_id = ks.dept_id
+		<where>
+			<if test="queryStartDate!=null">
+				and b.lastoper_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and b.lastoper_date &lt;= #{queryEndDate}
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and b.dept_id=#{deptId}
+			</if>
+			<if test="deptName!=null and deptName!=''">
+				and ks.dept_name like CONCAT(CONCAT('%',#{deptName}), '%') 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+		    	and (a.zyid like concat(concat('%',#{searchString}), '%') or a.patient_name like concat(concat('%',#{searchString}), '%')) 
+		    </if>
+		</where>
+	</select>
+	
+	<select id="findConfirmInfectionCount" parameterType="gr002YsgrMx" resultType="int">
+		select count(*)
+		from (select distinct bk.relid relid from bk001_sbk bk join bk002_grzd zd on bk.relid = zd.refid
+		<where>
+			bk.is_ok = '1' and bk.is_del = '0'
+			<if test="queryStartDate!=null">
+				and zd.infect_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and zd.infect_date &lt;= #{queryEndDate}
+			</if>
+			<if test="infectDeptId!=null and infectDeptId!=''">
+				and zd.infect_dept_id=#{infectDeptId}
+			</if>
+			<if test="infectDeptName!=null and infectDeptName!=''">
+				and zd.infect_dept_name like CONCAT(CONCAT('%',#{infectDeptName}), '%') 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+		    	and (bk.zyid like concat(concat('%',#{searchString}), '%') or bk.patient_name like concat(concat('%',#{searchString}), '%')) 
+		    </if>
+		</where>
+		)
+	</select>
+	
+	<select id="findCasesReported" resultType="gr002YsgrMx">
+		select bk1.*,bk1.return_reason returnReason,bk1.del_reason delReason,bk2.infect_diagn_name infectName,bk2.infect_diagn_id infectCode,bk2.infect_date startAt,bk2.infect_type infectTypeId, bk2.infect_dept_id infectDeptId,bk2.infect_dept_name infectDeptName,
+		bk2.relation relation,bk2.ope_name opeName, bk2.memo memo,nu.realname auditDrName,bk2.auth_at auditAt,bk2.auth_username authUserName,bk2.return_reason returnReason,grmx.report_type reportType,bk2.jbzg jbzg,bk2.jbzg_date infectendDt 
+		from (
+			select distinct bk.relid relid,bk.zyid zyid,bk.report_dept_name reportDeptName,bk.patient_name patientName,bk.age||bk.age_unit age,
+			bk.sex sex,bk.in_hosp_at inHospAt,bk.report_dr_id reportDrId,bk.report_dr_name reportDrName,
+			bk.is_ok isOk,bk.is_del isDel,bk.report_at reportAt,zd.return_reason,zd.del_reason
+			from bk001_sbk bk join bk002_grzd zd on bk.relid = zd.refid
+			<where>
+				bk.zyid=#{zyid} 
+				/*and  bk.is_ok in (0,1) and bk.is_del=0*/
+			</where>
+		) bk1
+		left join bk002_grzd bk2 on bk1.relid = bk2.refid 
+		left join gr002_ysgr_mx grmx on bk2.relid = grmx.relid and bk2.infect_diagn_id = grmx.infect_code
+		left join ac_account nu on nu.username = bk2.auth_userid 
+		order by bk2.auth_at desc, bk1.relid, bk2.infect_diagn_id
+	</select>
+	
+	<select id="workloadStatistics" resultType="gr002YsgrMx">
+	  select tt.*,t2.clrname pcr from (
+			select 
+			  OPERATOR pcrid,
+			  sum((case when t.exclude_name = '审卡' then 1 else 0 end)) clzrs,
+			  sum((case when t.exclude_name = '院感' then 1 else 0 end)) ygyqr,
+			  sum((case when t.exclude_name = '社感' then 1 else 0 end)) lwsg,
+			  sum((case when t.exclude_name = '定植菌' then 1 else 0 end)) dzj,
+			  sum((case when (nvl(t.exclude_name,'x') not in ('审卡','院感','社感','定植菌')) then 1 else 0 end)) pc
+			from (
+			  select OPERATOR, lastoper_date, exclude_name
+			  from GR002_YSGR_MX t
+			  left outer join st003_cryxxb s3 on t.zyid = s3.zyid
+		 	 left join zg005_yygrzd zg5 on zg5.infect_code = t.infect_code
+			  where state = 3
+			   <if test="queryStartDate!=null and queryEndDate!=null">
+				    and trunc(lastoper_date) between #{queryStartDate} and #{queryEndDate}
+			   </if>
+			   and s3.zyid is not null
+			   
+			  union  
+			  select bk1.report_dr_id,
+			  bk1.REPORT_AT,
+			  decode(bk2.infect_type, 1, '院感', 2, '社感') exclude_name
+			 /* from bk001_sbk bk1, bk002_grzd bk2, GR002_YSGR_MX t */
+			  from bk001_sbk bk1
+		        inner join bk002_grzd bk2
+		            on bk1.relid = bk2.refid
+		        inner join GR002_YSGR_MX t
+		            on bk2.relid = t.gr2_relid
+		        left outer join st003_cryxxb s3
+            		on bk1.zyid = s3.zyid
+			  where bk1.relid = bk2.refid
+       	 			and bk2.relid = t.gr2_relid
+			        and bk2.auth_userid = bk1.report_dr_id
+			        and bk2.auth_status = 1
+			   <if test="queryStartDate!=null and queryEndDate!=null">
+				    and trunc(REPORT_AT) between #{queryStartDate} and #{queryEndDate}
+			   </if>
+			  and s3.zyid is not null
+			  
+			  union
+			  select bk2.auth_userid, bk2.auth_at, '审卡' exclude_name
+			  from bk001_sbk bk1, bk002_grzd bk2
+			  where bk1.relid = bk2.refid
+			    and bk2.auth_at is not null
+			    and bk2.auth_userid &lt;&gt; bk1.report_dr_id
+			   <if test="queryStartDate!=null and queryEndDate!=null">
+				    and trunc(auth_at) between #{queryStartDate} and #{queryEndDate}
+			   </if>
+			) t
+			where t.OPERATOR is not null
+			group by OPERATOR
+		) tt 
+		left join (
+		     select zg.employee_id clrid ,zg.employee_name clrname from zg003_yyzg zg
+		     union
+		     select ac.username clrid, ac.realname clrname from ac_account ac
+		) t2 on tt.pcrid = t2.clrid
+		where 1=1 /* (tt.clzrs &gt; 0 or ygyqr &gt; 0 or lwsg &gt; 0) */
+		and t2.clrname is not null
+	</select>
+	
+	<select id="workloadDetail" resultType="gr002YsgrMx">
+		select tt.*,t2.clrname from (
+			select 
+				null id,null zyid,null patientName,null sex,null age,null ageUnit,null inHospAt,null deptName,
+		    	null startAt,null infectName, null dataDate, null clrId
+		    from dual
+		<if test="state == -1 or state == 2 or state == 4">
+		  union
+		  select 
+		    'gr2'||t.reg_id id,s3.zyid,s3.patient_name patientName,s3.sex,s3.age,s3.age_unit ageUnit,s3.in_hosp_at inHospAt,s3.dept_name deptName,
+		    t.start_at startAt,zg5.infect_name infectName, t.lastoper_date dataDate, t.OPERATOR clrId
+		  from GR002_YSGR_MX t
+		  left outer join st003_cryxxb s3 on t.zyid = s3.zyid
+		  left join zg005_yygrzd zg5 on zg5.infect_code = t.infect_code
+		  where state = 3
+			    <if test="queryStartDate!=null and queryEndDate!=null">
+				    and trunc(t.lastoper_date) between #{queryStartDate} and #{queryEndDate}
+			    </if>
+			    <if test="state == 2">
+		        	and exclude_name = '定植菌'
+			    </if>
+			    <if test="state == 4">
+		        	and nvl(exclude_name,'x') not in ('定植菌')
+			    </if>
+			    <if test="userId != '' and  userId!=null">
+		        	and t.OPERATOR = #{userId}
+			    </if>
+			    and s3.zyid is not null
+		</if>
+		<if test="state == -1 or state == 1 or state == 3">
+		  union
+		  select 
+		    'bk1'||bk1.relid id,s3.zyid,s3.patient_name patientName,s3.sex,s3.age,s3.age_unit ageUnit,s3.in_hosp_at inHospAt,s3.dept_name deptName,
+		    t.start_at startAt,t.infect_name infectName, bk1.report_at dataDate, bk1.report_dr_id clrId
+		  from bk001_sbk bk1
+		  inner join bk002_grzd bk2 on bk1.relid = bk2.refid 
+		  inner join GR002_YSGR_MX t on bk2.relid = t.gr2_relid
+		  left outer join st003_cryxxb s3 on bk1.zyid = s3.zyid
+		  where bk2.auth_userid = bk1.report_dr_id
+		        and bk2.auth_status = 1
+		        and bk2.infect_type in('1','2')
+			   <if test="queryStartDate!=null and queryEndDate!=null">
+				    and trunc(bk1.REPORT_AT) between #{queryStartDate} and #{queryEndDate}
+			   </if>
+			    <if test="state == 1">
+		        	and bk2.infect_type = '1'
+			    </if>
+			    <if test="state == 3">
+		        	and bk2.infect_type = '2'
+			    </if>
+			    <if test="userId != '' and  userId!=null">
+		        	and bk1.report_dr_id = #{userId}
+			    </if>
+			    and s3.zyid is not null
+		</if>
+		<if test="state == 0">
+		  union
+		  select 
+		    'bk2'||bk2.relid id,s3.zyid,s3.patient_name patientName,s3.sex,s3.age,s3.age_unit ageUnit,s3.in_hosp_at inHospAt,s3.dept_name deptName,
+		    t.start_at startAt,bk2.infect_diagn_name infectName, bk2.auth_at dataDate, bk2.auth_userid clrId
+		  from bk001_sbk bk1
+		  inner join bk002_grzd bk2 on bk1.relid = bk2.refid 
+		  left outer join GR002_YSGR_MX t on bk2.relid = t.gr2_relid
+		  left outer join st003_cryxxb s3 on bk1.zyid = s3.zyid
+		  where bk2.auth_at is not null
+		      and bk2.auth_userid &lt;&gt; bk1.report_dr_id
+			   <if test="queryStartDate!=null and queryEndDate!=null">
+				    and trunc(bk2.auth_at) between #{queryStartDate} and #{queryEndDate}
+			   </if>
+			    <if test="userId != '' and  userId!=null">
+		        	and bk2.auth_userid = #{userId}
+			    </if>
+			    and s3.zyid is not null
+		</if>
+		) tt 
+		inner join (
+		     select zg.employee_id clrid ,zg.employee_name clrname from zg003_yyzg zg
+		     union
+		     select ac.username clrid, ac.realname clrname from ac_account ac
+		) t2 on tt.clrId = t2.clrid
+		where t2.clrname is not null
+		order by dataDate
+	</select>
+	
+	<delete id="deleteByZyidState" flushCache="true">
+		delete from  GR002_YSGR_MX${tablename}
+		<where>
+			zyid=#{zyid} and report_type is null and lastoper_date is null and state=1 and (operator='NIS6' or operator='NIS7')
+		</where>
+	</delete>
+	
+	<select id="findByZyidInfectCode" resultType="gr002YsgrMx">
+		select <include refid="commCols"/> from GR002_YSGR_MX${tablename}
+		<where>
+			zyid=#{zyid} and INFECT_CODE=#{infectCode}
+			<choose>
+			<when test="reportType!='' and  reportType!=null">
+			 and report_type is not null
+			</when>
+			<otherwise>
+			and report_type is null
+			</otherwise>
+			</choose> 
+		</where>
+	</select>
+	
+	<select id="findByZyid" resultType="gr002YsgrMx">
+		select <include refid="commCols"/> from  GR002_YSGR_MX${tablename}
+		<where>
+			zyid=#{zyid} and report_type is null and lastoper_date is null and state=1 and (operator='NIS6' or operator='NIS7')
+		</where>
+	</select>
+</mapper>

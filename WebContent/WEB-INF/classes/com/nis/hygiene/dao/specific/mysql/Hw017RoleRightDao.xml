@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw017RoleRightDao">
+
+	<sql id="commCols_mysql">
+		role_id roleId,class_id classId,self_view selfView,self_add selfAdd,self_result selfResult,other_view otherView,other_add otherAdd,other_result otherResult
+	</sql>
+
+	<select id="findHw017RoleRight_mysql" parameterType="hw017RoleRight" resultType="hw017RoleRight">
+		select <include refid="commCols_mysql"/> from hw017_role_right
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

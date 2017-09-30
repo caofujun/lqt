@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl004CsDetailinfoDao">
+
+	<sql id="commCols_mysql">
+		CSM_ID csmId,CSD_ID csdId,CSD_NAME csdName,FLAG flag,CREATE_MEN createMen,LAST_AT lastAt,SP_CODE spCode,WB_CODE wbCode,BZ bz
+	</sql>
+
+	<select id="findBl004CsDetailinfo_mysql" parameterType="bl004CsDetailinfo" resultType="bl004CsDetailinfo">
+		select <include refid="commCols_mysql"/> from BL004_CS_DETAILINFO
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

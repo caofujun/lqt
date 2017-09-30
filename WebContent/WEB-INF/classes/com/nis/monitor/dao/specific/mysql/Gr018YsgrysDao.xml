@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr018YsgrysDao">
+
+	<sql id="commCols_mysql">
+		element_name elementName,monitor_at monitorAt,data_form dataForm,original_content originalContent,data_type dataType,state state,id id,sj_id sjId,infect_typeid infectTypeid,zyid zyid,data_date dataDate,element_id elementId
+	</sql>
+
+	<select id="findGr018Ysgrys_mysql" parameterType="gr018Ysgrys" resultType="gr018Ysgrys">
+		select <include refid="commCols_mysql"/> from gr018_ysgrys
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

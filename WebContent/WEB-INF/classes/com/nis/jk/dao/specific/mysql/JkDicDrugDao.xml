@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicDrugDao">
+
+	<sql id="commCols_mysql">
+		ID id,DRUG_CODE drugCode,DRUG_NAME drugName,SPEC spec,DRUG_LINE drugLine,PRICE price,IS_ANTIBIOTIC isAntibiotic,UNITS units,DRUG_FORM drugForm,TOXI_PROPERTY toxiProperty,DOSE_PER_UNIT dosePerUnit,DOSE_UNITS doseUnits,DRUG_INDICATOR drugIndicator,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkDicDrug_mysql" parameterType="jkDicDrug" resultType="jkDicDrug">
+		select <include refid="commCols_mysql"/> from JK_DIC_DRUG
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

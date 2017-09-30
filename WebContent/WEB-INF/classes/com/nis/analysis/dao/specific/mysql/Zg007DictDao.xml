@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Zg007DictDao">
+
+	<sql id="commCols_mysql">
+		BH_ELEMENT bhElement,KEYID keyid,ELEMENT_ID elementId,ITEM_NAME itemName,ITEM_CLASS itemClass,ELEMENT_TYPE elementType,QY_ELEMENT qyElement,APP_ELEMENT appElement
+	</sql>
+
+	<select id="findZg007Dict_mysql" parameterType="zg007Dict" resultType="zg007Dict">
+		select <include refid="commCols_mysql"/> from ZG007_DICT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw102JcdmxDao">
+
+	<sql id="commCols_oracle">
+		id id,dj_id djId,report_id reportId,class_id classId,class_name className,place_id placeId,place_name placeName,take_mode_id takeModeId,take_mode_name takeModeName,sample_id sampleId,sample_name sampleName,pos_id posId,pos_name posName,take_by takeBy,take_at takeAt,test_by testBy,test_at testAt,verify_by verifyBy,verify_at verifyAt,report_by reportBy,report_at reportAt,recheck recheck,result_patho_num resultPathoNum,result_flag resultFlag,result result,criterion criterion,memo memo,sample_gg sampleGg,sample_cj sampleCj,sample_ph samplePh,sample_xdrq sampleXdrq,sample_sxrq sampleSxrq,sample_nds sampleNds,sample_zsh sampleZsh,take_type takeType,take_type_name takeTypeName,status status,check_by checkBy,check_name checkName,check_at checkAt,print_by printBy,print_name printName,print_at printAt,is_print isPrint,type type,iftran iftran,ifjctran ifjctran,cy_meno cyMeno
+	</sql>
+
+	<select id="findHw102Jcdmx_oracle" parameterType="hw102Jcdmx" resultType="hw102Jcdmx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw102_jcdmx
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

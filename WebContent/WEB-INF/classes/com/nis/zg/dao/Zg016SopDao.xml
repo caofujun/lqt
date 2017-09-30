@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg016SopDao">
+
+	<sql id="commCols">
+		FILE_ID fileId,P_FILE_ID pFileId,FILE_TITLE fileTitle,FILE_PATH filePath,FILE_NAME fileName,FILE_DATA fileData,WB_CODE wbCode,SP_CODE spCode,LAST_AT lastAt,FLAG flag,BH_CODE bhCode,URL url,P_FILE_NAME pFileName
+	</sql>
+
+	<insert id="save" parameterType="zg016Sop"  flushCache="true">
+		 insert into ZG016_SOP(FILE_ID,P_FILE_ID,FILE_TITLE,FILE_PATH,FILE_NAME,FILE_DATA,WB_CODE,SP_CODE,LAST_AT,FLAG,BH_CODE,URL,P_FILE_NAME)
+		 values(#{fileId},#{pFileId},#{fileTitle},#{filePath},#{fileName},#{fileData},#{wbCode},#{spCode},#{lastAt},#{flag},#{bhCode},#{url},#{pFileName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG016_SOP
+		<where>FILE_ID=#{fileId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg016Sop" flushCache="true">
+		update ZG016_SOP
+		<set>
+			FILE_ID=#{fileId},P_FILE_ID=#{pFileId},FILE_TITLE=#{fileTitle},FILE_PATH=#{filePath},FILE_NAME=#{fileName},FILE_DATA=#{fileData},WB_CODE=#{wbCode},SP_CODE=#{spCode},LAST_AT=#{lastAt},FLAG=#{flag},BH_CODE=#{bhCode},URL=#{url},P_FILE_NAME=#{pFileName}
+		</set>
+		<where>FILE_ID=#{fileId}</where>
+	</update>
+	
+	<select id="get" resultType="zg016Sop">
+		select <include refid="commCols"/> from ZG016_SOP
+  		<where>FILE_ID=#{fileId}</where>
+	</select>
+	
+	
+	<select id="findZg016SopCount" parameterType="zg016Sop" resultType="int">
+		select count(*) from ZG016_SOP
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg016Sop">
+		select <include refid="commCols"/> from ZG016_SOP
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

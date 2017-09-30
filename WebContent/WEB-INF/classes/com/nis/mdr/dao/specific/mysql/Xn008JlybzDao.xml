@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn008JlybzDao">
+
+	<sql id="commCols_mysql">
+		item_id itemId,germ_id germId,germ_name germName,orderno orderno,mdr mdr,xdr xdr,pdr pdr,class_type classType,match_name matchName
+	</sql>
+
+	<select id="findXn008Jlybz_mysql" parameterType="xn008Jlybz" resultType="xn008Jlybz">
+		select <include refid="commCols_mysql"/> from xn008_jlybz
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

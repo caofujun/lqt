@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St012ZkjlDao">
+
+	<sql id="commCols_oracle">
+		id id,zyid zyid,in_date inDate,in_dept_id inDeptId,out_date outDate,out_dept_id outDeptId,bed_no bedNo,in_dept_days inDeptDays,upd_time updTime
+	</sql>
+
+	<select id="findSt012Zkjl_oracle" parameterType="st012Zkjl" resultType="st012Zkjl">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from st012_zkjl
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

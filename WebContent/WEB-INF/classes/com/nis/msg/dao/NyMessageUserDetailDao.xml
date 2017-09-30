@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageUserDetailDao">
+
+	<sql id="commCols">
+		MUD_ID mudId,NY_MESSAGE_USER_DETAIL.MID mid,NY_MESSAGE_USER_DETAIL.USER_ID userId,NY_MESSAGE_USER_DETAIL.USER_NAME userName,IS_READ isRead,THEME_ID themeId
+	</sql>
+
+	<insert id="save" parameterType="nyMessageUserDetail"  flushCache="true">
+		 insert into NY_MESSAGE_USER_DETAIL(MUD_ID,MID,USER_ID,USER_NAME,IS_READ,THEME_ID)
+		 values(#{mudId},#{mid},#{userId},#{userName},#{isRead},#{themeId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  NY_MESSAGE_USER_DETAIL
+		<where>MUD_ID=#{mudId}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyMessageUserDetail" flushCache="true">
+		update NY_MESSAGE_USER_DETAIL
+		<set>
+			MUD_ID=#{mudId},MID=#{mid},USER_ID=#{userId},USER_NAME=#{userName},IS_READ=#{isRead},THEME_ID=#{themeId}
+		</set>
+		<where>MUD_ID=#{mudId}</where>
+	</update>
+	
+	<select id="get" resultType="nyMessageUserDetail">
+		select <include refid="commCols"/> from NY_MESSAGE_USER_DETAIL
+  		<where>MUD_ID=#{mudId}</where>
+	</select>
+	
+	
+	<select id="findNyMessageUserDetailCount" parameterType="nyMessageUserDetail" resultType="int">
+		select count(*) from NY_MESSAGE_USER_DETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="nyMessageUserDetail">
+		select <include refid="commCols"/> from NY_MESSAGE_USER_DETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<insert id="saveList" parameterType="nyMessageUserDetail"  flushCache="true">
+		 insert into NY_MESSAGE_USER_DETAIL(MUD_ID,MID,USER_ID,USER_NAME,IS_READ,THEME_ID)
+		<foreach collection="messageUserDetailList" item="item" index="index" separator="union all" > 
+		(select #{item.mudId},#{item.mid},#{item.userId},#{item.userName},#{item.isRead},#{item.themeId} from dual)
+	    </foreach>
+	</insert>
+	
+	<select id="getByUserId"  resultType="nyMessageTheme">
+		select NY_MESSAGE_THEME.THEME_ID themeId,THEME theme,NY_MESSAGE_THEME.CREATE_USER createUser,NY_MESSAGE_THEME.CREATE_TIME createTime,NY_MESSAGE_THEME.ZYID zyid,LAST_MID lastMid,NY_MESSAGE_DETAIL.SEND_TIME lastSendTime,NY_MESSAGE_DETAIL.SEND_USER_NAME lastSendUser,NY_MESSAGE_DETAIL.CONTENT lastContent,
+       count(NY_MESSAGE_USER_DETAIL.IS_READ) msgUserUnReadCount from NY_MESSAGE_USER_DETAIL left join NY_MESSAGE_THEME on NY_MESSAGE_THEME.THEME_ID=NY_MESSAGE_USER_DETAIL.THEME_ID left join NY_MESSAGE_DETAIL on NY_MESSAGE_DETAIL.MID=NY_MESSAGE_THEME.LAST_MID
+		<where>
+			NY_MESSAGE_USER_DETAIL.USER_ID=#{userId} and IS_READ='0'
+		</where>
+		group by NY_MESSAGE_THEME.THEME_ID,THEME,
+       NY_MESSAGE_THEME.CREATE_USER,NY_MESSAGE_THEME.CREATE_TIME,NY_MESSAGE_THEME.ZYID,LAST_MID,NY_MESSAGE_DETAIL.SEND_TIME, NY_MESSAGE_DETAIL.SEND_USER_NAME,NY_MESSAGE_DETAIL.CONTENT        
+	</select>
+	
+	<update id="updateByThemeIdAndUserId" parameterType="nyMessageUserDetail" flushCache="true">
+		update NY_MESSAGE_USER_DETAIL
+		<set>
+			IS_READ='1'
+		</set>
+		<where>THEME_ID=#{themeId} and USER_ID=#{userId}</where>
+	</update>
+	
+	<update id="updateByCaseIdAndUserId"  flushCache="true">
+		update NY_MESSAGE_USER_DETAIL
+		<set>
+			IS_READ='1'
+		</set>
+		<where>MID=(select MID from NY_MESSAGE_DETAIL where CASE_ID=#{caseId}) and USER_ID=#{userId}</where>
+	</update>
+	
+	<select id="unreadMsgCount" resultType="Integer">
+		select count(*) from NY_MESSAGE_DETAIL d
+       where exists
+       (select 1
+                from NY_MESSAGE_USER_DETAIL t
+               where t.theme_id in (select theme_id from NY_MESSAGE_THEME th)
+                 and t.user_id = #{userId}
+                 and t.is_read = 0
+                 and t.mid = d.mid
+                 and t.theme_id = d.theme_id)
+	</select>
+	
+	<update id="markAsRead" parameterType="String" flushCache="true">
+		update NY_MESSAGE_USER_DETAIL
+		<set>
+			IS_READ='1'
+		</set>
+		<where>
+			MID=#{mid} and THEME_ID=#{themeId} and USER_ID=#{userId}
+		</where>
+	</update>
+</mapper>

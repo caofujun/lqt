@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl004KjywDao">
+
+	<sql id="commCols">
+		yjywid yjywid,brid brid,grid grid,bytid bytid,drug_id drugId,drug_name drugName,status status,last_at lastAt
+	</sql>
+
+	<insert id="save" parameterType="xl004Kjyw" flushCache="true">
+		 insert into xl004_kjyw(yjywid,brid,grid,bytid,drug_id,drug_name,status,last_at)
+		 values(#{yjywid},#{brid},#{grid},#{bytid},#{drugId},#{drugName},#{status},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl004_kjyw
+		<where>yjywid=#{yjywid}</where>
+	</delete>
+	
+	<delete id="deleteByBrid" flushCache="true">
+		delete from xl004_kjyw
+		<where>brid=#{brid}</where>
+	</delete>
+	
+	<delete id="delXl004Kjyw" flushCache="true">
+		delete from xl004_kjyw
+		<where>
+			brid=#{brid}
+			<if test="yjywidNotIn!=null and yjywidNotIn.size!=0">
+		    	and yjywid not in 
+				<foreach collection="yjywidNotIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="xl004Kjyw" flushCache="true">
+		update xl004_kjyw
+		<set>
+			yjywid=#{yjywid},brid=#{brid},grid=#{grid},bytid=#{bytid},drug_id=#{drugId},drug_name=#{drugName},status=#{status},last_at=#{lastAt}
+		</set>
+		<where>yjywid=#{yjywid}</where>
+	</update>
+	
+	<select id="get" resultType="xl004Kjyw">
+		select <include refid="commCols"/> from xl004_kjyw
+  		<where>yjywid=#{yjywid}</where>
+	</select>
+	
+	
+	<select id="findXl004KjywCount" parameterType="xl004Kjyw" resultType="int">
+		select count(*) from xl004_kjyw
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl004Kjyw">
+		select <include refid="commCols"/> from xl004_kjyw
+		<where>
+		</where>
+	</select>
+</mapper>

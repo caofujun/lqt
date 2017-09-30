@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn015TrlyjlDao">
+
+	<sql id="commCols">
+		test_order_no testOrderNo,patho_code pathoCode,patho_name pathoName,pathogen_sn pathogenSn,anti_code antiCode,anti_name antiName,record_dt recordDt
+	</sql>
+
+	<insert id="save" parameterType="xn015Trlyjl" flushCache="true">
+		 insert into xn015_trlyjl(test_order_no,patho_code,patho_name,pathogen_sn,anti_code,anti_name,record_dt)
+		 values(#{testOrderNo},#{pathoCode},#{pathoName},#{pathogenSn},#{antiCode},#{antiName},#{recordDt})
+	</insert>
+	
+	<update id="update" parameterType="xn015Trlyjl" flushCache="true">
+		update xn015_trlyjl
+		<set>
+			test_order_no=#{testOrderNo},patho_code=#{pathoCode},patho_name=#{pathoName},pathogen_sn=#{pathogenSn},anti_code=#{antiCode},anti_name=#{antiName},record_dt=#{recordDt}
+		</set>
+		<where>test_order_no=#{testOrderNo},patho_code=#{pathoCode},anti_code=#{antiCode}</where>
+	</update>
+	
+	<select id="get" resultType="xn015Trlyjl">
+		select <include refid="commCols"/> from xn015_trlyjl
+  		<where>test_order_no=#{testOrderNo} and patho_code=#{pathoCode} and anti_code=#{antiCode}</where>
+	</select>
+	
+	<select id="findXn015TrlyjlCount" parameterType="xn015Trlyjl" resultType="int">
+		select count(*) from xn015_trlyjl
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xn015Trlyjl">
+		select <include refid="commCols"/> from xn015_trlyjl
+		<where>
+		</where>
+	</select>
+</mapper>

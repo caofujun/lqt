@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St001JbxxbDao">
+
+	<sql id="commCols_mysql">
+		id id,patient_id patientId,patient_name patientName,sex sex,birth_date birthDate,weight weight,address address,tel tel,id_card_id idCardId,nation nation,upd_date updDate
+	</sql>
+
+	<select id="findSt001Jbxxb_mysql" parameterType="st001Jbxxb" resultType="st001Jbxxb">
+		select <include refid="commCols_mysql"/> from st001_jbxxb
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

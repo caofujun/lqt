@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw016RoleDao">
+
+	<sql id="commCols">
+		role_id roleId,role_name roleName,memo memo,sp_code spCode,wb_code wbCode,last_at lastAt,order_index orderIndex,flag flag
+	</sql>
+
+	<insert id="save" parameterType="hw016Role" flushCache="true">
+		 insert into hw016_role(role_id,role_name,memo,sp_code,wb_code,last_at,order_index,flag)
+		 values(#{roleId},#{roleName},#{memo},#{spCode},#{wbCode},#{lastAt},#{orderIndex},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw016_role
+		<where>role_id=#{roleId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw016Role" flushCache="true">
+		update hw016_role
+		<set>
+			role_id=#{roleId},role_name=#{roleName},memo=#{memo},sp_code=#{spCode},wb_code=#{wbCode},last_at=#{lastAt},order_index=#{orderIndex},flag=#{flag}
+		</set>
+		<where>role_id=#{roleId}</where>
+	</update>
+	
+	<update id="updHw016Role" parameterType="hw016Role" flushCache="true">
+		update hw016_role
+		<set>
+			role_name=#{roleName},last_at=#{lastAt}
+		</set>
+		<where>role_id=#{roleId}</where>
+	</update>
+	
+	<select id="get" resultType="hw016Role">
+		select <include refid="commCols"/> from hw016_role
+  		<where>role_id=#{roleId}</where>
+	</select>
+	
+	
+	<select id="findHw016RoleCount" parameterType="hw016Role" resultType="int">
+		select count(*) from hw016_role
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw016Role">
+		select <include refid="commCols"/> from hw016_role
+		<where>
+		</where>
+	</select>
+	
+	<select id="findList" parameterType="hw016Role" resultType="hw016Role">
+		select <include refid="commCols"/> from hw016_role
+		<where>
+		</where>
+		order by role_id
+	</select>
+	
+	<select id="findListJoinHw018" parameterType="hw016Role" resultType="hw016Role">
+		select hw16.role_id roleId,hw16.role_name roleName,hw18.user_id userId 
+		from HW016_ROLE hw16 left join HW018_ROLE_USER hw18 on (hw16.role_id = hw18.role_id and hw18.user_id=#{userId})
+		order by hw18.role_id,hw16.role_id
+	</select>
+</mapper>

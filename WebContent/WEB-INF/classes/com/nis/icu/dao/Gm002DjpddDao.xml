@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm002DjpddDao">
+
+	<sql id="commCols">
+		DT_YEAR dtYear,DT_MONTH dtMonth,WEEKNUMBER weeknumber,GRADEA gradea,GRADEB gradeb,GRADEC gradec,GRADED graded,GRADEE gradee,WEEK1 week1,WEEK2 week2,WEEK3 week3,WEEK4 week4,WEEK5 week5,WEEK6 week6,WEEK7 week7,gm002_djpdd.DEPT_ID deptId
+	</sql>
+
+	<insert id="save" parameterType="gm002Djpdd"  flushCache="true">
+		 insert into GM002_DJPDD(DT_YEAR,DT_MONTH,WEEKNUMBER,ZYID,GRADEA,GRADEB,GRADEC,GRADED,GRADEE,WEEK1,WEEK2,WEEK3,WEEK4,WEEK5,WEEK6,WEEK7,DEPT_ID)
+		 values(#{dtYear},#{dtMonth},#{weeknumber},#{zyid},#{gradea},#{gradeb},#{gradec},#{graded},#{gradee},#{week1},#{week2},#{week3},#{week4},#{week5},#{week6},#{week7},#{deptId})
+	</insert>
+	
+	
+	<update id="update" parameterType="gm002Djpdd" flushCache="true">
+		update GM002_DJPDD
+		<set>
+			GRADEA=#{gradea},GRADEB=#{gradeb},GRADEC=#{gradec},GRADED=#{graded},GRADEE=#{gradee},WEEK1=#{week1},WEEK2=#{week2},WEEK3=#{week3},WEEK4=#{week4},WEEK5=#{week5},WEEK6=#{week6},WEEK7=#{week7},DEPT_ID=#{deptId}
+		</set>
+		<where>DT_YEAR=#{dtYear} and DT_MONTH=#{dtMonth} and WEEKNUMBER=#{weeknumber} and ZYID=#{zyid}</where>
+	</update>
+	
+	<select id="get" resultType="gm002Djpdd">
+		select <include refid="commCols"/> from GM002_DJPDD
+		<where>
+			DT_YEAR=#{dtYear} and DT_MONTH=#{dtMonth} and WEEKNUMBER=#{weeknumber} and ZYID=#{zyid}
+		</where>
+	</select>
+	
+	<select id="findGm002DjpddCount" parameterType="gm002Djpdd" resultType="int">
+		select count(*) from GM002_DJPDD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="gm002Djpdd">
+		select <include refid="commCols"/> from GM002_DJPDD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByDateAndDeptId"  resultType="gm002Djpdd">
+	select <include refid="commCols"/>,a.zyid zyid,a.patient_name patientName,a.patient_id patientId,a.age age,a.sex sex,a.out_at outAt,a.bed_no bedNo from  st003_cryxxb a left join (select * from gm002_djpdd where dt_year=#{dtYear} and dt_month=#{dtMonth} and weeknumber=#{weeknumber}) gm002_djpdd on a.zyid=gm002_djpdd.zyid where a.zyid in( select zyid
+	  from gm004_jcmx a
+	 where a.typeid = '02'
+	 and a.creationdate &gt;= to_date(#{strDate}, 'yyyy-MM-dd')
+	   and creationdate &lt; to_date(#{strDate}, 'yyyy-MM-dd')+1 and a.deptid=#{deptId})
+	</select>
+	
+	<select id="getBedByDateAndDeptId"  resultType="gm002Djpdd">
+	select <include refid="commCols"/>,a.zyid zyid,a.patient_name patientName,a.patient_id patientId,a.age age,a.sex sex,a.out_at outAt,a.bed_no bedNo from  st003_cryxxb a left join (select * from gm002_djpdd where dt_year=#{dtYear} and dt_month=#{dtMonth} and weeknumber=#{weeknumber}) gm002_djpdd on a.zyid=gm002_djpdd.zyid where a.zyid in 
+	( select distinct a.zyid
+	  from gm004_jcmx a left join st004_yzxxb s4 on a.zyid=s4.zyid
+	 where a.typeid = '02' and s4.order_name in (select jk.order_name from jk_dic_all jk where jk.class_code='110')
+	 and a.creationdate &gt;= to_date(#{strDate}, 'yyyy-MM-dd')
+	   and a.creationdate &lt; to_date(#{strDate}, 'yyyy-MM-dd')+1 and a.deptid=#{deptId})
+	</select>
+	
+	<select id="getCountByDateAndDeptId"  resultType="int">
+	select nvl(sum(case when ((gradea!=1 or gradea is null) and (gradeb!=1 or gradeb is null) and (gradec!=1 or gradec is null) and (graded!=1 or graded is null) and (gradee!=1 or gradee is null)) then 1 else 0 end),0) noScore from  st003_cryxxb a left join (select * from gm002_djpdd where dt_year=#{dtYear} and dt_month=#{dtMonth} and weeknumber=#{weeknumber}) gm002_djpdd on a.zyid=gm002_djpdd.zyid where a.zyid in 
+	( select distinct zyid
+	  from gm004_jcmx a 
+	 where a.typeid = '02' 
+	 and a.creationdate &gt;= to_date(#{startDate}, 'yyyy-MM-dd')
+	   and creationdate &lt; to_date(#{endDate}, 'yyyy-MM-dd')+1 and a.deptid=#{deptId} group by zyid)
+	</select>
+	
+	<select id="getBedCountByDateAndDeptId"  resultType="int">
+	select nvl(sum(case when ((gradea!=1 or gradea is null) and (gradeb!=1 or gradeb is null) and (gradec!=1 or gradec is null) and (graded!=1 or graded is null) and (gradee!=1 or gradee is null)) then 1 else 0 end),0) noScore from  st003_cryxxb a left join (select * from gm002_djpdd where dt_year=#{dtYear} and dt_month=#{dtMonth} and weeknumber=#{weeknumber}) gm002_djpdd on a.zyid=gm002_djpdd.zyid where a.zyid in 
+	( select distinct a.zyid
+	  from gm004_jcmx a left join st004_yzxxb s4 on a.zyid=s4.zyid
+	 where a.typeid = '02' and s4.order_name in (select jk.order_name from jk_dic_all jk where jk.class_code='110')
+	 and a.creationdate &gt;= to_date(#{startDate}, 'yyyy-MM-dd')
+	   and creationdate &lt; to_date(#{endDate}, 'yyyy-MM-dd')+1 and a.deptid=#{deptId} group by a.zyid)
+	</select>
+	
+	<select id="getByWeekAndDeptId" resultType="gm001Djpdm">
+		select sum(case when gradea=1 then 1 else 0 end) as acount,sum(case when gradeb=1 then 1 else 0 end) as bcount,sum(case when gradec=1 then 1 else 0 end) as ccount,sum(case when graded=1 then 1 else 0 end) as dcount,sum(case when gradee=1 then 1 else 0 end) as ecount from GM002_DJPDD
+		<where>
+			DT_YEAR=#{dtYear} and DT_MONTH=#{dtMonth} and WEEKNUMBER=#{weeknumber} and DEPT_ID=#{deptId}
+		</where>
+	</select>
+</mapper>

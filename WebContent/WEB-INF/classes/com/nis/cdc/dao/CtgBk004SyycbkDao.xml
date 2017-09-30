@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk004SyycbkDao">
+
+	<sql id="commCols">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,PATIENT_NAME patientName,SEX sex,BIRTHDAY birthday,ID_TYPE idType,ID_TYPE_NAME idTypeName,ID id,ADDR addr,ADDRCODE addrcode,REGISTERADDR registeraddr,REGISTERAREACODE registerareacode,TELEPHONE telephone,MOBILE_PHONE mobilePhone,START_DATE startDate,DIAGNOSE_DATE diagnoseDate,SYMPTOMS symptoms,SYMPTOMS_OTHER symptomsOther,DIGESTIVES digestives,DIGESTIVE_OTHER digestiveOther,RESPIRATORYS respiratorys,RESPIRATORY_OTHER respiratoryOther,CARDIOVASCULARS cardiovasculars,CARDIOVASCULAR_OTHER cardiovascularOther,URINARYS urinarys,URINARY_OTHER urinaryOther,NERVOUS nervous,NERVOU_OTHER nervouOther,SKINS skins,SKIN_OTHER skinOther,OTHER_SYMPTOM otherSymptom,SIGN sign,LAB_RESULT labResult,ASSIST_RESULT assistResult,MAIN_DIAGNOSIS mainDiagnosis,PATHOGENESIS pathogenesis,FOODS foods,REPORT_REASON reportReason,REPORTDT reportdt,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,FLAG flag,VALIDDT validdt,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,REJECT_REASON rejectReason,PATHOGENESIS_OTHER pathogenesisOther,AGE age,AGEUNIT ageUnit,ISEMPTYCARD isemptycard,ISPRINT isprint
+	</sql>
+
+	<insert id="save" parameterType="ctgBk004Syycbk"  flushCache="true">
+		 insert into CTG_BK004_SYYCBK(MASTERID,CARDID,PATIENT_ID,ZYID,VISIT_ID,MZID,PATIENT_NAME,SEX,BIRTHDAY,ID_TYPE,ID_TYPE_NAME,ID,ADDR,ADDRCODE,REGISTERADDR,REGISTERAREACODE,TELEPHONE,MOBILE_PHONE,START_DATE,DIAGNOSE_DATE,SYMPTOMS,SYMPTOMS_OTHER,DIGESTIVES,DIGESTIVE_OTHER,RESPIRATORYS,RESPIRATORY_OTHER,CARDIOVASCULARS,CARDIOVASCULAR_OTHER,URINARYS,URINARY_OTHER,NERVOUS,NERVOU_OTHER,SKINS,SKIN_OTHER,OTHER_SYMPTOM,SIGN,LAB_RESULT,ASSIST_RESULT,MAIN_DIAGNOSIS,PATHOGENESIS,FOODS,REPORT_REASON,REPORTDT,REPORTDOCTORID,REPORTDOCTORNAME,REPORTDEPTID,REPORTDEPTNAME,FLAG,VALIDDT,VALIDPERSONID,VALIDPERSONNAME,REJECT_REASON,PATHOGENESIS_OTHER,AGE,AGEUNIT,ISEMPTYCARD)
+		 values(#{masterid},#{cardid},#{patientId},#{zyid},#{visitId},#{mzid},#{patientName},#{sex},#{birthday},#{idType},#{idTypeName},#{id},#{addr},#{addrcode},#{registeraddr},#{registerareacode},#{telephone},#{mobilePhone},#{startDate},#{diagnoseDate},#{symptoms},#{symptomsOther},#{digestives},#{digestiveOther},#{respiratorys},#{respiratoryOther},#{cardiovasculars},#{cardiovascularOther},#{urinarys},#{urinaryOther},#{nervous},#{nervouOther},#{skins},#{skinOther},#{otherSymptom},#{sign},#{labResult},#{assistResult},#{mainDiagnosis},#{pathogenesis},#{foods},#{reportReason},#{reportdt},#{reportdoctorid},#{reportdoctorname},#{reportdeptid},#{reportdeptname},#{flag},#{validdt},#{validpersonid},#{validpersonname},#{rejectReason},#{pathogenesisOther},#{age},#{ageUnit},#{isemptycard})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK004_SYYCBK
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk004Syycbk" flushCache="true">
+		update CTG_BK004_SYYCBK
+		<set>
+			MASTERID=#{masterid},CARDID=#{cardid},PATIENT_ID=#{patientId},ZYID=#{zyid},VISIT_ID=#{visitId},MZID=#{mzid},PATIENT_NAME=#{patientName},SEX=#{sex},BIRTHDAY=#{birthday},ID_TYPE=#{idType},ID_TYPE_NAME=#{idTypeName},ID=#{id},ADDR=#{addr},ADDRCODE=#{addrcode},REGISTERADDR=#{registeraddr},REGISTERAREACODE=#{registerareacode},TELEPHONE=#{telephone},MOBILE_PHONE=#{mobilePhone},START_DATE=#{startDate},DIAGNOSE_DATE=#{diagnoseDate},SYMPTOMS=#{symptoms},SYMPTOMS_OTHER=#{symptomsOther},DIGESTIVES=#{digestives},DIGESTIVE_OTHER=#{digestiveOther},RESPIRATORYS=#{respiratorys},RESPIRATORY_OTHER=#{respiratoryOther},CARDIOVASCULARS=#{cardiovasculars},CARDIOVASCULAR_OTHER=#{cardiovascularOther},URINARYS=#{urinarys},URINARY_OTHER=#{urinaryOther},NERVOUS=#{nervous},NERVOU_OTHER=#{nervouOther},SKINS=#{skins},SKIN_OTHER=#{skinOther},OTHER_SYMPTOM=#{otherSymptom},SIGN=#{sign},LAB_RESULT=#{labResult},ASSIST_RESULT=#{assistResult},MAIN_DIAGNOSIS=#{mainDiagnosis},PATHOGENESIS=#{pathogenesis},FOODS=#{foods},REPORT_REASON=#{reportReason},REPORTDT=#{reportdt},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},FLAG=#{flag},VALIDDT=#{validdt},VALIDPERSONID=#{validpersonid},VALIDPERSONNAME=#{validpersonname},REJECT_REASON=#{rejectReason},PATHOGENESIS_OTHER=#{pathogenesisOther},AGE=#{age},AGEUNIT=#{ageUnit},ISEMPTYCARD=#{isemptycard}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk004Syycbk">
+		select <include refid="commCols"/> from CTG_BK004_SYYCBK
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk004SyycbkCount" parameterType="ctgBk004Syycbk" resultType="int">
+		select count(*) from CTG_BK004_SYYCBK
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk004Syycbk">
+		select <include refid="commCols"/> from CTG_BK004_SYYCBK
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findCardsForAdmin" resultType="ctgBk004Syycbk" parameterType="ctgBk001Crbmaster">
+		select <include refid="commCols"/>,unReadMsg from
+       		(select m.* , (select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = m.zyid
+		             ) and user_id = #{userid} and is_read = 0) unReadMsg 
+		from CTG_BK004_Syycbk m )m
+		<where>
+			1=1
+			<if test="reportdoctorid!=null and reportdoctorid!=''">
+				and m.reportdoctorid in (#{reportdoctorid})
+			</if>
+			<if test="reportdeptid!=null and reportdeptid!=''">
+		        and m.reportdeptid in (#{reportdeptid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+			</if>
+			<if test="dateType==1">
+				and trunc(m.reportdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+				and trunc(m.validdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="cardStates>=0">
+				and m.flag=#{cardStates}
+			</if>
+			<choose>
+				<when test="isprint==1">
+					and m.isprint = 1
+				</when>
+				<when test="isprint==2">
+					 and ( m.isprint is null or m.isprint !=1 ) 
+				</when>
+			</choose>
+			<if test="unReadMsg==1">
+				and m.unReadMsg>0
+			</if>
+			<choose>
+				<when test="cardStates==1">
+					order by validdt desc
+				</when>
+				<when test="cardStates!=1">
+					order by reportdt desc
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="audit" parameterType="ctgBk004Syycbk" flushCache="true">
+		update CTG_BK004_Syycbk c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="retreat" parameterType="ctgBk004Syycbk" flushCache="true">
+		update CTG_BK004_Syycbk c set c.flag=2,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.reject_reason=#{rejectReason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="cancel" parameterType="ctgBk004Syycbk" flushCache="true">
+		update CTG_BK004_Syycbk c set c.flag=0,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.reject_reason='' where c.masterid=#{masterid}
+	</update>
+	
+	<update id="remove" parameterType="ctgBk004Syycbk" flushCache="true">
+		update CTG_BK004_Syycbk c set c.flag=3,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname}, c.reject_reason=#{rejectReason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="batchAudit" parameterType="ctgBk004Syycbk" flushCache="true">
+		update CTG_BK004_Syycbk c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid in (${masterid})
+	</update>
+	
+	<update id="updatePrintFlag" parameterType="String">
+		update CTG_BK004_Syycbk set isprint=1
+  		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+</mapper>

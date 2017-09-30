@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkTranDatelogDao">
+
+	<sql id="commCols">
+		SYNC_CODE syncCode,SYNC_NAME syncName,PARAM_BEGINTIME paramBegintime,PARAM_ENDTIME paramEndtime,LAST_ID lastId,LAST_STATUS lastStatus,LAST_SYNC_TIME lastSyncTime,LAST_LOG lastLog
+	</sql>
+
+	<insert id="save" parameterType="jkTranDatelog" flushCache="true">
+		 insert into JK_TRAN_DATELOG(SYNC_CODE,SYNC_NAME,PARAM_BEGINTIME,PARAM_ENDTIME,LAST_ID,LAST_STATUS,LAST_SYNC_TIME,LAST_LOG)
+		 values(#{syncCode},#{syncName},#{paramBegintime},#{paramEndtime},#{lastId},#{lastStatus},#{lastSyncTime},#{lastLog})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_TRAN_DATELOG
+		<where>SYNC_CODE=#{syncCode}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkTranDatelog" flushCache="true">
+		update JK_TRAN_DATELOG
+		<set>
+			SYNC_CODE=#{syncCode},SYNC_NAME=#{syncName},PARAM_BEGINTIME=#{paramBegintime},PARAM_ENDTIME=#{paramEndtime},LAST_ID=#{lastId},LAST_STATUS=#{lastStatus},LAST_SYNC_TIME=#{lastSyncTime},LAST_LOG=#{lastLog}
+		</set>
+		<where>SYNC_CODE=#{syncCode}</where>
+	</update>
+	
+	<select id="get" resultType="jkTranDatelog">
+		select <include refid="commCols"/> from JK_TRAN_DATELOG
+  		<where>SYNC_CODE=#{syncCode}</where>
+	</select>
+	
+	
+	<select id="findJkTranDatelogCount" parameterType="jkTranDatelog" resultType="int">
+		select count(*) from JK_TRAN_DATELOG
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkTranDatelog">
+		select <include refid="commCols"/> from JK_TRAN_DATELOG
+		<where>
+		</where>
+	</select>
+</mapper>

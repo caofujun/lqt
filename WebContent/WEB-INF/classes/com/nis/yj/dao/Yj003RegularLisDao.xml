@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.yj.dao.Yj003RegularLisDao">
+
+	<sql id="commCols">
+		ID id,ITEM_TYPE_NAME itemTypeName,ANTI_NAME antiName,COMPARE_REGULAR compareRegular,VALUE value,UNIT unit,MALE_UP maleUp,MALE_DOWN maleDown,FEMALE_UP femaleUp,FEMALE_DOWN femaleDown,ELEMENT element,LIS_TYPE lisType
+	</sql>
+
+	<insert id="save" parameterType="yj003RegularLis"  flushCache="true">
+		 insert into YJ003_REGULAR_LIS(ID,ITEM_TYPE_NAME,ANTI_NAME,COMPARE_REGULAR,VALUE,UNIT,MALE_UP,MALE_DOWN,FEMALE_UP,FEMALE_DOWN,ELEMENT,LIS_TYPE)
+		 values(#{id},#{itemTypeName},#{antiName},#{compareRegular},#{value},#{unit},#{maleUp},#{maleDown},#{femaleUp},#{femaleDown},#{element},#{lisType})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  YJ003_REGULAR_LIS
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="yj003RegularLis" flushCache="true">
+		update YJ003_REGULAR_LIS
+		<set>
+			ID=#{id},ITEM_TYPE_NAME=#{itemTypeName},ANTI_NAME=#{antiName},COMPARE_REGULAR=#{compareRegular},VALUE=#{value},UNIT=#{unit},MALE_UP=#{maleUp},MALE_DOWN=#{maleDown},FEMALE_UP=#{femaleUp},FEMALE_DOWN=#{femaleDown},ELEMENT=#{element},LIS_TYPE=#{lisType}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="yj003RegularLis">
+		select <include refid="commCols"/> from YJ003_REGULAR_LIS
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findYj003RegularLisCount" parameterType="yj003RegularLis" resultType="int">
+		select count(*) from YJ003_REGULAR_LIS
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="yj003RegularLis">
+		select <include refid="commCols"/> from YJ003_REGULAR_LIS
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

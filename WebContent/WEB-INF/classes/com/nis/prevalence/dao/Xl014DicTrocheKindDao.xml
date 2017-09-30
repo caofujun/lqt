@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl014DicTrocheKindDao">
+
+	<sql id="commCols">
+		year year,trochekindid trochekindid,trochekindname trochekindname,memoryid memoryid,flag flag,last_at lastAt
+	</sql>
+
+	<insert id="save" parameterType="xl014DicTrocheKind" flushCache="true">
+		 insert into xl014_dic_troche_kind(year,trochekindid,trochekindname,memoryid,flag,last_at)
+		 values(#{year},#{trochekindid},#{trochekindname},#{memoryid},#{flag},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl014_dic_troche_kind
+		<where>year=#{year} and trochekindid=#{trochekindid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl014DicTrocheKind" flushCache="true">
+		update xl014_dic_troche_kind
+		<set>
+			year=#{year},trochekindid=#{trochekindid},trochekindname=#{trochekindname},memoryid=#{memoryid},flag=#{flag},last_at=#{lastAt}
+		</set>
+		<where>year=#{year} and trochekindid=#{trochekindid}</where>
+	</update>
+	
+	<select id="get" resultType="xl014DicTrocheKind">
+		select <include refid="commCols"/> from xl014_dic_troche_kind
+  		<where>year=#{year} and trochekindid=#{trochekindid}</where>
+	</select>
+	
+	
+	<select id="findXl014DicTrocheKindCount" parameterType="xl014DicTrocheKind" resultType="int">
+		select count(*) from xl014_dic_troche_kind
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl014DicTrocheKind">
+		select <include refid="commCols"/> from xl014_dic_troche_kind
+		<where>
+		</where>
+	</select>
+</mapper>

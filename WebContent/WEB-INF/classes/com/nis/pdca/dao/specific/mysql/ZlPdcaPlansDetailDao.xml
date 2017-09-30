@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.pdca.dao.ZlPdcaPlansDetailDao">
+
+	<sql id="commCols_mysql">
+		P_UID pUid,PD_SUBID pdSubid,STEP_NO stepNo,STEP_NAME stepName,STEP_CONTENT stepContent,STATUS status,XH xh
+	</sql>
+
+	<select id="findZlPdcaPlansDetail_mysql" parameterType="zlPdcaPlansDetail" resultType="zlPdcaPlansDetail">
+		select <include refid="commCols_mysql"/> from ZL_PDCA_PLANS_DETAIL
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

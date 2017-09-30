@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl011DicPathoDao">
+
+	<sql id="commCols_oracle">
+		pathoid pathoid,pathoname pathoname,pathoorder pathoorder,ifdisp ifdisp,remark remark,memoryid memoryid
+	</sql>
+
+	<select id="findXl011DicPatho_oracle" parameterType="xl011DicPatho" resultType="xl011DicPatho">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from xl011_dic_patho
+		<where>
+			<if test="ifdisp!=null">
+				and ifdisp=#{ifdisp}
+			</if>
+		</where>
+		order by pathoorder
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

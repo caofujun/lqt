@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientRoutineDao">
+
+	<sql id="commCols">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID
+		visitId,STOOL_DATE stoolDate,RECORDING_AT recordingAt,ROUTINE_VALUES
+		routineValues,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientRoutine" flushCache="true">
+		insert into
+		JK_PATIENT_ROUTINE(ID,ZYID,PATIENT_ID,VISIT_ID,STOOL_DATE,RECORDING_AT,ROUTINE_VALUES,UPD_TIME,UPD_FLAG)
+		values(#{id},#{zyid},#{patientId},#{visitId},#{stoolDate},#{recordingAt},#{routineValues},#{updTime},#{updFlag})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_ROUTINE
+		<where>ID=#{id}</where>
+	</delete>
+
+	<update id="update" parameterType="jkPatientRoutine" flushCache="true">
+		update JK_PATIENT_ROUTINE
+		<set>
+			ID=#{id},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},STOOL_DATE=#{stoolDate},RECORDING_AT=#{recordingAt},ROUTINE_VALUES=#{routineValues},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<update id="updateFlag" parameterType="jkPatientRoutine"
+		flushCache="true">
+		update JK_PATIENT_ROUTINE
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<select id="get" resultType="jkPatientRoutine">
+		select
+		<include refid="commCols" />
+		from JK_PATIENT_ROUTINE
+		<where>ID=#{id}</where>
+	</select>
+
+
+	<select id="findJkPatientRoutineCount" parameterType="jkPatientRoutine"
+		resultType="int">
+		select count(*) from JK_PATIENT_ROUTINE
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="jkPatientRoutine">
+		select
+		<include refid="commCols" />
+		from JK_PATIENT_ROUTINE
+		<where>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw017RoleRightDao">
+
+	<sql id="commCols_oracle">
+		role_id roleId,class_id classId,self_view selfView,self_add selfAdd,self_result selfResult,other_view otherView,other_add otherAdd,other_result otherResult
+	</sql>
+
+	<select id="findHw017RoleRight_oracle" parameterType="hw017RoleRight" resultType="hw017RoleRight">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw017_role_right
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findList_oracle" parameterType="hw017RoleRight" resultType="hw017RoleRight">
+		select h1.class_id classId,h1.class_name className,nvl(hw017.self_view, 0) selfView,nvl(hw017.self_add, 0) selfAdd,nvl(hw017.self_result, 0) selfResult,nvl(hw017.other_view, 0) otherView,nvl(hw017.other_add, 0) otherAdd,nvl(hw017.other_result, 0) otherResult,hw017.role_id roleId 
+		from (select class_id, class_name from hw001_jcxm where pclass_id=0) h1 
+		left join (select * from hw017_role_right 
+		<where>
+			role_id=#{roleId} 
+		</where>
+		) hw017 on h1.class_id=hw017.class_id
+	</select>
+</mapper>

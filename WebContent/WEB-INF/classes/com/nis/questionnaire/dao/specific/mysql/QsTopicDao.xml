@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsTopicDao">
+
+	<sql id="commCols_mysql">
+		TID tid,TITLE title,TTYPE ttype,TLEVEL tlevel,ALLOW_NULL allowNull,NOTE note,CAT_ID catId,CAT_NAME catName,UNIT_ID unitId,DEP_NO depNo,DOC_NO docNo,ATTR attr,STATUS status,UPD_TIME updTime,UPD_USER updUser,QID qid,SORT_NO sortNo,DEP_TYPE depType,MAX_VALUE maxValue,FEED_TYPE feedType,IS_COUNT isCount
+	</sql>
+
+	<select id="findQsTopic_mysql" parameterType="qsTopic" resultType="qsTopic">
+		select <include refid="commCols_mysql"/> from QS_TOPIC
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

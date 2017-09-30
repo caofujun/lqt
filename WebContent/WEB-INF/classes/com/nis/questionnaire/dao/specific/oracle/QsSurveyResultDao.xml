@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsSurveyResultDao">
+
+	<sql id="commCols_oracle">
+		ID id,RID rid,QID qid,TID tid,OPT_ID optId,OPT_NAME optName,INPUT_VALUE inputValue,REMARK remark,EXT1 ext1,EXT2 ext2
+	</sql>
+
+	<select id="findQsSurveyResult_oracle" parameterType="qsSurveyResult" resultType="qsSurveyResult">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from QS_SURVEY_RESULT
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<resultMap type="com.nis.questionnaire.entity.QsReportTopic" id="_qsReportTopic">
+		<id column="TID" property="tid"/>  
+        <result column="TITLE" property="title"/>
+        <result column="TTYPE" property="ttype"/>
+        <result column="TIDCOUNT" property="tidCount"/>
+        <collection property="qsReportOptionList" ofType="com.nis.questionnaire.entity.QsReportOptions" >
+        	<id column="OPTID" property="optId"/>  
+	        <result column="OPTNAME" property="optName"/>
+	        <result column="OPTSCALE" property="opScale"/>
+	        <result column="OPTCOUNT" property="opCount"/>
+        </collection>
+	</resultMap>
+	
+	<select id="findQsReportDefault_oracle" parameterType="qsReportTopic" resultMap="_qsReportTopic" >
+		with sql_1 as (
+		  <!--统计选项数据-->
+		   select count(qr.rid ) optCount,op.opt_id,tc.tid
+	      from qs_topic tc inner join qs_topic_option op on tc.tid = op.tid 
+	      left join qs_survey_result qr on op.opt_id = qr.opt_id 
+	      left join QS_SURVEY_RECORD qs on qr.rid = qs.rid 
+		  where tc.qid = #{qId} 
+		  <if test="queryStartDate != null and queryEndDate == null">
+				AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+		  </if>
+		  <if test="queryStartDate == null and queryEndDate != null">
+				AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+		  </if>
+		  <if test="queryStartDate != null and queryEndDate != null">
+				AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+		  </if>
+		  <if test="depNo != null and depNo != ''">
+				AND qs.DEP_NO =${depNo}
+		  </if>
+		  group by tc.tid,op.opt_id 
+		),
+		sql_2 as (
+		  <!-- 统计题目数据 -->
+		 select count(qr.rid ) tidCount,tc.tid
+	      from qs_topic tc inner join qs_topic_option op on tc.tid = op.tid 
+	      left join qs_survey_result qr on op.opt_id = qr.opt_id 
+	      left join QS_SURVEY_RECORD qs on qr.rid = qs.rid 
+		  where tc.qid = #{qId}  
+		  <if test="queryStartDate != null and queryEndDate == null">
+				AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+		  </if>
+		  <if test="queryStartDate == null and queryEndDate != null">
+				AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+		  </if>
+		  <if test="queryStartDate != null and queryEndDate != null">
+				AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+		  </if>
+		  <if test="depNo != null and depNo != ''">
+				AND qs.DEP_NO =${depNo}
+		  </if>
+		  group by tc.tid 
+		),
+		sql_3 as (
+		  <!-- 统计填空题目 -->
+		  select count(qr.tid) tidCount,qr.tid from qs_survey_result qr inner join QS_SURVEY_RECORD qs 
+		  on qr.rid = qs.rid inner join qs_topic qt on qr.tid = qt.tid 
+		  where qt.ttype = '3' and qr.qid = #{qId} 
+		  <if test="queryStartDate != null and queryEndDate == null">
+				AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+		  </if>
+		  <if test="queryStartDate == null and queryEndDate != null">
+				AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+		  </if>
+		  <if test="queryStartDate != null and queryEndDate != null">
+				AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+		  </if> 
+		  	<if test="depNo != null and depNo != ''">
+				AND qs.DEP_NO =${depNo}
+		  </if>
+		  group by qr.tid
+		)
+		select x.* from (
+		 select t.* from (  
+		    select qt.title,qt.tid,qt.ttype,qto.opt_name optName,qto.opt_id optId,qt.sort_no,qt.qid,
+					       sql_1.optCount,sql_2.tidCount,
+					        case sql_2.tidCount when 0 then 0 
+		         			else round((sql_1.optCount/sql_2.tidCount)*100,2) end optScale   
+		    from sql_1 inner join sql_2 on sql_1.tid = sql_2.tid 
+		    left join qs_topic qt on sql_1.tid = qt.tid 
+		    left join qs_topic_option qto on sql_1.tid = qto.tid and sql_1.opt_id = qto.opt_id  
+		    where qt.ttype != '3' 
+		 ) t union all ( 
+		    select qt.title,qt.tid,qt.ttype,qr.input_value as optName,null optId,qt.sort_no,qt.qid,
+		    null optCount,sql_3.tidCount, null optScale 
+		    from qs_survey_result qr inner join QS_SURVEY_RECORD qs 
+		    on qr.rid = qs.rid inner join qs_topic qt on qr.tid = qt.tid 
+		    inner join sql_3 on sql_3.tid = qr.tid 
+		    where qr.qid = #{qId} and qt.ttype = '3' 
+		    <if test="queryStartDate != null and queryEndDate == null">
+				AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+			  </if>
+			  <if test="queryStartDate == null and queryEndDate != null">
+					AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+			  </if>
+			  <if test="queryStartDate != null and queryEndDate != null">
+					AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+			  </if> 
+			  <if test="depNo != null and depNo != ''">
+				  AND qs.DEP_NO =${depNo}
+		  	  </if>
+		)) x 
+		 order by x.sort_no ,x.qid
+	</select>
+	
+	<select id="findQsReportClassify_oracle" parameterType="qsReportTopic" resultMap="_qsReportTopic" >
+	with sql_1 as (
+      <!--统计选项数据-->
+      select count(t.rid ) optCount,op.opt_id,qt.tid   
+        from qs_topic qt inner join qs_topic_option op on qt.tid = op.tid 
+        left join (
+           <!--填过某一题目的问卷的数据-->
+            select qr.opt_id,qr.rid from qs_survey_result qr 
+            where qr.rid in ( 
+              select distinct qr.rid from qs_survey_result qr inner join QS_SURVEY_RECORD qs on qr.rid = qs.rid  
+              where qr.qid = #{qId} and qr.opt_id = #{optId} 
+              <if test="queryStartDate != null and queryEndDate == null">
+				AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+			  </if>
+			  <if test="queryStartDate == null and queryEndDate != null">
+					AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+			  </if>
+			  <if test="queryStartDate != null and queryEndDate != null">
+					AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+			  </if>
+			  <if test="depNo != null and depNo != ''">
+			     AND qs.DEP_NO =${depNo}
+		  	  </if>   
+            ) 
+        ) t on op.opt_id = t.opt_id 
+      where qt.qid = #{qId} 
+      group by qt.tid,op.opt_id 
+    ),
+    sql_2 as (
+      <!-- 统计题目数据 -->
+      select count(t.rid ) tidCount,qt.tid 
+        from qs_topic qt inner join qs_topic_option op on qt.tid = op.tid 
+        left join (
+           <!--填过某一题目的问卷的数据-->
+            select qr.opt_id,qr.rid from qs_survey_result qr 
+            where qr.rid in ( 
+              select distinct qr.rid from qs_survey_result qr  inner join QS_SURVEY_RECORD qs on qr.rid = qs.rid 
+              where qr.qid = #{qId} and qr.opt_id = #{optId} 
+              <if test="queryStartDate != null and queryEndDate == null">
+					AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+			  </if>
+			  <if test="queryStartDate == null and queryEndDate != null">
+					AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+			  </if>
+			  <if test="queryStartDate != null and queryEndDate != null">
+					AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+			  </if>
+			 <if test="depNo != null and depNo != ''">
+					AND qs.DEP_NO =${depNo}
+		  	  </if>  
+            )   
+        ) t on op.opt_id = t.opt_id 
+      where qt.qid = #{qId} 
+      group by qt.tid 
+    ),
+    sql_3 as (
+      <!-- 统计填空题目 -->
+      select count(qr.tid) tidCount,qr.tid from qs_survey_result qr inner join qs_topic qt on qr.tid = qt.tid 
+      where qt.ttype = '3' and qr.rid in (
+		    select distinct qr.rid from qs_survey_result qr  inner join QS_SURVEY_RECORD qs on qr.rid = qs.rid  
+		    where qr.qid = #{qId}  and qr.opt_id = #{optId} 
+		    <if test="queryStartDate != null and queryEndDate == null">
+				AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+		  </if>
+		  <if test="queryStartDate == null and queryEndDate != null">
+				AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+		  </if>
+		  <if test="queryStartDate != null and queryEndDate != null">
+				AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+		  </if>
+		   <if test="depNo != null and depNo != ''">
+		     	AND qs.DEP_NO =${depNo}
+		  </if> 
+	  ) 
+      group by qr.tid
+    )
+    select t.* from (  
+        select qt.title,qt.tid,qt.ttype,qto.opt_name optName,qto.opt_id optId,qt.sort_no,qt.qid,
+                 sql_1.optCount,sql_2.tidCount,
+                  case sql_2.tidCount when 0 then 0 
+                  else round((sql_1.optCount/sql_2.tidCount)*100,2) end optScale   
+        from sql_1 inner join sql_2 on sql_1.tid = sql_2.tid 
+        left join qs_topic qt on sql_1.tid = qt.tid 
+        left join qs_topic_option qto on sql_1.tid = qto.tid and sql_1.opt_id = qto.opt_id  
+        where qt.ttype != '3' 
+     ) t union all ( 
+        select qt.title,qt.tid,qt.ttype,qr.input_value as optName,null optId,qt.sort_no,qt.qid,
+        null optCount,sql_3.tidCount, null optScale 
+        from qs_survey_result qr inner join qs_topic qt on qr.tid = qt.tid 
+        inner join sql_3 on sql_3.tid = qr.tid 
+        where qr.qid = #{qId} and qt.ttype = '3' 
+        and qr.rid in (
+			    select distinct qr.rid from qs_survey_result qr  inner join QS_SURVEY_RECORD qs on qr.rid = qs.rid  
+			    where qr.qid = #{qId}  and qr.opt_id = #{optId} 
+				  <if test="queryStartDate != null and queryEndDate == null">
+						AND qs.SURVEY_TIME &gt;= #{queryStartDate} 
+				  </if>
+				  <if test="queryStartDate == null and queryEndDate != null">
+						AND qs.SURVEY_TIME &lt;= #{queryEndDate} 
+				  </if>
+				  <if test="queryStartDate != null and queryEndDate != null">
+						AND qs.SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate} 
+				  </if>
+				  <if test="depNo != null and depNo != ''">
+					   AND qs.DEP_NO =${depNo}
+		 		  </if> 
+		  ) 
+    )  
+	</select>
+	
+	<select id="findQsReportClassifyCount_oracle" parameterType="qsReportTopic" resultType="qsReportTopic" >
+		select (
+			select count(distinct qs.rid) trueQsCount from qs_survey_result qs where qs.qid=#{qId} and qs.opt_id = #{optId} 
+		) trueQsCount,
+		(
+			select count(distinct qr.rid) allQsCount from qs_survey_record qr where qr.qid = #{qId}
+		) allQsCount 
+		from dual  
+	</select>
+	
+</mapper>

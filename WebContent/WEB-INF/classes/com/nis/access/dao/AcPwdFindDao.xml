@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcPwdFindDao">
+
+	<sql id="commCols">
+		ID id,USERNAME username,MOBILE mobile,EMAIL
+		email,RANDOM_STR randomStr,VALID_DATE validDate,STATUS status
+	</sql>
+
+	<insert id="save" parameterType="acPwdFind" flushCache="true">
+		insert into
+		AC_PWD_FIND(ID,USERNAME,MOBILE,EMAIL,RANDOM_STR,VALID_DATE,STATUS)
+		values(#{id},#{username},#{mobile},#{email},#{randomStr},#{validDate},#{status})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from AC_PWD_FIND
+		<where>ID=#{id}</where>
+	</delete>
+
+	<update id="update" parameterType="acPwdFind" flushCache="true">
+		update AC_PWD_FIND
+		<set>
+			ID=#{id},USERNAME=#{username},MOBILE=#{mobile},EMAIL=#{email},RANDOM_STR=#{randomStr},VALID_DATE=#{validDate},STATUS=#{status}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<update id="updateState" flushCache="true">
+		update AC_PWD_FIND
+		<set>
+			STATUS=#{status}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<select id="get" resultType="acPwdFind">
+		select
+		<include refid="commCols" />
+		from AC_PWD_FIND
+		<where>ID=#{id}</where>
+	</select>
+
+	<select id="findAcPwdFindByUserNameEmailVDate" resultType="acPwdFind">
+		select
+		<include refid="commCols" />
+		from AC_PWD_FIND
+		<where>USERNAME=#{username} and EMAIL=#{email} and
+			VALID_DATE=#{validDate} and STATUS = '0'</where>
+	</select>
+
+
+	<select id="findAcPwdFindCount" parameterType="acPwdFind"
+		resultType="int">
+		select count(*) from AC_PWD_FIND
+		<where>
+			1=1
+		</where>
+	</select>
+
+	<select id="getAll" resultType="acPwdFind">
+		select
+		<include refid="commCols" />
+		from AC_PWD_FIND
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

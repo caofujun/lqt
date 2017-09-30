@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl012DicTrocheDao">
+
+	<sql id="commCols">
+		trocheid trocheid,trochename trochename,memoryid memoryid,xhl_use xhlUse
+	</sql>
+
+	<insert id="save" parameterType="xl012DicTroche" flushCache="true">
+		 insert into xl012_dic_troche(trocheid,trochename,memoryid,xhl_use)
+		 values(#{trocheid},#{trochename},#{memoryid},#{xhlUse})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl012_dic_troche
+		<where>trocheid=#{trocheid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl012DicTroche" flushCache="true">
+		update xl012_dic_troche
+		<set>
+			trocheid=#{trocheid},trochename=#{trochename},memoryid=#{memoryid},xhl_use=#{xhlUse}
+		</set>
+		<where>trocheid=#{trocheid}</where>
+	</update>
+	
+	<select id="get" resultType="xl012DicTroche">
+		select <include refid="commCols"/> from xl012_dic_troche
+  		<where>trocheid=#{trocheid}</where>
+	</select>
+	
+	
+	<select id="findXl012DicTrocheCount" parameterType="xl012DicTroche" resultType="int">
+		select count(*) from xl012_dic_troche
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl012DicTroche">
+		select <include refid="commCols"/> from xl012_dic_troche
+		<where>
+		</where>
+	</select>
+</mapper>

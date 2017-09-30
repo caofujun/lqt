@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys007DictcontagionDao">
+
+	<sql id="commCols">
+		DISEASEID diseaseid,DISEASENAME diseasename,ZJF zjf,ICD10 icd10,CANINPUT caninput,SEXCARD sexcard,SORTSEQ sortseq,PARENTID parentid,KINDID kindid,KINDNAME kindname,ISINTESTINAL isintestinal,ISRESPIRATORY isrespiratory,ISNATURAL isnatural,ISHEMIC ishemic,ISSEXSPREAD issexspread,SCOPETIME scopetime,REPEATCYCLE repeatCycle,ISIMPORTANT isimportant 
+	</sql>
+
+	<insert id="save" parameterType="ctgSys007Dictcontagion"  flushCache="true">
+		 insert into CTG_SYS007_DICTCONTAGION(DISEASEID,DISEASENAME,ZJF,ICD10,CANINPUT,SEXCARD,SORTSEQ,PARENTID,KINDID,KINDNAME,ISINTESTINAL,ISRESPIRATORY,ISNATURAL,ISHEMIC,ISSEXSPREAD,SCOPETIME,REPEATCYCLE,ISIMPORTANT)
+		 values(#{diseaseid},#{diseasename},#{zjf},#{icd10},#{caninput},#{sexcard},#{sortseq},#{parentid},#{kindid},#{kindname},#{isintestinal},#{isrespiratory},#{isnatural},#{ishemic},#{issexspread},#{scopetime},#{repeatCycle},#{isimportant})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS007_DICTCONTAGION
+		<where>DISEASEID=#{diseaseid}</where>
+	</delete>
+	
+	<delete id="delByParentId" flushCache="true">
+		delete from  CTG_SYS007_DICTCONTAGION
+		<where>PARENTID=#{parentId}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys007Dictcontagion" flushCache="true">
+		update CTG_SYS007_DICTCONTAGION
+		<set>
+			DISEASEID=#{diseaseid},DISEASENAME=#{diseasename},ZJF=#{zjf},ICD10=#{icd10},CANINPUT=#{caninput},SEXCARD=#{sexcard},SORTSEQ=#{sortseq},PARENTID=#{parentid},KINDID=#{kindid},KINDNAME=#{kindname},ISINTESTINAL=#{isintestinal},ISRESPIRATORY=#{isrespiratory},ISNATURAL=#{isnatural},ISHEMIC=#{ishemic},ISSEXSPREAD=#{issexspread},SCOPETIME=#{scopetime},REPEATCYCLE=#{repeatCycle},ISIMPORTANT=#{isimportant} 
+		</set>
+		<where>DISEASEID=#{diseaseid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys007Dictcontagion">
+		select <include refid="commCols"/> from CTG_SYS007_DICTCONTAGION
+  		<where>DISEASEID=#{diseaseid}</where>
+	</select>
+	
+	
+	<select id="findCtgSys007DictcontagionCount" parameterType="ctgSys007Dictcontagion" resultType="int">
+		select count(*) from CTG_SYS007_DICTCONTAGION
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and ( upper(diseaseid) like CONCAT(CONCAT('%',upper(#{searchString})),'%') 
+					or upper(diseasename) like CONCAT(CONCAT('%',upper(#{searchString})),'%') )
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys007Dictcontagion">
+		select <include refid="commCols"/> from CTG_SYS007_DICTCONTAGION
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getNeedFKDiseasis"  resultType="String">
+		select wm_concat(DISEASEID) from CTG_SYS007_DICTCONTAGION
+		<where>
+			sexcard=1
+		</where>
+	</select>
+	
+	<select id="search"  resultType="ctgSys007Dictcontagion" parameterType="String">
+		select <include refid="commCols"/> from CTG_SYS007_DICTCONTAGION
+		<where>
+			CANINPUT=1 
+			<if test="keyword!=null and keyword!=''">
+				and (upper(DISEASEID) like upper(CONCAT('%',CONCAT(#{keyword},'%'))) or upper(DISEASENAME) like upper(CONCAT('%',CONCAT(#{keyword},'%'))) or upper(ZJF) like upper(CONCAT('%',CONCAT(#{keyword},'%')))  )
+			</if>
+		</where>
+		order by DISEASEID
+	</select>
+	
+	<select id="getByParentId" resultType="ctgSys007Dictcontagion" parameterType="ctgSys007Dictcontagion">
+		select <include refid="commCols"/> from CTG_SYS007_DICTCONTAGION
+		<where>
+			1=1
+			<if test="parentid!=null and parentid!=''">
+				and parentid=#{parentid}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and ( upper(DISEASEID) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(DISEASENAME) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(ZJF) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) )
+			</if>
+		</where>
+	</select>
+	
+	<select id="getNeedFKDiseasisByParentId"  resultType="String" >
+		select wm_concat(DISEASEID) from CTG_SYS007_DICTCONTAGION
+		<where>
+			parentid=#{parentId}
+		</where>
+	</select>
+	
+	<select id="getMDDiseaseId" resultType="String" >
+		select wm_concat(n.diseaseid) from ctg_sys007_dictcontagion n where n.diseaseid='0800' or n.parentid='0800'
+	</select>
+	
+	<select id="getByIds" resultType="ctgSys007Dictcontagion" >
+		select <include refid="commCols"/> from ctg_sys007_dictcontagion n where n.diseaseid in (${ids})
+	</select>
+	
+	<select id="getAvailableDiseaseId" resultType="Integer">
+		select max(to_number(diseaseid))+1 diseaseid from ctg_sys007_dictcontagion where trim(translate(nvl(diseaseid,'x'),'0123456789',' ')) is NULL 
+	</select>
+	
+	<select id="getDiseaseParent" resultType="ctgSys007Dictcontagion"> 
+		select <include refid="commCols"/> from ctg_sys007_dictcontagion o where nvl(o.caninput,0)=0 and diseaseId not like 'ZDY%'
+	</select>
+	
+	<select id="getDiseaseParentLevel" resultType="ctgSys007Dictcontagion"> 
+		select <include refid="commCols"/> from ctg_sys007_dictcontagion o where 1=1
+		<if test="kindid!=null and kindid!=''">
+			and o.kindid=#{kindid}
+		</if>
+		and ( o.caninput=0 or nvl(parentid,'x')='x' )
+		order by diseaseid
+	</select>
+	
+	<update id="updateStatus"  parameterType="ctgSys007Dictcontagion" flushCache="true">
+		update CTG_SYS007_DICTCONTAGION 
+		<set>
+			<if test="sexcard!=null">
+				SEXCARD=#{sexcard}
+			</if>
+			<if test="isintestinal!=null">
+				ISINTESTINAL=#{isintestinal}
+			</if>
+			<if test="isrespiratory!=null">
+				ISRESPIRATORY=#{isrespiratory}
+			</if>
+			<if test="isnatural!=null">
+				ISNATURAL=#{isnatural}
+			</if>
+			<if test="ishemic!=null">
+				ISHEMIC=#{ishemic}
+			</if>
+			<if test="issexspread!=null">
+				ISSEXSPREAD=#{issexspread}
+			</if>
+		</set>
+		<where>DISEASEID=#{diseaseid}</where>
+	</update>
+	
+	<select id="getClassify" resultType="ctgSys007Dictcontagion">
+		select kindid kindid,kindname kindname from ctg_sys007_dictcontagion group by kindid,kindname
+	</select>
+	
+	<select id="getSelfAndSonsByParentId" resultType="map" parameterType="ctgSys007Dictcontagion">
+		select nvl(sum(case when diseaseid=#{parentid} then 1 else 0 end),0) SELF , nvl(sum(case when parentid=#{parentid} then 1 else 0 end),0) SONS from CTG_SYS007_DICTCONTAGION
+		<where>
+			1=1
+			<if test="parentid!=null and parentid!=''">
+				and (parentid=#{parentid} or diseaseid=#{parentid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and ( upper(DISEASEID) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(DISEASENAME) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(ZJF) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) )
+			</if>
+		</where>
+	</select>
+	
+</mapper>

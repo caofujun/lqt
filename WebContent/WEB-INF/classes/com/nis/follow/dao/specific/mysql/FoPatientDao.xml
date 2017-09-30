@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.follow.dao.FoPatientDao">
+
+	<sql id="commCols_mysql">
+		FO_ID foId,PATIENT_ID patientId,FOLLOW_NAME followName,FOLLOW_TIME followTime
+	</sql>
+
+	<select id="findFoPatient_mysql" parameterType="foPatient" resultType="foPatient">
+		select <include refid="commCols_mysql"/> from FO_PATIENT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

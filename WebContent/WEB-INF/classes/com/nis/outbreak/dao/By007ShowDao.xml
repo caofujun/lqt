@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007ShowDao">
+
+	<sql id="commCols">
+		type_id typeId,extra_id extraId,name name,id id,order_by orderBy
+	</sql>
+
+	<insert id="save" parameterType="by007Show" flushCache="true">
+		 insert into by007_show(type_id,extra_id,name,id,order_by)
+		 values(#{typeId},#{extraId},#{name},#{id},#{orderBy})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from by007_show
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="by007Show" flushCache="true">
+		update by007_show
+		<set>
+			type_id=#{typeId},extra_id=#{extraId},name=#{name},id=#{id},order_by=#{orderBy}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="by007Show">
+		select <include refid="commCols"/> from by007_show
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findBy007ShowCount" parameterType="by007Show" resultType="int">
+		select count(*) from by007_show
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="by007Show">
+		select <include refid="commCols"/> from by007_show
+		<where>
+		</where>
+	</select>
+	
+	<select id="findShowFields" resultType="by007Show">
+		select a.type_id typeId,a.extra_id extraId,a.name name,a.id id,a.order_by orderBy 
+		from by007_show a inner join by007_config b on a.type_id = b.type_id
+		<where>
+			b.show_type=1 or b.show_type=#{showType}
+		</where>
+        order by a.order_by
+	</select>
+	
+	<resultMap type="java.util.HashMap" id="cursorMap"></resultMap>  
+	
+	<select id="callPrStatBfyjAbsoluteWarn" statementType="CALLABLE" parameterType="map">
+		{call pr_stat_bfyj_absolute_warn(#{startDate,mode=IN,jdbcType=VARCHAR},#{result,mode=OUT,jdbcType=CURSOR,javaType=ResultSet, resultMap=cursorMap})}
+	</select>
+	
+	<select id="callPrStatBfyjAbsoluteDept" statementType="CALLABLE" parameterType="map">
+		{call pr_stat_bfyj_absolute_dept(#{startDate,mode=IN,jdbcType=VARCHAR},#{result,mode=OUT,jdbcType=CURSOR,javaType=ResultSet, resultMap=cursorMap})}
+	</select>
+	
+	<resultMap type="by007GraphData" id="graphMap">
+		<result column="MONI_DATE" property="moniDate"/>  
+    	<result column="CNT" property="cnt"/>
+    	<result column="LINE" property="line"/>  
+    	<result column="OBSERVE_LINE" property="observeLine"/>
+    	<result column="CNT_ALL" property="cntAll"/>  
+	</resultMap>
+	
+	<select id="callPrStatMasterAbsolute" statementType="CALLABLE" parameterType="map">
+		{call pr_stat_master_absolute(#{startDate,mode=IN,jdbcType=VARCHAR},#{endDate,mode=IN,jdbcType=VARCHAR},#{id,mode=IN,jdbcType=VARCHAR},#{deptId,mode=IN,jdbcType=VARCHAR},#{result,mode=OUT,jdbcType=CURSOR,javaType=ResultSet, resultMap=graphMap})}
+	</select>
+	
+	<select id="callPrStatBfyjRelativeWarn" statementType="CALLABLE" parameterType="map">
+		{call pr_stat_bfyj_relative_warn(#{startDate,mode=IN,jdbcType=VARCHAR},#{result,mode=OUT,jdbcType=CURSOR,javaType=ResultSet, resultMap=cursorMap})}
+	</select>
+	
+	<select id="callPrStatBfyjRelativeDept" statementType="CALLABLE" parameterType="map">
+		{call pr_stat_bfyj_relative_dept(#{startDate,mode=IN,jdbcType=VARCHAR},#{result,mode=OUT,jdbcType=CURSOR,javaType=ResultSet, resultMap=cursorMap})}
+	</select>
+	
+	<select id="callPrStatMasterRelative" statementType="CALLABLE" parameterType="map">
+		{call pr_stat_master_relative(#{startDate,mode=IN,jdbcType=VARCHAR},#{endDate,mode=IN,jdbcType=VARCHAR},#{id,mode=IN,jdbcType=VARCHAR},#{deptId,mode=IN,jdbcType=VARCHAR},#{result,mode=OUT,jdbcType=CURSOR,javaType=ResultSet, resultMap=graphMap})}
+	</select>
+		
+	<select id="findPatientInfo" parameterType="by007Show" resultType="st003Cryxxb">
+		select distinct
+			s3.zyid zyid, s3.patient_id patientId,s3.visit_id visitId,s3.bed_no bedNo,patient_name patientName,s3.age age,
+			s3.age_unit ageUnit,s3.sex sex,s3.dept_code deptCode,s3.dept_name deptName,s3.in_dept_id inDeptId,s3.in_dept_name inDeptName,
+			s3.out_dept_id outDeptId,s3.out_dept_name outDeptName,s3.in_hosp_at inHospAt,s3.out_at outAt,
+			s3.charge_dr_id chargeDrId,s3.charge_dr_name chargeDrName ,
+			(select submi_at from st009_sjbb where id=a.data_id) submiAt,
+			(select item_name from st009_sjbb where id=a.data_id) itemTypeName,
+			(select tw_values from st006_twxx where id=a.data_id) tw,
+			(select recording_at from st006_twxx where id=a.data_id) recording_at
+		from by007_data a
+		 inner join by007_config b
+		    on a.type_id = b.type_id
+		 inner join by007_show c
+		    on a.type_id = c.type_id
+		   and a.extra_id = c.extra_id
+		  left join st003_cryxxb s3
+		    on a.identify = s3.zyid
+		<where>
+			c.id=#{id} 
+			and decode(#{deptId}, null, '@@@', a.dept_id)=decode(#{deptId}, null, '@@@', #{deptId})
+			and moni_date between #{queryStartDate} and #{queryEndDate}
+		</where>
+		    order by s3.zyid,s3.in_hosp_at
+	</select>
+	
+	<select id="findBloodCulturePatient" parameterType="by007Show" resultType="st003Cryxxb">
+		select 
+			distinct s3.zyid zyid, s3.patient_id patientId,s3.VISIT_ID visitId,s3.patient_name patientName,s3.age age,
+			s3.age_unit ageUnit,s3.sex sex,s3.dept_name deptName,
+			s9.submi_at submiAt,s9.dept_name submiDeptName,s9.item_type_name itemTypeName,
+	        (select max(test_date) from st010_jcbyt where test_order_no = s9.test_order_no) testDate,
+	        (select wm_concat(distinct patho_name) from st010_jcbyt where test_order_no = s9.test_order_no) pathoName
+	    from by007_data a
+			 inner join by007_config b
+			    on a.type_id = b.type_id
+			 inner join by007_show c
+			    on a.type_id = c.type_id
+			   and a.extra_id = c.extra_id
+			 inner join st009_sjbb s9
+			    on a.data_id = s9.id
+			  left join st003_cryxxb s3
+			    on s9.zyid = s3.zyid
+  		<where>
+   			c.id = #{id}
+   			and decode(#{deptId}, null, '@@@', a.dept_id) = decode(#{deptId}, null, '@@@', #{deptId})
+			and moni_date between #{queryStartDate} and #{queryEndDate}
+  		</where>
+  		order by  s3.zyid,s9.submi_at
+	</select>
+	
+	<select id="findPathogenPatient" parameterType="by007Show" resultType="st003Cryxxb">
+		select 
+			distinct s3.zyid zyid, s3.patient_id patientId,s3.VISIT_ID visitId,s3.patient_name patientName,s3.age age,
+			s3.age_unit ageUnit,s3.sex sex,s3.dept_name deptName,
+			s9.submi_at submiAt,s9.dept_name submiDeptName,
+			s9.item_type_name itemTypeName,
+            x13.lis_bytname lisBytname, 
+            s10.test_date testDate,
+            case nvl(mx.manual_res_prop, mx.res_prop) 
+            when 0 then '敏感' 
+            when 1 then 'MDR' 
+            when 2 then 'XDR'
+            when 3 then 'PDR'
+            when 5 then '正在检验'
+            end as propName,
+            mx.spec_describes specDescribes
+       from by007_data a
+           inner join by007_config b on a.type_id = b.type_id
+           inner join by007_show c on a.type_id = c.type_id and a.extra_id = c.extra_id
+           inner join st010_jcbyt s10 on s10.id = a.data_id
+           inner join st009_sjbb s9 on s9.test_order_no = s10.test_order_no and s9.zyid = s10.zyid
+           inner join xn013_lisbyt x13 on x13.lis_bytid = s10.patho_code
+           left join st003_cryxxb s3 on s9.zyid = s3.zyid
+           left join xn011_dclymx mx on mx.zyid=s10.zyid and mx.test_order_no=s10.test_order_no and mx.pathogen_sn=s10.pathogen_sn
+  		<where>
+   			c.id = #{id}
+   			and decode(#{deptId}, null, '@@@', a.dept_id) = decode(#{deptId}, null, '@@@', #{deptId})
+			and moni_date between #{queryStartDate} and #{queryEndDate}
+  		</where>
+  		order by s3.zyid,s9.submi_at
+	</select>
+	
+	<select id="findInfectionSiteList" parameterType="by007Show" resultType="st003Cryxxb">
+		select 
+			distinct s3.zyid zyid, s3.patient_id patientId,s3.VISIT_ID visitId,s3.patient_name patientName,s3.age age,
+			s3.age_unit ageUnit,s3.sex sex,s3.dept_name deptName,s3.in_dept_name inDeptName,
+			s3.out_dept_id outDeptId,s3.out_dept_name outDeptName,s3.in_hosp_at inHospAt,s3.out_at outAt,
+			s3.charge_dr_id chargeDrId,s3.charge_dr_name chargeDrName,
+			a.moni_date moniDate, c.name infection
+       from by007_data a
+           inner join by007_config b on a.type_id = b.type_id
+           inner join by007_show c on a.type_id = c.type_id and a.extra_id = c.extra_id
+           left join st003_cryxxb s3 on a.identify = s3.zyid
+  		<where>
+   			c.id = #{id}
+   			and decode(#{deptId}, null, '@@@', a.dept_id) = decode(#{deptId}, null, '@@@', #{deptId})
+			and moni_date between #{queryStartDate} and #{queryEndDate}
+  		</where>
+  		order by s3.zyid,a.moni_date
+	</select>
+	
+	<select id="callPrStatBy0007Detail" statementType="CALLABLE" parameterType="map">
+		{call pr_stat_by0007_detail(#{queryStartDate,mode=IN,jdbcType=VARCHAR},#{id,mode=IN,jdbcType=VARCHAR},#{deptId,mode=IN,jdbcType=VARCHAR},#{queryEndDate,mode=IN,jdbcType=VARCHAR},#{result,mode=OUT,jdbcType=CURSOR,javaType=ResultSet, resultMap=cursorMap})}
+	</select>
+</mapper>

@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm004JcmxDao">
+
+	<sql id="commCols">
+		IN_DEPT_DT inDeptDt,CREATIONDATE creationdate,TYPEID typeid,ZYID zyid,ISNEWBORN isnewborn,NEONATEBW neonatebw,DEPTID deptid,ISADD isadd,INTERVENTIONMARKS interventionmarks,OPERATOR_NAME operatorName,OPERATOR_DT operatorDt
+	</sql>
+
+	<insert id="save" parameterType="gm004Jcmx"  flushCache="true">
+		 insert into GM004_JCMX(IN_DEPT_DT,CREATIONDATE,TYPEID,ZYID,ISNEWBORN,NEONATEBW,DEPTID,ISADD,INTERVENTIONMARKS,OPERATOR_NAME,OPERATOR_DT)
+		 values(#{inDeptDt},#{creationdate},#{typeid},#{zyid},#{isnewborn},#{neonatebw},#{deptid},#{isadd},#{interventionmarks},#{operatorName},#{operatorDt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  GM004_JCMX
+		<where>CREATIONDATE=#{creationdate}</where>
+	</delete>
+	
+	<update id="deleteHxj" parameterType="gm004Jcmx" flushCache="true">
+		update GM004_JCMX
+		<set>
+			ISSHOW='1'
+		</set>
+		<where>CREATIONDATE=#{creationdate} and zyid=#{zyid} and typeid=#{typeid} and deptid=#{deptid}</where>
+	</update>
+	
+	<update id="updateHxjCount" parameterType="gm004Jcmx" flushCache="true">
+		update gm003_ybsj
+		<set>
+			gm003_ybsj.survey_count=gm003_ybsj.survey_count-1
+		</set>
+		<where>CREATIONDATE=#{creationdate} and type_id=#{typeid} and dept_id=#{deptid}</where>
+	</update>
+	
+	<update id="update" parameterType="gm004Jcmx" flushCache="true">
+		update GM004_JCMX
+		<set>
+			IN_DEPT_DT=#{inDeptDt},CREATIONDATE=#{creationdate},TYPEID=#{typeid},ZYID=#{zyid},ISNEWBORN=#{isnewborn},NEONATEBW=#{neonatebw},DEPTID=#{deptid},ISADD=#{isadd},INTERVENTIONMARKS=#{interventionmarks},OPERATOR_NAME=#{operatorName},OPERATOR_DT=#{operatorDt}
+		</set>
+		<where>CREATIONDATE=#{creationdate}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update gm004_jcmx
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='inDeptDt'">IN_DEPT_DT=#{gm004Jcmx.inDeptDt},</when>
+					<when test="item=='creationdate'">CREATIONDATE=#{gm004Jcmx.creationdate},</when>
+					<when test="item=='typeid'">TYPEID=#{gm004Jcmx.typeid},</when>
+					<when test="item=='zyid'">ZYID=#{gm004Jcmx.zyid},</when>
+					<when test="item=='isnewborn'">ISNEWBORN=#{gm004Jcmx.isnewborn},</when>
+					<when test="item=='neonatebw'">NEONATEBW=#{gm004Jcmx.neonatebw},</when>
+					<when test="item=='deptid'">DEPTID=#{gm004Jcmx.deptid},</when>
+					<when test="item=='isadd'">ISADD=#{gm004Jcmx.isadd},</when>
+					<when test="item=='interventionmarks'">INTERVENTIONMARKS=#{gm004Jcmx.interventionmarks},</when>
+					<when test="item=='operatorName'">OPERATOR_NAME=#{gm004Jcmx.operatorName},</when>
+					<when test="item=='operatorDt'">OPERATOR_DT=#{gm004Jcmx.operatorDt},</when>
+				</choose>
+			</foreach>
+			ZYID=#{gm004Jcmx.zyid}
+		</set>
+		<where>ZYID=#{gm004Jcmx.zyid}</where>
+	</update>
+	
+	<select id="get" resultType="gm004Jcmx">
+		select <include refid="commCols"/> from GM004_JCMX
+  		<where>CREATIONDATE=#{creationdate}</where>
+	</select>
+	
+	<select id="getMonitorPatientTubeLastAt" resultType="date">
+		select max(CREATIONDATE) from GM004_JCMX mx
+		 join st003_cryxxb cr on mx.zyid=cr.zyid
+		 where cr.out_at is null and CREATIONDATE&lt;sysdate
+	</select>
+
+
+	<select id="getPatientNum"  resultType="String">
+		select nvl(sum(countChild),0) countPatient  from (select c.dept_code,c.dept_name,count(distinct c.zyid) as countChild from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+	    left join st003_cryxxb c on c.zyid=a.zyid
+	    where a.typeid in ('04', '05', '06')  and b.qid is  null
+		and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}
+		 and c.out_at is null 
+		 <if test="deptId!=null and deptId!=''"> 
+		 	and a.deptid=#{deptId}
+		 </if>
+		   group by c.dept_code,c.dept_name)
+	</select>
+	
+	<select id="getPatientNum2"  resultType="String">
+		select nvl(sum(countChild),0) countPatient  from (select c.dept_code,c.dept_name,count(distinct c.zyid) as countChild from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+	    left join st003_cryxxb c on c.zyid=a.zyid
+	    where a.typeid in ('04', '05', '06')  and b.qid is  null
+		and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}
+		  and  to_date(to_char(c.out_at,'yyyy-MM-dd'),'yyyy-MM-dd') = to_date(#{queryDate},'yyyy-MM-dd')  
+   		group by c.dept_code,c.dept_name )
+	</select>
+	
+	<select id="getDeptPatient2"  resultType="map">
+		select c.dept_code,c.dept_name,count(distinct c.zyid) as count_child from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+	    left join st003_cryxxb c on c.zyid=a.zyid
+	    where a.typeid in ('04', '05', '06')  and b.qid is  null
+		and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}
+		and to_date(to_char(c.out_at,'yyyy-MM-dd'),'yyyy-MM-dd') = to_date(#{queryDate},'yyyy-MM-dd') 
+		 <if test="deptId!=null and deptId!=''"> 
+		 	and a.deptid=#{deptId}
+		 </if>
+		 group by c.dept_code,c.dept_name order by c.dept_name
+		
+	</select>
+	
+	<select id="getDeptPatient"  resultType="map">
+		select c.dept_code,c.dept_name,count(distinct c.zyid) as count_child from gm004_jcmx a left join  (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+	    left join st003_cryxxb c on c.zyid=a.zyid
+	    where a.typeid in ('04', '05', '06')  and b.qid is  null
+		and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}
+		 and c.out_at is null 
+		 <if test="deptId!=null and deptId!=''"> 
+		 	and a.deptid=#{deptId}
+		 </if>
+		   group by c.dept_code,c.dept_name order by c.dept_name
+	
+	</select>
+	
+	<select id="getDeptPatientMenuNode2"  resultType="treeEntity">
+		select  c.patient_id as id,c.patient_name as text,case when c.sex='男' then 'icon-man-two' else 'icon-woman-two' end iconCls from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+	    left join st003_cryxxb c on c.zyid=a.zyid
+	    where a.typeid in ('04', '05', '06')  and b.qid is  null
+		and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}
+		  and c.dept_code =#{deptCode} and  to_date(to_char(c.out_at,'yyyy-MM-dd'),'yyyy-MM-dd') = to_date(#{queryDate},'yyyy-MM-dd')  
+   		 group by c.patient_id,c.patient_name,c.sex 
+	</select>
+	
+	<select id="getDeptPatientMenuNode"  resultType="treeEntity">
+		select  c.patient_id as id,c.patient_name as text,case when c.sex='男' then 'icon-man-two' else 'icon-woman-two' end iconCls from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+	    left join st003_cryxxb c on c.zyid=a.zyid
+	    where a.typeid in ('04', '05', '06')  and b.qid is  null
+		and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}
+		 and c.out_at is null  and c.dept_code =#{deptCode}
+   		 group by c.patient_id,c.patient_name,c.sex
+	</select>
+	
+	<select id="getpatientList"  resultType="gm004Jcmx">
+	     select  a.creationdate ,a.typeid, a.zyid,'未评估' as isTest from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+    left join st003_cryxxb c on c.zyid=a.zyid
+    where a.typeid in ('04', '05', '06') and c.patient_id=#{patientId} and b.qid is  null
+and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}   group by a.creationdate ,a.typeid,a.zyid order by a.creationdate desc
+	</select>
+	
+	<select id="findGm004JcmxCount" parameterType="gm004Jcmx" resultType="int">
+		select count(*) from GM004_JCMX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="gm004Jcmx">
+		select <include refid="commCols"/> from GM004_JCMX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+<!-- 	<select id="findByZyid"  resultType="gm004Jcmx"> -->
+<!-- 		SELECT A.*, B.OUTBREAK_TYPE_NAME outbreakTypeName, B.QID qid,nvl(C.qcount,0) qcount  -->
+<!--   FROM (SELECT g.zyid, -->
+<!--                min(CREATIONDATE) AS startAt, -->
+<!--                MAX(CREATIONDATE) AS stopAt, -->
+<!--                TYPEID,          -->
+<!--                COUNT(*) AS days -->
+<!--           fROM GM004_JCMX g -->
+<!--          where g.zyid = #{zyid} -->
+<!--            AND TYPEID in ('04', '05', '06', '008', '009') -->
+<!--          group by g.zyid, Typeid) A -->
+<!--   LEFT JOIN BY001_BFGZ B  ON A.TYPEID = B.OUTBREAK_TYPE_ID -->
+<!--   left join (select (case when qs.cat_id=1 then '05' when qs.cat_id=2 then '04' when qs.cat_id=3 then '06' else '' end) typeid,count(1) qcount -->
+<!--                   from qs_survey_record q -->
+<!--                   left join qs_questionnaire qs -->
+<!--                     on qs.qid = q.qid                   -->
+<!--                  where q.zyid = #{zyid} and ROUND(TO_NUMBER(q.survey_time - (SELECT  -->
+<!--                min(CREATIONDATE ) -->
+<!--           fROM GM004_JCMX g -->
+<!--          where g.zyid =  #{zyid} -->
+<!--            AND TYPEID in ('04', '05', '06', '008', '009') -->
+<!--          group by g.zyid, Typeid) ) * 24) &lt;=#{time} -->
+<!--                   group by q.zyid, qs.cat_id) C on A.TYPEID = C.typeid -->
+<!-- 	</select> -->
+	
+		<select id="findByZyid"  resultType="gm004Jcmx">
+		 select distinct g1.*,B.OUTBREAK_TYPE_NAME outbreakTypeName,g2.isTest,
+		  (select max(x.order_at) from st004_yzxxb x left join jk_dic_all a on x.order_name = a.order_name where x.zyid=#{zyid} and a.class_code='001' and trunc(x.stop_at) &lt; trunc(g1.stopAt)) dngLastDt,
+       	  (select max(x.order_at) from st004_yzxxb x left join jk_dic_all a on x.order_name = a.order_name where x.zyid=#{zyid} and a.class_code='002' and trunc(x.stop_at) &lt; trunc(g1.stopAt)) zxjmLastDt,
+          (select max(x.order_at) from st004_yzxxb x left join jk_dic_all a on x.order_name = a.order_name where x.zyid=#{zyid} and a.class_code='003' and trunc(x.stop_at) &lt; trunc(g1.stopAt)) hxjLastDt
+		 from 
+(SELECT g.zyid, min(CREATIONDATE) AS startAt,
+               MAX(CREATIONDATE) AS stopAt,
+               TYPEID,         
+               COUNT(*) AS days
+          fROM GM004_JCMX g
+         where g.zyid = #{zyid}
+           AND TYPEID in ('04', '05', '06', '008', '009')
+         group by g.zyid, Typeid) g1
+           LEFT JOIN BY001_BFGZ B  ON g1.TYPEID = B.OUTBREAK_TYPE_ID
+  left join(
+  		select  a.creationdate ,a.typeid, a.zyid,'未评估' as isTest from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+    left join st003_cryxxb c on c.zyid=a.zyid
+    where a.typeid in ('04', '05', '06') and c.zyid=#{zyid} and b.qid is  null
+	and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}  group by a.creationdate ,a.typeid,a.zyid order by a.creationdate desc)
+	 g2
+on g1.zyid=g2.zyid and g1.typeid=g2.typeid
+	
+	</select>
+	
+	<select id="findqrxczxgxgr" resultType="map">
+		select to_char(a.creationdate,'MM-dd') CREATIONDATE,nvl(ROUND(a.dngcg * 100, 2), 0) CAUTI,nvl(ROUND(b.zxjmcg * 100, 2), 0) CRBSI,nvl(ROUND(c.hxj * 100, 2), 0) VAP from (select c.creationdate,sum(c.grrs)/count(*) dngcg
+           from (select distinct b.zyid,b.creationdate,b.typeid,(select count(*) from gr005_grblmx e, gr007_grbw f
+                          where e.reg_id = f.reg_id
+                            and e.relid = f.relid
+                            and e.zyid = b.zyid
+                            and f.infect_dept_id=b.deptid
+                            <if test="ificu=='1,'">
+					 		 	and f.infect_dept_id  in (select dept_id from zg002_byks where ificu='1') 
+							 </if>
+							 <if test="ificu=='0,'">
+							 	and f.infect_dept_id  in (select dept_id from zg002_byks where ificu='0') 
+							 </if>  
+                            and f.relation = '导尿管插管'
+                            and f.infect_date between to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')) as grrs
+                   from gm004_jcmx b
+                  where b.creationdate between  to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')
+                    and b.typeid = '04') c
+          group by c.creationdate) a left join 
+       (select c.creationdate,sum(c.grrs)/count(*) zxjmcg
+           from (select distinct b.zyid,b.creationdate,b.typeid,(select count(*) from gr005_grblmx e, gr007_grbw f
+                          where e.reg_id = f.reg_id
+                            and e.relid = f.relid
+                            and e.zyid = b.zyid
+                            and f.infect_dept_id=b.deptid
+                             <if test="ificu=='1,'">
+					 		 	and f.infect_dept_id  in (select dept_id from zg002_byks where ificu='1') 
+							 </if>
+							 <if test="ificu=='0,'">
+							 	and f.infect_dept_id  in (select dept_id from zg002_byks where ificu='0') 
+							 </if>  
+                            and f.relation = '中心静脉插管'
+                            and f.infect_date between to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')) as grrs
+                   from gm004_jcmx b
+                  where b.creationdate between  to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')
+                    and b.typeid = '05') c
+          group by c.creationdate) b on a.creationdate=b.creationdate left join 
+           (select c.creationdate,sum(c.grrs)/count(*) hxj
+           from (select distinct b.zyid,b.creationdate,b.typeid,(select count(*) from gr005_grblmx e, gr007_grbw f
+                          where e.reg_id = f.reg_id
+                            and e.relid = f.relid
+                            and e.zyid = b.zyid
+                            and f.infect_dept_id=b.deptid
+                             <if test="ificu=='1,'">
+					 		 	and f.infect_dept_id  in (select dept_id from zg002_byks where ificu='1') 
+							 </if>
+							 <if test="ificu=='0,'">
+							 	and f.infect_dept_id  in (select dept_id from zg002_byks where ificu='0') 
+							 </if>  
+                            and f.relation = '呼吸机'
+                            and f.infect_date between to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')) as grrs
+                   from gm004_jcmx b
+                  where b.creationdate between to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')
+                    and b.typeid = '06') c
+          group by c.creationdate) c on a.creationdate=c.creationdate
+          order by a.creationdate asc
+	</select>
+	
+	<select id="findDcl" resultType="map">
+		select (select count(*)
+				  from bk001_sbk bk1
+				 right join (select refid
+				               from bk002_grzd
+				              group by refid) bk2
+				    on bk1.relid = bk2.refid
+				  left join st003_cryxxb st3
+				    on bk1.zyid = st3.zyid
+				 WHERE bk1.report_at &gt;=to_date(#{startDate},'yyyy-MM-dd')
+				   and bk1.report_at &lt;to_date(#{endDate},'yyyy-MM-dd')+1
+				   and bk1.is_ok = 0
+				) as bkCount,
+              (select sum(a.num)
+				  from (select * from zg002_byks WHERE ifcaseoffice = 1) c
+				  join (select dept_id, count(*) num
+				          from (select dept_id,
+				                       suspected_degree,
+				                       report_type,
+				                       state,
+				                       row_number() over(partition by dept_id, mx.zyid order by nvl(report_type, 0) desc, nvl(suspected_degree, 0) desc) rn
+				                  from gr002_ysgr_mx mx
+				                  left join st003_cryxxb st3
+				                    on mx.zyid = st3.zyid
+				                 WHERE suspected_degree >= #{qzValue}
+				                   and mx.state = 1
+				                   and nvl2(st3.out_at, 2, 1) = 1
+				                   and mx.infect_type_id = 1)
+				         where rn = 1
+				         group by dept_id) a
+				    on a.dept_id = c.dept_id) as yjCount,            
+		(select count(*) from view_mdr t left join ny_sys_dddd n on n.dict_id = 'DD0017' and n.item_id = t.rs_id where t.res_prop>0  and t.isym = 1 and t.SPEC_DESCRIBES is not null  and t.SUBMI_AT &gt;=to_date(#{startDate},'yyyy-MM-dd') and t.SUBMI_AT &lt;to_date(#{endDate},'yyyy-MM-dd')+1) as xnCount ,
+		  (SELECT Count(*) 
+		    fROM by007_bfjl
+		   WHERE read_flag = 0
+		     AND moni_date &gt;= to_date(#{startDate},'yyyy-MM-dd') and moni_date &lt;to_date(#{endDate},'yyyy-MM-dd')+1) as bfyjCount,
+		 (select count(*)  from bl007_fcsj where fc &gt;= to_date(#{startDate},'yyyy-MM-dd') and fc &lt;to_date(#{endDate},'yyyy-MM-dd')+1) as fcCount,
+		 (select count(*) from fx_patient left join st003_cryxxb on st003_cryxxb.zyid = fx_patient.zy_id
+		 WHERE (out_at &lt; (to_date(#{endDate}, 'yyyy-MM-dd') + 1) and
+		       out_at &gt;= to_date(#{startDate}, 'yyyy-MM-dd'))
+		    or (out_at is null and in_hosp_at &lt; (to_date(#{endDate}, 'yyyy-MM-dd') + 1))
+		    or (in_hosp_at &lt; (to_date(#{endDate}, 'yyyy-MM-dd') + 1) and
+		       in_hosp_at &gt;= to_date(#{startDate}, 'yyyy-MM-dd'))) as FXCOUNT,
+		  (select sum(case when t.typeid = '06' then 1 else 0 end) from gm004_jcmx t
+		 	where t.creationdate between to_date(#{startDate}, 'yyyy-MM-dd') and
+       		to_date(#{endDate}, 'yyyy-MM-dd')) as HXJCOUNT,
+       		 (select sum(case when t.typeid = '05' then 1 else 0 end) from gm004_jcmx t
+		 	where t.creationdate between to_date(#{startDate}, 'yyyy-MM-dd') and
+       		to_date(#{endDate}, 'yyyy-MM-dd')) as ZXJMCOUNT,
+       		 (select sum(case when t.typeid = '04' then 1 else 0 end) from gm004_jcmx t
+		 	where t.creationdate between to_date(#{startDate}, 'yyyy-MM-dd') and
+       		to_date(#{endDate}, 'yyyy-MM-dd')) as MNDCOUNT
+		  from dual
+	</select>
+	
+	<select id="findNicuCount" resultType="nicuCount">
+		select to_char(nvl(bb.creationdate, d.everyDay),'yyyy-MM-dd') as strDate,
+	       sum(decode(bb.neonatebw, '01', bb.new_count, 0))+sum(decode(bb.neonatebw, '00', bb.new_count, 0)) as newCount1,
+	       sum(decode(bb.neonatebw, '01', bb.in_count, 0))+sum(decode(bb.neonatebw, '00', bb.in_count, 0)) as inCount1,
+	       sum(decode(bb.neonatebw, '01', bb.outbreak_count1, 0))+sum(decode(bb.neonatebw, '00', bb.outbreak_count1, 0)) as zxjmCount1,
+	       sum(decode(bb.neonatebw, '01', bb.outbreak_count2, 0))+sum(decode(bb.neonatebw, '00', bb.outbreak_count2, 0)) as hxjCount1,
+	       sum(decode(bb.neonatebw, '02', bb.new_count, 0)) as newCount2,
+	       sum(decode(bb.neonatebw, '02', bb.in_count, 0)) as inCount2,
+	       sum(decode(bb.neonatebw, '02', bb.outbreak_count1, 0)) as zxjmCount2,
+	       sum(decode(bb.neonatebw, '02', bb.outbreak_count2, 0)) as hxjCount2,
+	       sum(decode(bb.neonatebw, '03', bb.new_count, 0)) as newCount3,
+	       sum(decode(bb.neonatebw, '03', bb.in_count, 0)) as inCount3,
+	       sum(decode(bb.neonatebw, '03', bb.outbreak_count1, 0)) as zxjmCount3,
+	       sum(decode(bb.neonatebw, '03', bb.outbreak_count2, 0)) as hxjCount3,
+	       sum(decode(bb.neonatebw, '04', bb.new_count, 0)) as newCount4,
+	       sum(decode(bb.neonatebw, '04', bb.in_count, 0)) as inCount4,
+	       sum(decode(bb.neonatebw, '04', bb.outbreak_count1, 0)) as zxjmCount4,
+	       sum(decode(bb.neonatebw, '04', bb.outbreak_count2, 0)) as hxjCount4
+	  from (select to_date(#{startDate},'yyyy-MM-dd') + level - 1 as everyDay
+	          from dual
+	        connect by level &lt; = (to_date(#{endDate},'yyyy-MM-dd') - to_date(#{startDate},'yyyy-MM-dd') + 1)) d left join
+	        (select aa.creationdate,
+	               decode(aa.typeid, '01', aa.pcount, 0) as new_indept,
+	               decode(aa.typeid, '11', aa.pcount, 0) as new_count,
+	               decode(aa.typeid, '02', aa.pcount, 0) as in_count,
+	               decode(aa.typeid, '05', aa.pcount, 0) as outbreak_count1,
+	               decode(aa.typeid, '06', aa.pcount, 0) as outbreak_count2,
+	               aa.neonatebw,
+	               aa.deptid
+	          from (select t.creationdate,
+	                        t.typeid,
+	                        count(t.zyid) as PCount,
+	                        t.neonatebw,
+	                        t.deptid
+	                   from GM004_JCMX t
+	                  where
+	                  t.deptid = #{deptId}
+	               and t.creationdate between to_date(#{startDate},'yyyy-MM-dd') and to_date(#{endDate},'yyyy-MM-dd')
+	                  group by t.creationdate, t.typeid, t.neonatebw, t.deptid) aa) bb
+	                   on bb.creationdate = d.everyDay
+	 group by bb.creationdate, bb.deptid,d.everyDay order by bb.creationdate asc
+	</select>
+	
+	<select id="findFloorGeneral" resultType="map">
+		select (select count(*) from gm004_jcmx t where t.creationdate between to_date(#{startDate}, 'yyyy-MM-dd hh24:mi:ss') and to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss') and t.typeid = '02' and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1)) as "zyhsCount",
+	      (select count(distinct b.zyid) from gm004_jcmx a left join (select distinct zyid, recording_at
+	          from st006_twxx where tw_values &gt;= #{tw}
+	          and trunc(recording_at) between to_date(#{startDate}, 'yyyy-MM-dd hh24:mi:ss') and to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')) b on a.zyid = b.zyid and to_char(a.creationdate, 'yyyy-MM-dd')=to_char(b.recording_at, 'yyyy-MM-dd')
+	          where a.typeid = '02' and a.creationdate between to_date(#{startDate}, 'yyyy-MM-dd hh24:mi:ss') and to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')) as "twycCount",
+	      (select count(*) from gm004_jcmx t
+	       where t.creationdate between to_date(#{startDate}, 'yyyy-MM-dd hh24:mi:ss') and to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss') and t.typeid = '05' and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1)) as "zxjmCount",
+	      (select count(*) from gm004_jcmx t
+	       where t.creationdate between to_date(#{startDate}, 'yyyy-MM-dd hh24:mi:ss') and to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss') and t.typeid = '04' and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1)) as "mndCount",
+	      (select count(*) from gm004_jcmx t
+	       where t.creationdate between to_date(#{startDate}, 'yyyy-MM-dd hh24:mi:ss') and to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss') and t.typeid = '06' and t.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1)) as "hxjCount",
+	      (select count(*) from view_mdr t where  t.isym = 1 and t.isyang = 1 and nvl(t.infect_type_id, 0) &lt;&gt; 4 
+	      	and (
+            t.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+            or t.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+            (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+            or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id != '无' 
+            and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in 
+            (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1))
+            )  
+	      and t.DT between to_date(#{startDate}, 'yyyy-MM-dd hh24:mi:ss') and to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')) "zdjCount"
+	      from dual
+	</select>
+	
+	<select id="findTodo" resultType="map">
+		select (select  nvl(sum(typeCount),0) deptCount
+  from (select t.dept_id deptId,d.type_id typeId,d.type_name typeName, b.dept_name deptName, count(1) typeCount, wm_concat(t.id) id
+          from BY007_BFJL t inner join BY007_CONFIG d on t.type_id = d.type_id inner join zg002_byks b on t.dept_id = b.dept_id
+         WHERE 1 = 1 and t.moni_date between #{startDate} and #{endDate} and d.grade = 3 and t.audit_flag =0
+         group by t.dept_id, d.type_id, d.type_name, b.dept_name
+         order by b.dept_name) tt) as "bfyjCount",
+	         (select nvl(sum(a.num), 0)
+	          from (select * from zg002_byks WHERE ifcaseoffice = 1) c
+	          join (select dept_code, count(*) num
+	             from (select st3.dept_code,suspected_degree,report_type,state,
+	             row_number() over(partition by st3.dept_code, mx.zyid order by nvl(report_type, 0) desc, nvl(suspected_degree, 0) desc) rn
+	             from gr002_ysgr_mx mx left join st003_cryxxb st3 on mx.zyid = st3.zyid
+	             where suspected_degree &gt;= #{qzValue} and mx.state = 1 and nvl2(st3.out_at, 2, 1) = 1 and mx.infect_type_id = 1)
+	             where rn = 1 group by dept_code) a on a.dept_code = c.dept_id) as "gryjCount",
+	        (select count(*) from fx_patient left join st003_cryxxb on st003_cryxxb.zyid = fx_patient.zy_id
+	     where (out_at between #{startDate} and #{endDate})
+	        or (out_at is null and in_hosp_at &lt; #{endDate})
+	        or (in_hosp_at between #{startDate} and #{endDate})) as "fxyjCount",
+	        (select count(*)
+	          from bk001_sbk bk1
+	         right join (select refid from bk002_grzd group by refid) bk2 on bk1.relid = bk2.refid
+	         left join st003_cryxxb st3 on bk1.zyid = st3.zyid
+	         where bk1.report_at between #{startDate} and #{endDate} and bk1.is_ok = 0
+	        ) as "bkCount",
+	      (select count(*) from ctg_bk001_crbdisease d left join ctg_bk001_crbmaster m on d.masterid = m.masterid
+	      where trunc(m.filldate) between #{startDate} and #{endDate} and d.flag = '0') as "crbbkCount",
+	      (select count(*) from ctg_bk005_syjc m where trunc(m.reportdt) between #{startDate} and #{endDate} and m.flag='0') as "syxbkCount",
+	      (select count(*) from ctg_bk002_sybk m where trunc(m.filldate) between #{startDate} and #{endDate} and m.flag='0') as "sybkCount",
+	      (select count(*) from ctg_bk006_tumour m where trunc(m.REPORTDT) between #{startDate} and #{endDate} and m.flag='0') as "zlbkCount",
+	      (select count(*) from ctg_bk004_syycbk m where trunc(m.REPORTDT) between #{startDate} and #{endDate} and m.flag='0') as "syycbkCount",
+	       (select count(*) from ctg_bk008_ccvd cc where trunc(cc.REPORTDT) between #{startDate} and #{endDate} and cc.flag='0') as "xnxgbkCount",
+	       (select count(*) from ctg_bk009_sunstroke ss where trunc(ss.REPORTDT) between #{startDate} and #{endDate} and ss.flag='0') as "gwzsbkCount",
+	      (select count(*) from bl002_sjdj sjdj WHERE sjdj.dj_time &gt;= #{startDate} and sjdj.enter_time &lt;= #{endDate} and sjdj.sj_state = '1') "blsbCount",
+	      (select count(*) from BL007_FCSJ a left outer join bl002_sjdj s on a.bl_id = s.bl_id 
+		 where s.sj_state!=10 and a.fc &lt; sysdate + #{days} and a.fc &gt; sysdate - #{days}) "blfcCount",
+	      (select nvl(sum(countChild),0) countPatient from (select c.dept_code,c.dept_name,count(distinct c.zyid) as countChild from gm004_jcmx a left join (select qr.*,(case
+                        when qs.cat_id = 1 then
+                         '05'
+                        when qs.cat_id = 2 then
+                         '04'
+                        when qs.cat_id = 3 then
+                         '06'
+                        else
+                         ''
+                      end) typeid from qs_survey_record qr left join qs_questionnaire qs on qs.qid=qr.qid ) b  on a.zyid=b.zyid and a.typeid=b.typeid and a.creationdate=b.survey_time
+	    left join st003_cryxxb c on c.zyid=a.zyid
+	    where a.typeid in ('04', '05', '06')  and b.qid is  null
+		and c.dept_code is not null and ROUND(TO_NUMBER(sysdate - a.creationdate) * 24)>#{time}
+		 and c.out_at is null 
+		   group by c.dept_code,c.dept_name)) as "cgCount"
+	      from dual
+	</select>
+	
+	<select id="getNumByTypeId" resultType="int">
+		select count(*) from gm004_jcmx
+		<where>
+			typeid=#{typeid} and zyid=#{zyid} and creationdate &gt;= #{startAt}
+			<if test="stopAt!=null">
+				and creationdate &lt;= #{stopAt}
+			</if>
+		</where>
+	</select>
+	
+	<select id="judgeGm004" statementType="CALLABLE">
+		{call p_nis6_task(#{startDate,mode=IN,jdbcType=DATE},#{endDate,mode=IN,jdbcType=DATE},'','',#{status,mode=OUT,jdbcType=VARCHAR})}
+	</select>
+	
+	<select id="findBedIcuByorderName" resultType="icuCount">
+		select to_char(nvl(a.creationdate, d.everyDay),'yyyy-MM-dd') strDate,
+         nvl(a.new_count, 0) newCount,
+         nvl(a.in_count, 0) inCount,
+         nvl(a.out_count, 0) outCount,
+         nvl(a.outbreak_count3, 0) mndCount,
+         nvl(a.outbreak_count2, 0) zxjmCount,
+         nvl(a.outbreak_count1, 0) hxjCount,
+         nvl(b.frCount, 0) frCount
+    from (select to_date(#{startDate},'yyyy-MM-dd') + level - 1 as everyDay from dual
+          connect by level &lt; = (to_date(#{endDate},'yyyy-MM-dd') - to_date(#{startDate},'yyyy-MM-dd') + 1)) d
+ 	left join (
+ 		select t.creationdate,t.deptid,sum(decode(t.typeid, '01',1, 0)) new_count,
+            sum(decode(t.typeid, '02', 1, 0)) in_count,
+            sum(decode(t.typeid, '03', 1, 0)) out_count,
+            sum(decode(t.typeid, '04', 1, 0)) outbreak_count3,
+            sum(decode(t.typeid, '05', 1, 0)) outbreak_count2,
+            sum(decode(t.typeid, '06', 1, 0)) outbreak_count1 
+            from (
+            	select distinct g4.* 
+            	from st004_yzxxb s4 
+            	inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+            	and trunc(g4.creationdate) between trunc(s4.order_at) and trunc(nvl(s4.stop_at,sysdate))
+           		where s4.order_name in (select jk.order_name from jk_dic_all jk where jk.class_code = '110')
+				and g4.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+		             <if test="unitId!=null and unitId!=''">
+		             	and z2.HOSP_ID = #{unitId}
+		             </if>
+	            )
+           	) t 
+           	where t.deptid=#{deptId}
+            and t.creationdate &gt;= to_date(#{startDate},'yyyy-MM-dd') and t.creationdate &lt; to_date(#{endDate},'yyyy-MM-dd')+1
+		group by t.deptid,t.creationdate
+	) a on a.creationdate = d.everyDay
+ 	left join (
+ 		select  
+ 			a.creationdate, count(distinct b.zyid)  frCount
+    	from (
+    		select distinct g4.* 
+    		from st004_yzxxb s4 
+    		inner join gm004_jcmx g4 on g4.zyid=s4.zyid
+   			and trunc(g4.creationdate) between trunc(s4.order_at) 
+   			and trunc(s4.stop_at)
+            where  s4.order_name in (select jk.order_name from jk_dic_all jk where jk.class_code = '110')
+			and g4.deptid in (select dept_id from zg002_byks z2  where ifcaseoffice=1
+	             <if test="unitId!=null and unitId!=''">
+	             	and z2.HOSP_ID = #{unitId}
+	             </if>
+            )
+        ) a
+        LEFT JOIN (
+       		SELECT distinct ZYID,RECORDING_AT
+              FROM ST006_TWXX
+             WHERE TW_VALUES &gt;= #{tw}
+               AND  recording_at &gt;=to_date(#{startDate},'yyyy-MM-dd') and recording_at &lt; to_date(#{endDate},'yyyy-MM-dd')+1
+        ) b ON a.ZYID = b.ZYID and to_char(a.creationdate,'yyyy-MM-dd')=to_char(b.RECORDING_AT,'yyyy-MM-dd')
+   		where a.typeid = '02'
+    	and a.creationdate &gt;=to_date(#{startDate},'yyyy-MM-dd') and a.creationdate &lt; to_date(#{endDate},'yyyy-MM-dd')+1
+	   	and a.deptid=#{deptId}
+  		group by a.creationdate
+  	) b on b.creationdate=d.everyDay
+	order by strDate
+	</select>
+</mapper>

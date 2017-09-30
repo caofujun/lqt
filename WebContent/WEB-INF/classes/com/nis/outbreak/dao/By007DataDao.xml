@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007DataDao">
+
+	<sql id="commCols">
+		moni_date moniDate,dept_id deptId,identify identify,type_id typeId,extra_id extraId
+	</sql>
+
+	<insert id="save" parameterType="by007Data" flushCache="true">
+		 insert into by007_data(moni_date,dept_id,identify,type_id,extra_id)
+		 values(#{moniDate},#{deptId},#{identify},#{typeId},#{extraId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from by007_data
+		<where>=#{}</where>
+	</delete>
+	
+	<update id="update" parameterType="by007Data" flushCache="true">
+		update by007_data
+		<set>
+			moni_date=#{moniDate},dept_id=#{deptId},identify=#{identify},type_id=#{typeId},extra_id=#{extraId}
+		</set>
+		<where>=#{}</where>
+	</update>
+	
+	<select id="get" resultType="by007Data">
+		select <include refid="commCols"/> from by007_data
+  		<where>=#{}</where>
+	</select>
+	
+	
+	<select id="findBy007DataCount" parameterType="by007Data" resultType="int">
+		select count(*) from by007_data
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="by007Data">
+		select <include refid="commCols"/> from by007_data
+		<where>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.AntibiosisDrugDao">
+
+	<sql id="commCols">
+		WB_CODE wbCode,IF_COMMON ifCommon,FLAG flag,IF_REPORT ifReport,ZJ_CODE zjCode,LAST_AT lastAt,DRUG_ID drugId,
+		DRUG_NAME drugName,DRUG_ENNAME drugEnname,DRUG_TYPEID drugTypeid,BH_CODE bhCode,SP_CODE spCode,SUBCLASS_ID subClassid
+	</sql>
+
+	<insert id="save" parameterType="antibiosisDrug" flushCache="true">
+		 insert into xn003_kjyw(WB_CODE,IF_COMMON,FLAG,IF_REPORT,ZJ_CODE,LAST_AT,DRUG_ID,DRUG_NAME,DRUG_ENNAME,DRUG_TYPE_ID,BH_CODE,SP_CODE,SUBCLASS_ID)
+		 values(#{wbCode},#{ifCommon},#{flag},#{ifReport},#{zjCode},#{lastAt},#{drugId},#{drugName},#{drugEnname},#{drugTypeid},#{bhCode},#{spCode},#{subClassid})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from xn003_kjyw
+		<where>trim(DRUG_ID)=#{drugId}</where>
+	</delete>
+
+	<update id="update" parameterType="antibiosisDrug" flushCache="true">
+		update xn003_kjyw
+		<set>
+			WB_CODE=#{wbCode},
+			IF_COMMON=#{ifCommon},
+			FLAG=#{flag},
+			IF_REPORT=#{ifReport},
+			ZJ_CODE=#{zjCode},
+			LAST_AT=#{lastAt},
+			DRUG_ID=#{drugId},
+			DRUG_NAME=#{drugName},
+			DRUG_ENNAME=#{drugEnname},
+			DRUG_TYPE_ID=#{drugTypeid},
+			BH_CODE=#{bhCode},
+			SP_CODE=#{spCode},
+			SUBCLASS_ID=#{subClassid}
+		</set>
+		<where>trim(DRUG_ID)=#{drugId}</where>
+	</update>
+
+	<select id="get" resultType="antibiosisDrug">
+		select
+		   WB_CODE                     wbCode,
+           IF_COMMON                   ifCommon,
+           FLAG             flag,
+           IF_REPORT                   ifReport,
+           ZJ_CODE                     zjCode,
+           LAST_AT          lastAt,
+           DRUG_ID                     drugId,
+           DRUG_NAME                   drugName,
+           DRUG_ENNAME                 drugEnname,
+           DRUG_TYPE_ID                 drugTypeid,
+           BH_CODE                     bhCode,
+           SP_CODE                     spCode,
+           SUBCLASS_ID		subClassid			
+		from xn003_kjyw
+		<where>trim(DRUG_ID)=#{drugId}</where>
+	</select>
+
+
+	<select id="findAntibiosisDrugCount" parameterType="antibiosisDrug"
+		resultType="int">
+		select count(*) from xn003_kjyw
+		<where>
+			1=1
+			<if test="drugTypeid!=null and drugTypeid!=''">and xn003_kjyw.DRUG_TYPE_ID=#{drugTypeid}</if>
+			<if test="searchString!=null and searchString!=''"> and (DRUG_ID like CONCAT( CONCAT('%',#{searchString}),'%') or DRUG_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or DRUG_ENNAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			or lower(sp_code) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') 
+			</if>
+			</where>
+	</select>
+
+	<select id="getAll" resultType="antibiosisDrug">
+		select
+		   WB_CODE                     wbCode,
+           IF_COMMON                   ifCommon,
+           FLAG             			flag,
+           IF_REPORT                   ifReport,
+           ZJ_CODE                     zjCode,
+           LAST_AT          			lastAt,
+           DRUG_ID                     drugId,
+           DRUG_NAME                   drugName,
+           DRUG_ENNAME                 drugEnname,
+           DRUG_TYPE_ID                 drugTypeid,
+           BH_CODE                     bhCode,
+           SP_CODE                     spCode,
+           SUBCLASS_ID					subClassid
+		from xn003_kjyw
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsTopicOptionDao">
+
+	<sql id="commCols">
+		OPT_ID optId,OPT_NAME optName,ALLOW_INPUT allowInput,OPT_VALUE optValue,TID tid,UNIT_ID unitId,SORT_NO sortNo,STATUS status,IS_SELECT isSelect
+	</sql>
+
+	<insert id="save" parameterType="qsTopicOption" flushCache="true">
+		 insert into QS_TOPIC_OPTION(OPT_ID,OPT_NAME,ALLOW_INPUT,OPT_VALUE,TID,UNIT_ID,SORT_NO,STATUS,IS_SELECT)
+		 values(#{optId},#{optName},#{allowInput},#{optValue},#{tid},#{unitId},#{sortNo},0,#{isSelect})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from QS_TOPIC_OPTION
+		<where>OPT_ID=#{optId}</where>
+	</delete>
+	
+	<delete id="deleteCache" flushCache="true">
+		delete from QS_TOPIC_OPTION where QS_TOPIC_OPTION.TID in (
+			select QS_TOPIC.TID from QS_TOPIC where  QS_TOPIC.QID in (select QS_QUESTIONNAIRE.QID from QS_QUESTIONNAIRE where QS_QUESTIONNAIRE.EXT1 = 'cached' )
+		)
+	</delete>
+	
+	<delete id="deleteTid" flushCache="true">
+		delete from QS_TOPIC_OPTION
+		<where>TID=#{tid}</where>
+	</delete>
+	
+	<update id="update" parameterType="qsTopicOption" flushCache="true">
+		update QS_TOPIC_OPTION
+		<set>
+			OPT_NAME=#{optName},ALLOW_INPUT=#{allowInput},OPT_VALUE=#{optValue},SORT_NO=#{sortNo},IS_SELECT=#{isSelect}
+		</set>
+		<where>OPT_ID=#{optId}</where>
+	</update>
+	
+	<select id="get" resultType="qsTopicOption">
+		select <include refid="commCols"/> from QS_TOPIC_OPTION
+  		<where>OPT_ID=#{optId}</where>
+	</select>
+	
+	
+	<select id="findQsTopicOptionCount" parameterType="qsTopicOption" resultType="int">
+		select count(*) from QS_TOPIC_OPTION
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="qsTopicOption">
+		select <include refid="commCols"/> from QS_TOPIC_OPTION
+		<where>
+		</where>
+	</select>
+	
+	<select id="findByTid" resultType="qsTopicOption">
+		select <include refid="commCols"/> from QS_TOPIC_OPTION
+		<where>
+			TID=#{tid} and status=0
+		</where>
+		order by SORT_NO
+	</select>
+</mapper>

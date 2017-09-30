@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hand.dao.Sw002YcxdcDao">
+
+	<sql id="commCols_oracle">
+		DC_ID dcId,DC_DATE dcDate,DC_WARD dcWard,DC_WARD_ID dcWardId,GC_TIME gcTime,GC_USERNAME gcUsername,GC_USERID gcUserId,DJ_DATE djDate,YPSS ypss
+	</sql>
+
+	
+	<select id="findSw002Ycxdc_oracle" parameterType="sw002Ycxdc" resultType="sw002Ycxdc">
+		select * from ( select a.*, rownum rn from (
+		 select <include refid="commCols_oracle"/>,
+			(select count(*) from  ( select DC_ID,SJ_ID,RY_TYPE,RY_NAME, wm_concat(SJ_LIST) sjList, SWS_LIST,IS_RIGHT,ERR_REASON from SW004_YCXSJ t group by DC_ID, SJ_ID, RY_TYPE, RY_NAME, SWS_LIST, IS_RIGHT, ERR_REASON) j 
+			left join sys_dict g on j.ry_type = g.dict_code where j.dc_id=x.dc_id and g.dict_type_code = 'personnel_type') sjs,
+		(select wm_concat(dict_name||'('||count(*)||')') from  ( select DC_ID,SJ_ID,RY_TYPE,RY_NAME, wm_concat(SJ_LIST) sjList, SWS_LIST,IS_RIGHT,ERR_REASON from SW004_YCXSJ t group by DC_ID, SJ_ID, RY_TYPE, RY_NAME, SWS_LIST, IS_RIGHT, ERR_REASON) j 
+		  left join sys_dict g on j.ry_type = g.dict_code 
+			where g.dict_type_code = 'personnel_type' 
+			and j.dc_id=x.dc_id
+		 	group by g.dict_name) personalType
+		 from sw002_ycxdc x
+		<where>
+			1=1
+			<if test="dcWardId!=null and dcWardId!=''">
+				and x.dc_Ward_Id = #{dcWardId}
+			</if>
+			<if test="queryStartDate!=null">
+				and x.dc_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and x.dc_date &lt;= #{queryEndDate}
+			</if>
+			<if test="gcUserId!=null and gcUserId!=''">
+				and x.gc_userid = #{gcUserId}
+			</if>
+		</where>
+			order by x.dc_date desc
+		) a where rownum &lt;= #{orclEndNum} 
+			<if test="personalType!=null and personalType!=''">
+				and instr(a.personalType,#{personalType}) > 0
+			</if>
+		) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

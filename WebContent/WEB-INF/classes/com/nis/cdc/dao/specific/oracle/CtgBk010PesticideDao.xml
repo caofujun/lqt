@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk010PesticideDao">
+
+	<sql id="commCols_oracle">
+		MASTERID masterid,CARD_ID cardId,PATIENT_ID patientId,ZYID zyid,MZID mzid,VISIT_ID visitId,PATIENT_NAME patientName,ID_NO idNo,SEX sex,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,TEL tel,NOWADDRAREACODE nowaddrareacode,NOWADDR nowaddr,NOWADDR_VILLAGE nowaddrVillage,NOWADDR_GROUP nowaddrGroup,POISONING_NUM poisoningNum,PESTICIDE_LIST pesticideList,PESTICIDE_KIND pesticideKind,KIND_OTHER kindOther,POISONING_REASON poisoningReason,TRAIN train,DRUG_WAY drugWay,RISK_BEHAVIOR riskBehavior,OUTCOME outcome,OUTCOME_OTHER outcomeOther,DIAGNOSE_DT diagnoseDt,DEAD_DT deadDt,DIAGNOSE_UNIT diagnoseUnit,UNIT_LEADER unitLeader,REPORTDT reportdt,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORT_TEL reportTel,FLAG flag,VALIDDT validdt,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,REJECT_REASON rejectReason,isemptycard isemptycard,isprint isprint
+	</sql>
+
+	
+	<select id="findCtgBk010Pesticide_oracle" parameterType="ctgBk010Pesticide" resultType="ctgBk010Pesticide">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_BK010_PESTICIDE
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

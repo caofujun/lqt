@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questions.dao.QsRepoOptionsDao">
+
+	<sql id="commCols">
+		OPT_ID optId,OPT_NAME optName,ALLOW_INPUT allowInput,OPT_VALUE optValue,RTID rtid,UNIT_ID unitId,SORT_NO sortNo,STATUS status
+	</sql>
+
+	<insert id="save" parameterType="qsRepoOptions" flushCache="true">
+		 insert into QS_REPO_OPTIONS(OPT_ID,OPT_NAME,ALLOW_INPUT,OPT_VALUE,RTID,UNIT_ID,SORT_NO,STATUS)
+		 values(#{optId},#{optName},#{allowInput},#{optValue},#{rtid},#{unitId},#{sortNo},#{status})
+	</insert>
+	
+	<delete id="deleteRtid" flushCache="true">
+		delete from QS_REPO_OPTIONS
+		<where>RTID=#{rtid}</where>
+	</delete>
+	
+	<update id="update" parameterType="qsRepoOptions" flushCache="true">
+		update QS_REPO_OPTIONS
+		<set>
+			OPT_ID=#{optId},OPT_NAME=#{optName},ALLOW_INPUT=#{allowInput},OPT_VALUE=#{optValue},RTID=#{rtid},UNIT_ID=#{unitId},SORT_NO=#{sortNo},STATUS=#{status}
+		</set>
+		<where>OPT_ID=#{optId}</where>
+	</update>
+	
+	<select id="get" resultType="qsRepoOptions">
+		select <include refid="commCols"/> from QS_REPO_OPTIONS
+  		<where>OPT_ID=#{optId}</where>
+	</select>
+	
+	
+	<select id="findQsRepoOptionsCount" parameterType="qsRepoOptions" resultType="int">
+		select count(*) from QS_REPO_OPTIONS
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="qsRepoOptions">
+		select <include refid="commCols"/> from QS_REPO_OPTIONS
+		<where>
+		</where>
+	</select>
+	
+	<select id="findByRtid" resultType="qsRepoOptions">
+		select <include refid="commCols"/> from QS_REPO_OPTIONS
+		<where>RTID=#{rtid}</where>
+		ORDER BY SORT_NO
+	</select>
+</mapper>

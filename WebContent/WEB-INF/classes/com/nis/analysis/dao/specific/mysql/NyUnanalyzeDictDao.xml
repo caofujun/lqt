@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.NyUnanalyzeDictDao">
+
+	<sql id="commCols_mysql">
+		DC_NAME dcName
+	</sql>
+
+	<select id="findNyUnanalyzeDict_mysql" parameterType="nyUnanalyzeDict" resultType="nyUnanalyzeDict">
+		select <include refid="commCols_mysql"/> from NY_UNANALYZE_DICT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

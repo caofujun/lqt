@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Gr019YsgrmxTestDao">
+
+	<sql id="commCols_mysql">
+		ZYID zyid,INFECT_CODE infectCode,NODE_LEVEL nodeLevel,NODE_ID nodeId,IF_MUST ifMust,LIST_COUNT listCount,NEED_COUNT needCount,CURR_ITEMS currItems,ELEMENT_ID elementId,WEIGHT_VALUE weightValue,CREATE_AT createAt,LAST_AT lastAt,P_NODE_ID pNodeId,FLAG flag,WEIGHT_RATIO weightRatio,WEIGHT_FLAG weightFlag,YS_ID ysId,TIEMS_COUNT tiemsCount,STANDARD_NO standardNo,INFECT_TYPEID infectTypeid,CURWTVALUE curwtvalue,NODE_TYPE nodeType,IF_BASE_ELEMENT ifBaseElement,NODE_TYPE2 nodeType2
+	</sql>
+
+	<select id="findGr019YsgrmxTest_mysql" parameterType="gr019YsgrmxTest" resultType="gr019YsgrmxTest">
+		select <include refid="commCols_mysql"/> from GR019_YSGRMX_TEST
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

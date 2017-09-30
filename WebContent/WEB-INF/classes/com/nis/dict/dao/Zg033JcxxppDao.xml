@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Zg033JcxxppDao">
+
+	<sql id="commCols">
+		id id,sj_id sjId,item_field itemField,item_match itemMatch,item_match_value itemMatchValue,value_field valueField,value_match valueMatch,value_match_value valueMatchValue
+	</sql>
+
+	<insert id="save" parameterType="zg033Jcxxpp" flushCache="true">
+		 insert into zg033_jcxxpp(id,sj_id,item_field,item_match,item_match_value,value_field,value_match,value_match_value)
+		 values(#{id},#{sjId},#{itemField},#{itemMatch},#{itemMatchValue},#{valueField},#{valueMatch},#{valueMatchValue})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from zg033_jcxxpp
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg033Jcxxpp" flushCache="true">
+		update zg033_jcxxpp
+		<set>
+			id=#{id},sj_id=#{sjId},item_field=#{itemField},item_match=#{itemMatch},item_match_value=#{itemMatchValue},value_field=#{valueField},value_match=#{valueMatch},value_match_value=#{valueMatchValue}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="zg033Jcxxpp">
+		select <include refid="commCols"/> from zg033_jcxxpp
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findZg033JcxxppCount" parameterType="zg033Jcxxpp" resultType="int">
+		select count(*) from zg033_jcxxpp
+		<where>
+			<if test="sjId!=null and sjId!=''">
+				and sj_id = #{sjId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="zg033Jcxxpp">
+		select <include refid="commCols"/> from zg033_jcxxpp
+		<where>
+		</where>
+	</select>
+	
+	<select id="findBySjId" resultType="zg033Jcxxpp">
+		select <include refid="commCols"/> from zg033_jcxxpp
+		<where>
+			sj_id=#{sjId}
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcAccountDao">
+
+	<sql id="commCols">
+		USER_ID userId,USERNAME username,PASSWD passwd,REALNAME
+		realname,NICKNAME nickname,ISVALID isvalid,USER_TYPE
+		userType,MOBILENUM mobilenum,DEP_NO depNo,LAST_LOGINTIME
+		lastLogintime,LAST_IP lastIp,UPD_TIME updTime,UPD_USER updUser,UNIT_ID
+		unitId,DATA_SCOPE dataScope,SCOPE_INFO scopeInfo,EMAIL email,DOCTOR_ID
+		doctorId,DOC_NO docNo,EXT1 ext1,EXT2 ext2,ERROR_TIMES
+		errorTimes,VALID_DATE validDate,PHOTO_PATH photoPath,AC_TYPE acType
+	</sql>
+
+	<insert id="save" parameterType="acAccount" flushCache="true">
+		insert into
+		AC_ACCOUNT(USER_ID,USERNAME,PASSWD,REALNAME,NICKNAME,ISVALID,USER_TYPE,MOBILENUM,DEP_NO,LAST_LOGINTIME,LAST_IP,UPD_TIME,UPD_USER,UNIT_ID,DATA_SCOPE,SCOPE_INFO,EMAIL,DOCTOR_ID,DOC_NO,VALID_DATE,EXT1,EXT2,AC_TYPE)
+		values(#{userId},#{username},#{passwd},#{realname},#{nickname},#{isvalid},#{userType},#{mobilenum},#{depNo},#{lastLogintime},#{lastIp},#{updTime},#{updUser},#{unitId},#{dataScope},#{scopeInfo},#{email},#{doctorId},#{docNo},#{validDate},#{ext1},#{ext2},#{acType})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from AC_ACCOUNT
+		<where>USER_ID=#{userId}</where>
+	</delete>
+
+	<update id="update" parameterType="acAccount" flushCache="true">
+		update AC_ACCOUNT
+		<set>
+			USERNAME=#{username},REALNAME=#{realname},NICKNAME=#{nickname},ISVALID=#{isvalid},USER_TYPE=#{userType},MOBILENUM=#{mobilenum},DEP_NO=#{depNo},LAST_LOGINTIME=#{lastLogintime},LAST_IP=#{lastIp},UPD_TIME=#{updTime},UPD_USER=#{updUser},DATA_SCOPE=#{dataScope},SCOPE_INFO=#{scopeInfo},EMAIL=#{email},DOCTOR_ID=#{doctorId},DOC_NO=#{docNo},EXT1=#{ext1},EXT2=#{ext2},PHOTO_PATH=#{photoPath},AC_TYPE=#{acType}
+			<if test="passwd!=null and passwd!=''">,PASSWD=#{passwd}</if>
+			<if test="validDate!=null and validDate!=''">,VALID_DATE=#{validDate}</if>
+		</set>
+		<where>USER_ID=#{userId}</where>
+	</update>
+
+	<update id="updateLoginInfo" flushCache="true">
+		update AC_ACCOUNT
+		<set>
+			ERROR_TIMES = #{errorTimes}
+		</set>
+		<where>USER_ID=#{userId}</where>
+	</update>
+
+	<update id="updateUserIdByUserId" flushCache="true">
+		update AC_ACCOUNT
+		<set>
+			USER_ID=#{newUserId}
+		</set>
+		<where>USER_ID=#{userId}</where>
+	</update>
+
+	<update id="updatePwdByUserId" flushCache="true">
+		update AC_ACCOUNT
+		<set>
+			PASSWD=#{passwd}
+		</set>
+		<where>USER_ID=#{userId}</where>
+	</update>
+
+	<select id="get" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>USER_ID=#{userId}</where>
+	</select>
+
+
+	<select id="findAcAccountCount" parameterType="acAccount"
+		resultType="int">
+		select count(*) from AC_ACCOUNT
+		<where>
+			AC_TYPE = #{acType}
+			<if test="searchString!=null and searchString!=''">
+				and (USERNAME LIKE CONCAT(CONCAT('%', #{searchString}),
+				'%') or REALNAME LIKE CONCAT(CONCAT('%', #{searchString}), '%'))
+			</if>
+		</where>
+	</select>
+
+	<select id="findAcAccountCountByCondition" parameterType="acAccount"
+		resultType="int">
+		select count(*)
+		from AC_ACCOUNT ac
+		left join ZG002_BYKS d on (d.dept_id = ac.dep_no <if test="unitId!=null and unitId!=''"> and d.hosp_id=#{unitId}</if>) 
+		left join ac_accountrole aro on aro.user_id=ac.user_id
+		left join ac_role ro on ro.role_id= aro.role_id
+		<where>
+			<choose>
+				<when test="searchString!=null and searchString!=''"> 
+				and (USERNAME LIKE CONCAT(CONCAT('%',#{searchString}), '%') and ac.AC_TYPE = #{acType} 
+				or REALNAME LIKE	CONCAT(CONCAT('%', #{searchString}), '%')) 	and ac.AC_TYPE = #{acType} 
+				or (d.DEPT_NAME LIKE CONCAT(CONCAT('%', #{searchString}),	'%') and ac.AC_TYPE = #{acType} 
+				or d.SP_CODE LIKE		CONCAT(CONCAT('%', Upper(#{searchString})), '%')) and ac.AC_TYPE = #{acType} 
+				or ro.name like concat(concat('%', #{searchString}), '%')	and ac.AC_TYPE = #{acType}
+				</when>
+				<otherwise>and ac.AC_TYPE = #{acType}</otherwise>
+			</choose>
+		</where>
+	</select>
+
+	<select id="findByUnitId" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			UNIT_ID = #{unitId}
+		</where>
+	</select>
+
+	<select id="getUsername" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			1 = 1
+			<if test="unitId != null">
+				AND UNIT_ID = #{unitId}
+			</if>
+			AND lower(USERNAME)=lower(#{username})
+		</where>
+	</select>
+
+	<select id="findAccountByRealnameNameAndEmail" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			(REALNAME=#{realname} or USERNAME = #{realname} ) and EMAIL =
+			#{email}
+		</where>
+	</select>
+
+	<select id="findAccountByMobilenum" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			MOBILENUM=#{mobilenum}
+		</where>
+	</select>
+
+	<select id="findAccExtis" parameterType="acAccount" resultType="acAccount">
+		select username employeeId,realname employeeName,0 source,user_id id from ac_account ac
+		<where>
+			(ac.username=#{username} or ac.mobilenum=#{mobilenum} or ac.email=#{email})
+			<if test="userId!=null and userId!=''"> and ac.user_id!=#{userId}</if>
+		</where>
+		union
+		select employee_id employeeId,employee_name employeeName,1 source,id id from zg003_yyzg zg3 
+		<where>
+			(zg3.employee_id=#{username} or zg3.phone_no=#{mobilenum} or zg3.email=#{email})
+			<if test="userId!=null and userId!=''"> and zg3.id!=#{userId}</if>
+		</where>
+	</select>
+
+	<select id="findAccountByEmail" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			email = #{email}
+		</where>
+	</select>
+
+	<select id="findAccoutByCondition" resultType="acAccount"
+		parameterType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			1 = 1
+			<if test="unitId!=null and unitId!=''"> and UNIT_ID =#{unitId}</if>
+			<if test="username!=null and username!=''"> and USERNAME = #{username}</if>
+			<if test="passwd!=null and passwd!=''"> and PASSWD = #{passwd}</if>
+		</where>
+	</select>
+
+	<select id="findRealname" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			REALNAME LIKE CONCAT(CONCAT('%', #{realname}), '%')
+			or USERNAME LIKE CONCAT(CONCAT('%',#{realname}), '%')
+		</where>
+	</select>
+	
+	<select id="findByDeptIds" resultType="acAccount">
+		select
+		<include refid="commCols" />
+		from AC_ACCOUNT
+		<where>
+			dep_no in
+			<foreach collection="deptIds" open="(" close=")" item="deptId" separator=",">
+					#{deptId}
+			</foreach>
+		</where>
+	</select>
+
+	<select id="checkUniqueExtis" resultType="int" parameterType="acAccount">
+		select count(1) from (
+			select username employeeId,realname employeeName,0 source from ac_account ac 
+			<where> 
+				<if test="mobilenum!=null and mobilenum!=''">
+					and ac.mobilenum=#{mobilenum}
+				</if>
+				<if test="username!=null and username!=''">
+					and ac.username=#{username}
+				</if>
+				<if test="email!=null and email!=''">
+					and ac.email=#{email}
+				</if>
+				<if test="userId!=null and userId!=''"> and ac.user_id!=#{userId}</if>
+			</where>
+			union
+			select employee_id employeeId,employee_name employeeName,1 source from zg003_yyzg zg3 
+			<where> 
+				<if test="mobilenum!=null and mobilenum!=''">
+					and zg3.phone_no=#{mobilenum}
+				</if>
+				<if test="username!=null and username!=''">
+					and zg3.employee_id=#{username}
+				</if>
+				<if test="email!=null and email!=''">
+					and zg3.email=#{email}
+				</if>
+				<if test="userId!=null and userId!=''"> and zg3.id!=#{userId}</if>
+			</where>
+		)
+	</select>
+</mapper>

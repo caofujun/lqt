@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk008CcvdDao">
+
+	<sql id="commCols_oracle">
+		MASTERID masterid,CARD_ID cardId,PATIENT_ID patientId,ZYID zyid,MZID mzid,VISIT_ID visitId,PATIENT_NAME patientName,ID_NO idno,SEX sex,BIRTHDAY birthday,AGE age,AGE_UNIT ageunit,NATION nation,PROFESSION profession,UNIT unit,CONTACTS contacts,TEL tel,REGISTERAREACODE registerareacode,REGISTERAREAADDR registerareaaddr,REGISTERADDR_VILLAGE registeraddrVillage,REGISTERADDR_GROUP registeraddrGroup,REGISTERADDRDETAIL registeraddrDetail,NOWADDRAREACODE nowaddrareacode,NOWADDR nowaddr,NOWADDR_VILLAGE nowaddrVillage,NOWADDR_GROUP nowaddrGroup,NOWADDRDETAIL nowaddrDetail,ICD_CODE icdcode,DIAGNOSIS_LIST diagnosisList,DIAGNOSIS_GIST diagnosisGist,START_DT startDt,DIAGNOSIS_DT diagnosisDt,ONSET_TIME onsetTime,FIRST_DIAGNOSIS_DT firstDiagnosisDt,HIGHEST_UNIT highestUnit,THE_RESULT theresult,DEADZONE deadzone,DEAD_REASON deadReason,DEATH_DT deathDt,DEAD_REPORT_NAME deadReportName,REPORT_UNIT reportUnit,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDT reportdt,FLAG flag,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,VALIDDT validdt,DELREASON delreason,ISEMPTYCARD isemptycard,MARRIAGE marriage,EDUCATION education
+	</sql>
+
+	
+	<select id="findCtgBk008Ccvd_oracle" parameterType="ctgBk008Ccvd" resultType="ctgBk008Ccvd">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_BK008_CCVD
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

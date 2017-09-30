@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007BfjlDao">
+
+	<sql id="commCols_oracle">
+		id id,show_id showId,audit_flag auditFlag,break_start_date breakStartDate,break_end_date breakEndDate,
+		break_count breakCount,create_date createDate,moni_date moniDate,dept_id deptId,break_type breakType,
+		read_flag readFlag,audit_id auditId,audit_date auditDate,
+		observe_day observeDay,is_warn isWarn,audit_name auditName,memo memo
+	</sql>
+
+	<select id="findBy007Bfjl_oracle" parameterType="by007Bfjl" resultType="by007Bfjl">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from by007_bfjl
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findList_oracle" parameterType="by007Bfjl" resultType="by007Bfjl">
+		<if test="size != null">select * from ( select a.*, rownum rn from (</if>
+		select a.audit_flag auditFlag,a.read_flag readFlag,a.break_start_date breakStartDate,a.break_end_date breakEndDate,
+		a.observe_day observeDay,a.dept_id deptId,b.dept_name deptName,d.type_name typeName,a.break_count breakCount,
+		memo memo,a.moni_date moniDate,a.create_date createDate,
+		a.audit_id auditId,a.audit_name auditName,a.audit_date auditDate,a.break_type breakType,a.show_id showId,
+		a.id id,d.absolute_detail_name absoluteDetailName,c.name name
+  		from by007_bfjl a 
+  		left join zg002_byks b on a.dept_id = b.dept_id 
+  		left join by007_show c on a.show_id = c.id 
+  		left join by007_config d on c.type_id = d.type_id
+		<where>
+			<if test="queryStartDate != null">
+				and a.moni_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and a.moni_date &lt;= #{queryEndDate}
+			</if>
+			<if test="readFlag != null">
+				and a.read_flag = #{readFlag}
+			</if>
+			<if test="deptId != null and deptId != ''">
+				and a.dept_id = #{deptId}
+			</if>
+			<if test="showId != null and showId != ''">
+				and a.show_id = #{showId}
+			</if>
+			<if test="auditFlag != null">
+				and a.audit_flag = #{auditFlag}
+			</if>
+			<if test="grade != null and grade != ''">
+				and d.grade = #{grade}
+			</if>
+			<if test="idList !=null and idList !='' ">
+				and a.id in <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+		</where>
+			order by a.moni_date
+		<if test="size != null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<select id="findListByDept_oracle" parameterType="by007Bfjl" resultType="by007Bfjl">
+	    select 
+	      tt.deptId,tt.deptName,sum(typeCount) deptCount, 
+	      wm_concat(tt.typeName||'('||typeCount||')') as typeName,wm_concat(id) id
+		from (
+		select 
+			t.dept_id deptId,d.type_id typeId,d.type_name typeName,
+			b.dept_name deptName,count(1) typeCount,wm_concat(t.id) id 
+		from BY007_BFJL t 
+			inner join BY007_CONFIG d on t.type_id =  d.type_id
+			inner join zg002_byks b on t.dept_id = b.dept_id
+		<where>
+			1=1
+			<if test="queryStartDate != null">
+				and t.moni_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and t.moni_date &lt;= #{queryEndDate}
+			</if>
+			<if test="readFlag != null">
+				and t.read_flag = #{readFlag}
+			</if>
+			<if test="deptId != null and deptId != ''">
+				and t.dept_id = #{deptId}
+			</if>
+			<if test="showId != null and showId != ''">
+				and t.show_id = #{showId}
+			</if>
+			<if test="auditFlag != null">
+				and t.audit_flag = #{auditFlag}
+			</if>
+			<if test="grade != null and grade != ''">
+				and d.grade = #{grade}
+			</if>
+			<if test="auditFlagList !=null and auditFlagList !='' ">
+				and t.audit_flag in <foreach collection="auditFlagList" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+		</where>
+			group by t.dept_id,d.type_id,d.type_name,b.dept_name 
+			order by b.dept_name
+		) tt
+		group by tt.deptId,tt.deptName order by sum(typeCount) desc
+	</select>
+</mapper>

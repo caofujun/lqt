@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St005SsxxbDao">
+
+	<sql id="commCols">
+		sqbxbs sqbxbs,sfsszylg sfsszylg,cysfylg cysfylg,isjt isjt,isdzcz isdzcz,id id,pre_zqyy preZqyy,after_zqyy afterZqyy,
+		wsq_lhyy wsqLhyy,wsq_zqyy wsqZqyy,jbzg jbzg,heal heal,imp_ope_id impOpeId,imp_ope_name impOpeName,view_flag viewFlag,
+		circuit_nurse circuitNurse,scrub_nurse scrubNurse,xg_flag xgFlag,zyid zyid,patient_id patientId,visit_id visitId,
+		dept_name deptName,upd_date updDate,out_at outAt,age age,age_unit ageUnit,sex sex,bed_no bedNo,in_hosp_at inHospAt,
+		sync_code syncCode,sync_name syncName,param_begintime paramBegintime,param_endtime paramEndtime,last_id lastId,
+		last_status lastStatus,last_sync_time lastSyncTime,last_log lastLog,dept_id deptId,in_dept_id inDeptId,in_dept_name inDeptName,
+		out_dept_id outDeptId,out_dept_name outDeptName,in_days inDays,charge_dr_id chargeDrId,charge_dr_name chargeDrName,cost cost,
+		memo memo,bed_no_index bedNoIndex,patient_name patientName,last_mod_userid lastModUserid,status status,oper_at operAt,
+		returnvisitdate3 returnvisitdate3,returnvisitdate2 returnvisitdate2,returnvisitdate1 returnvisitdate1,relid relid,
+		oper_room operRoom,oper_name operName,oper_id operId,opedoc_id opedocId,opedoc_name opedocName,anes_dr_name anesDrName,
+		asa asa,narc_kind narcKind,oper_leng_time operLengTime,incision_grade incisionGrade,hosp_id hospId,tel tel,weight weight,
+		patient_address patientAddress,lapse_to lapseTo,lapse_to_at lapseToAt,inope_days inopeDays,wzbxbjs wzbxbjs,
+		blood_sugar_level bloodSugarLevel,yzjcjb yzjcjb,bmi bmi,type_build typeBuild,nutrition_condition nutritionCondition,
+		opepartkindid opepartkindid,partkindname partkindname,oper_at_end operAtEnd,ssyszc ssyszc,anes_dr_id anesDrId,nurse_id nurseId,
+		nurse_name nurseName,nnis nnis,blood_in bloodIn,blood_out bloodOut,continuous_ope continuousOpe,skin_prepare skinPrepare,
+		skin_method skinMethod,pre_skintime preSkintime,wsqsykjyw wsqsykjyw,wsqsyyfkjyw wsqsyyfkjyw,pre_yymd preYymd,pre_lhyy preLhyy,
+		pre_yyts preYyts,is_sqyy isSqyy,szyzjyyewzj szyzjyyewzj,after_yymd afterYymd,after_lhyy afterLhyy,after_yyts afterYyts,
+		tm_exceed1 tmExceed1,cutred1 cutred1,cutpus1 cutpus1,pathoisyang1 pathoisyang1,tm_exceed2 tmExceed2,cutred2 cutred2,
+		cutpus2 cutpus2,pathoisyang2 pathoisyang2,tm_exceed3 tmExceed3,cutred3 cutred3,cutpus3 cutpus3,pathoisyang3 pathoisyang3,
+		monitor_date monitorDate,last_mod_date lastModDate,create_date createDate,urgent_ope urgentOpe,replant replant,
+		glass_ope glassOpe,returnvisit_status returnvisitStatus,danger_index dangerIndex,OPER_AT_START operAtStart,oper_bw operBw
+	</sql>
+
+	<insert id="save" parameterType="st005Ssxxb" flushCache="true">
+		 insert into st005_ssxxb(sqbxbs,sfsszylg,cysfylg,isjt,isdzcz,id,pre_zqyy,after_zqyy,wsq_lhyy,wsq_zqyy,jbzg,heal,imp_ope_id,
+		 imp_ope_name,view_flag,circuit_nurse,scrub_nurse,xg_flag,zyid,patient_id,visit_id,dept_name,upd_date,out_at,age,age_unit,sex,
+		 bed_no,in_hosp_at,sync_code,sync_name,param_begintime,param_endtime,last_id,last_status,last_sync_time,last_log,dept_id,
+		 in_dept_id,in_dept_name,out_dept_id,out_dept_name,in_days,charge_dr_id,charge_dr_name,cost,memo,bed_no_index,patient_name,
+		 last_mod_userid,status,oper_at,returnvisitdate3,returnvisitdate2,returnvisitdate1,relid,oper_room,oper_name,oper_id,opedoc_id,
+		 opedoc_name,anes_dr_name,asa,narc_kind,oper_leng_time,incision_grade,hosp_id,tel,weight,patient_address,lapse_to,lapse_to_at,
+		 inope_days,wzbxbjs,blood_sugar_level,yzjcjb,bmi,type_build,nutrition_condition,opepartkindid,partkindname,oper_at_end,ssyszc,
+		 anes_dr_id,nurse_id,nurse_name,nnis,blood_in,blood_out,continuous_ope,skin_prepare,skin_method,pre_skintime,wsqsykjyw,
+		 wsqsyyfkjyw,pre_yymd,pre_lhyy,pre_yyts,is_sqyy,szyzjyyewzj,after_yymd,after_lhyy,after_yyts,tm_exceed1,cutred1,cutpus1,
+		 pathoisyang1,tm_exceed2,cutred2,cutpus2,pathoisyang2,tm_exceed3,cutred3,cutpus3,pathoisyang3,monitor_date,last_mod_date,
+		 create_date,urgent_ope,replant,glass_ope,returnvisit_status,danger_index,OPER_AT_START,OPER_BW)
+		 values(#{sqbxbs},#{sfsszylg},#{cysfylg},#{isjt},#{isdzcz},#{id},#{preZqyy},#{afterZqyy},#{wsqLhyy},#{wsqZqyy},#{jbzg},
+		 #{heal},#{impOpeId},#{impOpeName},#{viewFlag},#{circuitNurse},#{scrubNurse},#{xgFlag},#{zyid},#{patientId},#{visitId},
+		 #{deptName},#{updDate},#{outAt},#{age},#{ageUnit},#{sex},#{bedNo},#{inHospAt},#{syncCode},#{syncName},#{paramBegintime},
+		 #{paramEndtime},#{lastId},#{lastStatus},#{lastSyncTime},#{lastLog},#{deptId},#{inDeptId},#{inDeptName},#{outDeptId},
+		 #{outDeptName},#{inDays},#{chargeDrId},#{chargeDrName},#{cost},#{memo},#{bedNoIndex},#{patientName},#{lastModUserid},
+		 #{status},#{operAt},#{returnvisitdate3},#{returnvisitdate2},#{returnvisitdate1},#{relid},#{operRoom},#{operName},#{operId},
+		 #{opedocId},#{opedocName},#{anesDrName},#{asa},#{narcKind},#{operLengTime},#{incisionGrade},#{hospId},#{tel},#{weight},
+		 #{patientAddress},#{lapseTo},#{lapseToAt},#{inopeDays},#{wzbxbjs},#{bloodSugarLevel},#{yzjcjb},#{bmi},#{typeBuild},
+		 #{nutritionCondition},#{opepartkindid},#{partkindname},#{operAtEnd},#{ssyszc},#{anesDrId},#{nurseId},#{nurseName},#{nnis},
+		 #{bloodIn},#{bloodOut},#{continuousOpe},#{skinPrepare},#{skinMethod},#{preSkintime},#{wsqsykjyw},#{wsqsyyfkjyw},#{preYymd},
+		 #{preLhyy},#{preYyts},#{isSqyy},#{szyzjyyewzj},#{afterYymd},#{afterLhyy},#{afterYyts},#{tmExceed1},#{cutred1},#{cutpus1},
+		 #{pathoisyang1},#{tmExceed2},#{cutred2},#{cutpus2},#{pathoisyang2},#{tmExceed3},#{cutred3},#{cutpus3},#{pathoisyang3},
+		 #{monitorDate},#{lastModDate},#{createDate},#{urgentOpe},#{replant},#{glassOpe},#{returnvisitStatus},#{dangerIndex},
+		 #{operAtStart},#{operBw})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st005_ssxxb
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st005Ssxxb" flushCache="true">
+		update st005_ssxxb
+		<set>
+			sqbxbs=#{sqbxbs},sfsszylg=#{sfsszylg},cysfylg=#{cysfylg},isjt=#{isjt},isdzcz=#{isdzcz},id=#{id},
+			pre_zqyy=#{preZqyy},after_zqyy=#{afterZqyy},wsq_lhyy=#{wsqLhyy},wsq_zqyy=#{wsqZqyy},jbzg=#{jbzg},heal=#{heal},
+			imp_ope_id=#{impOpeId},imp_ope_name=#{impOpeName},view_flag=#{viewFlag},circuit_nurse=#{circuitNurse},
+			scrub_nurse=#{scrubNurse},xg_flag=#{xgFlag},zyid=#{zyid},patient_id=#{patientId},visit_id=#{visitId},
+			dept_name=#{deptName},upd_date=#{updDate},out_at=#{outAt},age=#{age},age_unit=#{ageUnit},sex=#{sex},bed_no=#{bedNo},
+			in_hosp_at=#{inHospAt},sync_code=#{syncCode},sync_name=#{syncName},param_begintime=#{paramBegintime},
+			param_endtime=#{paramEndtime},last_id=#{lastId},last_status=#{lastStatus},last_sync_time=#{lastSyncTime},
+			last_log=#{lastLog},dept_id=#{deptId},in_dept_id=#{inDeptId},in_dept_name=#{inDeptName},out_dept_id=#{outDeptId},
+			out_dept_name=#{outDeptName},in_days=#{inDays},charge_dr_id=#{chargeDrId},charge_dr_name=#{chargeDrName},cost=#{cost},
+			memo=#{memo},bed_no_index=#{bedNoIndex},patient_name=#{patientName},last_mod_userid=#{lastModUserid},status=#{status},
+			oper_at=#{operAt},returnvisitdate3=#{returnvisitdate3},returnvisitdate2=#{returnvisitdate2},
+			returnvisitdate1=#{returnvisitdate1},relid=#{relid},oper_room=#{operRoom},oper_name=#{operName},oper_id=#{operId},
+			opedoc_id=#{opedocId},opedoc_name=#{opedocName},anes_dr_name=#{anesDrName},asa=#{asa},narc_kind=#{narcKind},
+			oper_leng_time=#{operLengTime},incision_grade=#{incisionGrade},hosp_id=#{hospId},tel=#{tel},weight=#{weight},
+			patient_address=#{patientAddress},lapse_to=#{lapseTo},lapse_to_at=#{lapseToAt},inope_days=#{inopeDays},wzbxbjs=#{wzbxbjs},
+			blood_sugar_level=#{bloodSugarLevel},yzjcjb=#{yzjcjb},bmi=#{bmi},type_build=#{typeBuild},
+			nutrition_condition=#{nutritionCondition},opepartkindid=#{opepartkindid},partkindname=#{partkindname},
+			oper_at_end=#{operAtEnd},ssyszc=#{ssyszc},anes_dr_id=#{anesDrId},nurse_id=#{nurseId},nurse_name=#{nurseName},
+			nnis=#{nnis},blood_in=#{bloodIn},blood_out=#{bloodOut},continuous_ope=#{continuousOpe},skin_prepare=#{skinPrepare},
+			skin_method=#{skinMethod},pre_skintime=#{preSkintime},wsqsykjyw=#{wsqsykjyw},wsqsyyfkjyw=#{wsqsyyfkjyw},pre_yymd=#{preYymd},
+			pre_lhyy=#{preLhyy},pre_yyts=#{preYyts},is_sqyy=#{isSqyy},szyzjyyewzj=#{szyzjyyewzj},after_yymd=#{afterYymd},
+			after_lhyy=#{afterLhyy},after_yyts=#{afterYyts},tm_exceed1=#{tmExceed1},cutred1=#{cutred1},cutpus1=#{cutpus1},
+			pathoisyang1=#{pathoisyang1},tm_exceed2=#{tmExceed2},cutred2=#{cutred2},cutpus2=#{cutpus2},pathoisyang2=#{pathoisyang2},
+			tm_exceed3=#{tmExceed3},cutred3=#{cutred3},cutpus3=#{cutpus3},pathoisyang3=#{pathoisyang3},monitor_date=#{monitorDate},
+			last_mod_date=#{lastModDate},create_date=#{createDate},urgent_ope=#{urgentOpe},replant=#{replant},glass_ope=#{glassOpe},
+			returnvisit_status=#{returnvisitStatus},danger_index=#{dangerIndex},OPER_AT_START=#{operAtStart},OPER_BW=#{operBw}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateOutHosp" parameterType="st005Ssxxb" flushCache="true">
+		update st005_ssxxb
+		<set>
+			out_at=#{outAt},out_dept_id=#{outDeptId},out_dept_name=#{outDeptName}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateNnis" parameterType="st005Ssxxb" flushCache="true">
+		update st005_ssxxb
+		<set>
+			nnis=#{nnis}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update st005_ssxxb
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='sqbxbs'">sqbxbs=#{st005Ssxxb.sqbxbs},</when>
+					<when test="item=='sfsszylg'">sfsszylg=#{st005Ssxxb.sfsszylg},</when>
+					<when test="item=='cysfylg'">cysfylg=#{st005Ssxxb.cysfylg},</when>
+					<when test="item=='isjt'">isjt=#{st005Ssxxb.isjt},</when>
+					<when test="item=='isdzcz'">isdzcz=#{st005Ssxxb.isdzcz},</when>
+					<when test="item=='preZqyy'">pre_zqyy=#{st005Ssxxb.preZqyy},</when>
+					<when test="item=='afterZqyy'">after_zqyy=#{st005Ssxxb.afterZqyy},</when>
+					<when test="item=='wsqLhyy'">wsq_lhyy=#{st005Ssxxb.wsqLhyy},</when>
+					<when test="item=='wsqZqyy'">wsq_zqyy=#{st005Ssxxb.wsqZqyy},</when>
+					<when test="item=='jbzg'">jbzg=#{st005Ssxxb.jbzg},</when>
+					<when test="item=='heal'">heal=#{st005Ssxxb.heal},</when>
+					<when test="item=='impOpeId'">imp_ope_id=#{st005Ssxxb.impOpeId},</when>
+					<when test="item=='impOpeName'">imp_ope_name=#{st005Ssxxb.impOpeName},</when>
+					<when test="item=='viewFlag'">view_flag=#{st005Ssxxb.viewFlag},</when>
+					<when test="item=='circuitNurse'">circuit_nurse=#{st005Ssxxb.circuitNurse},</when>
+					<when test="item=='scrubNurse'">scrub_nurse=#{st005Ssxxb.scrubNurse},</when>
+					<when test="item=='xgFlag'">xg_flag=#{st005Ssxxb.xgFlag},</when>
+					<when test="item=='zyid'">zyid=#{st005Ssxxb.zyid},</when>
+					<when test="item=='patientId'">patient_id=#{st005Ssxxb.patientId},</when>
+					<when test="item=='visitId'">visit_id=#{st005Ssxxb.visitId},</when>
+					<when test="item=='deptName'">dept_name=#{st005Ssxxb.deptName},</when>
+					<when test="item=='updDate'">upd_date=#{st005Ssxxb.updDate},</when>
+					<when test="item=='outAt'">out_at=#{st005Ssxxb.outAt},</when>
+					<when test="item=='age'">age=#{st005Ssxxb.age},</when>
+					<when test="item=='ageUnit'">age_unit=#{st005Ssxxb.ageUnit},</when>
+					<when test="item=='sex'">sex=#{st005Ssxxb.sex},</when>
+					<when test="item=='bedNo'">bed_no=#{st005Ssxxb.bedNo},</when>
+					<when test="item=='inHospAt'">in_hosp_at=#{st005Ssxxb.inHospAt},</when>
+					<when test="item=='syncCode'">sync_code=#{st005Ssxxb.syncCode},</when>
+					<when test="item=='syncName'">sync_name=#{st005Ssxxb.syncName},</when>
+					<when test="item=='paramBegintime'">param_begintime=#{st005Ssxxb.paramBegintime},</when>
+					<when test="item=='paramEndtime'">param_endtime=#{st005Ssxxb.paramEndtime},</when>
+					<when test="item=='lastId'">last_id=#{st005Ssxxb.lastId},</when>
+					<when test="item=='lastStatus'">last_status=#{st005Ssxxb.lastStatus},</when>
+					<when test="item=='lastSyncTime'">last_sync_time=#{st005Ssxxb.lastSyncTime},</when>
+					<when test="item=='lastLog'">last_log=#{st005Ssxxb.lastLog},</when>
+					<when test="item=='deptId'">dept_id=#{st005Ssxxb.deptId},</when>
+					<when test="item=='inDeptId'">in_dept_id=#{st005Ssxxb.inDeptId},</when>
+					<when test="item=='inDeptName'">in_dept_name=#{st005Ssxxb.inDeptName},</when>
+					<when test="item=='outDeptId'">out_dept_id=#{st005Ssxxb.outDeptId},</when>
+					<when test="item=='outDeptName'">out_dept_name=#{st005Ssxxb.outDeptName},</when>
+					<when test="item=='inDays'">in_days=#{st005Ssxxb.inDays},</when>
+					<when test="item=='chargeDrId'">charge_dr_id=#{st005Ssxxb.chargeDrId},</when>
+					<when test="item=='chargeDrName'">charge_dr_name=#{st005Ssxxb.chargeDrName},</when>
+					<when test="item=='cost'">cost=#{st005Ssxxb.cost},</when>
+					<when test="item=='memo'">memo=#{st005Ssxxb.memo},</when>
+					<when test="item=='bedNoIndex'">bed_no_index=#{st005Ssxxb.bedNoIndex},</when>
+					<when test="item=='patientName'">patient_name=#{st005Ssxxb.patientName},</when>
+					<when test="item=='lastModUserid'">last_mod_userid=#{st005Ssxxb.lastModUserid},</when>
+					<when test="item=='status'">status=#{st005Ssxxb.status},</when>
+					<when test="item=='operAt'">oper_at=#{st005Ssxxb.operAt},</when>
+					<when test="item=='returnvisitdate3'">returnvisitdate3=#{st005Ssxxb.returnvisitdate3},</when>
+					<when test="item=='returnvisitdate2'">returnvisitdate2=#{st005Ssxxb.returnvisitdate2},</when>
+					<when test="item=='returnvisitdate1'">returnvisitdate1=#{st005Ssxxb.returnvisitdate1},</when>
+					<when test="item=='relid'">relid=#{st005Ssxxb.relid},</when>
+					<when test="item=='operRoom'">oper_room=#{st005Ssxxb.operRoom},</when>
+					<when test="item=='operName'">oper_name=#{st005Ssxxb.operName},</when>
+					<when test="item=='operId'">oper_id=#{st005Ssxxb.operId},</when>
+					<when test="item=='opedocId'">opedoc_id=#{st005Ssxxb.opedocId},</when>
+					<when test="item=='opedocName'">opedoc_name=#{st005Ssxxb.opedocName},</when>
+					<when test="item=='anesDrName'">anes_dr_name=#{st005Ssxxb.anesDrName},</when>
+					<when test="item=='asa'">asa=#{st005Ssxxb.asa},</when>
+					<when test="item=='narcKind'">narc_kind=#{st005Ssxxb.narcKind},</when>
+					<when test="item=='operLengTime'">oper_leng_time=#{st005Ssxxb.operLengTime},</when>
+					<when test="item=='incisionGrade'">incision_grade=#{st005Ssxxb.incisionGrade},</when>
+					<when test="item=='hospId'">hosp_id=#{st005Ssxxb.hospId},</when>
+					<when test="item=='tel'">tel=#{st005Ssxxb.tel},</when>
+					<when test="item=='weight'">weight=#{st005Ssxxb.weight},</when>
+					<when test="item=='patientAddress'">patient_address=#{st005Ssxxb.patientAddress},</when>
+					<when test="item=='lapseTo'">lapse_to=#{st005Ssxxb.lapseTo},</when>
+					<when test="item=='lapseToAt'">lapse_to_at=#{st005Ssxxb.lapseToAt},</when>
+					<when test="item=='inopeDays'">inope_days=#{st005Ssxxb.inopeDays},</when>
+					<when test="item=='wzbxbjs'">wzbxbjs=#{st005Ssxxb.wzbxbjs},</when>
+					<when test="item=='bloodSugarLevel'">blood_sugar_level=#{st005Ssxxb.bloodSugarLevel},</when>
+					<when test="item=='yzjcjb'">yzjcjb=#{st005Ssxxb.yzjcjb},</when>
+					<when test="item=='bmi'">bmi=#{st005Ssxxb.bmi},</when>
+					<when test="item=='typeBuild'">type_build=#{st005Ssxxb.typeBuild},</when>
+					<when test="item=='nutritionCondition'">nutrition_condition=#{st005Ssxxb.nutritionCondition},</when>
+					<when test="item=='opepartkindid'">opepartkindid=#{st005Ssxxb.opepartkindid},</when>
+					<when test="item=='partkindname'">partkindname=#{st005Ssxxb.partkindname},</when>
+					<when test="item=='operAtEnd'">oper_at_end=#{st005Ssxxb.operAtEnd},</when>
+					<when test="item=='ssyszc'">ssyszc=#{st005Ssxxb.ssyszc},</when>
+					<when test="item=='anesDrId'">anes_dr_id=#{st005Ssxxb.anesDrId},</when>
+					<when test="item=='nurseId'">nurse_id=#{st005Ssxxb.nurseId},</when>
+					<when test="item=='nurseName'">nurse_name=#{st005Ssxxb.nurseName},</when>
+					<when test="item=='nnis'">nnis=#{st005Ssxxb.nnis},</when>
+					<when test="item=='bloodIn'">blood_in=#{st005Ssxxb.bloodIn},</when>
+					<when test="item=='bloodOut'">blood_out=#{st005Ssxxb.bloodOut},</when>
+					<when test="item=='continuousOpe'">continuous_ope=#{st005Ssxxb.continuousOpe},</when>
+					<when test="item=='skinPrepare'">skin_prepare=#{st005Ssxxb.skinPrepare},</when>
+					<when test="item=='skinMethod'">skin_method=#{st005Ssxxb.skinMethod},</when>
+					<when test="item=='preSkintime'">pre_skintime=#{st005Ssxxb.preSkintime},</when>
+					<when test="item=='wsqsykjyw'">wsqsykjyw=#{st005Ssxxb.wsqsykjyw},</when>
+					<when test="item=='wsqsyyfkjyw'">wsqsyyfkjyw=#{st005Ssxxb.wsqsyyfkjyw},</when>
+					<when test="item=='preYymd'">pre_yymd=#{st005Ssxxb.preYymd},</when>
+					<when test="item=='preLhyy'">pre_lhyy=#{st005Ssxxb.preLhyy},</when>
+					<when test="item=='preYyts'">pre_yyts=#{st005Ssxxb.preYyts},</when>
+					<when test="item=='isSqyy'">is_sqyy=#{st005Ssxxb.isSqyy},</when>
+					<when test="item=='szyzjyyewzj'">szyzjyyewzj=#{st005Ssxxb.szyzjyyewzj},</when>
+					<when test="item=='afterYymd'">after_yymd=#{st005Ssxxb.afterYymd},</when>
+					<when test="item=='afterLhyy'">after_lhyy=#{st005Ssxxb.afterLhyy},</when>
+					<when test="item=='afterYyts'">after_yyts=#{st005Ssxxb.afterYyts},</when>
+					<when test="item=='tmExceed1'">tm_exceed1=#{st005Ssxxb.tmExceed1},</when>
+					<when test="item=='cutred1'">cutred1=#{st005Ssxxb.cutred1},</when>
+					<when test="item=='cutpus1'">cutpus1=#{st005Ssxxb.cutpus1},</when>
+					<when test="item=='pathoisyang1'">pathoisyang1=#{st005Ssxxb.pathoisyang1},</when>
+					<when test="item=='tmExceed2'">tm_exceed2=#{st005Ssxxb.tmExceed2},</when>
+					<when test="item=='cutred2'">cutred2=#{st005Ssxxb.cutred2},</when>
+					<when test="item=='cutpus2'">cutpus2=#{st005Ssxxb.cutpus2},</when>
+					<when test="item=='pathoisyang2'">pathoisyang2=#{st005Ssxxb.pathoisyang2},</when>
+					<when test="item=='tmExceed3'">tm_exceed3=#{st005Ssxxb.tmExceed3},</when>
+					<when test="item=='cutred3'">cutred3=#{st005Ssxxb.cutred3},</when>
+					<when test="item=='cutpus3'">cutpus3=#{st005Ssxxb.cutpus3},</when>
+					<when test="item=='pathoisyang3'">pathoisyang3=#{st005Ssxxb.pathoisyang3},</when>
+					<when test="item=='monitorDate'">monitor_date=#{st005Ssxxb.monitorDate},</when>
+					<when test="item=='lastModDate'">last_mod_date=#{st005Ssxxb.lastModDate},</when>
+					<when test="item=='createDate'">create_date=#{st005Ssxxb.createDate},</when>
+					<when test="item=='urgentOpe'">urgent_ope=#{st005Ssxxb.urgentOpe},</when>
+					<when test="item=='replant'">replant=#{st005Ssxxb.replant},</when>
+					<when test="item=='glassOpe'">glass_ope=#{st005Ssxxb.glassOpe},</when>
+					<when test="item=='returnvisitStatus'">returnvisit_status=#{st005Ssxxb.returnvisitStatus},</when>
+					<when test="item=='dangerIndex'">danger_index=#{st005Ssxxb.dangerIndex},</when>
+					<when test="item=='operAtStart'">OPER_AT_START=#{st005Ssxxb.operAtStart},</when>
+					<when test="item=='operBw'">OPER_BW=#{st005Ssxxb.operBw},</when>
+				</choose>
+			</foreach>
+			id=#{st005Ssxxb.id}
+		</set>
+		<where>id=#{st005Ssxxb.id}</where>
+	</update>
+	
+	<select id="get" resultType="st005Ssxxb">
+		select <include refid="commCols"/>  from st005_ssxxb 
+  		<where>id=#{id}</where>
+	</select>
+	
+	<select id="getByRelid" resultType="st005Ssxxb">
+		select <include refid="commCols"/>  from st005_ssxxb 
+  		<where>relid=#{relid}</where>
+	</select>
+	
+	<select id="findSt005SsxxbCount" parameterType="st005Ssxxb" resultType="int">
+		select count(*) from st005_ssxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getMonitorPatientSsxxLastAt" resultType="date">
+		select max(OPER_AT) from st005_ssxxb s
+		join st003_cryxxb cr on s.zyid=cr.zyid where cr.out_at is null and OPER_AT&lt;sysdate
+		<if test="deptId!=null and deptId!=''">
+			AND dept_id = #{deptId}
+		</if>
+	</select>
+	
+	<select id="getAll" resultType="st005Ssxxb">
+		select <include refid="commCols"/> from st005_ssxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="findListByZyid" resultType="st005Ssxxb">
+		select id id,relid relid,oper_room operRoom,oper_at operAt,oper_leng_time operLengTime,oper_name operName,
+		incision_grade incisionGrade,heal heal,narc_kind narcKind,opedoc_name opedocName,anes_dr_name anesDrName,
+		asa asa,nnis nnis,dept_name deptName,continuous_ope continuousOpe
+		from st005_ssxxb
+  		<where>zyid=#{zyid}</where>
+  		order by oper_at desc
+	</select>
+	
+	<select id="findListByPatientId" resultType="st005Ssxxb">
+		select relid relid,oper_at operAt,oper_id operId,oper_name operName,opedoc_name opedocName,incision_grade incisionGrade
+		from st005_ssxxb
+  		<where>
+  		patient_id=#{patientId} 
+  		<if test="operAt!=null">
+  			and trunc(oper_at) &lt;= trunc(#{operAt})
+  		</if>
+  		</where>
+  		order by oper_at desc
+	</select>
+	
+	<select id="findListByName" resultType="st005Ssxxb">
+		select relid relid,oper_room operRoom,oper_at operAt,oper_leng_time operLengTime,oper_name operName,incision_grade incisionGrade,heal heal,narc_kind narcKind,opedoc_name opedocName,anes_dr_name anesDrName,asa asa
+		from st005_ssxxb left join st003_cryxxb on st003_cryxxb.zyid=st005_ssxxb.zyid
+  		<where>
+  			(st003_cryxxb.fx_status=0 or st003_cryxxb.upd_date>st003_cryxxb.fx_date) and oper_name in
+			<foreach collection="operNames" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+  		</where>
+	</select>
+	
+	<select id="findSurgeryListCount" parameterType="st005Ssxxb" resultType="int">
+		select count(*) from st005_ssxxb st5 
+		left join bk002_grzd bk2 on bk2.ope_relid=st5.relid 
+		inner join st003_cryxxb st3 on st3.zyid = st5.zyid
+		<where>
+			<if test="queryStartDate != null and dateType == 2">
+				and trunc(st5.oper_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null and dateType == 2">
+				and trunc(st5.oper_at) &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and dateType == 1">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null and dateType == 1">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and dateType == 3">
+				and trunc(bk2.infect_date) &gt;= #{queryStartDate}
+				and nvl(bk2.infect_type,'0')!=2
+				and bk2.auth_status in (0,1)
+			</if>
+			<if test="queryEndDate != null and dateType == 3">
+				and trunc(bk2.infect_date) &lt;= #{queryEndDate}
+			</if>
+			<if test="gr == 1"> 
+				and bk2.infect_diagn_name is not null
+				and nvl(bk2.infect_type,'0')!=2
+				and bk2.auth_status in (0,1)
+			</if>
+			<if test="deptId!=null and deptId!='' and deptType == 's'.toString()"> 
+				and st5.dept_id=#{deptId}
+			</if>
+			<if test="deptId!=null and deptId!='' and deptType == 'z'.toString()"> 
+				and st3.dept_code=#{deptId}
+			</if>
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and st5.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+			<if test="opepartkindid!=null and opepartkindid!=''"> 
+				and st5.opepartkindid=#{opepartkindid}
+			</if>
+			<if test="incisionGrade!=null and incisionGrade!=''"> 
+				and st5.incision_grade=#{incisionGrade}
+			</if>
+			<if test="impOpeId!=null and impOpeId!=''"> 
+				and st5.imp_ope_id=#{impOpeId}
+			</if>
+			<if test="opedocId!=null and opedocId!=''"> 
+				and st5.opedoc_id=#{opedocId}
+			</if>
+			<if test="searchString!=null and searchString!=''"> 
+				and (st5.zyid like concat( concat('%',#{searchString}),'%') or st5.patient_name like concat( concat('%',#{searchString}),'%'))
+			</if>
+			<if test="operName!=null and operName!=''"> 
+				and st5.oper_name like concat( concat('%',#{operName}),'%')
+			</if>
+			<if test="operBw!=null and operBw!=''"> 
+				and st5.oper_bw=#{operBw}
+			</if>
+			<if test="isMonitorOpera == 1"> 
+				and st5.opepartkindid in (select opepartkindid from zg017_ssczfl where flag = 1)
+			</if>
+			<if test="isMonitorOpera == 2"> 
+				and st5.opepartkindid not in (select opepartkindid from zg017_ssczfl where flag = 1)
+			</if>
+			<if test="viewFlag!=null"> 
+				and st5.view_flag=#{viewFlag}
+			</if>
+			<if test="status!=null"> 
+				and st5.status=#{status}
+			</if>
+			<if test="grType!=null and grType!=''"> 
+				and bk2.infect_type=#{grType}
+			</if>
+			<if test="operRoom!=null and operRoom!=''"> 
+				and st5.oper_room = #{operRoom}
+			</if>
+			<if test="lengTime!=null and lengTime!='' and operLengTime!=null and operLengTime!=''"> 
+				<if test="lengTime==1 "> 
+				and st5.oper_leng_time &gt; #{operLengTime}
+				</if>
+				<if test="lengTime==2 "> 
+				and st5.oper_leng_time &lt; #{operLengTime}
+				</if>
+			</if>
+		</where>
+	</select>
+	
+	<select id="findSurgeryDayListCount" parameterType="st005Ssxxb" resultType="int">
+		select count(*) from st005_ssxxb st5 
+		<where>
+			<if test="date!=null and date!=''">
+			 	and st5.oper_at &gt;=  to_date(#{date},'yyyy-MM-dd')  and st5.oper_at &lt; to_date(#{date},'yyyy-MM-dd')+1 
+			</if>
+			<if test="isZdjc=='zd'.toString()">
+				and st5.imp_ope_id in  (select dict_code from sys_dict t where t.dict_type_code='operation_point')
+			</if>
+			<if test="isZdjc=='fzd'.toString()">
+				and st5.imp_ope_id is null
+			</if>  
+			<if test="incisionGrade!=null and incisionGrade!=''">
+				<if test="incisionGrade!='未维护'.toString()">
+					and st5.incision_grade=#{incisionGrade}
+				</if> 
+				<if test="incisionGrade=='未维护'.toString()">
+					and ((st5.incision_grade!='零类' and st5.incision_grade!='I类' and st5.incision_grade!='II类'  and st5.incision_grade!='III类' and st5.incision_grade!='IV类') or st5.incision_grade is null)
+				</if>
+			</if>
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and st5.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</select>
+	
+	<select id="findSurgeryZdCount" parameterType="st005Ssxxb" resultType="map">
+		 select nvl(sum(case when st5.imp_ope_id in  (select dict_code from sys_dict t where t.dict_type_code='operation_point') then 1 else 0 end),0) zdcount,
+			nvl(sum(case when st5.imp_ope_id  in (select dict_code from sys_dict t where t.dict_type_code='operation_point') then 0 else 1 end),0) fzdcount,
+			count(1) qbcount
+		 from st005_ssxxb st5
+		 <where>
+			<if test="date!=null and date!=''">
+			 	and st5.oper_at &gt;=  to_date(#{date},'yyyy-MM-dd')  and st5.oper_at &lt; to_date(#{date},'yyyy-MM-dd')+1 
+			</if>
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and st5.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</select>
+	
+	<select id="findSurgeryQkCount" parameterType="st005Ssxxb" resultType="map">
+		select nvl(sum(case when st5.incision_grade='零类' then 1 else 0 end),0) lingcount,
+	      nvl(sum(case when st5.incision_grade='I类' then 1 else 0 end),0) yicount,
+	      nvl(sum(case when st5.incision_grade='II类' then 1 else 0 end),0) ercount,
+	      nvl(sum(case when st5.incision_grade='III类' then 1 else 0 end),0) sancount,
+	      nvl(sum(case when st5.incision_grade='IV类' then 1 else 0 end),0) sicount
+	     from st005_ssxxb st5
+	     <where>
+			<if test="date!=null and date!=''">
+			 	and st5.oper_at &gt;=  to_date(#{date},'yyyy-MM-dd')  and st5.oper_at &lt; to_date(#{date},'yyyy-MM-dd')+1 
+			</if>
+			<if test="isZdjc=='zd'.toString()">
+				and st5.imp_ope_id in  (select dict_code from sys_dict t where t.dict_type_code='operation_point')
+			</if>
+			<if test="isZdjc=='fzd'.toString()">
+				and st5.imp_ope_id is null
+			</if>
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and st5.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>    
+		</where>
+	</select>
+
+	<select id="findPatentSsxxbWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where ZYID ='''||ZYID||'''' sql,
+			'ST005_SSXXB表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST005_SSXXB t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where DEPT_ID ='''||DEPT_ID||'''' sql,
+			'ST005_SSXXB表中在院科室编号（'||DEPT_ID||'）在ZG002_BYKS表中未找到！' as warning from ST005_SSXXB t
+			where t.DEPT_ID not in(select dept_id from ZG002_BYKS )
+			and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where IN_DEPT_ID ='''||IN_DEPT_ID||'''' sql,
+			'ST005_SSXXB表中入院科室编号（'||IN_DEPT_ID||'）在ZG002_BYKS表中未找到！' as warning from ST005_SSXXB t
+			where t.IN_DEPT_ID not in(select dept_id from ZG002_BYKS )
+			and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where OUT_DEPT_ID ='''||OUT_DEPT_ID||'''' sql,
+			'ST005_SSXXB表中出院科室编号（'||OUT_DEPT_ID||'）在ZG002_BYKS表中未找到！' as warning from ST005_SSXXB t
+			where t.OUT_DEPT_ID not in(select dept_id from ZG002_BYKS )
+			and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where CHARGE_DR_ID ='''||CHARGE_DR_ID||'''' sql,
+			'ST005_SSXXB表中主管医生编号（'||CHARGE_DR_ID||'）在ZG003_YYZG表中未找到！' as warning from ST005_SSXXB t
+			where t.CHARGE_DR_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where OPEDOC_ID ='''||OPEDOC_ID||'''' sql,
+			'ST005_SSXXB表中手术医生编号（'||CHARGE_DR_ID||'）在ZG003_YYZG表中未找到！' as warning from ST005_SSXXB t
+			where t.OPEDOC_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where ANES_DR_ID ='''||ANES_DR_ID||'''' sql,
+			'ST005_SSXXB表中麻醉医生编号（'||ANES_DR_ID||'）在ZG003_YYZG表中未找到！' as warning from ST005_SSXXB t
+			where t.ANES_DR_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+	    select tt.* from(
+	        select distinct 'select * from ST005_SSXXB where Incision_Grade not in(''I类'',''II类'',''III类'',''IV类'');' sql,
+	        'ST005_SSXXB表中手术切口等级数据不规范！' as warning from ST005_SSXXB t
+	        where t.Incision_Grade not in('I类','II类','III类','IV类') 
+		    and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+	    where rownum <= 100
+	    union
+	    select tt.* from(
+			select distinct 'select * from ST005_SSXXB where (urgent_ope not in(''是'',''否'') or urgent_ope is null);' sql,
+			'ST005_SSXXB表中手术急诊、择期手术数据不规范或未维护！' as warning from ST005_SSXXB t
+			where (t.urgent_ope not in('是','否') or urgent_ope is null)
+		    and OPER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+	    where rownum <= 100
+	    union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where heal not in(''1'',''2'',''3'',''4'');' sql,
+			'ST005_SSXXB表中手术愈合等级数据不规范或未维护！' as warning from ST005_SSXXB t
+			where (t.heal not in('1','2','3','4'))
+			and OPER_AT BETWEEN to_date('2014-01-01','yyyy-MM-dd') AND to_date('2015-01-31','yyyy-MM-dd')
+		) tt
+		where rownum <= 100
+	    union
+		select tt.* from(
+			select distinct 'select * from ST005_SSXXB where nnis not in(''0'',''1'',''2'',''3'');' sql,
+			'ST005_SSXXB表中手术NNIS数据不规范或未维护！' as warning from ST005_SSXXB t
+			where (t.nnis not in('0','1','2','3'))
+			and OPER_AT BETWEEN to_date('2014-01-01','yyyy-MM-dd') AND to_date('2015-01-31','yyyy-MM-dd')
+		) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<select id="findWaitCalcNnis" resultType="st005Ssxxb">
+		select id id,imp_ope_id impOpeId,opepartkindid opepartkindid,incision_grade incisionGrade,asa asa,oper_leng_time operLengTime
+		from st005_ssxxb 
+		<where>
+			1=1
+			<if test="nnis!=null and nnis=='isnull'"> 
+				and nnis is null
+			</if>
+			<if test="nnis!=null and nnis=='all'"> 
+			</if>
+			<if test="nnis!=null and nnis=='isnotnull'"> 
+				and nnis is not null
+			</if>
+			<if test="status!=null and status==0"> 
+				and (status=0 or status is null)
+			</if>
+			<if test="status!=null and status=='1'">
+			</if>
+			<if test="status!=null and status==4"> 
+				and status=4
+			</if>
+		</where>
+	</select>
+</mapper>

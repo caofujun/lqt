@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw002JsbzDao">
+
+	<sql id="commCols">
+		item_id itemId,item_name itemName,class_id classId,condition condition,criterion criterion,unit unit,memo memo,last_at lastAt,flag flag
+	</sql>
+
+	<insert id="save" parameterType="hw002Jsbz" flushCache="true">
+		 insert into hw002_jsbz(item_id,item_name,class_id,condition,criterion,unit,memo,last_at,flag)
+		 values(#{itemId},#{itemName},#{classId},#{condition},#{criterion},#{unit},#{memo},#{lastAt},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw002_jsbz
+		<where>item_id=#{itemId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw002Jsbz" flushCache="true">
+		update hw002_jsbz
+		<set>
+			item_id=#{itemId},item_name=#{itemName},class_id=#{classId},condition=#{condition},criterion=#{criterion},unit=#{unit},memo=#{memo},last_at=#{lastAt},flag=#{flag}
+		</set>
+		<where>item_id=#{itemId}</where>
+	</update>
+	
+	<select id="get" resultType="hw002Jsbz">
+		select <include refid="commCols"/> from hw002_jsbz
+  		<where>item_id=#{itemId}</where>
+	</select>
+	
+	
+	<select id="findHw002JsbzCount" parameterType="hw002Jsbz" resultType="int">
+		select count(*) from hw002_jsbz
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw002Jsbz">
+		select <include refid="commCols"/> from hw002_jsbz
+		<where>
+		</where>
+	</select>
+	
+	<select id="findListByClassId" resultType="hw002Jsbz">
+		select item_id itemId,item_name itemName,class_id classId,condition condition,criterion criterion,unit unit 
+		from hw002_jsbz
+		<where>
+			class_id=#{classId}
+		</where>
+	</select>
+	
+	<select id="getHw002Jsbz" resultType="hw002Jsbz">
+		select hw002.item_id itemId,hw002.item_name itemName,hw002.class_id classId,hw002.condition condition,hw002.criterion criterion,hw002.unit unit,hw002.memo memo,hw002.last_at lastAt,hw002.flag flag,hw001.class_name className
+		from hw002_jsbz hw002 left join hw001_jcxm hw001 on hw001.class_id=hw002.class_id
+  		<where>hw002.item_id=#{itemId}</where>
+	</select>
+	
+	
+	<select id="findMaxItemId" resultType="String">
+		select max(to_number(item_id)) placeId from hw002_jsbz 
+	</select>
+</mapper>

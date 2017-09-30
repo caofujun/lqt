@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St014PacsDao">
+
+	<sql id="commCols_mysql">
+		id id,zyid zyid,mzid mzid,check_no checkNo,device device,item_id itemId,item_name itemName,check_at checkAt,report_at reportAt,cli_diagnose cliDiagnose,check_desc checkDesc,check_impr checkImpr,check_dr checkDr,report_dr reportDr,dept_id deptId,dept_name deptName,create_at createAt,anal_flag analFlag,anal_at analAt,anal_result analResult,patient_id patientId,upd_date updDate
+	</sql>
+
+	<select id="findSt014Pacs_mysql" parameterType="st014Pacs" resultType="st014Pacs">
+		select <include refid="commCols_mysql"/> from st014_pacs
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

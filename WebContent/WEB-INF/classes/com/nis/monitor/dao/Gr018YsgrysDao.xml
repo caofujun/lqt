@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr018YsgrysDao">
+
+	<sql id="commCols">
+		element_name elementName,monitor_at monitorAt,data_form
+		dataForm,original_content originalContent,data_type dataType,state
+		state,id id,sj_id sjId,infect_typeid infectTypeid,zyid zyid,data_date
+		dataDate,element_id elementId
+	</sql>
+
+	<insert id="save" parameterType="gr018Ysgrys" flushCache="true">
+		insert into
+		gr018_ysgrys${tablename}(element_name,monitor_at,data_form,original_content,data_type,state,id,sj_id,infect_typeid,zyid,data_date,element_id)
+		values(#{elementName},#{monitorAt},#{dataForm},#{originalContent},#{dataType},#{state},seq_gr018.nextval,#{sjId},#{infectTypeid},#{zyid},#{dataDate},#{elementId})
+	</insert>
+	
+	<insert id="saveList" parameterType="gr018Ysgrys" flushCache="true">
+		insert into gr018_ysgrys${tablename}(ZYID, DATA_DATE, ELEMENT_ID, ELEMENT_NAME,
+		MONITOR_AT, DATA_FORM, ORIGINAL_CONTENT, DATA_TYPE,
+		STATE,INFECT_TYPEID,SJ_ID)
+		<foreach collection="gr018YsgrysList" item="item" index="index"
+			separator="union all">
+			(select
+			#{item.zyid},#{item.dataDate},#{item.elementId},#{item.elementName},#{item.monitorAt},#{item.dataForm},#{item.originalContent},#{item.dataType},#{item.state},#{item.infectTypeid},#{item.sjId}
+			from dual)
+		</foreach>
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from gr018_ysgrys
+		<where>id=#{id}</where>
+	</delete>
+
+	<update id="update" parameterType="gr018Ysgrys" flushCache="true">
+		update gr018_ysgrys
+		<set>
+			element_name=#{elementName},monitor_at=#{monitorAt},data_form=#{dataForm},original_content=#{originalContent},data_type=#{dataType},state=#{state},id=#{id},sj_id=#{sjId},infect_typeid=#{infectTypeid},zyid=#{zyid},data_date=#{dataDate},element_id=#{elementId}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	<update id="updateByZyid" parameterType="gr018Ysgrys" flushCache="true">
+		Update gr018_ysgrys${tablename} set id =seq_gr018.nextval  
+		<where>
+		id is null and zyid=#{zyid}
+		</where>
+	</update>
+	
+	<update id="updateList" parameterType="gr018Ysgrys" flushCache="true">
+		<foreach collection="gr018YsgrysList" item="item" index="index" open="begin" close=";end;" separator=";">
+			update gr018_ysgrys${tablename} 
+			<set> state=#{item.state}, sj_id=#{item.sjId}, monitor_at=#{item.monitorAt}</set>
+			<where>
+				zyid=#{item.zyid} and data_date=#{item.dataDate} and element_id=#{item.elementId}
+			</where>
+		</foreach>
+	</update>
+
+	<select id="get" resultType="gr018Ysgrys">
+		select
+		<include refid="commCols" />
+		from gr018_ysgrys${tablename}
+		<where>id=#{id}</where>
+	</select>
+
+
+	<select id="findGr018YsgrysCount" parameterType="gr018Ysgrys"
+		resultType="int">
+		select count(*) from gr018_ysgrys
+		<where>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="gr018Ysgrys">
+		select
+		<include refid="commCols" />
+		from gr018_ysgrys
+		<where>
+		</where>
+	</select>
+
+	<select id="findListByZyid" resultType="gr018Ysgrys">
+		select <include refid="commCols" />
+		from gr018_ysgrys${tablename}
+		<where>
+			zyid=#{zyid} 
+			<if test="isPacs=='1'.toString()">
+				and data_form&lt;&gt;'影像'
+			</if>
+		</where>
+		order by monitor_at
+	</select>
+	<select id="findListByDataDate" resultType="gr018Ysgrys">
+		select
+		<include refid="commCols" />
+		from gr018_ysgrys${tablename}
+		<where>
+			zyid=#{zyid} and TO_CHAR(DATA_DATE,'YYYY-MM-DD')=#{DataDate}
+		</where>
+	</select>
+
+	<select id="findByFX" parameterType="gr018Ysgrys" resultType="gr018Ysgrys">
+		select
+		<include refid="commCols" />
+		from gr018_ysgrys
+		<where>
+			zyid=#{zyid} and data_form=#{dataForm} and
+			element_id=#{elementId}
+		</where>
+	</select>
+	<delete id="deleteGrysByZyid" flushCache="true">
+		delete from gr018_ysgrys${tablename} where zyid='' and id in(select ys.id from
+		gr018_bcgrys${tablename} bc join gr018_ysgrys${tablename} ys on bc.zyid = ys.zyid
+		and
+		bc.element_id = ys.element_id and bc.enter_date = ys.data_date
+		<where>
+			bc.zyid=#{zyid} and ys.data_form in('病程','影像') and
+			instr(ys.sj_id,
+			bc.bc_id)=0 and ys.monitor_at&lt;sysdate-0.2)
+		</where>
+	</delete>
+	
+	<select id="getMonitorPatientBcLastAt" resultType="date">
+		select max(monitor_at) from gr018_ysgrys where monitor_at&lt;sysdate
+	</select>
+	
+	<update id="updateStateByZyid" flushCache="true">
+		update gr018_ysgrys${tablename} set state=#{state} where zyid=#{zyid}
+	</update>
+	
+	<select id="findByStateCount" resultType="int">
+		select count(*) from gr018_ysgrys where state=#{state}
+	</select>
+	
+	<select id="getUnionDrugNum" resultType="int">
+		select count(*) from gr018_ysgrys${tablename} 
+		<where>
+			data_date between #{dataDate} - 3 and #{dataDate} and element_id='KJ000060' and zyid=#{zyid}
+		</where>
+	</select>
+	
+	<select id="findTwList" resultType="gr018Ysgrys">
+		select tw.zyid zyid,
+		       recording_at dataDate,
+		       '浮点' dataType,
+		       'TW000010' elementId,
+		       '体温升高' elementName,
+		       0 state,
+		       '体温' dataForm,
+		       temprature_type_name || ' ' || to_char(tw.tw_values) originalContent,
+		       tw.id sjId,
+		       sysdate monitorAt
+		  from st006_twxx tw
+		  join st003_cryxxb cry
+		    on tw.zyid = cry.zyid
+		 where nvl(tw.TW_ANAL_FLAG, 0) = 0
+		    and recording_at > trunc(sysdate - 100)
+		   and tw.tw_values &gt;= #{tw}
+		   and rownum &lt;=100
+	</select>
+	
+	<select id="findTwCount" resultType="int">
+		  select count(*) from st006_twxx tw
+		  join st003_cryxxb cry
+		    on tw.zyid = cry.zyid
+		 where nvl(tw.TW_ANAL_FLAG, 0) = 0
+		   and recording_at > trunc(sysdate - 100)
+		   and tw.tw_values &gt;= #{tw}
+	</select>
+</mapper>

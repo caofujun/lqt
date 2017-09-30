@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.NyBbDictDao">
+
+	<sql id="commCols_mysql">
+		GRTYPE grtype,ZDYJ zdyj,PCQK pcqk,VCMEMO vcmemo,INFECT_CODE infectCode,INFECT_NAME infectName,ELEMENT_ID elementId,TYPE_ID typeId,BBID bbid,BBMC bbmc,DYBW dybw
+	</sql>
+
+	<select id="findNyBbDict_mysql" parameterType="nyBbDict" resultType="nyBbDict">
+		select <include refid="commCols_mysql"/> from NY_BB_DICT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

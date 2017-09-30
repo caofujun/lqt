@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DoctorDao">
+
+	<sql id="commCols_oracle">
+		ID id,HOSP_ID hospId,EMPLOYEE_ID employeeId,EMPLOYEE_NAME employeeName,DEPT_ID deptId,ZJ_CODE zjCode,BH_CODE bhCode,
+		SP_CODE spCode,WB_CODE wbCode,FLAG flag,OPER_DOC operDoc,DR_LINETYPE drLinetype,LAST_AT lastAt,IN_TEL inTel,
+		PHONE_NO phoneNo,EMAIL email,IN_GROUP_NO inGroupNo,AUTH_MODE authMode,AUTH_CODE authCode,CLASS cclass,STATE state
+	</sql>
+
+	
+	<select id="findDoctor_oracle" parameterType="doctor" resultType="doctor">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from ZG003_YYZG
+		<where>
+			<if test="hospId!=null and hospId!=''">and HOSP_ID=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (EMPLOYEE_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') or EMPLOYEE_ID LIKE CONCAT(CONCAT('%', #{searchString}), '%'))
+				or lower(SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') 
+			</if>
+			<if test="deptId!=null and deptId!=''">and DEPT_ID=#{deptId}</if>
+			<if test="cclass!=null and cclass!=''">and CLASS=#{cclass}</if>
+		</where>
+		order by 
+		<if test="employeeId!=null and employeeId!=''"> case when employee_id=#{employeeId} then 0 else 1 end, </if>
+		employee_name
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<select id="findNosetDepDoctor_oracle" resultType="doctor">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from ZG003_YYZG
+		<where>
+			<if test="hospId!=null and hospId!=''">and HOSP_ID=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (EMPLOYEE_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') or EMPLOYEE_ID LIKE CONCAT(CONCAT('%', #{searchString}), '%')) 
+			</if>
+			<if test="deptId!=null and deptId!=''">and DEPT_ID=#{deptId}</if>
+			<if test="cclass!=null and cclass!=''">and CLASS=#{cclass}</if>
+		</where>
+		order by EMPLOYEE_NAME
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<select id="queryToSelect_oracle" resultType="doctor">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		<if test="employeeId!=null and employeeId!=''"> select * from ( </if>
+		select username employeeId,realname employeeName,0 source from ac_account
+		<where>
+			<if test="hospId!=null and hospId!=''">and unit_id=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (lower(username) like CONCAT(CONCAT('%', lower(#{searchString})), '%') or lower(realname) like CONCAT(CONCAT('%', lower(#{searchString})), '%')) 
+			</if>
+			<if test="deptId!=null and deptId!=''">and dep_no=#{deptId}</if>
+		</where>
+		union
+		select employee_id employeeId,employee_name employeeName,1 source from zg003_yyzg
+		<where>
+			<if test="hospId!=null and hospId!=''">and hosp_id=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (lower(employee_name) like CONCAT(CONCAT('%', lower(#{searchString})), '%') or lower(employee_id) like CONCAT(CONCAT('%', lower(#{searchString})), '%')) 
+			</if>
+			<if test="deptId!=null and deptId!=''">and dept_id=#{deptId}</if>
+		</where>
+		<if test="employeeId!=null and employeeId!=''">) order by case when employeeId=#{employeeId} then 0 else 1 end </if>
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<select id="queryToSelect1_oracle" resultType="doctor">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select u.*,z2.dept_name deptName from (
+		select username employeeId,realname employeeName,0 source,dep_no deptId  from ac_account
+		<where>
+			<if test="hospId!=null and hospId!=''">and unit_id=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (lower(username) like CONCAT(CONCAT('%', lower(#{searchString})), '%') or lower(realname) like CONCAT(CONCAT('%', lower(#{searchString})), '%')) 
+			</if>
+			<if test="deptId!=null and deptId!=''">and dep_no=#{deptId}</if>
+		</where>
+		union
+		select employee_id employeeId,employee_name employeeName,1 source,case when instr(dept_id,',',1) > 0 then substr(dept_id,1,(instr(dept_id,',',1)-1)) else dept_id end deptId from zg003_yyzg
+		<where>
+			<if test="hospId!=null and hospId!=''">and hosp_id=#{hospId}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (lower(employee_name) like CONCAT(CONCAT('%', lower(#{searchString})), '%') or  lower(employee_id) like CONCAT(CONCAT('%', lower(#{searchString})), '%')) 
+			</if>
+			<if test="deptId!=null and deptId!=''">and dept_id=#{deptId}</if>
+		</where>
+		) u left join zg002_byks z2 on z2.dept_id=u.deptId
+		order by u.source desc 
+		<if test="employeeId!=null and employeeId!=''">, case when employeeId=#{employeeId} then 0 else 1 end </if>
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

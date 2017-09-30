@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.task.dao.TaskJobDao">
+
+	<sql id="commCols">
+		ID id,PROJECTID projectid,NAME name,REMARK remark,LINK link,CRON cron,ADDTIME addtime,ISFAILMAIL isfailmail,ADDUSER adduser,STATUS status,STATUSMSG statusmsg
+	</sql>
+
+	<insert id="save" parameterType="taskJob"  flushCache="true">
+		 insert into TASK_JOB(ID,PROJECTID,NAME,REMARK,LINK,CRON,ADDTIME,ISFAILMAIL,ADDUSER,STATUS,STATUSMSG)
+		 values(#{id},#{projectid},#{name},#{remark},#{link},#{cron},#{addtime},#{isfailmail},#{adduser},#{status},#{statusmsg})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  TASK_JOB
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="taskJob" flushCache="true">
+		update TASK_JOB
+		<set>
+			ID=#{id},PROJECTID=#{projectid},NAME=#{name},REMARK=#{remark},LINK=#{link},CRON=#{cron},ADDTIME=#{addtime},ISFAILMAIL=#{isfailmail},ADDUSER=#{adduser},STATUS=#{status},STATUSMSG=#{statusmsg}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateWait"  flushCache="true">
+		update TASK_JOB
+		<set>
+			STATUS=#{status}
+		</set>
+		<where>STATUS!=#{stopStatus}</where>
+	</update>
+	
+		<update id="updateStatus" flushCache="true">
+		update TASK_JOB
+		<set>
+			STATUS=#{status}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="taskJob">
+		select <include refid="commCols"/> from TASK_JOB
+  		<where>ID=#{id}</where>
+	</select>
+	
+	<select id="findByLink" resultType="taskJob">
+		select <include refid="commCols"/> from TASK_JOB
+  		<where>Link like concat('%',concat(#{link},'%')) and rownum=1</where>
+	</select>
+	
+	<select id="findTaskJobCount" parameterType="taskJob" resultType="int">
+		select count(*) from TASK_JOB
+		<where>
+			PROJECTID=#{projectid}
+			<if test="searchString!=null and searchString!=''"> and (NAME like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="taskJob">
+		select <include refid="commCols"/> from TASK_JOB
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findByStatus"  resultType="taskJob">
+		select <include refid="commCols"/> from TASK_JOB
+		<where>
+			STATUS=#{status}
+		</where>
+	</select>
+	
+	<select id="findByProjectid"  resultType="taskJob">
+		select <include refid="commCols"/> from TASK_JOB
+		<where>
+			PROJECTID=#{projectid}
+		</where>
+	</select>
+</mapper>

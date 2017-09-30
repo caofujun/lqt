@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.yj.dao.Yj003SynonymDao">
+
+	<sql id="commCols">
+		ID id,STANDARD_ID standardId,SYNONYMS synonyms,COMPARE_TYPE compareType,COMPARE_USER_ID compareUserId,COMPARE_TIME compareTime
+	</sql>
+
+	<insert id="save" parameterType="yj003Synonym"  flushCache="true">
+		 insert into YJ003_SYNONYM(ID,STANDARD_ID,SYNONYMS,COMPARE_TYPE,COMPARE_USER_ID,COMPARE_TIME)
+		 values(#{id},#{standardId},#{synonyms},#{compareType},#{compareUserId},#{compareTime})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  YJ003_SYNONYM
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="yj003Synonym" flushCache="true">
+		update YJ003_SYNONYM
+		<set>
+			ID=#{id},STANDARD_ID=#{standardId},SYNONYMS=#{synonyms},COMPARE_TYPE=#{compareType},COMPARE_USER_ID=#{compareUserId},COMPARE_TIME=#{compareTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="yj003Synonym">
+		select <include refid="commCols"/> from YJ003_SYNONYM
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findYj003SynonymCount" parameterType="yj003Synonym" resultType="int">
+		select count(*) from YJ003_SYNONYM left join YJ003_STANDARD on YJ003_STANDARD.ID=YJ003_SYNONYM.STANDARD_ID
+		<where>
+			STANDARD_ID is not null
+			<if test="searchString!=null and searchString!=''">
+				and (SYNONYMS like CONCAT( CONCAT('%',#{searchString}),'%') or YJ003_STANDARD.NAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="findYj003SynonymListCount" parameterType="yj003Synonym" resultType="int">
+		select count(*) from YJ003_SYNONYM left join YJ003_STANDARD on YJ003_STANDARD.ID=YJ003_SYNONYM.STANDARD_ID
+		<where>
+			STANDARD_ID is null
+			<if test="searchString!=null and searchString!=''">
+				and (SYNONYMS like CONCAT( CONCAT('%',#{searchString}),'%') or YJ003_STANDARD.NAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="yj003Synonym">
+		select <include refid="commCols"/> from YJ003_SYNONYM
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

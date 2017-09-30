@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsQuestionnaireDao">
+
+	<sql id="commCols">
+		QID qid,TITLE title,NOTE note,CAT_ID catId,CAT_NAME catName,STATUS status,END_TIME endTime,START_TIME startTime,CREATE_TIME createTime,UPD_TIME updTime,UPD_USER updUser,DEP_NO depNo,UNIT_ID unitId,Q_IDS qIds,RESULT_OPEN_STATE resultOpenState,CREATE_USER createUser,PUBLISH publish,IS_MOD isMod,IS_EVAL isEval,ANSWER_COUNT answerCount,YJ_COUNT yjCount,TM_COUNT tmCount, QLEVEL qlevel,FEEDBACK_VALUE feedbackValue,IS_ANONYMOUS isAnonymous,IS_QZ isQz
+	</sql>
+
+	<insert id="save" parameterType="qsQuestionnaire" flushCache="true">
+		 insert into QS_QUESTIONNAIRE(QID,TITLE,NOTE,CAT_ID,CAT_NAME,STATUS,END_TIME,START_TIME,CREATE_TIME,UPD_TIME,UPD_USER,DEP_NO,UNIT_ID,Q_IDS,RESULT_OPEN_STATE,CREATE_USER,PUBLISH,IS_MOD,IS_EVAL,ANSWER_COUNT,YJ_COUNT,TM_COUNT,EXT1, QLEVEL,FEEDBACK_VALUE,IS_ANONYMOUS,IS_QZ)
+		 values(#{qid},#{title},#{note},#{catId},#{catName},0,#{endTime},#{startTime},#{createTime},#{updTime},#{updUser},#{depNo},#{unitId},#{qIds},#{resultOpenState},#{createUser},#{publish},#{isMod},#{isEval},0,0,0,#{ext1},#{qlevel},#{feedbackValue},#{isAnonymous},#{isQz})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from QS_QUESTIONNAIRE
+		<where>QID=#{qid}</where>
+	</delete>
+	
+	<delete id="deleteCache" flushCache="true">
+		delete from QS_QUESTIONNAIRE
+		<where> EXT1 = 'cached' </where>
+	</delete>
+	
+	<update id="update" parameterType="qsQuestionnaire" flushCache="true">
+		update QS_QUESTIONNAIRE
+		<set>
+			TITLE=#{title},NOTE=#{note},CAT_ID=#{catId},CAT_NAME=#{catName},END_TIME=#{endTime},START_TIME=#{startTime},UPD_TIME=#{updTime},UPD_USER=#{updUser},Q_IDS=#{qIds},RESULT_OPEN_STATE=#{resultOpenState},PUBLISH=#{publish},IS_MOD=#{isMod},IS_EVAL=#{isEval},EXT1=#{ext1},FEEDBACK_VALUE=#{feedbackValue},IS_ANONYMOUS=#{isAnonymous},IS_QZ=#{isQz}
+		</set>
+		<where>QID=#{qid}</where>
+	</update>
+	
+	<update id="updateTmCount" flushCache="true">
+		update QS_QUESTIONNAIRE
+		<set>
+			TM_COUNT=(select count(*) from QS_TOPIC where qid=#{qid} and status!=-1)
+		</set>
+		<where>QID=#{qid}</where>
+	</update>
+	
+	<update id="updateStatus" flushCache="true">
+		update QS_QUESTIONNAIRE
+		<set>
+			STATUS=#{status},START_TIME=#{startTime}
+		</set>
+		<where>QID=#{qid}</where>
+	</update>
+	
+	<update id="updatePublish" flushCache="true">
+		update QS_QUESTIONNAIRE
+		<set>
+			PUBLISH=#{publish}
+		</set>
+		<where>QID=#{qid}</where>
+	</update>
+	
+	<update id="updateAnswerCount" flushCache="true">
+		update QS_QUESTIONNAIRE
+		<set>
+			ANSWER_COUNT=ANSWER_COUNT${type}1
+		</set>
+		<where>QID=#{qid}</where>
+	</update>
+	
+	<update id="updateAnswerCounts" flushCache="true">
+		update QS_QUESTIONNAIRE
+		<set>
+			ANSWER_COUNT=#{answerCount}
+		</set>
+		<where>QID=#{qid}</where>
+	</update>
+	
+	<select id="get" resultType="qsQuestionnaire">
+		select <include refid="commCols"/> from QS_QUESTIONNAIRE
+  		<where>QID=#{qid} and (EXT1 != 'cached' or EXT1 is null )</where>
+	</select>
+	
+	<select id="getbyCatId" resultType="qsQuestionnaire">
+		select <include refid="commCols"/> from QS_QUESTIONNAIRE
+  		<where>CAT_ID=#{catId} and (EXT1 != 'cached' or EXT1 is null ) and rownum &lt;=1 </where>
+	</select>
+	
+	<select id="findQsQuestionnaireAll" parameterType="qsQuestionnaire" resultType="qsQuestionnaire">
+		select <include refid="commCols"/> from QS_QUESTIONNAIRE
+		<where>
+			UNIT_ID=#{unitId} and (EXT1 != 'cached' or EXT1 is null ) 
+			<if test="status!=null and status!=''">
+			and STATUS=#{status}
+			</if>
+			<if test="catId!=null and catId!=''">
+			and CAT_ID=#{catId}
+			</if>
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QLEVEL=#{qlevel}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QLEVEL=#{qlevel} or QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (QLEVEL='3' and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="title!=null and title!=''">and title LIKE CONCAT(CONCAT('%', #{title}), '%')</if>
+		</where>
+	</select>
+	
+	<select id="findQsQuestionnaireCount" parameterType="qsQuestionnaire" resultType="int">
+		select count(*) from QS_QUESTIONNAIRE
+		<where>
+			UNIT_ID=#{unitId} and (EXT1 != 'cached' or EXT1 is null ) 
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QLEVEL=#{qlevel}
+			</if>
+			<if test="catId!=null and catId!=''">
+			and CAT_ID=#{catId}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QLEVEL=#{qlevel} or QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (QLEVEL='3' and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="title!=null and title!=''">and title LIKE CONCAT(CONCAT('%', #{title}), '%')</if>
+			<!-- <if test="depNo!=null">and DEP_NO=#{depNo}</if> -->
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="qsQuestionnaire">
+		select <include refid="commCols"/> from QS_QUESTIONNAIRE
+		<where>
+			 EXT1 != 'cached' or EXT1 is null 
+		</where>
+	</select>
+	
+	<select id="getFeedback" resultType="qsQuestionnaire">
+		select <include refid="commCols"/> from QS_QUESTIONNAIRE
+		<where>
+			 FEEDBACK_VALUE is not null
+		</where>
+	</select>
+	
+	<select id="findByIsMod" resultType="qsQuestionnaire" parameterType="qsQuestionnaire">
+		select <include refid="commCols"/> from QS_QUESTIONNAIRE
+		<where>
+			UNIT_ID=#{unitId} and IS_MOD=#{isMod} and (EXT1 != 'cached' or EXT1 is null ) 
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QLEVEL=#{qlevel}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QLEVEL=#{qlevel} or QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (QLEVEL='3' and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<!-- <choose>
+			<when test="depNo!=null and depNo!=''">and ( (DEP_NO is null and STATUS=1) or (dep_no='${depNo}' and STATUS in(0,1)) )</when>
+			<otherwise>and ( (DEP_NO is null and STATUS in(0,1)) or (DEP_NO is not null and STATUS=1) )</otherwise>
+			</choose> -->
+		</where>
+	</select>
+	
+	<select id="findCanEnter" resultType="qsQuestionnaire" parameterType="qsQuestionnaire">
+		select <include refid="commCols"/> from QS_QUESTIONNAIRE
+		<where>
+			UNIT_ID=#{unitId} and (EXT1 != 'cached' or EXT1 is null ) 
+			<if test="depNo!=null and depNo!=''">and (DEP_NO IS NULL or DEP_NO=#{depNo})</if>
+			<if test="catId!=null">and CAT_ID=#{catId}</if>
+			and STATUS=1
+			and (END_TIME is null or END_TIME='' or END_TIME&gt;=#{endTime})
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QLEVEL=#{qlevel}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QLEVEL=#{qlevel} or QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (QLEVEL='3' and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+		</where>
+		order by STATUS DESC,END_TIME DESC
+	</select>
+	
+	<select id="pagefindCanEnterCount" parameterType="qsQuestionnaire" resultType="int" >
+		select count(*) from QS_QUESTIONNAIRE
+		<where>
+			UNIT_ID=#{unitId} and (EXT1 != 'cached' or EXT1 is null ) 
+			<!-- <if test="depNo!=null and depNo!=''">and (DEP_NO IS NULL or DEP_NO=#{depNo})</if> -->
+			<if test="catId!=null">and CAT_ID=#{catId}</if>
+			<!-- and STATUS=1 -->
+			<!-- and (END_TIME is null or END_TIME='' or END_TIME&gt;=#{endTime}) -->
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QLEVEL=#{qlevel}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QLEVEL=#{qlevel} or QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QLEVEL=#{qlevel} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (QLEVEL='3' and DEP_NO=#{depNo}) or QLEVEL='6' or QLEVEL='9')
+			</if>
+		</where>
+	</select>
+	
+	<resultMap type="com.nis.questionnaire.entity.QsQuestionnaire" id="qsQuestionnaireAllInfo">  
+        <id column="QID" property="qid"/>  
+        <result column="TITLE" property="title"/>
+        <collection property="qsTopicList" ofType="com.nis.questionnaire.entity.QsTopic" >
+        	<id column="TID" property="tid"/>  
+	        <result column="TITLE_DEFF" property="titleDiff"/>
+        </collection>  
+    </resultMap>
+	
+	<select id="findCanEnterToFollow" parameterType="qsQuestionnaire" resultMap="qsQuestionnaireAllInfo">
+		select QS_QUESTIONNAIRE.QID,QS_QUESTIONNAIRE.TITLE,Qs_Topic.TID,Qs_Topic.TITLE TITLE_DEFF 
+		from QS_QUESTIONNAIRE left join Qs_Topic on QS_QUESTIONNAIRE.Qid =  Qs_Topic.Qid 
+		<where>
+			QS_QUESTIONNAIRE.UNIT_ID=#{unitId} and (QS_QUESTIONNAIRE.EXT1 != 'cached' or QS_QUESTIONNAIRE.EXT1 is null ) 
+			<!-- <if test="depNo!=null and depNo!=''">and (QS_QUESTIONNAIRE.DEP_NO IS NULL or QS_QUESTIONNAIRE.DEP_NO=#{depNo})</if> -->
+			<if test="catId!=null">and QS_QUESTIONNAIRE.CAT_ID=#{catId}</if>
+			and QS_QUESTIONNAIRE.STATUS=1
+			and (QS_QUESTIONNAIRE.END_TIME is null or QS_QUESTIONNAIRE.END_TIME='' or QS_QUESTIONNAIRE.END_TIME&gt;=#{endTime}) 
+			<if test="searchString != null and searchString != '' ">and QS_QUESTIONNAIRE.TITLE LIKE CONCAT(CONCAT('%', #{searchString}), '%')</if>
+			<if test="qlevel==9"><!-- 平台级 -->
+			and QS_QUESTIONNAIRE.QLEVEL=#{qlevel}
+			</if>
+			<if test="qlevel==6"><!-- 本院级 -->
+			and (QS_QUESTIONNAIRE.QLEVEL=#{qlevel} or QS_QUESTIONNAIRE.QLEVEL=9)
+			</if>
+			<if test="qlevel==3"><!-- 科室级 -->
+			and ((QS_QUESTIONNAIRE.QLEVEL=#{qlevel} and QS_QUESTIONNAIRE.DEP_NO=#{depNo}) or QS_QUESTIONNAIRE.QLEVEL='6' or QS_QUESTIONNAIRE.QLEVEL='9')
+			</if>
+			<if test="qlevel==0"><!-- 本人级 -->
+			and ((QS_QUESTIONNAIRE.QLEVEL=#{qlevel} and QS_QUESTIONNAIRE.DEP_NO=#{depNo} and QS_QUESTIONNAIRE.CREATE_USER=#{createUser}) or (QS_QUESTIONNAIRE.QLEVEL='3' and QS_QUESTIONNAIRE.DEP_NO=#{depNo}) or QS_QUESTIONNAIRE.QLEVEL='6' or QS_QUESTIONNAIRE.QLEVEL='9')
+			</if>
+			<if test="excludeQids != null and excludeQids.size() > 0 ">
+				and QS_QUESTIONNAIRE.QID not in 
+				<foreach collection="excludeQids" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach> 
+			</if>
+		</where>
+		order by QS_QUESTIONNAIRE.QID desc 
+	</select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcAccountDao">
+
+	<sql id="commCols_mysql">
+		USER_ID userId,USERNAME username,PASSWD passwd,REALNAME realname,NICKNAME nickname,ISVALID isvalid,USER_TYPE userType,PHONE phone,MOBILENUM mobilenum,DEP_NO depNo,LAST_LOGINTIME lastLogintime,LAST_IP lastIp,UPD_TIME updTime,UPD_USER updUser,UNIT_ID unitId,DATA_SCOPE dataScope,EMAIL email,DOCTOR_ID doctorId,DOC_NO docNo,EXT1 ext1,EXT2 ext2,ERROR_TIMES errorTimes
+	</sql>
+
+	<select id="findAcAccount_mysql" parameterType="acAccount" resultType="acAccount">
+		select <include refid="commCols_mysql"/> from AC_ACCOUNT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

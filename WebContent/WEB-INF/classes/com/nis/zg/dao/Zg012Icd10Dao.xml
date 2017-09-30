@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg012Icd10Dao">
+
+	<sql id="commCols">
+		ICD_ID icdId,ICD_CODE icdCode,ICD_NAME icdName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,FLAG flag,ZJ_CODE zjCode,LAST_AT lastAt,SCODE scode
+	</sql>
+
+	<insert id="save" parameterType="zg012Icd10"  flushCache="true">
+		 insert into ZG012_ICD10(ICD_ID,ICD_CODE,ICD_NAME,BH_CODE,SP_CODE,WB_CODE,FLAG,ZJ_CODE,LAST_AT,SCODE)
+		 values(#{icdId},#{icdCode},#{icdName},#{bhCode},#{spCode},#{wbCode},#{flag},#{zjCode},#{lastAt},#{scode})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG012_ICD10
+		<where>ICD_ID=#{icdId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg012Icd10" flushCache="true">
+		update ZG012_ICD10
+		<set>
+			ICD_ID=#{icdId},ICD_CODE=#{icdCode},ICD_NAME=#{icdName},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},FLAG=#{flag},ZJ_CODE=#{zjCode},LAST_AT=#{lastAt},SCODE=#{scode}
+		</set>
+		<where>ICD_ID=#{icdId}</where>
+	</update>
+	
+	<select id="get" resultType="zg012Icd10">
+		select <include refid="commCols"/> from ZG012_ICD10
+  		<where>ICD_ID=#{icdId}</where>
+	</select>
+	
+	
+	<select id="findZg012Icd10Count" parameterType="zg012Icd10" resultType="int">
+		select count(*) from ZG012_ICD10
+		<where>
+			1=1
+		<if test="searchString!=null and searchString!=''">
+			and ( upper(ICD_CODE) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(ICD_NAME) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(SP_CODE) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(WB_CODE) like upper(CONCAT('%',CONCAT(#{searchString},'%')))  )
+		</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg012Icd10">
+		select <include refid="commCols"/> from ZG012_ICD10
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

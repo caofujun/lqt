@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.task.dao.TaskJobDao">
+
+	<sql id="commCols_mysql">
+		ID id,PROJECTID projectid,NAME name,REMARK remark,LINK link,CRON cron,ADDTIME addtime,ISFAILMAIL isfailmail,ADDUSER adduser,STATUS status,STATUSMSG statusmsg
+	</sql>
+
+	<select id="findTaskJob_mysql" parameterType="taskJob" resultType="taskJob">
+		select <include refid="commCols_mysql"/> from TASK_JOB
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (NAME like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

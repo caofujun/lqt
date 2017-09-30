@@ -1,0 +1,292 @@
+/* CSS Document */
+.blue{color:#2e82ff;}
+.bs_header {
+	width: 100%;
+	height: 110px;
+	background:#c4edff url(../images/bsHeader.jpg) top center;
+	background-size: 1290px 110px;
+	margin-bottom:10px;
+	}
+.bs_header .bs_header_title {
+	font-size: 32px;
+	font-weight: bold;
+	line-height: 110px;
+	color: #056894;
+	text-align:center;
+	}
+.pwd_main{
+	background-color:#f2f2f2;	
+	padding:30px 0px;
+	}
+.login_bg{
+	background:url(../images/banner_lqt_1.png) no-repeat center;
+	}
+.crb_bg{background:url(../images/banner_lqt_2.png) no-repeat center;}
+.login_bg2{
+	background:url(../images/login_banner_bg2.jpg) no-repeat center;
+	}
+.pwd_content{
+	margin:0px auto;
+	border:1px solid #ccc;
+	background:#fff;
+	}
+	
+.pwd_tab{ 
+	height:60px; 
+	border-bottom:1px solid #ccc; 
+	line-height:60px;
+	}
+
+.padd_0{
+	padding:0px;
+	}
+	
+.login_banner{
+	width:960px; 
+	height:450px;
+	background:url(../images/login_banner0.jpg) no-repeat;
+	margin:0 auto;
+	}
+.login_box{
+	padding:30px;
+	width:291px;
+	height:280px;
+	margin:55px 0px 0px 600px;
+	background:url(../images/login_bg.jpg) no-repeat;
+	position: absolute;
+	}
+.login_box .hd{ 
+	font:18px/30px "Microsoft yahei";
+	/*margin-bottom:15px;*/
+	
+	}
+.login_box .login_error{
+	padding-left:28px; 
+	height:20px;	
+	}
+.login_box .username-field {
+	padding-top: 32px;
+	}
+.login_box .field {
+	padding: 15px 0 5px 0;
+	zoom: 1;
+	}
+.login_box .field {
+	position: relative;
+	z-index: 1;
+	}
+.login_box .field label{
+	display: block;
+	width: 27px;
+	height: 30px;
+	line-height: 30px;
+	color: #FFF;
+	text-align: center;
+	background: #ccc url(../images/icon-label2.png) no-repeat 50% 7px;
+	position: absolute;
+	left: 0;
+	top: 15px;
+	text-indent: -9999em;
+	outline: 0;
+	zoom: 1;
+	z-index:99;
+	}
+.login_box .pwd-field label {
+	background-position: 50% -30px;
+	top:20px;
+	}
+.login_box .validation-field label {
+	background-position: 50% -30px;
+	top:3px;
+	}
+.login_box .pwd-field{
+	padding: 20px 0px 3px 0px;
+	}
+.login_box .validation-field {
+	padding: 3px 0px;	
+	height:30px;
+	}	
+.login_box .validation-field img {
+	margin-left:5px;
+	width:115px;
+	height:30px;	
+	}			
+.login_box .login-text {
+	width: 246px;	
+	height:22px;
+	line-height: 22px;
+	padding: 3px;
+	padding-left: 40px;
+	vertical-align: middle;
+	border: 1px solid #dedede;
+	}
+.ph-label {
+	position: absolute;
+	padding: 0 0 0 6px;
+	color: #999;
+	opacity: 1;
+	transition: all .2s ease-out;
+	-webkit-transition: all .2s ease-in;
+	-moz-transition: all .2s ease-out;
+	}
+.login_box .auto {
+	position: relative;
+	padding: 10px 0;
+	line-height: 26px;
+	min-height: 26px;
+	_height: 26px;
+	}
+.nickx {
+	display: none;
+	width: 16px;
+	height: 16px;
+	background: url(../images/c.jpg) no-repeat;
+	position: absolute;
+	left: 270px;
+	top: 27px;
+	z-index: 1000;
+	cursor: pointer;
+	filter: alpha(opacity=70);
+	opacity: .7;
+	}
+.auto-login {
+	position: relative;
+	zoom: 1;
+	height: 22px;
+	display: inline-block;
+	vertical-align: middle;
+	line-height: 26px;
+	padding: 2px 0 2px 3px;
+	overflow: hidden;
+	z-index: 5;
+	}
+.login_box .forget-pw {
+	position: absolute;
+	right: 0;	
+	}
+.login_box .forget-pw a:hover{text-decoration: underline;}	
+.login_box .submit button:hover, .login-submit button.hover {
+	background: #02a3d4;
+	}
+.login_box .submit button {
+	width: 291px;
+	height: 38px;
+	border: 0;
+	display: inline-block;
+	overflow: hidden;
+	vertical-align: middle;
+	line-height: 36px;
+	font-size: 18px;
+	color: #FFF;
+	background: #2e93c7;
+	border-radius: 3px;
+	cursor: pointer;
+	zoom: 1;
+	}
+.login_box .entries{
+	text-align:right;
+	margin-top:18px;
+	right:0;
+	}
+.findPw_gudiance{ 
+	margin:35px auto 0px 200px;
+	}
+	
+.findPw_gudiance div {
+	display: inline-block;
+	height: 35px;
+	line-height: 35px;
+	padding-left: 45px;
+	padding-right: 15px;
+	margin-right: 0px;
+	font-size: 14px;
+	color: #333;
+	background-image: url(../images/step_bg.png);
+	background-repeat: no-repeat;
+	_background-image: url(../images/step_bg.jpg);
+	/*ie7 ie7 hack*/
+	*zoom:1;height:35px;*height:15px;*line-height:15px;*display:inline;*padding:10px 15px 10px 45px;
+	}
+
+.findPw_gudiance div.unfin {
+	color: #999;
+	}
+
+.findPw_gudiance .step_1 {background-position: 0 0;}
+.findPw_gudiance .step_2 {background-position: -150px 0;}
+.findPw_gudiance .step_3 {background-position: -300px 0;}
+.findPw_gudiance .step_4 {background-position: -450px 0;}
+
+.findPw_gudiance .step_2_unfin {
+	background-position: -150px -35px;
+	}
+.findPw_gudiance .step_3_unfin {
+	background-position: -300px -35px;
+	}
+.findPw_gudiance .step_4_unfin {
+	background-position: -450px -35px;
+	}
+.findPw_content{ margin:30px auto; }
+.findPw_content .msg{ line-height:25px; margin-top:10px;}
+
+.findPw_content .welcome{ margin:0px auto;  width:190px;line-height:25px;}
+.btn_submit{ background:#1ABC9C; padding:0px 20px; color:#fff; border:1px solid #1ABC9C; border-radius:3px; font-weight:bold; font-size:16px; line-height:30px; cursor:pointer;}
+.btn_returnIndex{ color:#1ABC9C; background:#DFF2FF; padding:8px 18px; border-radius:5px; border:1px solid #DFF2FF; margin:15px; font-size:16px; cursor:pointer; }
+
+.reg_content{ overflow:auto; zoom:1}
+.error {height: 15px; padding: 0 0 3px 20px; background: url(../images/icon_nempty.png) 0 0 no-repeat; display:none;}
+.correct{background: url(../images/icon_right.png) 0 0 no-repeat; width: 18px; height: 18px; display: none; top: 6px;}
+.e_code{width:80px; height:32px; border:0px; background-color:#898989; color:#fff; margin-left: 20px; text-align:center; cursor:pointer;}
+.cont_left{ float:left; width:660px; border-right:1px solid #ccc; padding:30px; min-height: 354px;}
+.cont_right{float:left; margin:30px 20px; font-size:12px;}
+.prompt_title{ font:bold 16px/24px "Microsoft yahei"; margin:10px 0px;}
+.prompt_li{ margin-bottom:30px;}
+.prompt_p{ width:180px; margin-bottom:30px;}
+.prompt_cont{margin-bottom:30px; padding-left: 40px;  }
+.icon_doubt{background:url(../images/icon_doubt.jpg) no-repeat;}
+.icon_prompt{background:url(../images/icon_prompt.jpg) no-repeat;}
+
+
+
+/*  index  */
+.index_bg{height:350px; background:url(../images/login/index_banner.jpg) no-repeat center; z-index:-1;}
+.index_bg .index_banner_button{padding-top:220px; padding-left:20px;}
+.index_bg .index_banner_button a{padding:5px 15px; background-color:#eb6100; color:#fff; font-size:18px;}
+.hd-intro{ width: 585px; height:282px;  margin-top: 80px; margin-left:250px;  word-wrap: break-word;  font-size: 16px;}
+.hd-title{margin-bottom: 30px; font-size: 45px; color: #fff; font-weight: 400; text-shadow: 2px 2px 1px 1px rgba(0,0,0,0.2);} 
+.lt-ie10 .common-logo{height: 75px; padding-top: 25px; /**padding-top: 0px; _padding-top: 25px;*/}
+.ability-intro{float: left; width: 140px; height: 150px; overflow: hidden; *zoom: 1; cursor: pointer;} 
+.introduce-wrapper{width: 100%; height:140px; padding: 30px 0;} 
+.intro-img{float: left; } 
+.intro-body, .intro-title, .intro-content{float: left; width: 430px; word-wrap: break-word;}
+.intro-body{margin-top: 30px;}
+.intro-title{font-size: 22px; line-height:normal;}
+.intro-content{color: #666;}
+.custom-wrapper{border-bottom:1px solid #ccc; height:200px;}
+.custom{margin: 20px auto; padding: 25px 0 10px; margin-bottom:81px;}
+.custom_title{background:url(../images/login/custom_title_bg.jpg)center repeat-x; width:960px;}
+.custom_title  span{ padding:5px 15px; background-color:#fff; font:24px/24px "Microsoft yahei"; margin-left:40px;}
+.custom_li{margin:10px 5px;}
+.custom_li li{float: left; width: 180px; margin:5px;}
+
+/*修改密码*/
+.table_pwd{border:0px; table-layout:fixed;}
+.table_pwd tr th,.table_pwd tr td{ line-height:28px; padding:5px 10px; vertical-align:top;} 
+.table_pwd tr th{text-align:right; padding:5px 10px; font-weight:normal;}
+.correct{background: url(../images/icon_right.png) 0 0 no-repeat; width: 18px; height: 18px; display: none; top: 6px;}
+.pw_weak span{width:54px; display:block; float:left;background-color:#FFD09B; color:#FFF; line-height:14px; text-align:center; border-right:1px solid #fff; margin-bottom:10px;}
+.pw_weak span.pw_bar{background-color:#F60;}
+.pw_weak{font-size:12px;}
+
+
+/*2016-4-8*/
+.footer {width:960px; margin:0 auto;}
+.footer .foot_left,.footer .foot_center,.footer .foot_er,.footer .foot_er_text{float:left; margin-top:20px;}
+.footer .foot_left{border-right:1px solid #ccc; margin:50px 20px 0px 0px; padding-right:20px;}
+.footer .foot_left span{display:block; text-align:left;}
+.footer .foot_center{width:470px; text-align:left; margin:50px 20px 0px 0px;}
+.footer .foot_center span{display:block;}
+.footer .foot_er img{ width:120px;}
+.footer .foot_er_text{text-align:left; margin-left:10px;}
+.footer .foot_er_text span{display:block; padding-top:10px; font:bold 30px/45px "Microsoft yahei", "微软雅黑", "宋体", "Tahoma", "Verdana", "Arial", "sans-serif";}
+.footer .foot_er_text p{ width:120px; margin-top:10px;}

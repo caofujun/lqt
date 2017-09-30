@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.outbreak.dao.By007BfjlDao">
+
+	<sql id="commCols">
+		id id,show_id showId,audit_flag auditFlag,break_start_date breakStartDate,break_end_date breakEndDate,
+		break_count breakCount,create_date createDate,moni_date moniDate,dept_id deptId,break_type breakType,read_flag readFlag,
+		audit_id auditId,audit_date auditDate,observe_day observeDay,
+		is_warn isWarn,audit_name auditName,memo memo
+	</sql>
+
+	<insert id="save" parameterType="by007Bfjl" flushCache="true">
+		 insert into by007_bfjl(id,show_id,audit_flag,break_start_date,break_end_date,break_count,create_date,moni_date,dept_id,break_type,read_flag,audit_id,audit_date,observe_day,is_warn,audit_name,memo)
+		 values(#{id},#{showId},#{auditFlag},#{breakStartDate},#{breakEndDate},#{breakCount},#{createDate},#{moniDate},#{deptId},#{breakType},#{readFlag},#{auditId},#{auditDate},#{observeDay},#{isWarn},#{auditName},#{memo})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from by007_bfjl
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="by007Bfjl" flushCache="true">
+		update by007_bfjl
+		<set>
+			id=#{id},show_id=#{showId},audit_flag=#{auditFlag},break_start_date=#{breakStartDate},
+			break_end_date=#{breakEndDate},break_count=#{breakCount},create_date=#{createDate},moni_date=#{moniDate},
+			dept_id=#{deptId},break_type=#{breakType},read_flag=#{readFlag},audit_id=#{auditId},audit_date=#{auditDate},
+			observe_day=#{observeDay},is_warn=#{isWarn},
+			audit_name=#{auditName},memo=#{memo}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updAuditFlag" parameterType="by007Bfjl" flushCache="true">
+		update by007_bfjl
+		<set>
+			audit_flag=#{auditFlag},audit_id=#{auditId},audit_date=#{auditDate},audit_name=#{auditName}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updMemo" parameterType="by007Bfjl" flushCache="true">
+		update by007_bfjl
+		<set>
+			memo=#{memo}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update by007_bfjl
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='showId'">show_id=#{by007Bfjl.showId},</when>
+					<when test="item=='auditFlag'">audit_flag=#{by007Bfjl.auditFlag},</when>
+					<when test="item=='breakStartDate'">break_start_date=#{by007Bfjl.breakStartDate},</when>
+					<when test="item=='breakEndDate'">break_end_date=#{by007Bfjl.breakEndDate},</when>
+					<when test="item=='breakCount'">break_count=#{by007Bfjl.breakCount},</when>
+					<when test="item=='createDate'">create_date=#{by007Bfjl.createDate},</when>
+					<when test="item=='moniDate'">moni_date=#{by007Bfjl.moniDate},</when>
+					<when test="item=='deptId'">dept_id=#{by007Bfjl.deptId},</when>
+					<when test="item=='breakType'">break_type=#{by007Bfjl.breakType},</when>
+					<when test="item=='readFlag'">read_flag=#{by007Bfjl.readFlag},</when>
+					<when test="item=='auditId'">audit_id=#{by007Bfjl.auditId},</when>
+					<when test="item=='auditDate'">audit_date=#{by007Bfjl.auditDate},</when>
+					<when test="item=='line'">line=#{by007Bfjl.line},</when>
+					<when test="item=='observeLine'">observe_line=#{by007Bfjl.observeLine},</when>
+					<when test="item=='mulriple'">mulriple=#{by007Bfjl.mulriple},</when>
+					<when test="item=='observeDay'">observe_day=#{by007Bfjl.observeDay},</when>
+					<when test="item=='isWarn'">is_warn=#{by007Bfjl.isWarn},</when>
+					<when test="item=='auditName'">audit_name=#{by007Bfjl.auditName},</when>
+				</choose>
+			</foreach>
+			id=#{by007Bfjl.id}
+		</set>
+		<where>id=#{by007Bfjl.id}</where>
+	</update>
+	
+	<select id="get" resultType="by007Bfjl">
+		select <include refid="commCols"/> from by007_bfjl
+  		<where>id=#{id}</where>
+	</select>
+	
+	<select id="findBy007BfjlCount" parameterType="by007Bfjl" resultType="int">
+		select count(*) from by007_bfjl
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="by007Bfjl">
+		select <include refid="commCols"/> from by007_bfjl
+		<where>
+		</where>
+	</select>
+	
+	<select id="findListCount" parameterType="by007Bfjl" resultType="int">
+		select count(*) from by007_bfjl a 
+		<where>
+			<if test="queryStartDate != null">
+				and a.moni_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and a.moni_date &lt;= #{queryEndDate}
+			</if>
+			<if test="readFlag != null">
+				and a.read_flag = #{readFlag}
+			</if>
+			<if test="deptId != null and deptId != ''">
+				and a.dept_id = #{deptId}
+			</if>
+			<if test="showId != null and showId != ''">
+				and a.show_id = #{showId}
+			</if>
+			<if test="auditFlag != null">
+				and a.audit_flag = #{auditFlag}
+			</if>
+			<if test="grade != null and grade != ''">
+				and a.grade = #{grade}
+			</if>
+			<if test="idList !=null and idList !='' ">
+				and a.id in <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">#{item}</foreach>
+			</if>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkNisDicAllDao">
+
+	<sql id="commCols_oracle">
+		ID id,CLASS_ID classId,CLASS_NAME className,ITEM_ID itemId,ITEM_NAME itemName,IS_USE isUse,IS_VISIBLE isVisible,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkNisDicAll_oracle" parameterType="jkNisDicAll" resultType="jkNisDicAll">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from JK_DIC_ALL
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

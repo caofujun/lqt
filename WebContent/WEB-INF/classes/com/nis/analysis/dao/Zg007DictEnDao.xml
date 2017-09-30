@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Zg007DictEnDao">
+
+	<sql id="commCols">
+		ELEMENT_ID elementId,ITEM_NAME itemName,ITEM_CLASS itemClass,ELEMENT_TYPE elementType,QY_ELEMENT qyElement,APP_ELEMENT appElement,BH_ELEMENT bhElement,KEYID keyid,dict_Type dictType,flag flag,IS_MAIN isMain
+	</sql>
+
+	<insert id="save" parameterType="zg007DictEn"  flushCache="true">
+		 insert into ZG007_DICT_EN(ELEMENT_ID,ITEM_NAME,ITEM_CLASS,ELEMENT_TYPE,QY_ELEMENT,APP_ELEMENT,BH_ELEMENT,KEYID,dict_Type,flag,IS_MAIN)
+		 values(#{elementId},#{itemName},#{itemClass},#{elementType},#{qyElement},#{appElement},#{bhElement},#{keyid},#{dictType},#{flag},#{isMain})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG007_DICT_EN
+		<where>KEYID=#{keyid}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg007DictEn" flushCache="true">
+		update ZG007_DICT_EN
+		<set>
+			ELEMENT_ID=#{elementId},ITEM_NAME=#{itemName},ITEM_CLASS=#{itemClass},ELEMENT_TYPE=#{elementType},QY_ELEMENT=#{qyElement},APP_ELEMENT=#{appElement},BH_ELEMENT=#{bhElement},KEYID=#{keyid},dict_Type=#{dictType}
+		</set>
+		<where>KEYID=#{keyid}</where>
+	</update>
+	
+	<select id="get" resultType="zg007DictEn">
+		select <include refid="commCols"/> from ZG007_DICT_EN
+  		<where>KEYID=#{keyid}</where>
+	</select>
+	
+	
+	<select id="findZg007DictEnCount" parameterType="zg007DictEn" resultType="int">
+		select count(*) from ZG007_DICT_EN
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg007DictEn">
+		select <include refid="commCols"/> from ZG007_DICT_EN
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

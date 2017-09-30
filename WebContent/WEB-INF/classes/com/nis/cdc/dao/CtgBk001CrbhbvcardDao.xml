@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbhbvcardDao">
+
+	<sql id="commCols">
+		MASTERID masterid,SUBID subid,HBSAG hbsag,FIRST_YEAR firstYear,FIRST_MONTH firstMonth,FIRST_UNKNOWN firstUnknown,ALT alt,HBC hbc,LIVER_PUNCTURE liverPuncture,DECUBATION decubation
+	</sql>
+
+	<insert id="save" parameterType="ctgBk001Crbhbvcard"  flushCache="true">
+		 insert into CTG_BK001_CRBHBVCARD(MASTERID,SUBID,HBSAG,FIRST_YEAR,FIRST_MONTH,FIRST_UNKNOWN,ALT,HBC,LIVER_PUNCTURE,DECUBATION)
+		 values(#{masterid},#{subid},#{hbsag},#{firstYear},#{firstMonth},#{firstUnknown},#{alt},#{hbc},#{liverPuncture},#{decubation})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK001_CRBHBVCARD
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk001Crbhbvcard" flushCache="true">
+		update CTG_BK001_CRBHBVCARD
+		<set>
+			MASTERID=#{masterid},SUBID=#{subid},HBSAG=#{hbsag},FIRST_YEAR=#{firstYear},FIRST_MONTH=#{firstMonth},FIRST_UNKNOWN=#{firstUnknown},ALT=#{alt},HBC=#{hbc},LIVER_PUNCTURE=#{liverPuncture},DECUBATION=#{decubation}
+		</set>
+		<where>SUBID=#{subid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk001Crbhbvcard">
+		select <include refid="commCols"/> from CTG_BK001_CRBHBVCARD
+  		<where>SUBID=#{subid}</where>
+	</select>
+	
+	<select id="getByMasterId" resultType="ctgBk001Crbhbvcard" parameterType="String">
+		select <include refid="commCols"/> from CTG_BK001_CRBHBVCARD
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	<select id="findCtgBk001CrbhbvcardCount" parameterType="ctgBk001Crbhbvcard" resultType="int">
+		select count(*) from CTG_BK001_CRBHBVCARD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk001Crbhbvcard">
+		select <include refid="commCols"/> from CTG_BK001_CRBHBVCARD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="isYGExist"  resultType="int">
+		select count(*) from CTG_BK001_CRBHBVCARD
+		<where>
+			MASTERID=#{masterid}
+		</where>
+	</select>
+</mapper>

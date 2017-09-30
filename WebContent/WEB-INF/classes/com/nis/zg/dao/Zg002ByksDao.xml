@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg002ByksDao">
+
+	<sql id="commCols">
+		IFBEDICU ifbedicu,ID id,DEPT_ID deptId,DEPT_NAME deptName,DEPT_TYPEID deptTypeid,DEPT_TYPENAME deptTypename,STAND_DEPT_ID standDeptId,HOSP_ID hospId,ZJ_CODE zjCode,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,IFCASEOFFICE ifcaseoffice,IFENVOFFICE ifenvoffice,IFICU ificu,IFCHILDOFFICE ifchildoffice,IFOPEROFFICE ifoperoffice,IF_HOSPDEPT ifHospdept,IFMZOFFICE ifmzoffice,FLAG flag,LAST_AT lastAt,TEL tel,HOSINFECT_BASEPER hosinfectBaseper,OUTHOSINFECT_BASEPER outhosinfectBaseper
+	</sql>
+
+	<insert id="save" parameterType="zg002Byks"  flushCache="true">
+		 insert into ZG002_BYKS(IFBEDICU,ID,DEPT_ID,DEPT_NAME,DEPT_TYPEID,DEPT_TYPENAME,STAND_DEPT_ID,HOSP_ID,ZJ_CODE,BH_CODE,SP_CODE,WB_CODE,IFCASEOFFICE,IFENVOFFICE,IFICU,IFCHILDOFFICE,IFOPEROFFICE,IF_HOSPDEPT,IFMZOFFICE,FLAG,LAST_AT,TEL,HOSINFECT_BASEPER,OUTHOSINFECT_BASEPER)
+		 values(#{ifbedicu},#{id},#{deptId},#{deptName},#{deptTypeid},#{deptTypename},#{standDeptId},#{hospId},#{zjCode},#{bhCode},#{spCode},#{wbCode},#{ifcaseoffice},#{ifenvoffice},#{ificu},#{ifchildoffice},#{ifoperoffice},#{ifHospdept},#{ifmzoffice},#{flag},#{lastAt},#{tel},#{hosinfectBaseper},#{outhosinfectBaseper})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG002_BYKS
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg002Byks" flushCache="true">
+		update ZG002_BYKS
+		<set>
+			IFBEDICU=#{ifbedicu},ID=#{id},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},DEPT_TYPEID=#{deptTypeid},DEPT_TYPENAME=#{deptTypename},STAND_DEPT_ID=#{standDeptId},HOSP_ID=#{hospId},ZJ_CODE=#{zjCode},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},IFCASEOFFICE=#{ifcaseoffice},IFENVOFFICE=#{ifenvoffice},IFICU=#{ificu},IFCHILDOFFICE=#{ifchildoffice},IFOPEROFFICE=#{ifoperoffice},IF_HOSPDEPT=#{ifHospdept},IFMZOFFICE=#{ifmzoffice},FLAG=#{flag},LAST_AT=#{lastAt},TEL=#{tel},HOSINFECT_BASEPER=#{hosinfectBaseper},OUTHOSINFECT_BASEPER=#{outhosinfectBaseper}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="zg002Byks">
+		select <include refid="commCols"/> from ZG002_BYKS
+  		<where>ID=#{id}</where>
+	</select>
+	
+	<select id="getByDeptId" resultType="zg002Byks">
+		select <include refid="commCols"/> from zg002_byks
+  		<where>dept_id=#{deptId}</where>
+	</select>
+	
+	<select id="findZg002ByksCount" parameterType="zg002Byks" resultType="int">
+		select count(*) from ZG002_BYKS
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg002Byks">
+		select <include refid="commCols"/> from ZG002_BYKS
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getRoot" resultType="treeEntity">
+		select c.dict_code id,c.dict_name text , '1' isfather from sys_dict c where c.dict_type_code='dept_classify' and c.dict_status=1
+		union all
+		select s.dept_id id , s.dept_name text , '' isfather from zg002_byks s where s.flag=1 
+		<if test="nol==null or nol==''"> 
+			and s.ifcaseoffice=1 
+		</if>
+		 and s.dept_classify is null
+	</select>
+	
+	<select id="getLeaf" resultType="treeEntity">
+		select s.dept_id id , s.dept_name text from zg002_byks s where s.flag=1 
+		<if test="nol==null or nol==''"> 
+			and s.ifcaseoffice=1 
+		</if>
+		 and s.dept_classify=#{classify}
+	</select>
+</mapper>

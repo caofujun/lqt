@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcPwdFindDao">
+
+	<sql id="commCols_mysql">
+		ID id,USERNAME username,MOBILE mobile,EMAIL email,RANDOM_STR randomStr,VALID_DATE validDate,STATUS status
+	</sql>
+
+	<select id="findAcPwdFind_mysql" parameterType="acPwdFind" resultType="acPwdFind">
+		select <include refid="commCols_mysql"/> from AC_PWD_FIND
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

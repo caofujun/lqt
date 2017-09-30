@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw001JcxmDao">
+
+	<sql id="commCols_mysql">
+		class_id classId,class_name className,pclass_id pclassId,material material,take_area takeArea,take_mode takeMode,test_mode testMode,default_mode_id defaultModeId,default_sample_id defaultSampleId,default_pos_id defaultPosId,bh_code bhCode,sp_code spCode,wb_code wbCode,memo memo,last_at lastAt,type type,flag flag
+	</sql>
+
+	<select id="findHw001Jcxm_mysql" parameterType="hw001Jcxm" resultType="hw001Jcxm">
+		select <include refid="commCols_mysql"/> from hw001_jcxm
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

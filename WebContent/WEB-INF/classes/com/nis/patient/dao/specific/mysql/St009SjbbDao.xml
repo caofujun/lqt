@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St009SjbbDao">
+
+	<sql id="commCols_mysql">
+		id id,zyid zyid,patient_id patientId,visit_id visitId,patient_name patientName,test_order_no testOrderNo,sex sex,age age,age_unit ageUnit,item_type itemType,item_type_name itemTypeName,item_code itemCode,item_name itemName,submi_at submiAt,dept_id deptId,dept_name deptName,create_at createAt,upd_date updDate,cgjy_spe_flag cgjySpeFlag,sjbb_anal_flag sjbbAnalFlag,sjbb_anal_dt sjbbAnalDt
+	</sql>
+
+	<select id="findSt009Sjbb_mysql" parameterType="st009Sjbb" resultType="st009Sjbb">
+		select <include refid="commCols_mysql"/> from st009_sjbb
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

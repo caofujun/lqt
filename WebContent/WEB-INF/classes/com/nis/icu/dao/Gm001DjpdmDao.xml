@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm001DjpdmDao">
+
+	<sql id="commCols">
+		DT_YEAR dtYear,DT_MONTH dtMonth,WEEKNUMBER weeknumber,STARTDT startdt,ENDDT enddt,EVALUATEDT evaluatedt,ADJUSTERID adjusterid,ADJUSTERNAME adjustername,ACOUNT acount,BCOUNT bcount,CCOUNT ccount,DCOUNT dcount,ECOUNT ecount,DEPT_ID deptId
+	</sql>
+
+	<insert id="save" parameterType="gm001Djpdm"  flushCache="true">
+		 insert into GM001_DJPDM(DT_YEAR,DT_MONTH,WEEKNUMBER,STARTDT,ENDDT,EVALUATEDT,ADJUSTERID,ADJUSTERNAME,ACOUNT,BCOUNT,CCOUNT,DCOUNT,ECOUNT,AVGSCORE,DEPT_ID,SUMSCORE)
+		 values(#{dtYear},#{dtMonth},#{weeknumber},#{startdt},#{enddt},#{evaluatedt},#{adjusterid},#{adjustername},#{acount},#{bcount},#{ccount},#{dcount},#{ecount},#{avgscore},#{deptId},#{sumscore})
+	</insert>
+
+	
+	<update id="update" parameterType="gm001Djpdm" flushCache="true">
+		update GM001_DJPDM
+		<set>
+			EVALUATEDT=#{evaluatedt},ADJUSTERID=#{adjusterid},ADJUSTERNAME=#{adjustername},ACOUNT=#{acount},BCOUNT=#{bcount},CCOUNT=#{ccount},DCOUNT=#{dcount},ECOUNT=#{ecount},AVGSCORE=#{avgscore},SUMSCORE=#{sumscore}
+		</set>
+		<where>DT_YEAR=#{dtYear} and DT_MONTH=#{dtMonth} and WEEKNUMBER=#{weeknumber} and DEPT_ID=#{deptId}</where>
+	</update>
+	
+	
+	<select id="findGm001DjpdmCount" parameterType="gm001Djpdm" resultType="int">
+		select count(*) from GM001_DJPDM
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="gm001Djpdm">
+		select <include refid="commCols"/> from GM001_DJPDM
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByDeptIdAndDate"  resultType="gm001Djpdm">
+		select <include refid="commCols"/> ,
+		       round(case
+		         when Nvl(t.ACount, 0) + nvl(t.BCount, 0) + nvl(t.CCount, 0) +
+		              nvl(t.DCount, 0) + nvl(t.ECount, 0) &lt;&gt; 0 then
+		          (1 * t.ACount + 2 * t.BCount + 3 * t.CCount + 4 * t.CCount + 5 * t.ECount)
+		          / (t.ACount + t.BCount + t.CCount + t.DCount + t.ECount)
+		         else
+		          0
+		       end,2) avgscore,
+		       Nvl(t.ACount, 0) + nvl(t.BCount, 0) + nvl(t.CCount, 0) +
+		       nvl(t.DCount, 0) + nvl(t.ECount, 0) as GradeCount,
+		       Nvl(t.ACount, 0) * 1 + nvl(t.BCount, 0) * 2 + nvl(t.CCount, 0) * 3 +
+		       nvl(t.DCount, 0) * 4 + nvl(t.ECount, 0) * 5 as sumscore
+		  from GM001_DJPDM t
+		 where t.dt_year = #{dtYear}
+		   and t.dt_month = #{dtMonth}
+		   and t.dept_id = #{deptId}
+		   and t.weeknumber = #{weeknumber}
+	</select>
+</mapper>

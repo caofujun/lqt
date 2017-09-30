@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.JkDicAllDao">
+
+	<sql id="commCols_mysql">
+		CLASS_NAME className,CLASS_CODE classCode,ORDER_CODE orderCode,ORDER_NAME orderName,ORDER_USE orderUse,ORDER_VISIBLE orderVisible,FLAG flag,UPD_TIME updTime,WB_CODE wbCode,SP_CODE spCode,BH_CODE bhCode
+	</sql>
+
+	<select id="findJkDicAll_mysql" parameterType="jkDicAll" resultType="jkDicAll">
+		select <include refid="commCols_mysql"/> from JK_DIC_ALL
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

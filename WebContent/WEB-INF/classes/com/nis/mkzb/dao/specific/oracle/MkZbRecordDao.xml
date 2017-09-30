@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mkzb.dao.MkZbRecordDao">
+
+	<sql id="commCols_oracle">
+		ID id,REPORT_YEAR reportYear,REPORT_MONTH reportMonth,ITEM_CODE itemCode,ITEM_NAME itemName,
+		USER_ID userId,USER_NAME userName,REPORT_DATE reportDate,REPORT_RESULT reportResult,
+		REPORT_STATUS reportStatus,REPORT_AMOUNT reportAmount
+	</sql>
+	
+	<select id="findZbRecordList_oracle"  resultType="mkZbRecord">
+		select 
+				 '院感直报人数' itemName,reportAmount,unReportAmount
+		from (
+		 --病人基本信息（1）	
+      select  '01' itemCode,count(1) reportAmount from st003_cryxxb s3
+ 		 inner join (select * from (select b2.infect_date as f1,
+                            null as f4, 
+                            null as f5,
+                             b1.report_at reportAt,
+                            decode(b2.infect_type, 1, 1, 0) f14,
+                            decode(b2.bk_type, 2, 1, 0) f15,
+                            b1.zyid,
+                            row_number() over(partition by b1.zyid order by b2.auth_at, b2.infect_type, b2.infect_date) rn
+                       from bk002_grzd b2
+                      inner join bk001_sbk b1
+                         on b1.relid = b2.refid
+                      where b2.auth_status = 1)
+              where rn = 1) b on s3.zyid = b.zyid
+          where nvl(s3.TranFlag,0) = 1 
+	 		and trunc( b.reportAt ) between #{startDate} and #{endDate}
+		) a 
+		left outer join (
+		   --病人基本信息（1）
+			 select  '01' itemCode,count(1) unReportAmount from st003_cryxxb s3
+ 		 inner join (select * from (select b2.infect_date as f1,
+                            null as f4, 
+                            null as f5,
+                            decode(b2.infect_type, 1, 1, 0) f14,
+                            decode(b2.bk_type, 2, 1, 0) f15,
+                            b1.zyid,
+                             b1.report_at reportAt,
+                            row_number() over(partition by b1.zyid order by b2.auth_at, b2.infect_type, b2.infect_date) rn
+                       from bk002_grzd b2
+                      inner join bk001_sbk b1
+                         on b1.relid = b2.refid
+                      where b2.auth_status = 1)
+              where rn = 1) b on s3.zyid = b.zyid
+          where nvl(s3.TranFlag,0) = 0 
+	 		and trunc( b.reportAt ) between #{startDate} and #{endDate}
+   		) b on a.itemCode = b.itemCode
+	</select>
+	
+	
+	 <select id="caseRegist_oracle"  resultType="java.util.HashMap">
+		 select  s3.zyid KEY_ID,s3.patient_id patientId, s3.patient_name name from st003_cryxxb s3
+ 		 inner join (select * from (select b2.infect_date as f1,
+                            null as f4, 
+                            null as f5,
+                            decode(b2.infect_type, 1, 1, 0) f14,
+                            decode(b2.bk_type, 2, 1, 0) f15,
+                            b1.zyid,
+                            b1.report_at reportAt,
+                            row_number() over(partition by b1.zyid order by b2.auth_at, b2.infect_type, b2.infect_date) rn
+                       from bk002_grzd b2
+                      inner join bk001_sbk b1
+                         on b1.relid = b2.refid
+                      where b2.auth_status = 1)
+              where rn = 1) b on s3.zyid = b.zyid
+          where nvl(s3.TranFlag,0) = 0 
+	 		and trunc( b.reportAt ) between #{startDate} and #{endDate}
+	 </select>
+<!-- 	病人基本信息  -->
+	<select id="findBrjbxx_oracle"  resultType="java.util.HashMap"> 	
+	select f1,
+       f2,
+       f3,
+       to_char(s3.in_hosp_at,'YYYY-MM-DD')  f4,
+       f5,
+       s3.patient_id as f6,
+       1 as f7,
+       s3.patient_name as f8,
+       s3.sex as f9,
+       s3.age || nvl(s3.age_unit, '岁') as f10,
+       s3.bed_no as f11,
+       to_char(s3.in_hosp_at,'YYYY-MM-DD')  as f12,
+       to_char(s3.out_at,'YYYY-MM-DD')  as f13,
+       f14,
+       f15,
+       null as f16,
+       0 as f17,
+       nvl(b.jbzg,1) as f18,
+       null as f19,
+       null as f20,
+       null as f21,
+       0 as f22,
+       0 as f23,
+       0 as f24,
+       0 as f25,
+       0 as f26,
+       0 as f27,
+       0 as f28,
+       0 as f29,
+       0 as f30,
+       0 as f31,
+       0 as f32,
+       0 as f33,
+       0 as f34,
+       0 as f35,
+       0 as f36
+  from st003_cryxxb s3
+  left join (select *
+               from (select  to_char(b2.infect_date,'YYYY-MM-DD')  as f1,
+                            z1.dept_name as f2,
+                            z2.dept_name as f3,
+                            b2.jbzg as jbzg,
+                            'admin' as f5, --b2.auth_username as f5,       
+                            decode(b2.infect_type, 1, 1, 0) f14,
+                            decode(b2.bk_type, 2, 1, 0) f15,
+                            b1.zyid,
+                            row_number() over(partition by b1.zyid order by b2.auth_at, b2.infect_type, b2.infect_date) rn
+                       from bk002_grzd b2
+                      inner join zg002_byks z2
+                         on z2.dept_id = b2.infect_dept_id
+                      inner join zg001_bzks z1
+                         on z1.dept_id = z2.stand_dept_id
+                      inner join bk001_sbk b1
+                         on b1.relid = b2.refid
+                      where b2.auth_status = 1)
+              where rn = 1) b
+    on s3.zyid = b.zyid where s3.zyid = #{zyid}
+	</select>
+<!-- 	基础疾病 -->
+	<select id="findjcjb_oracle"  resultType="java.util.HashMap"> 	
+		 select z.icd_code diagnosisName from st002_zdxxb t left join zg012_icd10 z on z.icd_name=t.diagnosis_name where z.icd_code is not null and instr(z.icd_code,'.')>0 and t.zyid = #{zyid} 
+	</select>
+<!-- 	手术信息 -->
+	<select id="findSsqk_oracle"  resultType="java.util.HashMap"> 	
+		select nvl(zg.icd_code,'接骨手术') as f1,
+       decode(s5.urgent_ope, '否', 0, '是', 1, 2) as f2,
+        to_char(s5.oper_at_start,'yyyy-MM-dd HH24:mi')  as f3,
+        to_char(s5.oper_at_end,'yyyy-MM-dd HH24:mi') as f4,
+       s5.opedoc_name as f5,
+       case
+         when s5.narc_kind is null then
+          0
+         when (instr(s5.narc_kind, '全身') > 0) or
+              (instr(s5.narc_kind, '全麻') > 0) then
+          1
+         when instr(s5.narc_kind, '复合') > 0 then
+          2
+         when instr(s5.narc_kind, '硬膜外麻') > 0 then
+          3
+         when instr(s5.narc_kind, '其它') > 0 then
+          4
+         else
+          5
+       end as f6,
+       decode(s5.incision_grade, 
+              '清洁',
+              1,
+              '清洁-污染',
+              2,
+              '污染',
+              3,
+              '感染',
+              4,0) as f7,
+       nvl(s5.heal, 0) as f8,
+       decode(b.ope_relid, null, 0, 1) as f9,
+       b.infect_name as f10,
+      (select d.dict_name from sys_dict d where d.dict_type_code='opera_bw' and d.dict_code=s5.oper_bw)  as f10,
+       decode(b.infect_type, 1, 1, 0) as f11,
+        to_char(b.infect_date,'YYYY-MM-DD') as  f12,
+       '1' as f13,
+       s5.asa as f14,
+       s5.wzbxbjs as f15,
+       decode(s5.glass_ope, '是', 1, 0) as f16,
+       decode(s5.replant, '是', 1, 0) as f17,
+       0 as f18,
+       decode(s5.blood_out, null, 0, 1) as f19,
+       s5.blood_out as f20,
+       decode(s5.blood_in, null, 0, 1) as f21,
+       s5.blood_in as f22,
+       0 as f23,
+       0 as f24,
+       0 as f25,
+       0 as f26,
+       0 as f27,
+       0 as f28,
+       0  as f29,
+       0 as f30,
+       0 as f31,
+       0 as f32,
+       0 as f33,
+       0 as f34,
+       0 as f35,
+       0 as f36,
+       0 as f37,
+       0 as f38,
+       0 as f39,
+       null as f40
+  from st005_ssxxb s5
+   left join zg012_icd10 zg on s5.oper_name = zg.icd_name  and  instr(zg.icd_code,'.')>0
+  inner join (select infect_name, ope_relid, infect_type, infect_date
+               from (select substr(z5.infect_name, 4, 4) infect_name,
+                            b2.ope_relid,
+                            b2.infect_type,
+                            b2.infect_date,
+                            row_number() over(partition by b2.ope_relid order by b2.infect_type, b2.infect_date, z5.infect_code) rn
+                       from bk002_grzd b2
+                      inner join bk001_sbk b1
+                         on b1.Relid = b2.Refid
+                      inner join zg005_yygrzd z5
+                         on z5.infect_code = b2.infect_diagn_id
+                      where b2.auth_status = 1
+                      and substr(z5.infect_name, 4, 4) in ('表浅切口','深部切口','器官/腔隙')
+                      )
+              where rn = 1) b
+    on b.ope_relid = s5.relid
+    where s5.zyid = #{zyid}
+	</select>
+<!-- 	易感因素 -->
+	<select id="findYgys_oracle"  resultType="java.util.HashMap"> 	
+		select b.factor_name from ( 
+		select bk3.factor_name,
+		 row_number() over(partition by bk3.factor_name order by  b2.infect_date) rn  
+		  from bk003_ygys bk3
+		 inner join bk002_grzd b2
+		    on b2.relid = bk3.refid
+		 inner join bk001_sbk b1
+		    on b1.relid = b2.refid
+		  left join zg005_yygrzd z5
+		    on b2.infect_diagn_id = z5.infect_code
+		 where b1.zyid = #{zyid}) b where b.rn=1 and b.factor_name in('糖尿病','免疫抑制剂','激素','化疗','放疗','癌症','血液病','肝硬化','肾病','营养不良','高龄>75岁','新生儿','免疫功能低下',
+			'昏迷','长期卧床','透析','抗菌药物大量应用','器官移植','切口延迟缝合','其它')
+	</select>
+<!-- 	侵入性操作 -->
+	<select id="findQhxcz_oracle"  resultType="java.util.HashMap"> 	
+	select b.order_name from 
+	(select t.order_name,row_number() over(partition by t.order_name order by t.order_at) rn
+	  from ST004_YZXXB t
+	 where t.flag_jr = 1
+	   and t.zyid = #{zyid}) b where b.rn=1 and b.order_name in ('泌尿道插管','动静脉插管','人工呼吸机','内窥镜','气管插管','气管切开','血液透析',
+		'心脏起博器','异物植入','静脉穿刺','引流','静脉高营养','备皮','胃肠道置管','胸腹腔穿刺','输血','腹膜','透析','腰穿','颅内穿刺','心包穿刺','介入治疗','其它')
+	</select>
+<!-- 	感染部位详细情况 -->
+	<select id="findGrbwxxqk_oracle"  resultType="java.util.HashMap"> 	
+		select distinct ny.fl_infect_name,to_char(b2.infect_date,'YYYY-MM-DD') infect_date,b2.infect_diagn_name 
+		 from bk002_grzd b2
+         inner join bk001_sbk b1
+            on b1.relid = b2.refid
+          left join zg005_yygrzd z5
+            on b2.infect_diagn_id = z5.infect_code
+          left join ny_jc_grzdfl_cdc ny 
+            on b2.infect_diagn_id=ny.cdc_infect_code 
+         where b2.auth_status = 1
+           and b2.infect_date is not null
+           and b1.zyid = #{zyid} and  ny.fl_infect_name in ('上呼吸道','下呼吸道','胸膜腔','心脏瓣膜','心肌或心包','纵膈',
+			'动静脉','血液','输血','胃肠道','腹(盆)腔内组织','中枢神经系统','泌尿道','其它(肾等)','表浅切口','深部切口','器官/腔隙',
+			'皮肤软组织','烧伤部位','骨和关节','生殖系统','眼、耳、口腔','其它') and b2.infect_diagn_name in ('上呼吸道感染',
+			'气管炎、支气管炎','肺炎','胸膜腔感染','心膜炎','心肌炎或心包炎','纵膈感染','血管相关性感染','败血症','输血相关感染','感染性腹泻','胃肠道感染','抗菌药物相关性腹泻',
+			'病毒性肝炎','腹(盆)腔内组织感染','腹水感染','细菌性脑膜炎、脑室炎','颅内脓肿','椎管内感染','有症状的泌尿道感染','无症状菌尿症','泌尿道其它感染',
+			'表浅手术切口感染','深部手术切口感染','器官(或腔隙)感染','皮肤感染','软组织感染','褥疮感染' ,'烧伤感染','乳腺脓肿或乳腺炎','脐炎','婴儿脓疱病','关节和关节囊感染',
+			'骨髓炎','椎间盘感染','外阴切口感染','阴道穹窿部感染','急性盆腔炎','子宫内膜炎','男女性生殖道的其它感染','结膜炎','眼部感染(结膜除外)','耳部感染','口腔、舌、牙龈部位感染','其它')
+	</select>
+<!-- 	感染部位相关的侵害性操作 -->
+	<select id="findGrbwxgqhxcz_oracle"  resultType="java.util.HashMap"> 	
+		select b.fl_infect_name,to_char(b.infect_date,'YYYY-MM-DD') infect_date, b.order_name,b.rn from 
+			(select ny.fl_infect_name,b2.infect_date, st4.order_name, b1.zyid,row_number() over(partition by ny.fl_infect_name order by  b2.infect_date) rn
+	       from bk002_grzd b2 inner join bk001_sbk b1 on b1.relid = b2.refid
+	         inner join  st004_yzxxb st4 on st4.zyid=b1.zyid and st4.flag_jr=1  
+	          left join ny_jc_grzdfl_cdc ny  on b2.infect_diagn_id=ny.cdc_infect_code where b1.zyid = #{zyid} ) b
+	         where  b.fl_infect_name in ('上呼吸道','下呼吸道','胸膜腔','心脏瓣膜','心肌或心包','纵膈',
+	      '动静脉','血液','输血','胃肠道','腹(盆)腔内组织','中枢神经系统','泌尿道','其它(肾等)','表浅切口','深部切口','器官/腔隙',
+	      '皮肤软组织','烧伤部位','骨和关节','生殖系统','眼、耳、口腔','其它') and b.order_name in ('泌尿道插管','动静脉插管','人工呼吸机','内窥镜','气管插管','气管切开','血液透析',
+	    '心脏起博器','异物植入','静脉穿刺','引流','静脉高营养','备皮','胃肠道置管','胸腹腔穿刺','输血','腹膜','透析','腰穿','颅内穿刺','心包穿刺','介入治疗','其它')
+	</select>
+<!-- 	检测标本详细情况 -->
+	<select id="findJcbbxxqk_oracle"  resultType="java.util.HashMap"> 
+	 select s9.item_name, ny.fl_infect_name, to_char(s9.submi_at,'YYYY-MM-DD') submi_at, 1 as jyff, count(s11.id) bxb,null as  infect_date,s11.test_result
+     from st009_sjbb s9
+     left join st011_syjgb s11
+       on s11.zyid = s9.zyid
+      and s11.test_order_no = s9.test_order_no
+      and s11.anti_name like '%白细胞%'
+      inner join bk001_sbk b1 on 
+      b1.zyid=s9.zyid
+       inner join st010_jcbyt s10
+       on s10.zyid = s9.zyid
+	    inner join bk002_grzd b2
+	     on b2.refid = b1.relid
+	   left join ny_jc_grzdfl_cdc ny
+	     on b2.infect_diagn_id = ny.cdc_infect_code
+	  where b2.auth_status = 1 and  s10.isyang='1' and s9.zyid =  #{zyid}
+	  and s9.item_name in('痰','血液','尿','便','骨髓','伤口分泌物','阴道分泌物','穿刺液','胆汁','引流液','胸水','腹水','脑脊液',
+		'眼分泌物','组织活检','咽分泌物','肺泡灌洗液','外周血','中心静脉导管抽血','颈静脉导管抽血','股静脉导管抽血','导管尖端','皮肤下段','穿刺点','其它')
+		and ny.fl_infect_name in('上呼吸道','下呼吸道','胸膜腔','心脏瓣膜','心肌或心包','纵膈','动静脉','血液','输血','胃肠道','腹(盆)腔内组织',
+		'中枢神经系统','泌尿道','其它(肾等)','表浅切口','深部切口','器官/腔隙','皮肤软组织','烧伤部位','骨和关节','生殖系统','眼、耳、口腔','其它')
+	  group by s9.item_name, ny.fl_infect_name,s9.submi_at,b2.infect_date,s11.test_result   
+	</select>	
+	
+<!-- 	标本检测出的病原体详细情况 -->
+	<select id="findBbjcbytxxqk_oracle"  resultType="java.util.HashMap"> 
+	 select s9.item_name, to_char(s9.submi_at,'YYYY-MM-DD') submi_at, s10.patho_name, s10.isym
+	   from st009_sjbb s9
+	   inner join st010_jcbyt s10
+	     on s10.zyid = s9.zyid
+	    and s10.test_order_no = s9.test_order_no 
+	    where  s10.isyang='1' and s9.ZYID = #{zyid} and s9.item_name in('痰','血液','尿','便','骨髓','伤口分泌物','阴道分泌物','穿刺液','胆汁','引流液','胸水','腹水','脑脊液',
+		'眼分泌物','组织活检','咽分泌物','肺泡灌洗液','外周血','中心静脉导管抽血','颈静脉导管抽血','股静脉导管抽血','导管尖端','皮肤下段','穿刺点','其它')
+		and s10.patho_name in ('金黄色葡萄球菌','表皮葡萄球菌','腐生葡萄球菌','人型葡萄球菌','溶血葡萄球菌','赛氏葡萄球菌','模仿葡萄球菌','耐甲氧西林金黄色葡萄球菌(MRSA)','耐甲氧西林表皮葡萄球菌(MRSE)','耐甲氧西林溶血性葡萄球菌(MRSH)','耐万古霉素金黄色葡萄球菌(VRSA)','其它葡萄球菌','肺炎链球菌','化脓性链球菌(A群乙型溶血性链球菌)','无乳链球菌(B群乙型溶血性链球菌)','草绿色链球菌','耐青霉素肺炎链球菌(PRSP)','其它链球菌','粪肠球菌','屎肠球菌','鸟肠球菌','坚忍肠球菌','耐万古霉素肠球菌(VRE)','氨基糖苷类高水平耐药粪肠球菌(HLAR+)',
+		'氨基糖苷类高水平耐药屎肠球菌(HLAR+)','鹑鸡肠球菌','其它肠球菌','微球菌属','其它革兰阳性(G+)需氧球菌','卡他莫拉菌','淋病奈瑟菌','脑膜炎奈瑟菌','干燥奈瑟菌','粘膜奈瑟菌','其它奈瑟菌','其它革兰阴性(G-)需氧球菌','假白喉棒状杆菌','干燥棒状杆菌','JK群棒状杆菌','微小棒状杆菌','白喉棒状杆菌','其它棒状杆菌','单核细胞增生李斯特菌','其它李斯特菌','蜡样芽胞杆菌','枯草芽胞杆菌','炭疽芽胞杆菌','其它需氧芽胞杆菌','嗜酸乳酸杆菌','链状乳酸杆菌','其它乳酸杆菌','结核分枝杆菌','鸟分枝杆菌','胞内分枝杆菌','偶发分枝杆菌','龟分枝杆菌','堪萨斯分枝杆菌','瘰疬分枝杆菌','海分枝杆菌','耻垢分枝杆菌','耐多药结核分支杆菌(MDR-TB)','非结核分支杆菌(NTM)','其它分枝杆菌','红斑丹毒丝菌',
+		'其它革兰阳性(G+)需氧杆菌','大肠埃希菌','产超广谱β内酰胺酶的大肠杆菌','其它埃希菌','肺炎克雷白菌','产酸克雷白菌(催产克雷白菌)','鼻硬结克雷白菌','臭鼻克雷白菌','产超广谱β内酰胺酶(ESBLs)的肺炎克雷伯菌','其它克雷白菌','阴沟肠杆菌','产气肠杆菌','聚团肠杆菌','杰高肠杆菌','中间型肠杆菌','产超广谱β-内酰胺酶的阴沟肠杆菌','其它肠杆菌','粘质沙雷菌','液化沙雷菌','深红沙雷菌','其它沙雷菌','普通变形杆菌','奇异变形杆菌','潘氏变形杆菌','其它变形杆菌','鼠伤寒沙门菌','肠炎沙门菌','伤寒沙门菌','副伤寒沙门菌','其它沙门菌','费劳地枸橼酸杆菌','中间型枸橼酸杆菌','其它枸橼酸杆菌','小肠结肠耶尔森菌','中间耶尔森菌','假结核耶尔森菌','其它耶尔森菌','摩根摩根菌','雷极普鲁菲登斯菌','其它普鲁菲登斯菌','痢疾志贺菌','福氏志贺菌','鲍氏志贺菌','宋氏志贺菌','蜂房哈夫尼亚菌','爱德华氏菌属','欧文菌属','克卢瓦菌属','西蒂西菌属','兰恩菌属','塔特姆菌属','致病杆菌属','铜绿假单胞菌','洋葱假单胞菌','荧光假单胞菌','恶臭假单胞菌','腐败假单胞菌','假鼻疽假单胞菌','其它假单胞菌','醋酸钙不动杆菌','洛菲不动杆菌','溶血不动杆菌','鲍曼不动杆菌','泛耐药的不动杆菌(PDRA)','其它不动杆菌','粪产碱杆菌','其它产碱杆菌','嗜麦芽黄单胞菌','嗜麦芽窄食单胞菌','流感嗜血杆菌','副流感嗜血杆菌','杜克嗜血杆菌','溶血性嗜血杆菌','其它嗜血杆菌','百日咳包特菌','副百日咳包特菌','其它包特菌','嗜水气单胞菌','其它气单胞菌','类志贺邻单胞菌','霍乱弧菌','副溶血弧菌','其它弧菌属细菌','嗜肺军团菌',
+		'米克戴德军团菌','其它军团菌','胎儿弯曲菌','空肠弯曲菌','结肠弯曲菌','幽门螺杆菌','其它弯曲菌','类鼻疽伯克霍尔德菌','洋葱伯克霍尔德菌','皮氏伯克霍尔德菌','莫拉菌属','无色杆菌属','黄色杆菌属','巴斯德菌属','土拉热费朗西丝菌','布氏菌属','心杆菌属','色杆菌属','金氏杆菌属','伴放线放线杆菌','细胞嗜二氧化碳(CO2)菌属','小螺菌','大消化链球菌','非解糖消化链球菌','普氏消化链球菌','厌氧消化链球菌','其它消化链球菌','黑色消化球菌','小链球菌','汉森链球菌','其它厌氧链球菌','解糖葡萄球菌','其它厌氧葡萄球菌','其它革兰阳性(G+)厌氧球菌','小韦荣菌','其它韦荣球菌','其它革兰阳性(G-)厌氧球菌','痤疮丙酸杆菌','贪婪丙酸杆菌','其它丙酸杆菌','产气优杆菌','不解优杆菌','粘液优杆菌','其它优杆菌','衣氏放线菌','内氏放线菌','粘液放线菌','产脓放线菌','其它放线菌','丙酸蛛网菌','其它蛛网菌','破伤风杆菌','产气荚膜杆菌','肉毒梭菌','艰难梭菌','其它梭菌','其它革兰阳性(G+)厌氧菌杆菌','脆弱类杆菌','多形类杆菌','解脲类杆菌','侵肺类杆菌','腐败类杆菌','其它类杆菌','产黑色素普氏菌','其它普氏菌','具核梭杆菌','坏死梭杆菌','其它梭杆菌','非解糖卟啉单胞菌','牙龈卟啉单胞菌','其它卟啉单胞菌','其它革兰阴性(G-)厌氧菌杆菌','白色念珠菌(又叫白色假丝酵母菌)','新型隐球菌','曲霉菌','毛霉菌','组织胞浆菌','热带念珠菌(又叫热带假丝酵母菌)','光滑假丝酵母菌','近平滑假丝酵母菌','克柔假丝酵母菌','其它真菌','腺病毒','单纯疱疹病毒','水痘－带状疱疹病毒','巨细胞病毒','E-B病毒','柯萨奇病毒','埃可病毒','其它小RNA病毒','呼肠病毒','轮状病毒','人类免疫缺陷病毒','人类T细胞白血病病毒','流感病毒','副流感病毒','呼吸道合胞病毒','麻疹病毒','其它副粘病毒',
+		'风疹病毒','其它披盖病毒','甲型肝炎病毒','乙型肝炎病毒','丙型肝炎病毒','丁型肝炎病毒','戊型肝炎病毒','庚型肝炎病毒','肾综合症出血热病毒','虫媒病毒群','狂犬病毒','Norwalk样病毒','其它病毒','肺炎支原体','解脲脲原体','人支原体','生殖道支原体','其它支原体','沙眼衣原体','鹦鹉热衣原体','其他衣原体','螺旋体','立克次体','卡氏肺胞子虫','弓形虫','疟原','隐胞子虫','阿米巴原虫','其它寄生虫')
+		and s10.patho_name is not null
+	</select>
+	
+<!-- 	药敏试验结果 -->
+	<select id="findYmsyjg_oracle"  resultType="java.util.HashMap"> 
+	  select s9.item_name, to_char(s9.submi_at,'YYYY-MM-DD') submi_at, s10.patho_name,st11.anti_name, s10.isym
+	   from st009_sjbb s9
+	   inner join st010_jcbyt s10
+	     on s10.zyid = s9.zyid
+	    and s10.test_order_no = s9.test_order_no 
+	   left join st011_syjgb st11
+	    on st11.test_order_no = s9.TEST_ORDER_NO     
+	    where s10.isyang='1' and s9.ZYID = #{zyid} 
+	    and s9.item_name in ('痰','血液','尿','便','骨髓','伤口分泌物','阴道分泌物','穿刺液','胆汁','引流液','胸水','腹水','脑脊液',
+		'眼分泌物','组织活检','咽分泌物','肺泡灌洗液','外周血','中心静脉导管抽血','颈静脉导管抽血','股静脉导管抽血','导管尖端','皮肤下段','穿刺点','其它')
+		and st11.anti_name in ('青霉素G','氨苄西林','氨苄西林/舒巴坦','苯唑西林','阿莫西林','阿莫西林/克拉维酸','哌拉西林','哌拉西林/他唑巴坦','羧苄西林','青霉素V','氯唑西林','双氯西林',
+		'氟氯西林','替卡西林','替卡西林/克拉维酸','美洛西林','阿洛西林','磺苄西林','美西林','替莫西林','哌拉西林—舒巴坦','甲氧西林','美洛西林—舒巴坦','阿莫西林/氟氯西林','阿莫西林/舒巴坦','头孢噻吩',
+		'头孢唑啉','头孢硫脒','头孢拉定','头孢氨苄','头孢羟氨苄','头孢呋辛','头孢呋辛酯','头孢替安','头孢克洛','头孢丙烯','头孢孟多','头孢尼西','头孢呋肟','头孢替唑钠','头孢噻肟','头孢唑肟',
+		'头孢三嗪(头孢曲松)','头孢他啶','头孢哌酮','头孢哌酮/舒巴坦','头孢匹胺','头孢克肟','头孢地嗪','头孢米诺','头孢地尼','头孢泊肟','头孢他美酯(头孢美特酯)','头孢哌酮/他唑巴坦',
+		'头孢甲肟','头孢匹罗','头孢吡肟','头孢克定','头孢噻利','头孢西丁','头孢美唑','头孢替坦','氟氧头孢','亚胺培南','美罗培南','亚胺培南—西司他丁','帕尼培南','厄他培南','法罗培南钠','比阿培南',
+		'氨曲南','拉氧头孢','克拉维酸','舒巴坦','庆大霉素','卡那霉素','阿米卡星','妥布霉素','西索霉素','链霉素','新霉素','大观霉素','核糖霉素','福提米星','巴龙霉素','依替米星','异帕米星','奈替米星',
+		'吡哌酸','诺氟沙星','环丙沙星','氧氟沙星','培氟沙星','洛美沙星','依诺沙星','氟罗沙星','司帕沙星','克林沙星','替马沙星','萘啶酸','莫西沙星','左氧氟沙星','甲磺酸左氧氟沙星','那氟沙星','格帕沙星',
+		'曲伐沙星','阿拉沙星','加替沙星','帕珠沙星','普卢利沙星','吉米沙星','恩氟沙星','万古霉素','去甲万古霉素','多粘菌素B','多粘菌素E','杆菌肽','替考拉宁','红霉素','麦迪霉素','螺旋霉素','柱晶白霉素',
+		'交沙霉素','罗红霉素','阿奇霉素','地红霉素','克拉霉素','四环素','多西环素','米诺环素','磺胺甲噁唑','磺胺嘧啶','复方磺胺甲噁唑','复方磺胺嘧啶','甲氧苄氨嘧啶','磺胺嘧啶银','水杨酸偶氮磺','柳氮磺吡啶',
+		'林可霉素','克林霉素','氯霉素','呋喃妥因','呋喃唑酮','呋喃西林','利福平','利福定','利福喷丁','两性霉素B','氟胞嘧啶','酮康唑','咪康唑','克霉唑','益康唑','伊曲康唑','氟康唑','灰黄霉素','制霉菌素',
+		'伏立康唑','特比萘芬','卡泊芬净','异烟肼','乙胺丁醇','对氨水杨酸','吡嗪酰胺','甲硝唑','替硝唑','磷霉素','夫西地酸','黄连素','大蒜素','莫匹罗星','奥硝唑','利奈唑胺','奎奴普丁/达福普汀','新生霉素','β－内酰胺酶')
+		and s10.patho_name in ('金黄色葡萄球菌','表皮葡萄球菌','腐生葡萄球菌','人型葡萄球菌','溶血葡萄球菌','赛氏葡萄球菌','模仿葡萄球菌','耐甲氧西林金黄色葡萄球菌(MRSA)','耐甲氧西林表皮葡萄球菌(MRSE)','耐甲氧西林溶血性葡萄球菌(MRSH)','耐万古霉素金黄色葡萄球菌(VRSA)','其它葡萄球菌','肺炎链球菌','化脓性链球菌(A群乙型溶血性链球菌)','无乳链球菌(B群乙型溶血性链球菌)','草绿色链球菌','耐青霉素肺炎链球菌(PRSP)','其它链球菌','粪肠球菌','屎肠球菌','鸟肠球菌','坚忍肠球菌','耐万古霉素肠球菌(VRE)','氨基糖苷类高水平耐药粪肠球菌(HLAR+)',
+		'氨基糖苷类高水平耐药屎肠球菌(HLAR+)','鹑鸡肠球菌','其它肠球菌','微球菌属','其它革兰阳性(G+)需氧球菌','卡他莫拉菌','淋病奈瑟菌','脑膜炎奈瑟菌','干燥奈瑟菌','粘膜奈瑟菌','其它奈瑟菌','其它革兰阴性(G-)需氧球菌','假白喉棒状杆菌','干燥棒状杆菌','JK群棒状杆菌','微小棒状杆菌','白喉棒状杆菌','其它棒状杆菌','单核细胞增生李斯特菌','其它李斯特菌','蜡样芽胞杆菌','枯草芽胞杆菌','炭疽芽胞杆菌','其它需氧芽胞杆菌','嗜酸乳酸杆菌','链状乳酸杆菌','其它乳酸杆菌','结核分枝杆菌','鸟分枝杆菌','胞内分枝杆菌','偶发分枝杆菌','龟分枝杆菌','堪萨斯分枝杆菌','瘰疬分枝杆菌','海分枝杆菌','耻垢分枝杆菌','耐多药结核分支杆菌(MDR-TB)','非结核分支杆菌(NTM)','其它分枝杆菌','红斑丹毒丝菌',
+		'其它革兰阳性(G+)需氧杆菌','大肠埃希菌','产超广谱β内酰胺酶的大肠杆菌','其它埃希菌','肺炎克雷白菌','产酸克雷白菌(催产克雷白菌)','鼻硬结克雷白菌','臭鼻克雷白菌','产超广谱β内酰胺酶(ESBLs)的肺炎克雷伯菌','其它克雷白菌','阴沟肠杆菌','产气肠杆菌','聚团肠杆菌','杰高肠杆菌','中间型肠杆菌','产超广谱β-内酰胺酶的阴沟肠杆菌','其它肠杆菌','粘质沙雷菌','液化沙雷菌','深红沙雷菌','其它沙雷菌','普通变形杆菌','奇异变形杆菌','潘氏变形杆菌','其它变形杆菌','鼠伤寒沙门菌','肠炎沙门菌','伤寒沙门菌','副伤寒沙门菌','其它沙门菌','费劳地枸橼酸杆菌','中间型枸橼酸杆菌','其它枸橼酸杆菌','小肠结肠耶尔森菌','中间耶尔森菌','假结核耶尔森菌','其它耶尔森菌','摩根摩根菌','雷极普鲁菲登斯菌','其它普鲁菲登斯菌','痢疾志贺菌','福氏志贺菌','鲍氏志贺菌','宋氏志贺菌','蜂房哈夫尼亚菌','爱德华氏菌属','欧文菌属','克卢瓦菌属','西蒂西菌属','兰恩菌属','塔特姆菌属','致病杆菌属','铜绿假单胞菌','洋葱假单胞菌','荧光假单胞菌','恶臭假单胞菌','腐败假单胞菌','假鼻疽假单胞菌','其它假单胞菌','醋酸钙不动杆菌','洛菲不动杆菌','溶血不动杆菌','鲍曼不动杆菌','泛耐药的不动杆菌(PDRA)','其它不动杆菌','粪产碱杆菌','其它产碱杆菌','嗜麦芽黄单胞菌','嗜麦芽窄食单胞菌','流感嗜血杆菌','副流感嗜血杆菌','杜克嗜血杆菌','溶血性嗜血杆菌','其它嗜血杆菌','百日咳包特菌','副百日咳包特菌','其它包特菌','嗜水气单胞菌','其它气单胞菌','类志贺邻单胞菌','霍乱弧菌','副溶血弧菌','其它弧菌属细菌','嗜肺军团菌',
+		'米克戴德军团菌','其它军团菌','胎儿弯曲菌','空肠弯曲菌','结肠弯曲菌','幽门螺杆菌','其它弯曲菌','类鼻疽伯克霍尔德菌','洋葱伯克霍尔德菌','皮氏伯克霍尔德菌','莫拉菌属','无色杆菌属','黄色杆菌属','巴斯德菌属','土拉热费朗西丝菌','布氏菌属','心杆菌属','色杆菌属','金氏杆菌属','伴放线放线杆菌','细胞嗜二氧化碳(CO2)菌属','小螺菌','大消化链球菌','非解糖消化链球菌','普氏消化链球菌','厌氧消化链球菌','其它消化链球菌','黑色消化球菌','小链球菌','汉森链球菌','其它厌氧链球菌','解糖葡萄球菌','其它厌氧葡萄球菌','其它革兰阳性(G+)厌氧球菌','小韦荣菌','其它韦荣球菌','其它革兰阳性(G-)厌氧球菌','痤疮丙酸杆菌','贪婪丙酸杆菌','其它丙酸杆菌','产气优杆菌','不解优杆菌','粘液优杆菌','其它优杆菌','衣氏放线菌','内氏放线菌','粘液放线菌','产脓放线菌','其它放线菌','丙酸蛛网菌','其它蛛网菌','破伤风杆菌','产气荚膜杆菌','肉毒梭菌','艰难梭菌','其它梭菌','其它革兰阳性(G+)厌氧菌杆菌','脆弱类杆菌','多形类杆菌','解脲类杆菌','侵肺类杆菌','腐败类杆菌','其它类杆菌','产黑色素普氏菌','其它普氏菌','具核梭杆菌','坏死梭杆菌','其它梭杆菌','非解糖卟啉单胞菌','牙龈卟啉单胞菌','其它卟啉单胞菌','其它革兰阴性(G-)厌氧菌杆菌','白色念珠菌(又叫白色假丝酵母菌)','新型隐球菌','曲霉菌','毛霉菌','组织胞浆菌','热带念珠菌(又叫热带假丝酵母菌)','光滑假丝酵母菌','近平滑假丝酵母菌','克柔假丝酵母菌','其它真菌','腺病毒','单纯疱疹病毒','水痘－带状疱疹病毒','巨细胞病毒','E-B病毒','柯萨奇病毒','埃可病毒','其它小RNA病毒','呼肠病毒','轮状病毒','人类免疫缺陷病毒','人类T细胞白血病病毒','流感病毒','副流感病毒','呼吸道合胞病毒','麻疹病毒','其它副粘病毒',
+		'风疹病毒','其它披盖病毒','甲型肝炎病毒','乙型肝炎病毒','丙型肝炎病毒','丁型肝炎病毒','戊型肝炎病毒','庚型肝炎病毒','肾综合症出血热病毒','虫媒病毒群','狂犬病毒','Norwalk样病毒','其它病毒','肺炎支原体','解脲脲原体','人支原体','生殖道支原体','其它支原体','沙眼衣原体','鹦鹉热衣原体','其他衣原体','螺旋体','立克次体','卡氏肺胞子虫','弓形虫','疟原','隐胞子虫','阿米巴原虫','其它寄生虫')
+		and s10.patho_name is not null and st11.anti_name is not null and s9.submi_at is not null
+		
+	</select>
+	
+<!-- 	抗菌药物使用情况 -->
+	<select id="findKjywsyqk_oracle"  resultType="java.util.HashMap"> 
+	  select t.order_name, t.admin_route_name, to_char(t.order_at,'yyyy-MM-dd HH24:mi') order_at, to_char(t.stop_at,'yyyy-MM-dd HH24:mi') stop_at,
+       decode(t.pre_yymd, '治疗用药', 1, '预防用药', 2,'预防+治疗',3,0) yymd,   
+       null as zlyyfs,
+       null as yfyyzz,
+       null as yfyyyg,
+       j.use_antib_type lhyy, 
+     --  decode(t.oper_type_id, 2, 1, 0) wei,  
+       null wei,    
+      (select dic.dict_name from sys_dict dic where dic.dict_type_code='opera_before_time' and dic.dict_code = t.date_section ) as sqsj,
+      st5.after_yyts afterYyts, 
+      null as hlx,
+      null as bhlyy,
+      null as lx,
+      t.dose,
+      t.frequency,
+      t.dosage_unit 
+	    from gr016_bk_kjyw t 
+    inner join bk001_sbk b1 on b1.relid=t.refid
+    left join st005_ssxxb st5 on t.refid = st5.relid 
+	  left join (select * from jk_yz_lhyy jk where jk.zyid =#{zyid}  and  rownum 	&lt; 2  order by jk.calc_date desc ) j
+	   on j.zyid=b1.zyid where b1.zyid = #{zyid} and t.admin_route_name in('口服','静脉注射','静脉点滴','肌肉注射','舌下含服','气雾吸入','外用','直肠给药','其它')
+	and t.order_name in ('青霉素G','氨苄西林','氨苄西林/舒巴坦','苯唑西林','阿莫西林','阿莫西林/克拉维酸','哌拉西林','哌拉西林/他唑巴坦','羧苄西林','青霉素V','氯唑西林','双氯西林',
+		'氟氯西林','替卡西林','替卡西林/克拉维酸','美洛西林','阿洛西林','磺苄西林','美西林','替莫西林','哌拉西林—舒巴坦','甲氧西林','美洛西林—舒巴坦','阿莫西林/氟氯西林','阿莫西林/舒巴坦','头孢噻吩',
+		'头孢唑啉','头孢硫脒','头孢拉定','头孢氨苄','头孢羟氨苄','头孢呋辛','头孢呋辛酯','头孢替安','头孢克洛','头孢丙烯','头孢孟多','头孢尼西','头孢呋肟','头孢替唑钠','头孢噻肟','头孢唑肟',
+		'头孢三嗪(头孢曲松)','头孢他啶','头孢哌酮','头孢哌酮/舒巴坦','头孢匹胺','头孢克肟','头孢地嗪','头孢米诺','头孢地尼','头孢泊肟','头孢他美酯(头孢美特酯)','头孢哌酮/他唑巴坦',
+		'头孢甲肟','头孢匹罗','头孢吡肟','头孢克定','头孢噻利','头孢西丁','头孢美唑','头孢替坦','氟氧头孢','亚胺培南','美罗培南','亚胺培南—西司他丁','帕尼培南','厄他培南','法罗培南钠','比阿培南',
+		'氨曲南','拉氧头孢','克拉维酸','舒巴坦','庆大霉素','卡那霉素','阿米卡星','妥布霉素','西索霉素','链霉素','新霉素','大观霉素','核糖霉素','福提米星','巴龙霉素','依替米星','异帕米星','奈替米星',
+		'吡哌酸','诺氟沙星','环丙沙星','氧氟沙星','培氟沙星','洛美沙星','依诺沙星','氟罗沙星','司帕沙星','克林沙星','替马沙星','萘啶酸','莫西沙星','左氧氟沙星','甲磺酸左氧氟沙星','那氟沙星','格帕沙星',
+		'曲伐沙星','阿拉沙星','加替沙星','帕珠沙星','普卢利沙星','吉米沙星','恩氟沙星','万古霉素','去甲万古霉素','多粘菌素B','多粘菌素E','杆菌肽','替考拉宁','红霉素','麦迪霉素','螺旋霉素','柱晶白霉素',
+		'交沙霉素','罗红霉素','阿奇霉素','地红霉素','克拉霉素','四环素','多西环素','米诺环素','磺胺甲噁唑','磺胺嘧啶','复方磺胺甲噁唑','复方磺胺嘧啶','甲氧苄氨嘧啶','磺胺嘧啶银','水杨酸偶氮磺','柳氮磺吡啶',
+		'林可霉素','克林霉素','氯霉素','呋喃妥因','呋喃唑酮','呋喃西林','利福平','利福定','利福喷丁','两性霉素B','氟胞嘧啶','酮康唑','咪康唑','克霉唑','益康唑','伊曲康唑','氟康唑','灰黄霉素','制霉菌素',
+		'伏立康唑','特比萘芬','卡泊芬净','异烟肼','乙胺丁醇','对氨水杨酸','吡嗪酰胺','甲硝唑','替硝唑','磷霉素','夫西地酸','黄连素','大蒜素','莫匹罗星','奥硝唑','利奈唑胺','奎奴普丁/达福普汀','新生霉素','β－内酰胺酶')
+	and t.order_at is not null and j.use_antib_type is not null
+	</select>
+	
+<!-- 	ICU病人基本情况 -->
+	<select id="findIcubrjbqk_oracle"  resultType="java.util.HashMap"> 
+	    select 
+      to_char(s12.in_date,'YYYY-MM-DD') as f1,
+      b2.infect_dept_name as f2,
+       z2.dept_name as f3,
+      to_char(s12.in_date,'YYYY-MM-DD HH24') in_date,
+        (select t.dept_name
+           from ZG002_BYKS t
+          where t.dept_id = s12.in_dept_id) inDeptName,
+      null as f6,
+     to_char(s12.out_date,'YYYY-MM-DD HH24') out_date,
+        (select t.dept_name
+           from ZG002_BYKS t
+          where t.dept_id = s12.out_dept_id) outDeptName,
+      null as f9,
+      0 as f10,
+      0 as f11,
+      0 as f12,
+      0 as f13,
+      0 as f14,
+      0 as f15,
+      0 as f16,
+      0 as f17,
+      0 as f18,
+      0 as f19,
+      0 as f20,
+      0 as f21,
+      null as f22,
+      null as f23,
+      null as f24
+       from  bk001_sbk b1
+        left join st012_zkjl s12 on b1.zyid=s12.zyid 
+     inner join bk002_grzd b2
+       on b1.relid = b2.refid
+       inner join zg002_byks z2
+        on z2.dept_id = b1.report_dept_id
+    where b2.infect_dept_id in
+          (select z2.dept_id from zg002_byks z2 where z2.ificu = 1)
+     and s12.zyid = #{zyid}
+	</select>
+	
+<!-- 	ICU的疾病诊断 -->
+	<select id="findIcujbzd_oracle"  resultType="java.util.HashMap"> 
+	   select z.icd_code diagnosisName from st002_zdxxb t 
+	   left join zg012_icd10 z on z.icd_name=t.diagnosis_name
+		inner join  bk001_sbk b1 on b1.zyid=t.zyid 
+	   inner join bk002_grzd b2
+	     on b1.relid = b2.refid
+	  where b2.infect_dept_id in
+	        (select z2.dept_id from zg002_byks z2 where z2.ificu = 1)
+	         and instr(z.icd_code,'.')>0 
+	    and b1.zyid = #{zyid}
+	</select>
+	
+<!-- 	中心静脉插管情况 -->
+	<select id="findZxjmcgqk_oracle"  resultType="java.util.HashMap"> 
+	  select 
+	  '抗感染' as dglx,
+	  '双腔' as dgqs,
+	  '颈静脉' as bw,
+	  min(to_char(gm4.CREATIONDATE,'YYYY-MM-DD')) AS startAt,
+       MAX(to_char(gm4.CREATIONDATE,'YYYY-MM-DD')) AS stopAt,
+       gm4.operator_name,
+       (select t.dept_name from ZG002_BYKS t where t.dept_id=gm4.deptid) deptName,
+          decode(b2.auth_status, 1, 1, 0) isInfect,
+       b2.infect_diagn_name,
+        to_char(b2.infect_date,'YYYY-MM-DD') infect_date
+	  from gm004_jcmx gm4
+	  left join bk001_sbk b1
+	  on b1.zyid = gm4.zyid 
+	  inner join bk002_grzd b2
+	  on b2.refid = b1.relid
+	 where gm4.typeid = '05'
+	   and gm4.deptid in (select z2.dept_id from zg002_byks z2 where z2.ificu = 1)
+	   and  gm4.zyid = #{zyid} and gm4.CREATIONDATE is not null and gm4.deptid is not null and gm4.operator_name is not null
+	   group by gm4.CREATIONDATE,gm4.operator_name, b2.infect_dept_name,gm4.deptid,b2.auth_status ,b2.infect_diagn_name, b2.infect_date
+	</select>
+	
+	<select id="findHxjsyqk_oracle"  resultType="java.util.HashMap"> 
+		select 
+		'经鼻插管' as dglx,
+		min(to_char(gm4.CREATIONDATE,'YYYY-MM-DD')) AS startAt,
+       MAX(to_char(gm4.CREATIONDATE,'YYYY-MM-DD')) AS stopAt,
+       gm4.operator_name,
+       (select t.dept_name from ZG002_BYKS t where t.dept_id=gm4.deptid) deptName,
+          decode(b2.auth_status, 1, 1, 0) isInfect,
+       b2.infect_diagn_name,
+       to_char(b2.infect_date,'YYYY-MM-DD') infect_date
+	  from gm004_jcmx gm4
+	  left join bk001_sbk b1
+	  on b1.zyid = gm4.zyid 
+	  inner join bk002_grzd b2
+	  on b2.refid = b1.relid
+	  where gm4.typeid = '06'
+	   and gm4.deptid in
+	       (select z2.dept_id from zg002_byks z2 where z2.ificu = 1)
+	  and  gm4.zyid = #{zyid} and gm4.CREATIONDATE is not null and gm4.deptid is not null and gm4.operator_name is not null     
+       group by gm4.CREATIONDATE,gm4.operator_name, gm4.deptid,b2.infect_dept_id, b2.infect_dept_name,b2.auth_status ,b2.infect_diagn_name, b2.infect_date
+	</select>
+	
+	<select id="findDngsyqk_oracle"  resultType="java.util.HashMap"> 
+		select 
+		'抗反流' as dglx,
+		min(to_char(gm4.CREATIONDATE,'YYYY-MM-DD')) AS startAt,
+       MAX(to_char(gm4.CREATIONDATE,'YYYY-MM-DD')) AS stopAt,
+	       gm4.operator_name,
+	       (select t.dept_name from ZG002_BYKS t where t.dept_id=gm4.deptid) deptName,
+	          decode(b2.auth_status, 1, 1, 0) isInfect,
+	       b2.infect_diagn_name,
+	        to_char(b2.infect_date,'YYYY-MM-DD') infect_date
+		  from gm004_jcmx gm4
+		  left join bk001_sbk b1
+		  on b1.zyid = gm4.zyid 
+		  inner join bk002_grzd b2
+		  on b2.refid = b1.relid
+		 where gm4.typeid = '04'
+		   and gm4.deptid in
+		       (select z2.dept_id from zg002_byks z2 where z2.ificu = 1)
+		   and  gm4.zyid = #{zyid} and gm4.CREATIONDATE is not null and gm4.deptid is not null and gm4.operator_name is not null      
+		       group by gm4.CREATIONDATE,gm4.operator_name, b2.infect_dept_name,gm4.deptid,b2.auth_status ,b2.infect_diagn_name, b2.infect_date
+	</select>
+	
+</mapper>

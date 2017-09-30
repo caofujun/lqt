@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl013DicPathotrocheDao">
+
+	<sql id="commCols_mysql">
+		pathotrocheid pathotrocheid,year year,pathoname pathoname,trochename trochename,pathoid pathoid,trocheid trocheid
+	</sql>
+
+	<select id="findXl013DicPathotroche_mysql" parameterType="xl013DicPathotroche" resultType="xl013DicPathotroche">
+		select <include refid="commCols_mysql"/> from xl013_dic_pathotroche
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

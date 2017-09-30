@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.NyUnanalyzeBbBytDao">
+
+	<sql id="commCols">
+		bytid bytid,bbid bbid,bbmc bbmc,byt_name bytName
+	</sql>
+
+	<insert id="save" parameterType="nyUnanalyzeBbByt" flushCache="true">
+		 insert into ny_unanalyze_bb_byt(bytid,bbid,bbmc,byt_name)
+		 values(#{bytid},#{bbid},#{bbmc},#{bytName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from ny_unanalyze_bb_byt
+		<where>bytid=#{bytid}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyUnanalyzeBbByt" flushCache="true">
+		update ny_unanalyze_bb_byt
+		<set>
+			bytid=#{bytid},bbid=#{bbid},bbmc=#{bbmc},byt_name=#{bytName}
+		</set>
+		<where>bytid=#{bytid}</where>
+	</update>
+	
+	<select id="get" resultType="nyUnanalyzeBbByt">
+		select <include refid="commCols"/> from ny_unanalyze_bb_byt
+  		<where>bytid=#{bytid}</where>
+	</select>
+	
+	
+	<select id="findNyUnanalyzeBbBytCount" parameterType="nyUnanalyzeBbByt" resultType="int">
+		select count(*) from ny_unanalyze_bb_byt
+		<where>1=1
+			<if test="searchString!=null and searchString!=''">
+				and bbid LIKE CONCAT(CONCAT('%', #{searchString}), '%') 
+				or bbmc LIKE CONCAT(CONCAT('%', #{searchString}), '%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="nyUnanalyzeBbByt">
+		select <include refid="commCols"/> from ny_unanalyze_bb_byt
+		<where>
+		</where>
+	</select>
+</mapper>

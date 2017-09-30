@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl006JyjgDao">
+
+	<sql id="commCols_oracle">
+		FLAG flag,BL_ID blId,JY_TIME jyTime,JY_HM jyHm,JY_JG jyJg,DJ_MEN djMen,DJ_TIME djTime,JY_DH jyDh,SF_MEMO sfMemo
+	</sql>
+
+	
+	<select id="findBl006Jyjg_oracle" parameterType="bl006Jyjg" resultType="bl006Jyjg">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from BL006_JYJG
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<insert id="saveList_oracle" parameterType="java.util.List">
+        <foreach collection="jyjgList" item="item" index="index" open="begin" close=";end;" separator=";">
+           insert into BL006_JYJG(FLAG,BL_ID,JY_TIME,JY_HM,JY_JG,DJ_MEN,DJ_TIME,JY_DH,SF_MEMO)
+		 values(#{item.flag},#{item.blId},#{item.jyTime},#{item.jyHm},#{item.jyJg},#{item.djMen},#{item.djTime},#{item.jyDh},#{item.sfMemo})
+        </foreach>  
+    </insert>
+</mapper>

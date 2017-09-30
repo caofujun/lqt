@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbdiseaseDao">
+
+	<sql id="commCols_mysql">
+		DIAGNOSEDATE diagnosedate,CASETYPEID casetypeid,CASETYPENAME casetypename,CASETYPEID2 casetypeid2,CASETYPENAME2 casetypename2,CONTACTFLAG contactflag,DISEASENOTES diseasenotes,ACQUISITIONDATE acquisitiondate,SENDDOCTORNAME senddoctorname,SAMPLEPLACES sampleplaces,TREATMENTPROCESS treatmentprocess,CLINICALDIAGNOSIS1 clinicaldiagnosis1,CLINICALDIAGNOSIS2 clinicaldiagnosis2,MEMO memo,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,FILLDATE filldate,FLAG flag,AUDITDATE auditdate,AUDITOR auditor,LABRESULTNO labresultno,LABRESULT labresult,MASTERID masterid,SUBID subid,DISEASEID diseaseid,DISEASENAME diseasename,STARTDATE startdate
+	</sql>
+
+	<select id="findCtgBk001Crbdisease_mysql" parameterType="ctgBk001Crbdisease" resultType="ctgBk001Crbdisease">
+		select <include refid="commCols_mysql"/> from CTG_BK001_CRBDISEASE
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

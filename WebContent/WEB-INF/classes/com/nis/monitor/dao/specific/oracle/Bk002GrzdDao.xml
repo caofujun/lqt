@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk002GrzdDao">
+
+	<sql id="commCols_oracle">
+		infect_category infectCategory,auth_at authAt,auth_userid authUserid,auth_username authUsername,infect_kind infectKind,return_reason returnReason,del_reason delReason,auth_status authStatus,relid relid,refid refid,sn sn,diagnose_id diagnoseId,infect_diagn_id infectDiagnId,infect_diagn_name infectDiagnName,infect_date infectDate,infect_dept_id infectDeptId,infect_nexus infectNexus,infect_dept_name infectDeptName,sub_id subId,incision_grade incisionGrade,wound_healing woundHealing,oper_id operId,isselect isselect,infect_type infectType,deleted deleted,confirm_dt confirmDt,ope_relid opeRelid,ope_name opeName,custom_diagn_id customDiagnId,custom_diagn_name customDiagnName,memo memo,bk_type bkType,lastoper_name lastoperName,lastoper_date lastoperDate,bk_typename bkTypename,incision_type incisionType,infect_dept_name_edit infectDeptNameEdit,zdyj2 zdyj2,dgxggr_id dgxggrId,relation relation,jbzg jbzg,infect_relation infectRelation,jbzg_date jbzgDate,is_print isPrint 
+	</sql>
+	
+	<update id="updBkType1_oracle" flushCache="true">
+		update bk002_grzd
+		<set>
+			bk_type=decode(sign((((select report_at from bk001_sbk where relid=#{relid}) - confirm_dt) * 24 - 24)),-1,0,1),
+			lastoper_date=#{lastoperDate},
+			lastoper_name=#{lastoperName}
+		</set>
+		<where>
+			refid=#{relid} and (bk_type is null or bk_type=0)
+		</where>
+	</update>
+
+	<select id="findBk002Grzd_oracle" parameterType="bk002Grzd" resultType="bk002Grzd">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from bk002_grzd
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getOneInfectByRefid_oracle" resultType="bk002Grzd">
+		select * from (
+		select <include refid="commCols_oracle"/> from bk002_grzd
+		<where>
+			refid = #{refid}
+		</where>
+		order by auth_status
+		) where rownum = 1
+	</select>
+	
+	<select id="findMainInfectionParts_oracle" resultType="map">
+		select * from (select * from (
+		select ff.fl_infect_code "code", ff.fl_infect_name "name", count(*) "value" from (select zd.fl_infect_code, zd.fl_infect_name, t.* from (select  a.infect_diagn_id 
+          from bk002_grzd a  inner join bk001_sbk b1 on a.refid = b1.relid inner join st003_cryxxb s3 on b1.zyid = s3.zyid where a.infect_date between #{startDate} and #{endDate} and a.infect_type = 1 and a.auth_status=1) t
+          left join ny_jc_grzdfl_cdc zd on t.infect_diagn_id = zd.cdc_infect_code) ff group by ff.fl_infect_code,ff.fl_infect_name order by count(*) desc
+          ) where rownum &lt;= 4  union 
+		 select '' "code",'总计' "name", sum("value") "value" from (
+        select ff.fl_infect_code "code",
+                       ff.fl_infect_name "name",
+                       count(*) "value"
+                  from (select zd.fl_infect_code, zd.fl_infect_name, t.*
+                          from (select a.infect_diagn_id
+                                  from bk002_grzd a
+                                 inner join bk001_sbk b1
+                                    on a.refid = b1.relid
+                                 inner join st003_cryxxb s3
+                                    on b1.zyid = s3.zyid
+                                 where a.infect_date between #{startDate} and #{endDate}
+                                   and a.infect_type = 1
+                                   and a.auth_status = 1) t
+                          left join ny_jc_grzdfl_cdc zd
+                            on t.infect_diagn_id = zd.cdc_infect_code) ff
+                 group by ff.fl_infect_code, ff.fl_infect_name)) order by "value" 
+	</select>
+	
+	<select id="queryGrPosition_oracle" resultType="bk002Grzd">
+		select distinct t.fl_infect_name flInfectName,t.fl_infect_code flInfectCode from ny_jc_grzdfl_cdc t order by t.fl_infect_code
+	</select>
+	
+	<select id="findMainIncidence_oracle" resultType="map">
+		select a.month_name "datetime",
+		       decode(nvl(b.zyrs, 0), 0, 0, round(nvl(c.fbrs, 0) * 100 / b.zyrs, 2)) "value"
+		  from (select to_char(everyDay, 'yyyymm') month_id,
+		               to_char(everyDay, 'mm"月"') month_name
+		          from (select trunc(#{startDate}) + level - 1 as everyDay
+		                  from dual
+		                connect by level &lt;= trunc(#{endDate}) - trunc(#{startDate}))
+		         group by to_char(everyDay, 'yyyymm'),
+		                  to_char(everyDay, 'mm"月"')) a
+		  left join (select to_char(creationdate, 'yyyymm') month_id,
+		                    count(distinct zyid) zyrs
+		               from gm004_jcmx g4
+		              where g4.creationdate between #{startDate} and #{endDate}
+		                and deptid in (select dept_id from zg002_byks z2 where z2.ifcaseoffice = 1)
+		              group by to_char(creationdate, 'yyyymm')) b
+		    on a.month_id = b.month_id
+		  left join (select to_char(b2.infect_date, 'yyyymm') month_id,
+		                    count(distinct b1.zyid) fbrs
+		               from bk002_grzd b2
+		              inner join bk001_sbk b1
+		                 on b2.refid = b1.relid
+		              where trunc(b2.infect_date) between trunc(#{startDate}) and trunc(#{endDate})
+		                and b2.infect_dept_id in
+		                    (select dept_id
+		                       from zg002_byks z2
+		                      where z2.ifcaseoffice = 1)
+		                and b2.infect_type = 1
+		                and b2.auth_status = 1
+		              group by to_char(b2.infect_date, 'yyyymm')) c
+		    on a.month_id = c.month_id
+		 order by a.month_id
+	</select>
+	
+	<select id="findBloodInfections_oracle" resultType="map">
+		select t1.datetime "datetime", nvl(t2.value, 0) "value" from
+		(select trunc(#{startDate}) +level - 1 as datetime
+		          from dual
+		        connect by level &lt;= (ceil((trunc(#{endDate}) - trunc(#{startDate}) + 1)))) t1
+		left join
+		(select trunc(bk2.confirm_dt) datetime, count(*) value
+		  from bk002_grzd bk2
+		  left join bk001_sbk bk1
+		    on bk1.relid = bk2.refid
+		  left join bk004_sjbb bk4
+		    on bk2.relid = bk4.refid
+		  left join xn011_dclymx xn11
+		    on bk4.test_no = xn11.test_order_no
+		    and bk4.sample_id = xn11.item_code
+            and bk4.patho_id = xn11.patho_code
+		 where bk2.infect_diagn_id in
+		       (select infect_code
+                       from zg005_yygrzd z5
+                      start with infect_code = 'BSI'
+                     connect by prior infect_code = p_infect_code)
+		   and xn11.spec_describes = 'MRSA'
+		   and bk1.is_ok = '1'
+		   and bk2.confirm_dt between #{startDate} and #{endDate} group by trunc(bk2.confirm_dt)) t2 on t1.datetime = t2.datetime
+		order by t1.datetime asc
+	</select>
+</mapper>

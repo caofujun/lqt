@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys002ParamsDao">
+
+	<sql id="commCols_mysql">
+		PARAMVALUE paramvalue,COMM comm,PARAMID paramid,PARAMNAME paramname
+	</sql>
+
+	<select id="findCtgSys002Params_mysql" parameterType="ctgSys002Params" resultType="ctgSys002Params">
+		select <include refid="commCols_mysql"/> from CTG_SYS002_PARAMS
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

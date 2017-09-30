@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl009DicInfectdiagDao">
+
+	<sql id="commCols_mysql">
+		infect_id infectId,indiagid indiagid,indiagname indiagname,systemkindid systemkindid,remark remark,reportorder reportorder,torder torder,memoryid memoryid
+	</sql>
+
+	<select id="findXl009DicInfectdiag_mysql" parameterType="xl009DicInfectdiag" resultType="xl009DicInfectdiag">
+		select <include refid="commCols_mysql"/> from xl009_dic_infectdiag
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn013DbywDao">
+
+	<sql id="commCols_mysql">
+		ITEM_ID itemId,ORDERNO orderno,DRUG_TYPE_ID drugTypeId,DRUG_ID drugId,DRUG_NAME drugName
+	</sql>
+
+	<select id="findXn013Dbyw_mysql" parameterType="xn013Dbyw" resultType="xn013Dbyw">
+		select <include refid="commCols_mysql"/> from XN013_DBYW
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

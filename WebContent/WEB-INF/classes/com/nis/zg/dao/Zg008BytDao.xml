@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg008BytDao">
+
+	<sql id="commCols">
+		PATHOGEN_ID pathogenId,PATHOGEN_NAME pathogenName,PATHOGEN_EN_NAME pathogenEnName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,KIND_ID kindId,RS_ID rsId,BACT_GENUS_ID bactGenusId,CN_ID cnId,FLAG flag,IF_COMMON ifCommon,LAST_AT lastAt
+	</sql>
+
+	<insert id="save" parameterType="zg008Byt"  flushCache="true">
+		 insert into ZG008_BYT(PATHOGEN_ID,PATHOGEN_NAME,PATHOGEN_EN_NAME,BH_CODE,SP_CODE,WB_CODE,KIND_ID,RS_ID,BACT_GENUS_ID,CN_ID,FLAG,IF_COMMON,LAST_AT)
+		 values(#{pathogenId},#{pathogenName},#{pathogenEnName},#{bhCode},#{spCode},#{wbCode},#{kindId},#{rsId},#{bactGenusId},#{cnId},#{flag},#{ifCommon},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG008_BYT
+		<where>PATHOGEN_ID=#{pathogenId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg008Byt" flushCache="true">
+		update ZG008_BYT
+		<set>
+			PATHOGEN_ID=#{pathogenId},PATHOGEN_NAME=#{pathogenName},PATHOGEN_EN_NAME=#{pathogenEnName},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},KIND_ID=#{kindId},RS_ID=#{rsId},BACT_GENUS_ID=#{bactGenusId},CN_ID=#{cnId},FLAG=#{flag},IF_COMMON=#{ifCommon},LAST_AT=#{lastAt}
+		</set>
+		<where>PATHOGEN_ID=#{pathogenId}</where>
+	</update>
+	
+	<select id="get" resultType="zg008Byt">
+		select <include refid="commCols"/> from ZG008_BYT
+  		<where>PATHOGEN_ID=#{pathogenId}</where>
+	</select>
+	
+	
+	<select id="findZg008BytCount" parameterType="zg008Byt" resultType="int">
+		select count(*) from ZG008_BYT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg008Byt">
+		select <include refid="commCols"/> from ZG008_BYT
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

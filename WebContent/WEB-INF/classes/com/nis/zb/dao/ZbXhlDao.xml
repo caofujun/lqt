@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zb.dao.ZbXhlDao">
+
+	<select id="findDicOffice" resultType="java.util.HashMap">
+		select null         as OfficeId, 
+	       z2.dept_name     as Office,
+	       null             as OfficeKindId,
+	       z2.stand_dept_id as StandOfficeId,
+	       null             as UnitId,
+	       1                as Checked,
+	       0                as DelFlag
+	  from zg002_byks z2
+	 inner join zg001_bzks z1
+	    on z1.dept_id = z2.stand_dept_id
+	 where z2.ifcaseoffice = 1
+	</select>
+	
+	<select id="findPatientMain" resultType="java.util.HashMap">
+		select null as id,
+			   t.brid as brid, 
+		       null as UnitId,
+		       null as UserId,
+		       patient_id as PatientId,
+		       z2.dept_name as Office,
+		       z1.dept_id as StandOfficeId,
+		       bed_no as BedNo,
+		       patient_id as CaseId,
+		       patient_name as PatientName,
+		       sex as PatSex,
+		       decode(age_unit, '岁', age, 0) as AgeY,
+		       decode(age_unit, '月', age, 0) as AgeM,
+		       decode(age_unit, '天', age, 0) as AgeD,
+		       diagnose,
+		       nvl(is_infect, 0) as IfInfect,
+		       nvl(is_ca, 0) as yygr,
+		       nvl(is_ha, 0) as sqgr,
+		       nvl(sykjyw, 0) as kjywsy,
+		       nvl(yymd, -1) + 1 yymd,
+		       nvl(lhyy, -1) + 1 lhyy,
+		       nvl(zlyyspy, 0) zlyyspy,
+		       t.last_at as InputDate,
+		       1 as Checked,
+		       sysdate as CheckDate,
+		       votename,
+		       votedate,
+		       nvl(is_oper, 0) as Operator,
+		       nvl(is_grade1, 0) as ylqk,
+		       nvl(is_grade2, 0) as elqk,
+		       nvl(is_grade3, 0) as slqk,
+		       nvl(is_grade4, 0) as silqk,
+		       nvl(pop, 0) as sshfy,
+		       null pro_id,
+		       nvl(spyshkjyw, 0) as pysj,
+		       kjywmc1,
+		       kjywmc2,
+		       kjywmc3,
+		       kjywmc4
+		  from XL001_BRXX t
+		 inner join zg002_byks z2
+		    on z2.dept_id = t.dept_id
+		 inner join ZG001_BZKS z1
+		    on z1.dept_id = z2.stand_dept_id
+		 where t.votedate between trunc(#{startDate}) and trunc(#{endDate})
+	</select>
+	
+	<select id="findInfectInfo" resultType="java.util.HashMap">
+		select null as id,   
+		       x2.brid as brid,
+		       x2.grid as grid, 
+		       decode(infect_type, 1, 1, 0) yygr,
+		       decode(infect_type, 2, 1, 0) sqgr,
+		       null as UnitId,
+		       null as UserId,
+		       infect_code as DiagId,
+		       infect_name as InfectDiag,
+		       1 as Checked,
+		       x2.last_at as InputDate,
+		       null as Pro_Id
+		  from XL002_GRXX x2
+		 inner join XL001_BRXX x1
+		    on x1.brid = x2.brid
+		 where x1.votedate between trunc(#{startDate}) and trunc(#{endDate})		
+	</select>
+
+	<select id="findPathoInfo" resultType="java.util.HashMap">
+		select null              as id,   
+		       x2.brid              as BrId, 
+		       x3.grid              as GrId,
+		       x3.bytid          as BytId, 
+		       null              as UnitId,
+		       null              as UserId,
+		       infect_patho_id   as PathoId,
+		       infect_patho_name as PathoName,
+		       0                 as isMRSA,
+		       0                 as isBMBDGJ,
+		       1                 as Checked,
+		       x3.last_at        as InputDate,
+		       null              as Pro_ID,
+		       PathoResult
+		  from XL003_BYT x3
+		 inner join xl002_grxx x2
+		    on x2.grid = x3.grid
+		 inner join XL001_BRXX x1
+		    on x1.brid = x2.brid
+		 where x1.votedate between trunc(#{startDate}) and trunc(#{endDate})
+	</select>
+	
+	<select id="findAntibInfo" resultType="java.util.HashMap">
+		select null       as AntibId,
+		       x2.brid       as Brid,  
+		       x3.grid        as GrId,  
+		       x3.bytid       as BytId,
+		       x4.yjywid      as DURGID, 
+		       drug_name  as AntibName,
+		       status     as AntibResult,
+		       x4.last_at as InputDate,
+		       null       as Pro_ID
+		  from XL004_KJYW x4
+		 inner join xl003_byt x3
+		    on x3.bytid = x4.bytid
+		 inner join xl002_grxx x2
+		    on x2.grid = x3.grid
+		 inner join XL001_BRXX x1
+		    on x1.brid = x2.brid
+		 where x1.votedate between trunc(#{startDate}) and trunc(#{endDate})	
+	</select>
+	
+	<select id="findStandDeptUnMatch" resultType="string">
+		select wm_concat(distinct xl1.dept_id) from xl001_brxx xl1 left join zg002_byks bk on xl1.dept_id=bk.dept_id 
+		<where>
+			bk.stand_dept_id is null and xl1.votedate between trunc(#{startDate}) and trunc(#{endDate})
+		</where>
+	</select>
+	
+	<select id="findXl2BridUnMatch" resultType="string">
+		select wm_concat(distinct xl2.brid) from xl002_grxx xl2 left join xl001_brxx xl1 on xl2.brid=xl1.brid
+		<where>
+			xl1.brid is null and xl2.last_at between trunc(#{startDate}) and trunc(#{endDate})
+		</where>
+	</select>
+	
+	<select id="findXl3BridUnMatch" resultType="string">
+		select wm_concat(distinct xl3.brid) from xl003_byt xl3 left join xl001_brxx xl1 on xl3.brid=xl1.brid 
+		<where>
+			xl1.brid is null and xl3.last_at between trunc(#{startDate}) and trunc(#{endDate})
+		</where>
+	</select>
+	
+	<select id="findXl3GridUnMatch" resultType="string">
+		select wm_concat(distinct xl3.grid) from xl003_byt xl3 left join xl002_grxx xl2 on xl3.grid=xl2.grid
+		<where>
+			xl2.grid is null and xl3.last_at between trunc(#{startDate}) and trunc(#{endDate})
+		</where>
+	</select>
+	
+	<select id="findXl4BridUnMatch" resultType="string">
+		select wm_concat(distinct xl4.brid) from xl004_kjyw xl4 left join xl001_brxx xl1 on xl4.brid=xl1.brid
+		<where>
+			xl1.brid is null and xl4.last_at between trunc(#{startDate}) and trunc(#{endDate})
+		</where>
+	</select>
+	
+	<select id="findXl4GridUnMatch" resultType="string">
+		select wm_concat(distinct xl4.grid) from xl004_kjyw xl4 left join xl002_grxx xl2 on xl4.grid=xl2.grid
+		<where>
+			xl2.grid is null and xl4.last_at between trunc(#{startDate}) and trunc(#{endDate})
+		</where>
+	</select>
+	
+	<select id="findXl4BytidUnMatch" resultType="string">
+		select wm_concat(distinct xl4.bytid) from xl004_kjyw xl4 left join xl003_byt xl3 on xl4.bytid=xl3.bytid
+		<where>
+			xl3.bytid is null and xl4.last_at between trunc(#{startDate}) and trunc(#{endDate})
+		</where>
+	</select>
+</mapper>

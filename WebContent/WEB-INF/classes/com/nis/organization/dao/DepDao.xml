@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DepDao">
+
+	<sql id="commCols">
+		ID id,DEPT_ID deptId,DEPT_NAME deptName,DEPT_TYPEID deptTypeId,DEPT_TYPENAME deptTypeName,STAND_DEPT_ID standDeptId,
+		HOSP_ID hospId,ZJ_CODE zjCode,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,IFCASEOFFICE ifcaseoffice,SHOW_ORDER showOrder,
+		IFENVOFFICE ifenvoffice,IFICU ificu,IFBEDICU ifbedicu,IFCHILDOFFICE ifchildoffice,IFOPEROFFICE ifoperoffice,IF_HOSPDEPT ifhospdept,
+		IFMZOFFICE ifmzoffice,IFFOCUS iffocus,FLAG flag,LAST_AT lastAt,TEL tel,HOSINFECT_BASEPER hosinfectBaseper,OUTHOSINFECT_BASEPER outhosinfectBaseper,dept_classify deptClassify,baseInfect baseInfect
+	</sql>
+
+	<insert id="save" parameterType="dep" flushCache="true">
+		 insert into ZG002_BYKS(ID,DEPT_ID,DEPT_NAME,DEPT_TYPEID,DEPT_TYPENAME,STAND_DEPT_ID,
+		 HOSP_ID,ZJ_CODE,BH_CODE,SP_CODE,WB_CODE,IFCASEOFFICE,SHOW_ORDER,
+		 IFENVOFFICE,IFICU,IFBEDICU,IFCHILDOFFICE,IFOPEROFFICE,IF_HOSPDEPT,
+		 IFMZOFFICE,IFFOCUS,FLAG,LAST_AT,TEL,HOSINFECT_BASEPER,OUTHOSINFECT_BASEPER,dept_classify)
+		 values(#{id},#{deptId},#{deptName},#{deptTypeId},#{deptTypeName},#{standDeptId},
+		 #{hospId},#{zjCode},#{bhCode},#{spCode},#{wbCode},#{ifcaseoffice},#{showOrder},
+		 #{ifenvoffice},#{ificu},#{ifbedicu},#{ifchildoffice},#{ifoperoffice},#{ifhospdept},
+		 #{ifmzoffice},#{iffocus},#{flag},#{lastAt},#{tel},#{hosinfectBaseper},#{outhosinfectBaseper},#{deptClassify})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from ZG002_BYKS
+		<where>ID=#{id}</where>
+	</delete>
+	
+	
+	<update id="updateBaseInfect" parameterType="dep" flushCache="true">
+		update ZG002_BYKS
+		<set>
+		baseInfect = #{baseInfect},
+		</set>
+		<where>dept_id=#{deptId}</where>
+	</update>
+	
+	<update id="update" parameterType="dep" flushCache="true">
+		update ZG002_BYKS
+		<set>
+			DEPT_ID=#{deptId},
+			DEPT_NAME=#{deptName},
+			DEPT_TYPEID=#{deptTypeId},
+			DEPT_TYPENAME=#{deptTypeName},
+			STAND_DEPT_ID=#{standDeptId},
+			HOSP_ID=#{hospId},
+			ZJ_CODE=#{zjCode},
+			BH_CODE=#{bhCode},
+			SP_CODE=#{spCode},
+			WB_CODE=#{wbCode},
+			SHOW_ORDER=#{showOrder},
+			IFCASEOFFICE=#{ifcaseoffice},
+			IFENVOFFICE=#{ifenvoffice},
+			IFICU=#{ificu},
+			IFBEDICU=#{ifbedicu},
+			IFCHILDOFFICE=#{ifchildoffice},
+			IFOPEROFFICE=#{ifoperoffice},
+			IF_HOSPDEPT=#{ifhospdept},
+			IFMZOFFICE=#{ifmzoffice},
+			IFFOCUS=#{iffocus},
+			FLAG=#{flag},
+			LAST_AT=#{lastAt},
+			TEL=#{tel},
+			HOSINFECT_BASEPER=#{hosinfectBaseper},
+			OUTHOSINFECT_BASEPER=#{outhosinfectBaseper},
+			dept_classify=#{deptClassify}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="excuteNicu" parameterType="String" flushCache="true">
+	<![CDATA[begin
+		update st003_cryxxb st003 set st003.dept_code = #{nicuId}, st003.dept_name = #{nicuName}  where 
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.zyid in 
+		(select t.zyid from st004_yzxxb t where t.stop_at is null and t.order_name = #{yzName}) and st003.dept_code in ('163','164');
+		
+		update st003_cryxxb st003 set st003.dept_code = #{nicuId}, st003.dept_name = #{nicuName}  where 
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.zyid in 
+		(select t.zyid from st004_yzxxb t where t.stop_at=st003.out_at and t.order_name = #{yzName}) and st003.dept_code in ('163','164');
+		end;]]> 
+	</update>
+	
+	
+	<update id="excuteXsr" parameterType="String" flushCache="true">
+	<![CDATA[begin
+		update st003_cryxxb st003 set st003.dept_code = #{xsrId}, st003.dept_name = #{xsrName}  where 
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.patient_id in 
+		(select s1.patient_id from  st001_jbxxb s1  where (st003.in_hosp_at-s1.birth_date)<=48) and st003.dept_code in ('163');
+		
+		update st003_cryxxb st003 set st003.dept_code = #{xsrId}, st003.dept_name = #{xsrName}  where 
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.patient_id in 
+		(select s1.patient_id from  st001_jbxxb s1  where (st003.in_hosp_at-s1.birth_date)<=48) and st003.dept_code in ('163');
+		end;]]> 
+	</update>
+	
+	<update id="excuteXCcu" parameterType="String" flushCache="true">
+		<![CDATA[begin
+		update st003_cryxxb st003 set st003.dept_code = #{xccuId}, st003.dept_name = #{xccuName} where
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.zyid in  (select t.zyid 
+		from st004_yzxxb t where t.stop_at is null and t.order_name = #{yzName}) and st003.dept_code = '136';
+			  	
+		update st003_cryxxb st003 set  st003.out_dept_id = #{xccuId}, st003.out_dept_name = #{xccuName} where
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.zyid in (select t.zyid 
+		from st004_yzxxb t where   t.stop_at=st003.out_at and t.order_name = #{yzName}) and st003.dept_code = '136';	
+		end;]]> 
+	</update>
+	
+	<update id="excuteCcu" parameterType="String" flushCache="true">
+	<![CDATA[begin
+		update st003_cryxxb st003 set  st003.dept_code = #{ccuId}, st003.dept_name = #{ccuName} where
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.zyid in (select t.zyid 
+		from st004_yzxxb t where t.stop_at is null and t.order_name = #{yzName}) and st003.dept_code = '102';
+		
+		update st003_cryxxb st003 set  st003.out_dept_id = #{ccuId}, st003.out_dept_name = #{ccuName} where
+		(st003.out_at is null or st003.out_at >= Sysdate - #{day}) and st003.zyid in (select t.zyid 
+		from st004_yzxxb t where  t.stop_at=st003.out_at and t.order_name = #{yzName}) and st003.dept_code = '102';	
+		end;]]> 
+	</update>
+	
+	<update id="excuteIcu"  flushCache="true">
+			update st003_cryxxb st003 set  st003.dept_code = #{icuId}, st003.dept_name = #{icuName} where
+			(st003.out_at is null or st003.out_at >= sysdate - #{day}) and st003.zyid in (select t.zyid 
+			from st004_yzxxb t where t.stop_at is null and t.order_name = #{yzName})
+	</update>
+	
+	<update id="excuteCcuBack" parameterType="String" flushCache="true">
+		  update st003_cryxxb st003
+    	<set>
+     		st003.dept_code =(select t.execoffice_code from st004_yzxxb t where t.order_at=to_date(#{orderAt},'yyyy-mm-dd hh24:mi:ss') and t.zyid=#{zyid} and t.order_name = #{yzName}),
+        	st003.dept_name =(select t.execoffice_name from st004_yzxxb t where t.order_at=to_date(#{orderAt},'yyyy-mm-dd hh24:mi:ss') and t.zyid=#{zyid} and t.order_name = #{yzName})
+ 	 	</set>
+  		<where> 
+  			(st003.out_at is null or st003.out_at >= Sysdate - #{day})
+		    and st003.zyid  = #{zyid}
+		    and st003.dept_code = #{ccuId}	
+		   </where>
+	</update>
+	
+	
+	<update id="excuteNicuBack" parameterType="String" flushCache="true">
+		 update st003_cryxxb st003
+    	<set>
+     		st003.dept_code =(select t.execoffice_code from st004_yzxxb t where t.order_at=to_date(#{orderAt},'yyyy-mm-dd,hh24:mi:ss') and t.zyid=#{zyid} and t.order_name = #{yzName}),
+        	st003.dept_name =(select t.execoffice_name from st004_yzxxb t where t.order_at=to_date(#{orderAt},'yyyy-mm-dd,hh24:mi:ss') and t.zyid=#{zyid} and t.order_name = #{yzName})
+ 	 	</set>
+  		<where> 
+  			(st003.out_at is null or st003.out_at >= Sysdate - #{day})
+		    and st003.zyid  = #{zyid}
+		    and st003.dept_code = #{nicuId}	
+		</where>
+	</update>
+	
+	<update id="updateYzxxb" flushCache="true">
+	<![CDATA[begin
+		update st004_yzxxb t set t.execoffice_code=#{deptId},t.execoffice_name=#{deptName} where t.zyid=#{zyid} and t.order_at>=#{orderAt};
+		update st004_yzxxb t set t.execoffice_code=#{deptId},t.execoffice_name=#{deptName} where t.zyid=#{zyid} and t.order_at is null;
+	end;]]> 
+	</update>
+	
+	<update id="updateSjbb" flushCache="true">
+		update st009_sjbb t set t.dept_id=#{deptId},t.dept_name=#{deptName} where t.zyid=#{zyid} and t.submi_at>#{orderAt}
+	</update>
+	
+	<update id="updateSsxxb" flushCache="true">
+		update st009_sjbb t set t.dept_id=#{deptId},t.dept_name=#{deptName} where t.zyid=#{zyid} and t.submi_at>#{orderAt}
+	</update>
+	
+	<update id="updateZkjl" flushCache="true">
+	<![CDATA[begin
+		update st012_zkjl t set t.in_dept_id=#{deptId}  where t.zyid=#{zyid} and t.in_date>#{orderAt};
+		update st012_zkjl t set t.out_dept_id=#{deptId}  where t.zyid=#{zyid} and t.out_date>#{orderAt};
+	end;]]>   
+	</update>
+	
+	<select id="getICUList" resultType="map">
+		select t.zyid zyid,t.order_at orderAt,t.execoffice_code execofficeCode from st004_yzxxb t 
+		where t.stop_at is null and t.order_name=#{yzName}
+		and  t.order_at between sysdate-#{day} and sysdate
+	</select>
+	
+	<select id="getXsrList" resultType="map">
+		select distinct t.zyid zyid,t.in_hosp_at inHospAt from st003_cryxxb t 
+		where t.patient_id in (select s1.patient_id from  st001_jbxxb s1  where (t.in_hosp_at-s1.birth_date)&lt;=48) and t.dept_code='163' and t.in_hosp_at  between sysdate-#{day} and sysdate
+	</select>
+	
+	<select id="getNicuListBack" resultType="map">
+		select max(order_at) orderAt,zyid
+           from (select t.execoffice_code,
+                        t.execoffice_name,
+                        t.zyid,
+                        t.order_at
+                   from st004_yzxxb t
+                  where t.order_name = #{yzName}
+                  and t.stop_at is not null
+                   and  t.order_at between sysdate-#{day} and sysdate) a
+          group by zyid
+	</select>
+
+	
+	<select id="get" resultType="dep">
+		select <include refid="commCols"/> from ZG002_BYKS
+  		<where>dept_id=#{deptId}</where>
+	</select>
+	
+	
+	<select id="findDepCount" parameterType="dep" resultType="int">
+		select count(*) from ZG002_BYKS
+		<where>
+			1=1
+			<if test="hospId!=null and hospId!=''">
+			and HOSP_ID=#{hospId}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (upper(DEPT_NAME) LIKE CONCAT(CONCAT('%', upper(#{searchString})), '%')
+				or upper(DEPT_ID) LIKE CONCAT(CONCAT('%', upper(#{searchString})), '%')
+				or lower(SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') ) 
+			</if>
+			<if test="depPorp!=null and depPorp!=''">and ${depPorp}='1'</if>
+			<if test="deptTypeId!=null and deptTypeId!=''">and DEPT_TYPEID=#{deptTypeId}</if>
+			<if test="ifcaseoffice!=null">and IFCASEOFFICE=#{ifcaseoffice}</if>
+			<if test="ifenvoffice!=null">and ifenvoffice=#{ifenvoffice}</if>
+			<if test="iffocus!=null">and iffocus=#{iffocus}</if>
+			<if test="ifmzoffice!=null">and ifmzoffice=#{ifmzoffice}</if>
+			<if test="ificu!=null">and ificu=#{ificu} and ifchildoffice is null</if>
+			<if test="ifbedicu!=null">and IFBEDICU=#{ifbedicu} and ificu is null</if>
+			<if test="ifchildoffice!=null">and ifchildoffice=#{ifchildoffice}</if>
+			<if test="flag!=null">and FLAG = #{flag}</if>
+			<if test="isCaseOrEnvo!=null">and ( ifcaseoffice=#{isCaseOrEnvo} or  ifenvoffice=#{isCaseOrEnvo} )</if>
+			<if test="chargeManId!=null and chargeManId!=''">
+				and dept_id in (
+          			select regexp_substr((select g.dept_id
+                    from zg003_yyzg g
+                    where g.employee_id = #{chargeManId}),'[^,]+',1,level) as deptids from dual
+					connect by level &lt;= length((select g.dept_id from zg003_yyzg g
+                       where g.employee_id = #{chargeManId})) -
+           			   length(REPLACE((select g.dept_id
+                            from zg003_yyzg g
+                            where g.employee_id = #{chargeManId}),',','')) + 1
+                    union
+ 					select k.autho_dept_id from zg031_sqks k where k.id=#{chargeManId}
+      			)
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="getAll" resultType="dep">
+		select <include refid="commCols"/> from ZG002_BYKS
+		<where>
+			1=1
+		</where>
+		order by DEPT_TYPEID,SHOW_ORDER,DEPT_ID
+	</select>
+	
+	<select id="getDept" resultType="dep">
+		select t.dept_id deptId,t.dept_name deptName from zg002_byks t 
+		<where>
+			t.ifcaseoffice=1
+		</where>
+		order by DEPT_TYPEID,SHOW_ORDER,DEPT_ID
+	</select>
+	
+	<select id="getDepList" parameterType="dep" resultType="dep">
+		select <include refid="commCols"/>
+        from ZG002_BYKS 
+		<where> 
+			1=1
+			<if test="hospId!=null and hospId!=''">
+			and HOSP_ID=#{hospId} 
+			</if>
+			<if test="deptTypeId!=null and deptTypeId!=''">and DEPT_TYPEID=#{deptTypeId}</if>
+			<if test="ifcaseoffice!=null">and IFCASEOFFICE=#{ifcaseoffice}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (DEPT_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%')
+				or DEPT_ID LIKE CONCAT(CONCAT('%', #{searchString}), '%'))
+			</if>
+			<if test="flag!=null and flag!=''">
+				and flag=#{flag}
+			</if>
+		</where>
+		order by DEPT_TYPEID,SHOW_ORDER,DEPT_ID
+	</select>
+	
+	<select id="getDepByUnitIdAndDepTypeExt" resultType="dep">
+		select <include refid="commCols"/> 
+		from ZG002_BYKS 
+		<where>
+			1=1
+			<if test="hospId!=null and hospId!=''">
+			and HOSP_ID=#{hospId}
+			</if>
+			<if test="deptTypeId!=null and deptTypeId!=''">and DEPT_TYPEID=#{deptTypeId}</if>
+		</where>
+		order by DEPT_TYPEID,SHOW_ORDER,DEPT_ID
+	</select>
+	
+	<select id="findLike" resultType="dep">
+		select <include refid="commCols"/> from ZG002_BYKS
+		<where>
+			1=1
+			<if test="hospId!=null and hospId!=''">
+			and HOSP_ID=#{hospId}
+			</if>
+			<if test="name != null and name != ''">
+				and (
+					DEPT_NAME LIKE CONCAT(CONCAT('%', #{name}), '%')
+					or DEPT_ID LIKE CONCAT(CONCAT('%', Upper(#{name})), '%')
+					or SP_CODE LIKE CONCAT(CONCAT('%', Upper(#{name})), '%')
+				)
+			</if>
+		</where>
+		order by DEPT_TYPEID,SHOW_ORDER,DEPT_ID
+	</select>
+	
+	<select id="getUnitIdDepId" resultType="dep">
+		select <include refid="commCols"/> from ZG002_BYKS
+		<where>
+		    1=1 
+		    <if test="hospId != null and hospId != ''"> and HOSP_ID=#{hospId} </if>
+		    <if test="deptId != null and deptId != ''"> and DEPT_ID=#{deptId} </if>
+		</where>
+		order by DEPT_TYPEID,SHOW_ORDER,DEPT_ID
+	</select>
+	
+	<select id="getDeptType" resultType="String">
+		     select  (case
+                  when a.ificu = '1' then
+                   'ICU'
+                  else
+                         ''
+             end) deptType from ZG002_BYKS a where a.dept_id=#{deptId}
+	</select>
+	
+	<select id="findDepExtis" parameterType="dep" resultType="dep">
+		select <include refid="commCols"/> from ZG002_BYKS
+		<where>
+			1=1
+			<if test="hospId!=null and hospId!=''"> and HOSP_ID=#{hospId} </if>
+			and (DEPT_ID=#{deptId}) 
+			<if test="id!=null and id!=''"> and ID!=#{id}</if>
+		</where>
+	</select>
+	
+	<select id="getByDeptIds" resultType="dep">
+		select <include refid="commCols"/> from ZG002_BYKS
+		<where>
+			DEPT_ID in 
+			<foreach collection="deptIds" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+		</where>
+	</select>
+</mapper>

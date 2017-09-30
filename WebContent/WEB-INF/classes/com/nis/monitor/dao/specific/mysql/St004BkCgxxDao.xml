@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.St004BkCgxxDao">
+
+	<sql id="commCols_mysql">
+		RELID relid,REFID refid,CREATE_DATE createDate,YZ_ID yzId
+	</sql>
+
+	
+	<select id="findSt004BkCgxx_mysql" parameterType="st004BkCgxx" resultType="st004BkCgxx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ST004_BK_CGXX
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+
+</mapper>

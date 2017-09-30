@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxZhibiaoDao">
+
+	<sql id="commCols_mysql">
+		ZB_ID zbId,ZB_NAME zbName,ZB_CLASS zbClass,ZB_VALUE zbValue,ZB_SCORE zbScore,IS_GY isGy,ZB_TYPE zbType,QID qid
+	</sql>
+
+	<select id="findFxZhibiao_mysql" parameterType="fxZhibiao" resultType="fxZhibiao">
+		select <include refid="commCols_mysql"/> from FX_ZHIBIAO
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

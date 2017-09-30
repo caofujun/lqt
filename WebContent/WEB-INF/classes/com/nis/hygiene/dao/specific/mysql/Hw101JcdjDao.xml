@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw101JcdjDao">
+
+	<sql id="commCols_mysql">
+		dj_id djId,dept_id deptId,dept_name deptName,take_by takeBy,take_at takeAt,create_by createBy,create_at createAt,report_by reportBy,report_at reportAt,memo memo,type type
+	</sql>
+
+	<select id="findHw101Jcdj_mysql" parameterType="hw101Jcdj" resultType="hw101Jcdj">
+		select <include refid="commCols_mysql"/> from hw101_jcdj
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

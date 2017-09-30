@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl002GrxxDao">
+
+	<sql id="commCols">
+		grid grid,brid brid,infect_type infectType,infect_code infectCode,infect_name infectName,last_at lastAt
+	</sql>
+
+	<insert id="save" parameterType="xl002Grxx" flushCache="true">
+		 insert into xl002_grxx(grid,brid,infect_type,infect_code,infect_name,last_at)
+		 values(#{grid},#{brid},#{infectType},#{infectCode},#{infectName},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl002_grxx
+		<where>grid=#{grid}</where>
+	</delete>
+	
+	<delete id="deleteByBrid" flushCache="true">
+		delete from xl002_grxx
+		<where>brid=#{brid}</where>
+	</delete>
+	
+	<delete id="delXl002Grxx" flushCache="true">
+		delete from xl002_grxx
+		<where>
+			brid=#{brid}
+			<if test="gridNotIn!=null and gridNotIn.size!=0">
+		    	and grid not in 
+				<foreach collection="gridNotIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="xl002Grxx" flushCache="true">
+		update xl002_grxx
+		<set>
+			grid=#{grid},brid=#{brid},infect_type=#{infectType},infect_code=#{infectCode},infect_name=#{infectName},last_at=#{lastAt}
+		</set>
+		<where>grid=#{grid}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update xl002_grxx
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='brid'">brid=#{xl002Grxx.brid},</when>
+					<when test="item=='infectType'">infect_type=#{xl002Grxx.infectType},</when>
+					<when test="item=='infectCode'">infect_code=#{xl002Grxx.infectCode},</when>
+					<when test="item=='infectName'">infect_name=#{xl002Grxx.infectName},</when>
+					<when test="item=='lastAt'">last_at=#{xl002Grxx.lastAt},</when>
+				</choose>
+			</foreach>
+			grid=#{xl002Grxx.grid}
+		</set>
+		<where>grid=#{xl002Grxx.grid}</where>
+	</update>
+	
+	<select id="get" resultType="xl002Grxx">
+		select <include refid="commCols"/> from xl002_grxx
+  		<where>grid=#{grid}</where>
+	</select>
+	
+	
+	<select id="findXl002GrxxCount" parameterType="xl002Grxx" resultType="int">
+		select count(*) from xl002_grxx
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl002Grxx">
+		select <include refid="commCols"/> from xl002_grxx
+		<where>
+		</where>
+	</select>
+	
+	<resultMap type="xl002Grxx" id="queryByBridMap" >  
+        <id column="grid" property="grid"/>  
+        <result column="infectType" property="infectType"/>
+        <result column="infectCode" property="infectCode"/>
+        <result column="infectName" property="infectName"/>
+        <collection property="xl003List" column="grid" ofType="Xl003Byt">  
+            <id column="bytid" property="bytid"/> 
+            <result column="infectPathoId" property="infectPathoId"/>
+            <result column="infectPathoName" property="infectPathoName"/>
+            <result column="pathoresult" property="pathoresult"/>
+             <result column="sample" property="sample"/>
+            <collection property="xl004List" column="bytid" ofType="Xl004Kjyw">  
+	            <id column="yjywid" property="yjywid"/> 
+	            <result column="drugId" property="drugId"/>
+	            <result column="drugName" property="drugName"/>
+	            <result column="status" property="status"/>
+	        </collection> 
+        </collection>  
+    </resultMap>  
+	
+	<select id="queryByBrid" resultMap="queryByBridMap">
+		select xl2.grid grid,xl2.infect_type infectType,xl2.infect_code infectCode,xl2.infect_name infectName,xl3.infect_patho_id infectPathoId,xl3.infect_patho_name infectPathoName,xl3.pathoresult pathoresult,xl3.sample sample,
+		xl3.bytid bytid,xl4.yjywid yjywid,xl4.drug_id drugId,xl4.drug_name drugName,xl4.status status  
+		from xl002_grxx xl2 left join xl003_byt xl3 on xl2.grid = xl3.grid left join xl004_kjyw xl4 on xl3.bytid=xl4.bytid 
+		<where>
+			xl2.brid=#{brid} 
+		</where>
+		 order by xl2.grid desc,xl3.bytid,xl4.drug_id 
+	</select>
+	
+</mapper>

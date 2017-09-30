@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DepDao">
+
+	<sql id="commCols_oracle">
+		ID id,t.DEPT_ID deptId,t.DEPT_NAME deptName,t.DEPT_TYPEID deptTypeId,DEPT_TYPENAME deptTypeName,STAND_DEPT_ID standDeptId,
+		t.HOSP_ID hospId,t.ZJ_CODE zjCode,t.BH_CODE bhCode,t.SP_CODE spCode,t.WB_CODE wbCode,t.IFCASEOFFICE ifcaseoffice,t.SHOW_ORDER showOrder,
+		t.IFENVOFFICE ifenvoffice,t.IFICU ificu,t.IFBEDICU ifbedicu,t.IFCHILDOFFICE ifchildoffice,t.IFOPEROFFICE ifoperoffice,t.IF_HOSPDEPT ifhospdept,
+		t.IFMZOFFICE ifmzoffice,t.IFFOCUS iffocus,t.FLAG flag,t.LAST_AT lastAt,t.TEL tel,t.HOSINFECT_BASEPER hosinfectBaseper,
+		t.OUTHOSINFECT_BASEPER outhosinfectBaseper,t.dept_classify deptClassify,t.baseInfect baseInfect
+	</sql>
+	
+	<select id="findDep_oracle" parameterType="dep" resultType="dep">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/>
+		,z1.dept_name showStandDeptId,z4.hosp_name hospName 
+		from ZG002_BYKS t 
+		left join ZG001_BZKS z1 on t.STAND_DEPT_ID=z1.dept_id
+		left join zg004_yyxx z4 on z4.HOSP_ID=t.HOSP_ID
+		<where>
+			1=1
+			<if test="hospId!=null and hospId!=''">
+			and t.HOSP_ID=#{hospId} 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (upper(t.DEPT_NAME) LIKE CONCAT(CONCAT('%', upper(#{searchString})), '%')
+				or upper(t.DEPT_ID) LIKE CONCAT(CONCAT('%', upper(#{searchString})), '%')
+				or lower(t.SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%')) 
+			</if>
+			<if test="depPorp!=null and depPorp!=''">and ${depPorp}='1'</if>
+			<if test="flag!=null"> and t.FLAG = #{flag}</if>
+			<if test="deptTypeId!=null and deptTypeId!=''">and t.DEPT_TYPEID=#{deptTypeId}</if>
+			<if test="ifcaseoffice!=null">and t.ifcaseoffice=#{ifcaseoffice}</if>
+			<if test="ifenvoffice!=null">and t.ifenvoffice=#{ifenvoffice}</if>
+			<if test="ifmzoffice!=null">and ifmzoffice=#{ifmzoffice}</if>
+			<if test="iffocus!=null">and t.iffocus=#{iffocus}</if>
+			<if test="ificu!=null">and t.ificu=#{ificu} and ifchildoffice is null</if>
+			<if test="ifbedicu!=null">and t.IFBEDICU=#{ifbedicu} and ificu is null</if>
+			<if test="ifchildoffice!=null">and t.ifchildoffice=#{ifchildoffice}</if>
+			<if test="isCaseOrEnvo!=null">and ( t.ifcaseoffice=#{isCaseOrEnvo} or  t.ifenvoffice=#{isCaseOrEnvo} )</if>
+			<if test="chargeManId!=null and chargeManId!=''">
+				and t.dept_id in (
+          			select regexp_substr((select g.dept_id
+                    from zg003_yyzg g
+                    where g.employee_id = #{chargeManId}),'[^,]+',1,level) as deptids from dual
+					connect by level &lt;= length((select g.dept_id from zg003_yyzg g
+                       where g.employee_id = #{chargeManId})) -
+           			   length(REPLACE((select g.dept_id
+                            from zg003_yyzg g
+                            where g.employee_id = #{chargeManId}),',','')) + 1
+                     union
+ 					 select k.autho_dept_id from zg031_sqks k where k.id=#{chargeManId}
+      			)
+			</if>
+		</where>
+		order by t.SHOW_ORDER,t.DEPT_ID
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

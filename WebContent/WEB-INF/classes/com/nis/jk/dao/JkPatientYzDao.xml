@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientYzDao">
+
+	<sql id="commCols">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,ORDER_TYPE orderType,
+		ORDER_AT orderAt,STOP_AT stopAt,ORDER_ID orderId,ORDER_NAME orderName,DRUG_SPECI drugSpeci,DOSAGE dosage,
+		DOSAGE_UNIT dosageUnit,USE_COUNT useCount,SYPC sypc,ADMIN_ROUTE_ID adminRouteId,ADMIN_ROUTE_NAME adminRouteName,
+		USE_PURPOSE usePurpose,FREQUENCY frequency,EXECOFFICE_CODE execofficeCode,EXECOFFICE_NAME execofficeName,BDOC_ID bdocId,
+		BDOC_NAME bdocName,BNRS_ID bnrsId,BNRS_NAME bnrsName,EDOC_ID edocId,EDOC_NAME edocName,YZ_STATUS yzStatus,MEMO memo,
+		USEDRUG_DAYS usedrugDays,ORDER_CLASS orderClass,YPDJ ypdj,QTY_DAY qtyDay,TOTAL_QTY totalQty,IS_KJYW isKjyw,EXECUTE_TIME executeTime,
+		UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientYz" flushCache="true">
+		 insert into JK_PATIENT_YZ(ID,ZYID,PATIENT_ID,VISIT_ID,PATIENT_NAME,ORDER_TYPE,ORDER_AT,STOP_AT,ORDER_ID,ORDER_NAME,DRUG_SPECI,DOSAGE,DOSAGE_UNIT,USE_COUNT,SYPC,ADMIN_ROUTE_ID,ADMIN_ROUTE_NAME,USE_PURPOSE,FREQUENCY,EXECOFFICE_CODE,EXECOFFICE_NAME,BDOC_ID,BDOC_NAME,BNRS_ID,BNRS_NAME,EDOC_ID,EDOC_NAME,YZ_STATUS,MEMO,USEDRUG_DAYS,ORDER_CLASS,YPDJ,QTY_DAY,TOTAL_QTY,IS_KJYW,EXECUTE_TIME,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{zyid},#{patientId},#{visitId},#{patientName},#{orderType},#{orderAt},#{stopAt},#{orderId},#{orderName},#{drugSpeci},#{dosage},#{dosageUnit},#{useCount},#{sypc},#{adminRouteId},#{adminRouteName},#{usePurpose},#{frequency},#{execofficeCode},#{execofficeName},#{bdocId},#{bdocName},#{bnrsId},#{bnrsName},#{edocId},#{edocName},#{yzStatus},#{memo},#{usedrugDays},#{orderClass},#{ypdj},#{qtyDay},#{totalQty},#{isKjyw},#{executeTime},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_YZ
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientYz" flushCache="true">
+		update JK_PATIENT_YZ
+		<set>
+			ID=#{id},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},PATIENT_NAME=#{patientName},ORDER_TYPE=#{orderType},
+			ORDER_AT=#{orderAt},STOP_AT=#{stopAt},ORDER_ID=#{orderId},ORDER_NAME=#{orderName},DRUG_SPECI=#{drugSpeci},DOSAGE=#{dosage},
+			DOSAGE_UNIT=#{dosageUnit},USE_COUNT=#{useCount},SYPC=#{sypc},ADMIN_ROUTE_ID=#{adminRouteId},ADMIN_ROUTE_NAME=#{adminRouteName},
+			USE_PURPOSE=#{usePurpose},FREQUENCY=#{frequency},EXECOFFICE_CODE=#{execofficeCode},EXECOFFICE_NAME=#{execofficeName},
+			BDOC_ID=#{bdocId},BDOC_NAME=#{bdocName},BNRS_ID=#{bnrsId},BNRS_NAME=#{bnrsName},EDOC_ID=#{edocId},EDOC_NAME=#{edocName},
+			YZ_STATUS=#{yzStatus},MEMO=#{memo},USEDRUG_DAYS=#{usedrugDays},ORDER_CLASS=#{orderClass},YPDJ=#{ypdj},QTY_DAY=#{qtyDay},
+			TOTAL_QTY=#{totalQty},IS_KJYW=#{isKjyw},EXECUTE_TIME=#{executeTime},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientYz" flushCache="true">
+		update JK_PATIENT_YZ
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientYz">
+		select <include refid="commCols"/> from JK_PATIENT_YZ
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientYzCount" parameterType="jkPatientYz" resultType="int">
+		select count(*) from JK_PATIENT_YZ
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientYz">
+		select <include refid="commCols"/> from JK_PATIENT_YZ
+		<where>
+		</where>
+	</select>
+</mapper>

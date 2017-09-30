@@ -1,0 +1,105 @@
+.login_box .validation-field img {	
+	float:right;
+	top:-30px;
+	position: relative;
+	height:30px;
+	}
+.e_code{
+	float:right;	
+	position: relative;
+	top:-32px;
+	margin-right:20px;
+}
+.block_center tr td,.block_center tr th{line-height:20px; vertical-align: top;}	
+
+input{vertical-align:middle;}
+input.text{	
+  	height: 24px;
+  	line-height: 24px;
+  	text-indent: 0px;
+  	padding: 1px 5px;
+ 	width: 140px;
+  	border: 1px solid #e0e0e0;
+  	border-radius: 4px;  	
+  	margin:0px;
+ }
+.mb60{margin-bottom:10px;}
+.dialog-content{overflow:hidden;}
+/* home */
+.SingleRow .userInfor .main .left{  position: relative;}
+.SingleRow .userInfor .main .middle{  margin:70px 0px 0px 10px;}
+.DoubleRow .edit_pwd{ right:3%; width:20px; }
+.SingleRow .edit_pwd{ right:2%; width:20px; }
+.home_component ul li{ margin: 10px 1.5%;}
+.quickMenu{padding-top:10px;}
+
+
+.standard_select{ /*边框*/
+ display:inline-block;
+ border:solid 1px #E3E9EF;
+ border-top-color:#ABADB3;
+ background-color:#fff;
+ padding:4px 5px; /*调整此处改变select高度*/
+ margin-right:5px;
+ vertical-align:middle;
+}
+.select_shelter{ /*遮挡默认边框*/
+display:inline-block;
+width:136px;
+*width:136px;
+height:18px;
+overflow:hidden;
+vertical-align:middle;
+z-index:10;
+}
+.select_shelter select{
+ *margin:-2px;
+ margin:-2px;
+ padding:0px;
+ border:0px; 
+ width:140px; /*select的宽度*/
+ vertical-align:middle;
+ z-index:9;
+}
+.w_100 .select_shelter select,.w_100 .select_shelter{width:100px;} 
+
+.w_95{ padding:5px 0px;}
+.w_95 .select_shelter{ width:95%;}
+.w_95 .select_shelter select{width:100%;}
+.w_300{ padding:5px 0px;}
+.w_300 .select_shelter{ width:296px;}
+.w_300 .select_shelter select{width:300px;}
+input.span_l{width:250px;}
+input.span_sm{width:73px;}
+input.Wdate{padding-left:0px; width:100px; text-indnt:5px;}
+input.pagination-num{width:30px;}
+.combo input{padding-left:0px;}
+
+.arrow{position:absolute; right:20px;}
+.tree-title span{float:left;}
+.dg_panel1{padding:10px;}
+.Medical_records_pro_cont_title span{line-height: 14px; }
+.timeline{ margin:0px;}
+.dialog_footer2{position:fixed;}
+.dialog_footer,.dg_panel .dp_operate {position:fixed; bottom:opx; top:auto;}
+.pr{position:relative;}
+.plan_zd{overflow-x: hidden;}
+.sf_record_title button{ padding:3px 0px 0px 8px; line-height:18px;}
+.dg_panel .dgc_panel{height:auto; }
+.dg_panel {overflow-x: hidden;}
+
+/*采集单文字提示弹出块 肿瘤*/
+.prompt_d{display:block;}
+.prompt_d:hover{ visibility:visible; z-index:98; }
+.prompt_d:hover .arrow_top{ left:115px;}
+.prompt_d:hover div{left:100px; width:400px;}
+.prompt_d:hover div dd{position:relative; left:-40px;}
+
+/*弹窗底部*/
+.dg_panel .dp_operate{position:absolute; }
+
+.editfile input[type="text"]{padding-left:5px; text-indent:0px; width:90%;}
+
+.wjdc .sorting input[type="button"]{ float:left;}
+
+.m_search_tj{height:24px;}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg010KjywDao">
+
+	<sql id="commCols_mysql">
+		WB_CODE wbCode,IF_COMMON ifCommon,FLAG flag,IF_REPORT ifReport,ZJ_CODE zjCode,LAST_AT lastAt,DRUG_ID drugId,DRUG_NAME drugName,DRUG_ENNAME drugEnname,DRUG_TYPEID drugTypeid,BH_CODE bhCode,SP_CODE spCode
+	</sql>
+
+	<select id="findZg010Kjyw_mysql" parameterType="zg010Kjyw" resultType="zg010Kjyw">
+		select <include refid="commCols_mysql"/> from ZG010_KJYW
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

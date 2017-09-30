@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcPrivilegeDao">
+
+	<sql id="commCols">
+		ID id,ROLE_ID roleId,HAVEGRANT havegrant,OPERATION
+		operation,ACCESS_TYPE accessType,ACCESS_ID accessId,EXT1 ext1,EXT2
+		ext2
+	</sql>
+
+	<delete id="deleteRoleId" flushCache="true">
+		delete from AC_PRIVILEGE
+		<where>
+			ROLE_ID=#{roleId}
+			and access_id in (
+            	select n.menu_id from ac_menu n
+              	where n.isvalid = 1 and nvl(n.isreport,0) = 0
+        	)
+		</where>
+	</delete>
+
+	<update id="update" parameterType="acPrivilege" flushCache="true">
+		update AC_PRIVILEGE
+		<set>
+			ID=#{id},ROLE_ID=#{roleId},HAVEGRANT=#{havegrant},OPERATION=#{operation},ACCESS_TYPE=#{accessType},ACCESS_ID=#{accessId},EXT1=#{ext1},EXT2=#{ext2}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+
+	<select id="get" resultType="acPrivilege">
+		select
+		<include refid="commCols" />
+		from AC_PRIVILEGE
+		<where>ID=#{id}</where>
+	</select>
+
+
+	<select id="findAcPrivilegeCount" parameterType="acPrivilege"
+		resultType="int">
+		select count(*) from AC_PRIVILEGE
+		<where>
+			1=1
+		</where>
+	</select>
+
+	<select id="getAll" resultType="acPrivilege">
+		select
+		<include refid="commCols" />
+		from AC_PRIVILEGE
+		<where>
+			1=1
+		</where>
+	</select>
+
+	<select id="findByRoleid" resultType="acPrivilege">
+		select
+		<include refid="commCols" />
+		from AC_PRIVILEGE
+		<where>
+			ROLE_ID=#{roleId}
+		</where>
+	</select>
+
+	<select id="findMenuByRoleid" resultType="acMenu">
+		select distinct m.MENU_ID menuId,m.MENU_TYPE menuType,m.MENU_NO
+		menuNo,m.MENU_NAME menuName,m.PARENT_MENU_NO parentMenuNo,m.SHOW_ORDER
+		showOrder,m.DEST_URL destUrl,m.TARGET target,m.MODULE_CODE
+		moduleCode,m.OWNERSHIP ownership,m.IMAGE image,m.REMARK remark,m.isreport isreport
+		from
+		AC_MENU m inner join AC_PRIVILEGE p on(m.MENU_ID=p.ACCESS_ID and
+		p.ACCESS_TYPE=1 and p.OPERATION = 1)
+		<where>
+			p.ROLE_ID=#{roleId} or ROLE_ID=#{userId}
+		</where>
+		ORDER BY SHOW_ORDER
+	</select>
+	
+	<delete id="deleteReportAuthByRoleId" flushCache="true">
+		delete from ac_privilege g
+		   where g.role_id = #{roleId}
+		   and g.access_id in (
+		   		  select n.menu_id from ac_menu n
+		          where n.isvalid = 1 and n.isreport = 1 and n.OWNERSHIP = 'hospital' 
+		    )
+	</delete>
+</mapper>

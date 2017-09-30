@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl007FcsjDao">
+
+	<sql id="commCols_oracle">
+		RELID relid,BL_ID blId,SJ_ID sjId,CSM_ID csmId,CSD_ID csdId,FLAG flag,FC fc,FC_ZT fcZt
+	</sql>
+
+	
+	<select id="findBl007Fcsj_oracle" parameterType="bl007Fcsj" resultType="bl007Fcsj">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from BL007_FCSJ
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+
+	
+	<select id="findBl007FcsjList_oracle" parameterType="bl007Fcsj" resultType="bl007Fcsj">
+		select s.d_cardid djCardid,
+				s.d_name djName,
+				d.bl_id blId,
+				d.fc fc,
+				d.beforFc beforFc,
+				s.enter_time enterTime,
+       			d.fc fc,
+       			d.beforFc beforFc,
+       			d.fc_zt fcZt,
+       			 (select x.dept_name from zg002_byks x where x.dept_id=s.d_dept) djDept,
+      			(select t.item_name from ny_sys_dddd t where t.item_id = d.csm_id) itemName from(
+		select *
+		  from (select fc,
+                       bl_id,
+                       csm_id,
+                       fc_zt,
+		               (select max(fc)
+		                  from BL007_FCSJ b
+		                 where a.bl_id = b.bl_id
+		                   and a.fc &lt;&gt; b.fc) beforFc
+		          from BL007_FCSJ a
+		         where fc &lt; sysdate + ${days}
+		         and fc &gt; sysdate - ${days}
+		         ) c
+		 where (bl_id||'_'||beforFc) not in
+		       (select bl_id||'_'||max(fc) from BL007_FCSJ group by bl_id)) d
+		 left outer join bl002_sjdj s on d.bl_id = s.bl_id 
+	</select>
+	
+	<insert id="saveList_oracle" parameterType="java.util.List">
+        <foreach collection="fcsjList" item="item" index="index" open="begin" close=";end;" separator=";">
+           insert into BL007_FCSJ(RELID,BL_ID,SJ_ID,CSM_ID,CSD_ID,FLAG,FC,FC_ZT)
+		 values(#{item.relid},#{item.blId},#{item.sjId},#{item.csmId},#{item.csdId},#{item.flag},#{item.fc},#{item.fcZt})
+        </foreach>  
+    </insert>
+</mapper>

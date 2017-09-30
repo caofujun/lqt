@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientTempratureDao">
+
+	<sql id="commCols_mysql">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,RECORDING_AT recordingAt,TW_VALUES twValues,TEMPRATURE_TYPE_NAME tempratureTypeName,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientTemprature_mysql" parameterType="jkPatientTemprature" resultType="jkPatientTemprature">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_TEMPRATURE
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys012PathologyDao">
+
+	<sql id="commCols_oracle">
+		PATHOLOGYNO pathologyno,PATHOLOGYNAME pathologyname,PYCODE pycode,WBCODE wbcode,BHCODE bhcode
+	</sql>
+
+	
+	<select id="findCtgSys012Pathology_oracle" parameterType="ctgSys012Pathology" resultType="ctgSys012Pathology">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_SYS012_PATHOLOGY
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and ( upper(PATHOLOGYNO) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(PATHOLOGYNAME) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(PYCODE) like upper(CONCAT('%',CONCAT(#{searchString},'%'))) or upper(WBCODE) like upper(CONCAT('%',CONCAT(#{searchString},'%')))  )
+			</if>
+		</where>
+		order by 
+		<if test="pathologyno!=null and pathologyno!=''">
+		     case when upper(PATHOLOGYNO)=upper(#{pathologyno}) then 0 else 1 end, </if>
+			PATHOLOGYNO
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

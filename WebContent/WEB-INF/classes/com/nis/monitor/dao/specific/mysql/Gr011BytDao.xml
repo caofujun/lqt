@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr011BytDao">
+
+	<sql id="commCols_mysql">
+		id id,reg_id regId,order_index orderIndex,infect_part_id infectPartId,sample_id sampleId,pathogen_id pathogenId,pathogen_name pathogenName,submi_at submiAt,enter_at enterAt,relid relid,pathogen_sn pathogenSn,test_order_no testOrderNo,gr11_relid gr11Relid 
+	</sql>
+
+	<select id="findGr011Byt_mysql" parameterType="gr011Byt" resultType="gr011Byt">
+		select <include refid="commCols_mysql"/> from gr011_byt
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

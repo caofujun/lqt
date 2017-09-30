@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicOfficeDao">
+
+	<sql id="commCols_oracle">
+		ID id,DEPT_ID deptId,DEPT_NAME deptName,DEP_TYPE depType,DEP_TYPE_NAME depTypeName,DEP_STATUS depStatus,
+		PARENT_DEP_ID parentDepId,PARENT_DEP_NAME parentDepName,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkDicOffice_oracle" parameterType="jkDicOffice" resultType="jkDicOffice">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from JK_DIC_OFFICE
+		<where>
+			<if test="updFlag!=null">and (UPD_FLAG=#{updFlag} or UPD_FLAG is null)</if>
+			<if test="updTime!=null">and (UPD_TIME &gt;= #{updTime} or UPD_TIME is null)</if>
+		</where>
+		order by UPD_TIME desc
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

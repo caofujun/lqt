@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk002GrzdDao">
+
+	<sql id="commCols_mysql">
+		infect_category infectCategory,auth_at authAt,auth_userid authUserid,auth_username authUsername,infect_kind infectKind,return_reason returnReason,del_reason delReason,auth_status authStatus,relid relid,refid refid,sn sn,diagnose_id diagnoseId,infect_diagn_id infectDiagnId,infect_diagn_name infectDiagnName,infect_date infectDate,infect_dept_id infectDeptId,infect_nexus infectNexus,infect_dept_name infectDeptName,sub_id subId,incision_grade incisionGrade,wound_healing woundHealing,oper_id operId,isselect isselect,infect_type infectType,deleted deleted,confirm_dt confirmDt,ope_relid opeRelid,ope_name opeName,custom_diagn_id customDiagnId,custom_diagn_name customDiagnName,memo memo,bk_type bkType,lastoper_name lastoperName,lastoper_date lastoperDate,bk_typename bkTypename,incision_type incisionType,infect_dept_name_edit infectDeptNameEdit,zdyj2 zdyj2,dgxggr_id dgxggrId,relation relation,jbzg jbzg,infect_relation infectRelation,jbzg_date jbzgDate 
+	</sql>
+
+	<select id="findBk002Grzd_mysql" parameterType="bk002Grzd" resultType="bk002Grzd">
+		select <include refid="commCols_mysql"/> from bk002_grzd
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

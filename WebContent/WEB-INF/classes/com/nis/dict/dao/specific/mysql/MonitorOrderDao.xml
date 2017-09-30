@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.MonitorOrderDao">
+
+	<sql id="commCols_mysql">
+		ID id,CLASS_CODE classCode,CLASS_NAME className,ORDER_CODE orderCode,ORDER_NAME orderName,ORDER_USE orderUse,
+		ORDER_VISIBLE orderVisible,WB_CODE wbCode,SP_CODE spCode,BH_CODE hbCode,FLAG flag,UPD_TIME updTime
+	</sql>
+
+	<select id="findMonitorOrder_mysql" parameterType="monitorOrder" resultType="monitorOrder">
+		select <include refid="commCols_mysql"/> from ZG023_STANDDEPT_TYPE
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

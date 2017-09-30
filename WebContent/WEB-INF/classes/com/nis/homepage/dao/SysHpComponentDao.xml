@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.homepage.dao.SysHpComponentDao">
+
+	<sql id="commCols">
+		ID id,COMPONENT_CODE componentCode,COMPONENT_NAME componentName,COMPONENT_URL componentUrl,CODE_BUSINESS codeBusiness,IMG_URL imgUrl,REMARK remark,LAYOUT_STATUS layoutStatus,SCOPE_LEVEL scopeLevel,UNIT_ID unitId,DEP_NO depNo,MENU_CODE menuCode
+	</sql>
+
+	<insert id="save" parameterType="sysHpComponent" flushCache="true">
+		 insert into SYS_HP_COMPONENT(ID,COMPONENT_CODE,COMPONENT_NAME,COMPONENT_URL,CODE_BUSINESS,IMG_URL,REMARK,LAYOUT_STATUS,SCOPE_LEVEL,UNIT_ID,DEP_NO,MENU_CODE)
+		 values(#{id},#{componentCode},#{componentName},#{componentUrl},#{codeBusiness},#{imgUrl},#{remark},#{layoutStatus},#{scopeLevel},#{unitId},#{depNo},#{menuCode})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from SYS_HP_COMPONENT
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="sysHpComponent" flushCache="true">
+		update SYS_HP_COMPONENT
+		<set>
+			COMPONENT_CODE=#{componentCode},COMPONENT_NAME=#{componentName},COMPONENT_URL=#{componentUrl},CODE_BUSINESS=#{codeBusiness},IMG_URL=#{imgUrl},REMARK=#{remark},SCOPE_LEVEL=#{scopeLevel},UNIT_ID=#{unitId},DEP_NO=#{depNo},MENU_CODE=#{menuCode}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateStatus" flushCache="true">
+		update SYS_HP_COMPONENT
+		<set>
+			LAYOUT_STATUS=#{status}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="sysHpComponent">
+		select <include refid="commCols"/> from SYS_HP_COMPONENT
+  		<where>ID=#{id}</where>
+	</select>
+	
+	<select id="getComponentCode" resultType="sysHpComponent">
+		select <include refid="commCols"/> from SYS_HP_COMPONENT
+  		<where>COMPONENT_CODE=#{componentCode}</where>
+	</select>
+	
+	<select id="findSysHpComponentCount" parameterType="sysHpComponent" resultType="int">
+		select count(*) from SYS_HP_COMPONENT
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="sysHpComponent">
+		select <include refid="commCols"/> from SYS_HP_COMPONENT
+		<where>
+		</where>
+	</select>
+	
+</mapper>

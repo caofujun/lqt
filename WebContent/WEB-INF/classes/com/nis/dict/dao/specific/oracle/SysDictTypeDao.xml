@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.SysDictTypeDao">
+
+	<sql id="commCols_oracle">
+		ID id,DICT_TYPE_CODE dictTypeCode,DICT_TYPE_NAME dictTypeName,REMARK remark
+	</sql>
+
+	
+	<select id="findSysDictType_oracle" parameterType="sysDictType" resultType="sysDictType">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from SYS_Dict_TYPE
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (SYS_Dict_TYPE.DICT_TYPE_CODE like CONCAT( CONCAT('%',#{searchString}),'%')  or SYS_Dict_TYPE.DICT_TYPE_NAME like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+		order by DICT_TYPE_NAME
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Zg033JcxxppDao">
+
+	<sql id="commCols_oracle">
+		id id,sj_id sjId,item_field itemField,item_match itemMatch,item_match_value itemMatchValue,value_field valueField,value_match valueMatch,value_match_value valueMatchValue
+	</sql>
+
+	<select id="findZg033Jcxxpp_oracle" parameterType="zg033Jcxxpp" resultType="zg033Jcxxpp">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from zg033_jcxxpp
+		<where>
+			<if test="sjId!=null and sjId!=''">
+				and sj_id = #{sjId}
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

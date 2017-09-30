@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001TbDao">
+
+	<sql id="commCols">
+		MASTERID masterid,SUBID subid,REGISTER_TYPE registerType,PATIENT_SOURCE patientSource,PATIENT_SOURCE_OTHER patientSourceOther,SYMPTOM symptom,COUGH_TIME coughTime,SYMPTOM_OTHER symptomOther,TB_HISTORY tbHistory,DR_SOURCE drSource,DR_DIAGNOSE drDiagnose,RESULT1 result1,RESULT2 result2,RESULT3 result3,CURE_DISPOSE cureDispose,TB_REGISTER tbRegister,REFERRAL_UNIT referralUnit
+	</sql>
+
+	<insert id="save" parameterType="ctgBk001Tb"  flushCache="true">
+		 insert into CTG_BK001_TB(MASTERID,SUBID,REGISTER_TYPE,PATIENT_SOURCE,PATIENT_SOURCE_OTHER,SYMPTOM,COUGH_TIME,SYMPTOM_OTHER,TB_HISTORY,DR_SOURCE,DR_DIAGNOSE,RESULT1,RESULT2,RESULT3,CURE_DISPOSE,TB_REGISTER,REFERRAL_UNIT)
+		 values(#{masterid},#{subid},#{registerType},#{patientSource},#{patientSourceOther},#{symptom},#{coughTime},#{symptomOther},#{tbHistory},#{drSource},#{drDiagnose},#{result1},#{result2},#{result3},#{cureDispose},#{tbRegister},#{referralUnit})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK001_TB
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk001Tb" flushCache="true">
+		update CTG_BK001_TB
+		<set>
+			MASTERID=#{masterid},SUBID=#{subid},REGISTER_TYPE=#{registerType},PATIENT_SOURCE=#{patientSource},PATIENT_SOURCE_OTHER=#{patientSourceOther},SYMPTOM=#{symptom},COUGH_TIME=#{coughTime},SYMPTOM_OTHER=#{symptomOther},TB_HISTORY=#{tbHistory},DR_SOURCE=#{drSource},DR_DIAGNOSE=#{drDiagnose},RESULT1=#{result1},RESULT2=#{result2},RESULT3=#{result3},CURE_DISPOSE=#{cureDispose},TB_REGISTER=#{tbRegister},REFERRAL_UNIT=#{referralUnit}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk001Tb">
+		select <include refid="commCols"/> from CTG_BK001_TB
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk001TbCount" parameterType="ctgBk001Tb" resultType="int">
+		select count(*) from CTG_BK001_TB
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk001Tb">
+		select <include refid="commCols"/> from CTG_BK001_TB
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

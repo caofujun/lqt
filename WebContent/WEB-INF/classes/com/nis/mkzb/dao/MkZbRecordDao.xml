@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mkzb.dao.MkZbRecordDao">
+
+	<sql id="commCols">
+		ID id,REPORT_YEAR reportYear,REPORT_MONTH reportMonth,ITEM_CODE itemCode,ITEM_NAME itemName,USER_ID userId,USER_NAME userName,REPORT_DATE reportDate,REPORT_RESULT reportResult,REPORT_STATUS reportStatus
+	</sql>
+	
+	<update id="updateSt003ZBFlag">
+		update st003_cryxxb
+		<set>
+			TRANFLAG=#{tranFlag},tranDate=#{tranDate}
+		</set>
+		<where>zyid = #{zyid}</where>
+	</update>
+	
+
+	
+</mapper>

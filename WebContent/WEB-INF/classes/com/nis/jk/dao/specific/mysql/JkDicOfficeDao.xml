@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicOfficeDao">
+
+	<sql id="commCols_mysql">
+		ID id,DEPT_ID deptId,DEPT_NAME deptName,DEP_TYPE depType,DEP_TYPE_NAME depTypeName,DEP_STATUS depStatus,PARENT_DEP_ID parentDepId,PARENT_DEP_NAME parentDepName,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkDicOffice_mysql" parameterType="jkDicOffice" resultType="jkDicOffice">
+		select <include refid="commCols_mysql"/> from JK_DIC_OFFICE
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

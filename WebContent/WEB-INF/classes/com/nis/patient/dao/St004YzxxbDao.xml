@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St004YzxxbDao">
+
+	<sql id="commCols">
+		order_detail orderDetail,frequency frequency,qty_day qtyDay,total_qty totalQty,execoffice_code execofficeCode,
+		execoffice_name execofficeName,bdoc_id bdocId,bdoc_name bdocName,edoc_id edocId,edoc_name edocName,is_kjyw isKjyw,
+		st004_yzxxb.memo memo,firstday_dosage firstdayDosage,lastday_dosage lastdayDosage,flag_jr flagJr,
+		st004_yzxxb.upd_date updDate,execute_name executeName,execute_time executeTime,mrcs mrcs,xhsl xhsl,drug_line drugLine,
+		st004_yzxxb.id id,st004_yzxxb.zyid zyid,st004_yzxxb.patient_id patientId,st004_yzxxb.visit_id visitId,
+		st004_yzxxb.patient_name patientName,order_type orderType,order_at orderAt,stop_at stopAt,usedrug_days usedrugDays,
+		order_class orderClass,order_id orderId,order_name orderName,drug_speci drugSpeci,dosage dosage,dosage_unit dosageUnit,
+		use_count useCount,sypc sypc,admin_route_id adminRouteId,admin_route_name adminRouteName,use_purpose usePurpose,ypdj ypdj,
+		bnrs_id bnrsId,bnrs_name bnrsName,is_kjyw_ana isKjywAna,analysis_at analysisAt
+	</sql>
+
+	<insert id="save" parameterType="st004Yzxxb" flushCache="true">
+		 insert into st004_yzxxb(order_detail,frequency,qty_day,total_qty,execoffice_code,execoffice_name,bdoc_id,bdoc_name,edoc_id,edoc_name,is_kjyw,memo,firstday_dosage,lastday_dosage,flag_jr,upd_date,execute_name,execute_time,mrcs,xhsl,drug_line,id,zyid,patient_id,visit_id,patient_name,order_type,order_at,stop_at,usedrug_days,order_class,order_id,order_name,drug_speci,dosage,dosage_unit,use_count,sypc,admin_route_id,admin_route_name,use_purpose,ypdj,bnrs_id,bnrs_name,is_kjyw_ana,analysis_at)
+		 values(#{orderDetail},#{frequency},#{qtyDay},#{totalQty},#{execofficeCode},#{execofficeName},#{bdocId},#{bdocName},#{edocId},#{edocName},#{isKjyw},#{memo},#{firstdayDosage},#{lastdayDosage},#{flagJr},#{updDate},#{executeName},#{executeTime},#{mrcs},#{xhsl},#{drugLine},#{id},#{zyid},#{patientId},#{visitId},#{patientName},#{orderType},#{orderAt},#{stopAt},#{usedrugDays},#{orderClass},#{orderId},#{orderName},#{drugSpeci},#{dosage},#{dosageUnit},#{useCount},#{sypc},#{adminRouteId},#{adminRouteName},#{usePurpose},#{ypdj},#{bnrsId},#{bnrsName},#{isKjywAna},#{analysisAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st004_yzxxb
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st004Yzxxb" flushCache="true">
+		update st004_yzxxb
+		<set>
+			order_detail=#{orderDetail},frequency=#{frequency},qty_day=#{qtyDay},total_qty=#{totalQty},
+			execoffice_code=#{execofficeCode},execoffice_name=#{execofficeName},bdoc_id=#{bdocId},bdoc_name=#{bdocName},
+			edoc_id=#{edocId},edoc_name=#{edocName},is_kjyw=#{isKjyw},memo=#{memo},firstday_dosage=#{firstdayDosage},
+			lastday_dosage=#{lastdayDosage},flag_jr=#{flagJr},upd_date=#{updDate},execute_name=#{executeName},
+			execute_time=#{executeTime},mrcs=#{mrcs},xhsl=#{xhsl},drug_line=#{drugLine},id=#{id},zyid=#{zyid},
+			patient_id=#{patientId},visit_id=#{visitId},patient_name=#{patientName},order_type=#{orderType},
+			order_at=#{orderAt},stop_at=#{stopAt},usedrug_days=#{usedrugDays},order_class=#{orderClass},order_id=#{orderId},
+			order_name=#{orderName},drug_speci=#{drugSpeci},dosage=#{dosage},dosage_unit=#{dosageUnit},use_count=#{useCount},
+			sypc=#{sypc},admin_route_id=#{adminRouteId},admin_route_name=#{adminRouteName},use_purpose=#{usePurpose},ypdj=#{ypdj},
+			bnrs_id=#{bnrsId},bnrs_name=#{bnrsName},is_kjyw_ana=#{isKjywAna},analysis_at=#{analysisAt}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="getMonitorPatientYzxxLastAt" resultType="date">
+		select max(order_at) order_at,max(yz.stop_at) stop_at from st004_yzxxb yz
+		join st003_cryxxb cry on yz.zyid=cry.zyid where cry.out_at is null and order_at&lt;sysdate and (stop_at&lt;sysdate or stop_at is null)
+		<if test="deptId!=null and deptId!=''">
+			AND yz.execoffice_code = #{deptId}
+		</if>
+	</select>
+	<select id="getYzxx" resultType="st004Yzxxb">
+		select a.order_at orderAt,a.stop_at stopAt,case when  a.stop_at is null then
+            To_date(null) - To_date(a.order_at)
+           else
+            decode(To_date(a.stop_at) - To_date(a.order_at),0,1,To_date(a.stop_at) - To_date(a.order_at)) 
+         end as days, a.order_name orderName,a.bdoc_name bdocName,a.edoc_name edocName  from st004_yzxxb a 
+		<where> 1=1 and (a.order_name like (select order_name from jk_dic_all where jk_dic_all.class_code='108'  and order_name like '%a%%' escape 'a')
+ or a.order_name in (select order_name from jk_dic_all where jk_dic_all.class_code='108' and order_name not like '%a%%' escape 'a'))
+			<if test="zyId!=null and zyId!=''">
+				AND a.zyid = #{zyId}
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateSpecified" flushCache="true">
+		update st004_yzxxb
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='orderDetail'">order_detail=#{st004Yzxxb.orderDetail},</when>
+					<when test="item=='frequency'">frequency=#{st004Yzxxb.frequency},</when>
+					<when test="item=='qtyDay'">qty_day=#{st004Yzxxb.qtyDay},</when>
+					<when test="item=='totalQty'">total_qty=#{st004Yzxxb.totalQty},</when>
+					<when test="item=='execofficeCode'">execoffice_code=#{st004Yzxxb.execofficeCode},</when>
+					<when test="item=='execofficeName'">execoffice_name=#{st004Yzxxb.execofficeName},</when>
+					<when test="item=='bdocId'">bdoc_id=#{st004Yzxxb.bdocId},</when>
+					<when test="item=='bdocName'">bdoc_name=#{st004Yzxxb.bdocName},</when>
+					<when test="item=='edocId'">edoc_id=#{st004Yzxxb.edocId},</when>
+					<when test="item=='edocName'">edoc_name=#{st004Yzxxb.edocName},</when>
+					<when test="item=='isKjyw'">is_kjyw=#{st004Yzxxb.isKjyw},</when>
+					<when test="item=='memo'">memo=#{st004Yzxxb.memo},</when>
+					<when test="item=='firstdayDosage'">firstday_dosage=#{st004Yzxxb.firstdayDosage},</when>
+					<when test="item=='lastdayDosage'">lastday_dosage=#{st004Yzxxb.lastdayDosage},</when>
+					<when test="item=='flagJr'">flag_jr=#{st004Yzxxb.flagJr},</when>
+					<when test="item=='updDate'">upd_date=#{st004Yzxxb.updDate},</when>
+					<when test="item=='executeName'">execute_name=#{st004Yzxxb.executeName},</when>
+					<when test="item=='executeTime'">execute_time=#{st004Yzxxb.executeTime},</when>
+					<when test="item=='mrcs'">mrcs=#{st004Yzxxb.mrcs},</when>
+					<when test="item=='xhsl'">xhsl=#{st004Yzxxb.xhsl},</when>
+					<when test="item=='drugLine'">drug_line=#{st004Yzxxb.drugLine},</when>
+					<when test="item=='id'">id=#{st004Yzxxb.id},</when>
+					<when test="item=='zyid'">zyid=#{st004Yzxxb.zyid},</when>
+					<when test="item=='patientId'">patient_id=#{st004Yzxxb.patientId},</when>
+					<when test="item=='visitId'">visit_id=#{st004Yzxxb.visitId},</when>
+					<when test="item=='patientName'">patient_name=#{st004Yzxxb.patientName},</when>
+					<when test="item=='orderType'">order_type=#{st004Yzxxb.orderType},</when>
+					<when test="item=='orderAt'">order_at=#{st004Yzxxb.orderAt},</when>
+					<when test="item=='stopAt'">stop_at=#{st004Yzxxb.stopAt},</when>
+					<when test="item=='usedrugDays'">usedrug_days=#{st004Yzxxb.usedrugDays},</when>
+					<when test="item=='orderClass'">order_class=#{st004Yzxxb.orderClass},</when>
+					<when test="item=='orderId'">order_id=#{st004Yzxxb.orderId},</when>
+					<when test="item=='orderName'">order_name=#{st004Yzxxb.orderName},</when>
+					<when test="item=='drugSpeci'">drug_speci=#{st004Yzxxb.drugSpeci},</when>
+					<when test="item=='dosage'">dosage=#{st004Yzxxb.dosage},</when>
+					<when test="item=='dosageUnit'">dosage_unit=#{st004Yzxxb.dosageUnit},</when>
+					<when test="item=='useCount'">use_count=#{st004Yzxxb.useCount},</when>
+					<when test="item=='sypc'">sypc=#{st004Yzxxb.sypc},</when>
+					<when test="item=='adminRouteId'">admin_route_id=#{st004Yzxxb.adminRouteId},</when>
+					<when test="item=='adminRouteName'">admin_route_name=#{st004Yzxxb.adminRouteName},</when>
+					<when test="item=='usePurpose'">use_purpose=#{st004Yzxxb.usePurpose},</when>
+					<when test="item=='ypdj'">ypdj=#{st004Yzxxb.ypdj},</when>
+				</choose>
+			</foreach>
+			id=#{st004Yzxxb.id}
+		</set>
+		<where>id=#{st004Yzxxb.id}</where>
+	</update>
+	
+	<update id="updAnalFlag" parameterType="st004Yzxxb" flushCache="true">
+		update st004_yzxxb
+		<set>
+			is_kjyw_ana=#{isKjywAna},analysis_at=#{analysisAt}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updKeepToWaitState" flushCache="true">
+		update st004_yzxxb
+		<set>
+			is_kjyw_ana='0'
+		</set>
+		<where>nvl(is_kjyw_ana, '0')='9' and is_kjyw=1</where>
+	</update>
+	
+	<select id="get" resultType="st004Yzxxb">
+		select <include refid="commCols"/> from st004_yzxxb
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findSt004YzxxbCount" parameterType="st004Yzxxb" resultType="int">
+		select count(*) from st004_yzxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st004Yzxxb">
+		select <include refid="commCols"/> from st004_yzxxb
+		<where>
+		</where>
+	</select>
+	
+	<select id="findFlagJrCount" parameterType="st004Yzxxb" resultType="int">
+		select 
+			count(1) 
+		from st004_yzxxb 
+			a left join jk_dic_all b on 1=1
+		where instr(a.order_name,b.order_name) > 0
+			and b.class_code='004'
+			and a.ID=#{id}
+	</select>
+	
+	<select id="findFlagKjywCount" parameterType="st004Yzxxb" resultType="int">
+		select 
+		case when y.order_name in (select g.drug_name from st012_kjyw g where g.drug_line='1' ) then 1
+		else(case when y.order_name in (select g.drug_name from st012_kjyw g where g.drug_line='2' ) then 2
+		else(case when y.order_name in (select g.drug_name from st012_kjyw g where g.drug_line='3' ) then 3 end)end )
+		end as drug_line
+		from st004_yzxxb y
+		where  y.order_name in (select g.drug_name from st012_kjyw g ) 
+		and y.zyid in (select zyid from  st003_cryxxb)
+		and id = #{id}
+	</select>
+	
+	<select id="findDocAdviceCount" parameterType="st004Yzxxb" resultType="int">
+		select count(*)
+		from st004_yzxxb s4 left join jk_dic_all jda on s4.order_name = jda.order_name 
+		<where>
+			zyid=#{zyid}
+			<if test="classCode!=null and classCode!=''">
+		    	and jda.class_code = #{classCode} 
+		    </if>
+		    <if test="orderTypeIn!=null and orderTypeIn.size!=0">
+		    	and s4.order_type in 
+				<foreach collection="orderTypeIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		    <if test="queryStartDate != null">
+				and s4.order_at &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and s4.order_at &lt;= #{queryEndDate}
+			</if>
+			<if test="memo!=null and memo!=''">
+		    	and s4.memo = #{memo} 
+		    </if>
+			<if test="orderName!=null and orderName!=''">
+				and s4.order_Name like CONCAT(CONCAT('%', #{orderName}), '%')
+		    </if>
+		</where>
+	</select>
+	
+	
+	<select id="likeOrderName" resultType="st004Yzxxb">
+		select <include refid="commCols"/> from st004_yzxxb
+		<where>
+			zyid=#{zyid} and order_name like CONCAT(CONCAT('%', #{orderName}), '%')
+		</where>
+	</select>
+	
+	<select id="findInOrderName" resultType="st004Yzxxb">
+		select <include refid="commCols"/> from st004_yzxxb
+		<where>
+			zyid=#{zyid} and order_name in (select ORDER_NAME from JK_DIC_ALL where CLASS_CODE=#{classCode}) 
+		</where>
+		order by order_at asc
+	</select>
+	
+	<select id="findListByzyidName" resultType="st004Yzxxb">
+		select <include refid="commCols"/> from st004_yzxxb left join st003_cryxxb on st003_cryxxb.zyid=st004_yzxxb.zyid
+		<where>
+			(st003_cryxxb.fx_status=0 or st003_cryxxb.upd_date>st003_cryxxb.fx_date) and order_name in
+			<foreach collection="orderNames" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+		</where>
+	</select>
+	
+	<select id="findDrugSituation" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select st4.order_type orderType,st4.order_name orderName,st4.order_at orderAt,st4.stop_at stopAt,
+		st4.dosage dosage,st4.sypc sypc,st4.admin_route_name adminRouteName,gr16.isselect isselect,
+		gr16.date_section dateSection,gr16.pre_yymd preYymd,gr16.szyzjyyewzj szyzjyyewzj,gr16.relid relid,st4.id id ,
+		st4.memo memo,st4.execute_Time executeTime  
+		from st004_yzxxb 
+		st4 inner join gr016_ssbw_kjyw gr16 on st4.id = gr16.yz_id 
+		and gr16.oper_type_id=#{operTypeId} and gr16.refid=#{refid} and gr16.isselect=1
+		<where> is_kjyw = 1
+			and zyid=#{zyid}
+			<!-- and (st4.order_at &lt; #{operAt} or st4.stop_at &gt; #{operAt}) -->
+		</where>
+		order by st4.order_at
+	</select>
+	    
+	 <select id="findDrug" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select st4.order_type orderType,st4.order_name orderName,st4.order_at orderAt,st4.stop_at stopAt,st4.dosage_unit dosageUnit,
+   		 st4.dosage dosage,st4.sypc sypc,st4.admin_route_name adminRouteName,st4.id id from st004_yzxxb st4
+		<where> 1=1 and is_kjyw = 1
+			and st4.id=#{id}
+		</where>
+	</select>  
+	
+	<select id="findDrugSituationByPatient" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select st4.order_type orderType,st4.order_name orderName,st4.order_at orderAt,st4.stop_at stopAt,
+		st4.dosage dosage,st4.sypc sypc,st4.admin_route_name adminRouteName,st4.id id ,st4.memo memo,st4.execute_Time executeTime 
+		from st004_yzxxb st4
+		<where>
+			st4.zyid=#{zyid}
+			<if test="isKjyw!=null and isKjyw!=''">
+		    	and st4.is_kjyw = #{isKjyw} 
+		    </if>
+			<if test="isMemo!=null and isMemo!=''">
+		    	and trim(st4.memo) is not null
+		    </if>
+			<if test="operTypeId!=null and operTypeId!=''">
+		    	and st4.id not in(select gr16.yz_id from gr016_ssbw_kjyw gr16 where gr16.oper_type_id=#{operTypeId}
+		    	and gr16.isselect=1 and yz_id is not null )
+		    </if>
+		</where>
+		order by st4.order_at
+	</select>
+	
+	<select id="findDrugSituationByPatientTemp" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select st4.order_type orderType,st4.order_name orderName,st4.order_at orderAt,st4.stop_at stopAt,
+		st4.dosage dosage,st4.sypc sypc,st4.admin_route_name adminRouteName,st4.id id 
+		from st004_yzxxb st4
+		<where>
+			st4.zyid=#{zyid} and st4.is_kjyw = 1
+		    	and st4.id not in(select gr16.yz_id from gr016_bk_kjyw gr16 where 
+		    	 gr16.isselect=1 and yz_id is not null and gr16.refid=#{refid})
+		    order by st4.order_at desc
+		</where>
+	</select>
+	
+	<select id="findDrugbyZyid" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select st4.order_type orderType,st4.order_name orderName,st4.order_at orderAt,st4.stop_at stopAt,st4.admin_route_name adminRouteName,
+		st4.dosage dosage,st4.sypc sypc,gr016.refid,gr016.relid,st4.dosage dosage,st4.sypc sypc,gr016.pre_yymd preYymd,st4.id  id,gr016.isselect isselect 
+		from st004_yzxxb st4 left join gr016_bk_kjyw gr016 on gr016.yz_id=st4.id 
+			<if test="refid != null">
+			and gr016.refid=#{refid}
+			</if>
+		<where>
+			st4.zyid=#{zyid} and st4.is_kjyw = 1
+			
+		</where>
+		 order by st4.order_at desc
+	</select>
+	
+	<select id="findDrugAddbyZyid" parameterType="st004Yzxxb" resultType="st004Yzxxb">
+		select st4.order_type orderType,st4.order_name orderName,st4.order_at orderAt,st4.stop_at stopAt,st4.admin_route_name adminRouteName,
+		st4.dosage dosage,st4.sypc sypc,st4.dosage dosage,st4.sypc sypc ,st4.id id from st004_yzxxb st4  
+		<where>
+			st4.zyid=#{zyid} and st4.is_kjyw = 1
+		</where>
+		 order by st4.order_at desc
+	</select>
+	
+	<select id="findByZyid" resultType="st004Yzxxb">
+		select distinct yz.order_detail orderDetail,
+		case when ROUND(TO_NUMBER(sysdate - yz.order_at) * 24)&lt;#{days} or yz.order_type = '0' then '正常' else '异常' end as isCgException,
+		 yz.frequency frequency,yz.qty_day qtyDay,yz.total_qty totalQty,
+		yz.execoffice_code execofficeCode,yz.execoffice_name execofficeName,yz.bdoc_id bdocId,yz.bdoc_name bdocName,yz.edoc_id edocId,
+		yz.edoc_name edocName,yz.is_kjyw isKjyw,yz.memo memo,yz.firstday_dosage firstdayDosage,yz.lastday_dosage lastdayDosage,
+		yz.flag_jr flagJr,yz.upd_date updDate,yz.execute_name executeName,yz.execute_time executeTime,yz.mrcs mrcs,yz.xhsl xhsl,
+		/*yz.drug_line drugLine,*/yz.id id,yz.zyid zyid,yz.patient_id patientId,yz.visit_id visitId,yz.patient_name patientName,
+		yz.order_type orderType,yz.order_at orderAt,yz.stop_at stopAt,yz.usedrug_days usedrugDays,yz.order_class orderClass,
+		yz.order_id orderId,yz.order_name orderName,yz.drug_speci drugSpeci,yz.dosage dosage,yz.dosage_unit dosageUnit,
+		yz.use_count useCount,yz.sypc sypc,yz.admin_route_id adminRouteId,yz.admin_route_name adminRouteName,yz.use_purpose usePurpose,
+		yz.ypdj ypdj,yz.bnrs_id bnrsId,yz.bnrs_name bnrsName
+		 from st004_yzxxb yz,JK_DIC_ALL dic
+		<where>
+			yz.zyid=#{zyid}
+			<if test="isKjyw!=null">
+				and yz.is_kjyw=#{isKjyw}
+			</if>
+			<if test="flagJr!=null">
+			    and dic.class_code in('001','002','003')
+			    and yz.order_name like '%'|| dic.order_name||'%'
+			</if>
+		</where>
+		order by yz.order_at desc
+	</select>
+
+	<select id="findPatentYzxxbWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST004_YZXXB where ZYID ='''||ZYID||'''' sql,
+			'ST004_YZXXB表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST004_YZXXB t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and ORDER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST004_YZXXB where EXECOFFICE_CODE ='''||EXECOFFICE_CODE||'''' sql,
+			'ST004_YZXXB表中执行科室编号（'||EXECOFFICE_CODE||'）在ZG002_BYKS表中未找到！' as warning from ST004_YZXXB t
+			where t.EXECOFFICE_CODE not in(select dept_id from ZG002_BYKS )
+			and ORDER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST004_YZXXB where BDOC_ID ='''||BDOC_ID||'''' sql,
+			'ST004_YZXXB表中开嘱医生编号（'||BDOC_ID||'）在ZG003_YYZG表中未找到！' as warning from ST004_YZXXB t
+			where t.BDOC_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and ORDER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST004_YZXXB where EDOC_ID ='''||EDOC_ID||'''' sql,
+			'ST004_YZXXB表中停嘱医生编号（'||EDOC_ID||'）在ZG003_YYZG表中未找到！' as warning from ST004_YZXXB t
+			where t.EDOC_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and ORDER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST004_YZXXB where BNRS_ID ='''||BNRS_ID||'''' sql,
+			'ST004_YZXXB表中执行护士编号（'||BNRS_ID||'）在ZG003_YYZG表中未找到！' as warning from ST004_YZXXB t
+			where t.BNRS_ID not in(select EMPLOYEE_ID from ZG003_YYZG ) 
+			and ORDER_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+	]]>
+	</select>
+	
+	<select id="findKjywByZyid" resultType="st004Yzxxb">
+		select st4.id id,st4.order_at orderAt,st4.stop_at stopAt,st4.order_id orderId,st4.order_name orderName,st4.zyid zyid,st4.order_type orderType,st4.admin_route_name adminRouteName 
+		from st004_yzxxb st4
+		<where>
+			st4.is_kjyw = 1 and nvl(st4.is_kjyw_ana,'0') = '0' and st4.zyid=#{zyid}
+		</where>
+		order by st4.order_at
+	</select>
+	
+	<select id="getUseDrugNum" resultType="int">
+		select count(*) from st004_yzxxb st4
+		 <where>
+		 	st4.is_kjyw = 1 and st4.order_type=1 and st4.zyid=#{zyid} and st4.order_at &lt; trunc(#{endDate})
+		 	and nvl(st4.stop_at, #{endDate}) between #{startDate} and #{endDate} and st4.order_id=#{orderId} and st4.id!=#{id}
+		</where>
+	</select>
+	
+	<select id="getUseDrugNumNo" resultType="int">
+		select count(*) from st004_yzxxb st4
+		 <where>
+		 	st4.is_kjyw = 1 and st4.order_type=1 and st4.zyid=#{zyid} and st4.order_at &lt; trunc(#{endDate})
+		 	and nvl(st4.stop_at, #{endDate}) between #{startDate} and #{endDate} and st4.order_id!=#{orderId}
+		</where>
+	</select>
+	
+	<select id="getUseUnLimitNum" resultType="int">
+		select count(*) from st004_yzxxb st4 
+		<where>
+			st4.is_kjyw=1 and st4.order_at &gt; #{startDate} and st4.order_at &lt; #{endDate} and st4.order_name in (select drug_name from st012_kjyw where drug_line=1) and st4.zyid=#{zyid}
+			and st4.admin_route_name in (select dict_name from sys_dict where dict_type_code='drug_use_path_warn')
+		</where>
+	</select>
+	
+	<select id="getUseLimitNum" resultType="int">
+		select count(*) from st004_yzxxb st4 
+		<where>
+			st4.is_kjyw=1 and st4.order_at &gt; #{startDate} and st4.order_at &lt; #{endDate} and st4.order_name in (select drug_name from st012_kjyw where drug_line in (1, 2)) and st4.zyid=#{zyid}
+			and st4.admin_route_name in (select dict_name from sys_dict where dict_type_code='drug_use_path_warn')
+		</where>
+	</select>
+	
+	<select id="getDrugNumTheDay" resultType="int">
+		select count(*) from (select distinct st4.order_name from st004_yzxxb st4 
+		<where>
+			st4.is_kjyw=1 and st4.order_type=1 and st4.order_at &lt; #{startDate} and (st4.stop_at &gt; #{endDate} or st4.stop_at is null) and st4.zyid=#{zyid}
+		</where>
+		)
+	</select>
+	
+	<select id="findForYzAnalyzis" resultType="st004Yzxxb" parameterType="st004Yzxxb">
+		select * from st004_yzxxb c where c.order_name like '%死亡%' and trunc(c.order_at) between #{queryStartDate} and #{queryEndDate}
+	</select>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hand.dao.Sw003YcxsjDao">
+
+	<sql id="commCols">
+		SJ_ID sjId,RY_TYPE ryType,ZZ_BRQ zzBrq,ZZ_CZQ zzCzq,DC_ID dcId,IS_RIGHT isRight,ZZ_TYH zzTyh,ZZ_BRH zzBrh,ZZ_HJH zzHjh,XW_SX xwSx,XW_FZS xwFzs,XW_DST xwDst,XW_W xwW
+	</sql>
+
+	<insert id="save" parameterType="sw003Ycxsj"  flushCache="true">
+		 insert into SW003_YCXSJ(SJ_ID,RY_TYPE,ZZ_BRQ,ZZ_CZQ,DC_ID,IS_RIGHT,ZZ_TYH,ZZ_BRH,ZZ_HJH,XW_SX,XW_FZS,XW_DST,XW_W)
+		 values(#{sjId},#{ryType},#{zzBrq},#{zzCzq},#{dcId},#{isRight},#{zzTyh},#{zzBrh},#{zzHjh},#{xwSx},#{xwFzs},#{xwDst},#{xwW})
+	</insert>
+	
+	<delete id="deleteByDcid" flushCache="true">
+		delete from  SW003_YCXSJ
+		<where>DC_ID=#{dcId}</where>
+	</delete>
+	
+	<delete id="delete" flushCache="true">
+		delete from  SW003_YCXSJ
+		<where>SJ_ID=#{sjId}</where>
+	</delete>
+	
+	<update id="update" parameterType="sw003Ycxsj" flushCache="true">
+		update SW003_YCXSJ
+		<set>
+			SJ_ID=#{sjId},RY_TYPE=#{ryType},ZZ_BRQ=#{zzBrq},ZZ_CZQ=#{zzCzq},DC_ID=#{dcId},IS_RIGHT=#{isRight},ZZ_TYH=#{zzTyh},ZZ_BRH=#{zzBrh},ZZ_HJH=#{zzHjh},XW_SX=#{xwSx},XW_FZS=#{xwFzs},XW_DST=#{xwDst},XW_W=#{xwW}
+		</set>
+		<where>SJ_ID=#{sjId}</where>
+	</update>
+	
+	<select id="get" resultType="sw003Ycxsj">
+		select <include refid="commCols"/> from SW003_YCXSJ
+  		<where>SJ_ID=#{sjId}</where>
+	</select>
+	
+	<select id="getByDcid" resultType="sw003Ycxsj">
+		select <include refid="commCols"/> from SW003_YCXSJ
+  		<where>DC_ID=#{dcId}</where>
+	</select>
+	
+	<select id="findSw003YcxsjCount" parameterType="sw003Ycxsj" resultType="int">
+		select count(*) from SW003_YCXSJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="sw003Ycxsj">
+		select <include refid="commCols"/> from SW003_YCXSJ
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

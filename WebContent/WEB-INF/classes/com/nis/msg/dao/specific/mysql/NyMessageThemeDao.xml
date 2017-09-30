@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageThemeDao">
+
+	<sql id="commCols_mysql">
+		THEME_ID themeId,THEME theme,CREATE_USER createUser,CREATE_TIME createTime,ZYID zyid
+	</sql>
+
+	<select id="findNyMessageTheme_mysql" parameterType="nyMessageTheme" resultType="nyMessageTheme">
+		select <include refid="commCols_mysql"/> from NY_MESSAGE_THEME
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

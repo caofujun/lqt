@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.homepage.dao.SysHpComponentDao">
+
+	<sql id="commCols_oracle">
+		ID id,COMPONENT_CODE componentCode,COMPONENT_NAME componentName,COMPONENT_URL componentUrl,CODE_BUSINESS codeBusiness,IMG_URL imgUrl,REMARK remark,LAYOUT_STATUS layoutStatus,SCOPE_LEVEL scopeLevel,UNIT_ID unitId,DEP_NO depNo,MENU_CODE menuCode
+	</sql>
+
+	<select id="findSysHpComponent_oracle" parameterType="sysHpComponent" resultType="sysHpComponent">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from SYS_HP_COMPONENT
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="find_oracle" parameterType="sysHpComponent" resultType="sysHpComponent">
+		select <include refid="commCols"/> 
+		,case when instr(#{componentCodes} ,COMPONENT_CODE) > 0 then 'enable' else 'disable' end isSelected 
+		from SYS_HP_COMPONENT
+		<where>
+			<if test="unitId!=null">
+				(
+					(UNIT_ID=#{unitId} <if test="depNo!=null and depNo!=''">and DEP_NO=#{depNo}</if>)
+					or SCOPE_LEVEL is null
+				)
+			</if>
+			<if test="layoutStatus!=null">and LAYOUT_STATUS=#{layoutStatus}</if>
+			<if test="searchString!=null and searchString!=''">
+				and (
+				COMPONENT_CODE like CONCAT( CONCAT('%',#{searchString}),'%')
+				or COMPONENT_NAME like CONCAT( CONCAT('%',#{searchString}),'%')
+				)
+			</if>
+			<if test="codeBusiness!=null and codeBusiness!=''">and CODE_BUSINESS=#{codeBusiness}</if>
+		</where>
+		ORDER BY LAYOUT_STATUS DESC
+	</select>
+</mapper>

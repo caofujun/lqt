@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St006TwxxDao">
+
+	<sql id="commCols">
+		ID id,ZYID zyid,PATIENT_ID patientId,RECORDING_AT recordingAt,TW_VALUES twValues,TEMPRATURE_TYPE tempratureType,TEMPRATURE_TYPE_NAME tempratureTypeName,UPD_DATE updDate,TW_VALUES_KTL twValuesKtl,TW_ANAL_FLAG twAnalFlag,TW_ANAL_DT twAnalDt
+	</sql>
+
+	<insert id="save" parameterType="st006Twxx"  flushCache="true">
+		 insert into ST006_TWXX(ID,ZYID,PATIENT_ID,RECORDING_AT,TW_VALUES,TEMPRATURE_TYPE,TEMPRATURE_TYPE_NAME,UPD_DATE,TW_VALUES_KTL,TW_ANAL_FLAG,TW_ANAL_DT)
+		 values(#{id},#{zyid},#{patientId},#{recordingAt},#{twValues},#{tempratureType},#{tempratureTypeName},#{updDate},#{twValuesKtl},#{twAnalFlag},#{twAnalDt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ST006_TWXX
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st006Twxx" flushCache="true">
+		update ST006_TWXX
+		<set>
+			ID=#{id},ZYID=#{zyid},PATIENT_ID=#{patientId},RECORDING_AT=#{recordingAt},TW_VALUES=#{twValues},TEMPRATURE_TYPE=#{tempratureType},TEMPRATURE_TYPE_NAME=#{tempratureTypeName},UPD_DATE=#{updDate},TW_VALUES_KTL=#{twValuesKtl},TW_ANAL_FLAG=#{twAnalFlag},TW_ANAL_DT=#{twAnalDt}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="st006Twxx">
+		select <include refid="commCols"/> from ST006_TWXX
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findSt006TwxxCount" parameterType="st006Twxx" resultType="int">
+		select count(*) from ST006_TWXX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getMonitorPatientTwxxLastAt" resultType="date">
+		select max(RECORDING_AT) from ST006_TWXX tw 
+		join st003_cryxxb cr on tw.zyid=cr.zyid where cr.out_at is null and RECORDING_AT&lt;sysdate
+	</select>
+	
+	<select id="getAll"  resultType="st006Twxx">
+		select <include refid="commCols"/> from ST006_TWXX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findTwxxList" parameterType="st006Twxx" resultType="st006Twxx">
+		select zyid,
+		       recording_at recordingAt,
+		       max(tw_values) twValues,
+		       37 jz_line,
+		       38 fr_line,
+		       37.5 bz_line
+		  from ST006_TWXX t
+		<where>
+		 	zyid = #{zyid}
+			<if test="queryStartDate != null">
+				and recording_at &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and recording_at &lt;= #{queryEndDate}
+			</if>
+		</where>
+		Group by zyid,recording_at
+		order by recording_at
+	</select>
+	
+	<select id="getMaxATByZY" resultType="st006Twxx">
+		select min(recording_at) firstDate,max(recording_at) endDate from ST006_TWXX Where zyid = #{zyid}
+	</select>
+	
+	<select id="findAbnormalByZyid" resultType="st006Twxx">
+		select <include refid="commCols"/> from ST006_TWXX
+		<where>
+			tw_values &gt;= 38 and zyid = #{zyid}
+		</where>
+		order by recording_at desc
+	</select>
+
+	<select id="findPatentTwxxWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST006_TWXX where ZYID ='''||ZYID||'''' sql,
+			'ST006_TWXX表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST006_TWXX t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and RECORDING_AT BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<select id="getNumBeforeFever" resultType="int">
+		select count(*) from st006_twxx st6 
+		<where>
+			st6.zyid=#{zyid} and st6.recording_at &gt;= #{recordingAt}-1 and st6.recording_at &lt; #{recordingAt} and st6.tw_values &gt;= #{twValues}
+		</where>
+	</select>
+	
+	<update id="updateAnalFlag">
+		update ST006_TWXX
+		<set>
+			TW_ANAL_FLAG=#{twAnalFlag},TW_ANAL_DT=#{twAnalDt}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+</mapper>

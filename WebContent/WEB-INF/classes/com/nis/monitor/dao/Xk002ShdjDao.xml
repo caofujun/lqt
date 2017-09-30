@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Xk002ShdjDao">
+
+	<sql id="commCols">
+		SH_NO shNo,SH_TYPE shType,SCQY_NO scqyNo,SCQY_NAME scqyName,JYQY_NAME jyqyName,JYQY_NO jyqyNo,SCJY_DATE scjyDate,JYGR_DATE jygrDate,SC_ND scNd,JY_JYDATE jyJydate,DEP_CG depCg,CG_RY cgRy,SH_DATE shDate,SH_NAME shName,SH_JG shJg,USE_FLAG useFlag,REMARK remark
+	</sql>
+
+	<insert id="save" parameterType="xk002Shdj"  flushCache="true">
+		 insert into XK002_SHDJ(SH_NO,SH_TYPE,SCQY_NO,SCQY_NAME,JYQY_NAME,JYQY_NO,SCJY_DATE,JYGR_DATE,SC_ND,JY_JYDATE,DEP_CG,CG_RY,SH_DATE,SH_NAME,SH_JG,USE_FLAG,REMARK)
+		 values(#{shNo},#{shType},#{scqyNo},#{scqyName},#{jyqyName},#{jyqyNo},#{scjyDate},#{jygrDate},#{scNd},#{jyJydate},#{depCg},#{cgRy},#{shDate},#{shName},#{shJg},#{useFlag},#{remark})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  XK002_SHDJ
+		<where>SH_NO=#{shNo}</where>
+	</delete>
+	
+	<update id="update" parameterType="xk002Shdj" flushCache="true">
+		update XK002_SHDJ
+		<set>
+			SH_NO=#{shNo},SH_TYPE=#{shType},SCQY_NO=#{scqyNo},SCQY_NAME=#{scqyName},JYQY_NAME=#{jyqyName},JYQY_NO=#{jyqyNo},SCJY_DATE=#{scjyDate},JYGR_DATE=#{jygrDate},SC_ND=#{scNd},JY_JYDATE=#{jyJydate},DEP_CG=#{depCg},CG_RY=#{cgRy},SH_DATE=#{shDate},SH_NAME=#{shName},SH_JG=#{shJg},USE_FLAG=#{useFlag},REMARK=#{remark}
+		</set>
+		<where>SH_NO=#{orgShNo}</where>
+	</update>
+	
+	<select id="get" resultType="xk002Shdj">
+		select <include refid="commCols"/> from XK002_SHDJ
+  		<where>SH_NO=#{shNo}</where>
+	</select>
+	
+	
+	<select id="findXk002ShdjCount" parameterType="xk002Shdj" resultType="int">
+		select count(*) from XK002_SHDJ
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xk002Shdj">
+		select <include refid="commCols"/> from XK002_SHDJ
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''">
+				and ( SH_NO like CONCAT(CONCAT('%',#{searchString}),'%') or SCQY_NAME like CONCAT(CONCAT('%',#{searchString}),'%') or SCQY_NO like CONCAT(CONCAT('%',#{searchString}),'%') )
+			</if>
+		</where>
+	</select>
+	
+	<update id="setStatus" flushCache="true">
+		update XK002_SHDJ
+		<set>
+			USE_FLAG=#{useFlag}
+		</set>
+		<where>SH_NO=#{shNo}</where>
+	</update>
+</mapper>

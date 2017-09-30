@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl011DicPathoDao">
+
+	<sql id="commCols">
+		pathoid pathoid,pathoname pathoname,pathoorder pathoorder,ifdisp ifdisp,remark remark,memoryid memoryid
+	</sql>
+
+	<insert id="save" parameterType="xl011DicPatho" flushCache="true">
+		 insert into xl011_dic_patho(pathoid,pathoname,pathoorder,ifdisp,remark,memoryid)
+		 values(#{pathoid},#{pathoname},#{pathoorder},#{ifdisp},#{remark},#{memoryid})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl011_dic_patho
+		<where>pathoid=#{pathoid}</where>
+	</delete>
+	
+	<update id="update" parameterType="xl011DicPatho" flushCache="true">
+		update xl011_dic_patho
+		<set>
+			pathoid=#{pathoid},pathoname=#{pathoname},pathoorder=#{pathoorder},ifdisp=#{ifdisp},remark=#{remark},memoryid=#{memoryid}
+		</set>
+		<where>pathoid=#{pathoid}</where>
+	</update>
+	
+	<select id="get" resultType="xl011DicPatho">
+		select <include refid="commCols"/> from xl011_dic_patho
+  		<where>pathoid=#{pathoid}</where>
+	</select>
+	
+	
+	<select id="findXl011DicPathoCount" parameterType="xl011DicPatho" resultType="int">
+		select count(*) from xl011_dic_patho
+		<where>
+			<if test="ifdisp!=null">
+				and ifdisp=#{ifdisp}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl011DicPatho">
+		select <include refid="commCols"/> from xl011_dic_patho
+		<where>
+		</where>
+	</select>
+</mapper>

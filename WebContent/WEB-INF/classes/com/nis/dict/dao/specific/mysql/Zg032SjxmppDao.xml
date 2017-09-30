@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Zg032SjxmppDao">
+
+	<sql id="commCols_mysql">
+		id id,match_field matchField,match match,match_value matchValue,infect_factor infectFactor
+	</sql>
+
+	<select id="findZg032Sjxmpp_mysql" parameterType="zg032Sjxmpp" resultType="zg032Sjxmpp">
+		select <include refid="commCols_mysql"/> from zg032_sjxmpp
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

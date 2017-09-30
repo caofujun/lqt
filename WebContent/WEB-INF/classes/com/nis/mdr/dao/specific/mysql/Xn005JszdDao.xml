@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn005JszdDao">
+
+	<sql id="commCols_mysql">
+		BACT_GENUS_ID bactGenusId,BACT_GENUS_ID_NAME bactGenusIdName,PYCODE pycode,WBCODE wbcode,BHCODE bhcode,DESCRIBE describe,LAST_AT lastAt,FLAG flag
+	</sql>
+
+	<select id="findXn005Jszd_mysql" parameterType="xn005Jszd" resultType="xn005Jszd">
+		select <include refid="commCols_mysql"/> from XN005_JSZD
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw007XjlbDao">
+
+	<sql id="commCols">
+		patho_id pathoId,patho_name pathoName,bh_code bhCode,sp_code spCode,wb_code wbCode,last_at lastAt,flag flag
+	</sql>
+
+	<insert id="save" parameterType="hw007Xjlb" flushCache="true">
+		 insert into hw007_xjlb(patho_id,patho_name,bh_code,sp_code,wb_code,last_at,flag)
+		 values(#{pathoId},#{pathoName},#{bhCode},#{spCode},#{wbCode},#{lastAt},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw007_xjlb
+		<where>patho_id=#{pathoId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw007Xjlb" flushCache="true">
+		update hw007_xjlb
+		<set>
+			patho_id=#{pathoId},patho_name=#{pathoName},bh_code=#{bhCode},sp_code=#{spCode},wb_code=#{wbCode},last_at=#{lastAt},flag=#{flag}
+		</set>
+		<where>patho_id=#{pathoId}</where>
+	</update>
+	
+	<select id="get" resultType="hw007Xjlb">
+		select <include refid="commCols"/> from hw007_xjlb
+  		<where>patho_id=#{pathoId}</where>
+	</select>
+	
+	
+	<select id="findHw007XjlbCount" parameterType="hw007Xjlb" resultType="int">
+		select count(*) from hw007_xjlb
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw007Xjlb">
+		select <include refid="commCols"/> from hw007_xjlb
+		<where>
+		</where>
+	</select>
+	
+	<select id="query" parameterType="hw007Xjlb" resultType="hw007Xjlb">
+		select patho_id pathoId,patho_name pathoName,sp_code spCode from hw007_xjlb
+		<where>
+			flag=1
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr002YsgrMxDao">
+
+	<sql id="commCols_oracle">
+		exclude_name excludeName,yj_infect_code yjInfectCode,infect_dept_id infectDeptId,reg_id regId,zyid zyid,infect_code infectCode,infect_name infectName,cause cause,count count,start_at startAt,stop_at stopAt,fever_days feverDays,blood_test_unusual_count bloodTestUnusualCount,blood_test_count bloodTestCount,relid relid,state state,moni_at moniAt,operator operator,suspected_degree suspectedDegree,report_type reportType,infect_type_id infectTypeId,dept_id deptId,is_dc isDc,conf_date confDate,standard_no standardNo,custom_infect_code customInfectCode,custom_infect_name customInfectName,remark remark,lastoper_date lastoperDate,gr2_relid gr2Relid
+	</sql>
+
+	<select id="findGr002YsgrMx_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from gr002_ysgr_mx
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findInfectionCounts_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select c.dept_id deptId,c.dept_name deptName,nvl(a.bk,0) reportNum,nvl(a.fhzd,0) conformNum,nvl(a.hykl,0) veryLikelyNum,nvl(a.kl,0) likely,nvl(a.qt,0) qt,nvl(ss.followNum,0) followNum from 
+		(select * from zg002_byks  
+		<where>
+			ifcaseoffice = 1
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+		) c 
+		left join(select dept_id,sum(case when((report_type = 1 or report_type = 2) and(state = 1)) then 1 else 0 end) bk,sum(case when((suspected_degree &gt;= 100)) then 1 else 0 end) fhzd,
+		sum(case when((suspected_degree &gt;= 80) and(suspected_degree &lt; 100)) then 1 else 0 end) hykl,sum(case when((suspected_degree &gt;= 50) and(suspected_degree &lt; 80)) then 1 else 0 end) kl,
+		sum(case when((suspected_degree &gt; 0) and(suspected_degree &lt; 50)) then 1 else 0 end) qt 
+		from (select dept_id,suspected_degree,report_type,state,row_number() over(partition by dept_id,mx.zyid order by nvl(report_type,0) desc,nvl(suspected_degree,0) desc) rn 
+		from gr002_ysgr_mx mx left join st003_cryxxb st3 on mx.zyid = st3.zyid 
+		<where>
+			mx.state = 1 
+			<if test="isInHosp!=null">
+		    	and nvl2(st3.out_at, 2, 1)=#{isInHosp}
+		    </if>
+		    <if test="queryStartDate != null">
+				and trunc(mx.start_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(mx.start_at) &lt;= #{queryEndDate}
+			</if>
+		    <if test="infectTypeId!=null">
+		    	and nvl(mx.infect_type_id,1)=#{infectTypeId}
+		    </if>
+		    <!-- <if test="userId!=null">
+		    	and mx.dept_id in(select dept_id from ny_user_rule_dept where user_id=#{userId})
+		    </if> -->
+		    <if test="infectCode!=null and infectCode!=''">
+		    	and mx.infect_code in (select infect_code from zg005_yygrzd start with infect_code=#{infectCode} connect by prior infect_code = p_infect_code)
+		    </if>
+		</where>
+		) where rn = 1 group by dept_id) a on a.dept_id=c.dept_id
+		  left join ( select s.dept_code,count(*) as followNum from st003_cryxxb s left join fo_patient f  on s.patient_id=f.patient_id 
+		  <where>
+		 	 f.fo_id is not null 
+		 	 <choose>
+			 	 <when test="queryEndDate == null and queryStartDate == null"></when>
+			 	 <otherwise>
+				 	 and ((
+				 	 	<if test="queryStartDate != null">
+				  			s.out_at &gt;= #{queryStartDate}
+				  		</if>
+				  		<if test="queryEndDate != null and queryStartDate != null">
+				  			and s.out_at &lt;= #{queryEndDate}
+				  		</if>
+				  		<if test="queryEndDate != null and queryStartDate == null">
+				  	 		s.out_at &lt;= #{queryEndDate}
+				  		</if>
+				     ) or (
+				    	<if test="queryEndDate != null">
+				    		s.in_hosp_at &lt;= #{queryEndDate}
+				    	</if> 
+				    	<if test="queryStartDate != null and queryEndDate != null">
+				    		and s.in_hosp_at &gt;= #{queryStartDate}
+				     	</if>
+				     	<if test="queryStartDate != null and queryEndDate == null">
+				     		s.in_hosp_at &gt;= #{queryStartDate}
+				     	</if>
+				     	))
+				    <!-- <if test="userId!=null">
+			     		and s.dept_code in(select dept_id from ny_user_rule_dept where user_id=#{userId})
+			    	</if> -->
+			     </otherwise>
+		     </choose>
+		      group by s.dept_code
+		  </where>
+		  ) ss
+		  on ss.dept_code=a.dept_id
+		order by c.show_order,c.dept_id
+	</select>
+	
+	<select id="findInfectionDetail_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select b.patient_id patientId,b.patient_name patientName,b.bed_no bedNo,b.sex sex,b.age age,b.age_unit ageUnit, b.zyid zyid,b.in_hosp_at inHospAt,a.moni_at moniAt,a.start_at startAt,c.infect_code infectCode,c.infect_name infectName,
+		a.report_type reportType,a.infect_type_id infectTypeId 
+		from(select t.*,row_number() over(partition by zyid order by nvl(report_type,0) desc,suspected_degree desc) rn from gr002_ysgr_mx t 
+		<where>
+			t.state = 1
+			<if test="deptId!=null and deptId!=''">
+		    	and t.dept_id=#{deptId}
+		    </if>
+		    <if test="infectTypeId!=null">
+		    	and t.infect_type_id=#{infectTypeId}
+		    </if>
+		    <if test="queryStartDate != null">
+				and trunc(t.start_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(t.start_at) &lt;= #{queryEndDate}
+			</if>
+			<if test="infectCode!=null and infectCode!=''">
+		    	and t.infect_code in (select infect_code from zg005_yygrzd start with infect_code=#{infectCode} connect by prior infect_code = p_infect_code)
+		    </if>
+		</where>
+		order by nvl(report_type,0) desc,t.suspected_degree desc) a 
+		left join st003_cryxxb b on a.zyid = b.zyid left join zg005_yygrzd c on a.infect_code = c.infect_code
+		<where>
+			a.rn = 1
+			<if test="reportType!=null">
+		    	and (a.report_type = 1 or a.report_type = 2)
+		    </if>
+			<if test="suspectedDegreeGt!=null">
+		    	and a.suspected_degree &gt;= #{suspectedDegreeGt}
+		    </if>
+		    <if test="suspectedDegreeLt!=null">
+		    	and a.suspected_degree &lt; #{suspectedDegreeLt}
+		    </if>
+		    <if test="isInHosp!=null">
+		    	and decode(b.out_at,null,1,2)=#{isInHosp}
+		    </if>
+		</where>
+		order by bedNo
+	</select>
+	
+	<select id="findConfirmInfection_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">	
+		select bk1.*,bk2.infect_diagn_name infectName,bk2.infect_diagn_id infectCode,bk2.infect_date startAt,bk2.infect_type infectTypeId, bk2.infect_dept_id infectDeptId,bk2.infect_dept_name infectDeptName,
+		bk2.relation relation,bk2.ope_name opeName, bk2.memo memo,nu.realname auditDrName,bk2.auth_at auditAt,grmx.report_type reportType,bk2.jbzg jbzg,bk2.infect_date infectendDt from 
+		(select * from (select a.*, rownum rn from 
+		(select distinct bk.relid relid,bk.zyid zyid,bk.patient_name patientName,bk.age||bk.age_unit age,bk.sex sex,bk.in_hosp_at inHospAt,bk.report_dr_name reportDrName,bk.report_at reportAt
+		from bk001_sbk bk join bk002_grzd zd on bk.relid = zd.refid
+		<where>
+			bk.is_ok = '1' and bk.is_del = '0'
+			<if test="queryStartDate!=null">
+				and zd.infect_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and zd.infect_date &lt;= #{queryEndDate}
+			</if>
+			<if test="infectDeptId!=null and infectDeptId!=''">
+				and zd.infect_dept_id=#{infectDeptId}
+			</if>
+			<if test="infectDeptName!=null and infectDeptName!=''">
+				and zd.infect_dept_name like CONCAT(CONCAT('%',#{infectDeptName}), '%') 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+		    	and (bk.zyid like concat(concat('%',#{searchString}), '%') or bk.patient_name like concat(concat('%',#{searchString}), '%')) 
+		    </if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum} ) bk1
+		left join bk002_grzd bk2 on bk1.relid = bk2.refid 
+		left join gr002_ysgr_mx grmx on bk2.relid = grmx.relid and bk2.infect_diagn_id = grmx.infect_code
+		left join ac_account nu on nu.username = bk2.auth_userid 
+		order by bk2.auth_at desc, bk1.relid, bk2.infect_diagn_id
+		
+	</select>
+	
+	
+	<select id="findHasRuleOut_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select * from ( select a.*, rownum rn from (
+		select a.zyid zyid,a.age||a.age_unit age,a.sex sex,a.patient_name patientName,zd.infect_name infectName,b.report_type reportType,b.start_at startAt,b.infect_type_id infectTypeId,ks.dept_name deptName,
+		bk1.report_dr_name reportDrName,bk1.report_at reportAt,c.realname operator,b.lastoper_date lastoperDate,b.remark remark,b.reg_id regId 
+		from (select t1.zyid,t1.lastoper_date,t2.operator,t2.infect_code,t2.report_type,t2.start_at,t2.infect_type_id,t2.dept_id,t2.relid,t2.remark,t2.reg_id 
+			from (select zyid, max(lastoper_date) lastoper_date from gr002_ysgr_mx where infect_type_id = 1 and state = 3 group by zyid) t1
+         	left join gr002_ysgr_mx t2 on t1.zyid = t2.zyid and t1.lastoper_date = t2.lastoper_date) b
+        left join st003_cryxxb a on a.zyid = b.zyid
+		left join zg005_yygrzd zd on b.infect_code = zd.infect_code
+		left join zg002_byks ks on b.dept_id = ks.dept_id
+		left join bk001_sbk bk1 on b.relid = bk1.relid
+		left join ac_account c on b.operator = c.username	
+		<where>
+			<if test="queryStartDate!=null">
+				and b.lastoper_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and b.lastoper_date &lt;= #{queryEndDate}
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and b.dept_id=#{deptId}
+			</if>
+			<if test="deptName!=null and deptName!=''">
+				and ks.dept_name like CONCAT(CONCAT('%',#{deptName}), '%') 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+		    	and (a.zyid like concat(concat('%',#{searchString}), '%') or a.patient_name like concat(concat('%',#{searchString}), '%')) 
+		    </if>
+		</where>
+		order by b.lastoper_date desc nulls last 
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findWarningResults2_oracle" resultType="gr002YsgrMx">
+		select t.zyid zyid,t.infect_code infectCode,zd.infect_name infectName,t.tiems_count tiemsCount,t.element_name elementName,t.data_form dataForm,t.sjfw dateRange,t.original_content originalContent,
+		nvl(ac.realname, mx.operator) operator,mx.lastoper_date lastoperDate,mx.remark remark,t.fever_days feverDays,t.blood_test_count bloodTestCount,t.blood_test_unusual_count bloodTestUnusualCount,t.sj_id sjId,t.data_date dataDate
+		from (  select distinct zyid, infect_code,  tiems_count,infect_typeid,element_name,element_id,data_form,
+      sj_id,sjfw,original_content,fever_days,blood_test_count,blood_test_unusual_count,data_date from (select distinct a.zyid,a.infect_code,(select count(*) from   gr018_ysgrys  where zyid=a.zyid  and element_id=c.element_id) tiems_count,a.infect_typeid,b.element_name,c.element_id,c.data_form,c.sj_id,to_char(a.create_at, 'MM-dd') || '~' || to_char(c.data_date, 'MM-dd') as sjfw,
+		c.original_content,d.fever_days,d.blood_test_count,d.blood_test_unusual_count,c.data_date, dense_rank() over(partition by  b.element_name order by  c.data_date desc) rn
+		from gr019_ysgrmx a left join gr002_ysgr_mx d on a.zyid = d.zyid and a.infect_code = d.infect_code left join gr018_ysgrys c on a.zyid = c.zyid and a.element_id = c.element_id
+        left join zg007_grys b on a.element_id = b.element_id where a.zyid=#{zyid} and a.infect_code=#{infectCode} and a.weight_value >= 0 and not c.element_id is null and c.element_id like 'JY%'
+        <if test="infectTypeId!=null">
+			and d.infect_type_id=#{infectTypeId}
+		</if>
+		) tt where rn = 1
+        union select distinct a.zyid,a.infect_code,(select count(*) from   gr018_ysgrys  where zyid=a.zyid  and element_id=c.element_id) tiems_count,a.infect_typeid,b.element_name,c.element_id,c.data_form,c.sj_id,to_char(a.create_at, 'MM-dd') || '~' || to_char(a.last_at, 'MM-dd') as sjfw,
+        c.original_content,d.fever_days,d.blood_test_count,d.blood_test_unusual_count,c.data_date
+        from gr019_ysgrmx a left join gr002_ysgr_mx d on a.zyid = d.zyid and a.infect_code = d.infect_code left join gr018_ysgrys c on a.zyid = c.zyid and a.ys_id = c.id left join zg007_grys b on a.element_id = b.element_id
+        where a.zyid=#{zyid} and a.infect_code=#{infectCode} and a.weight_value >= 0 and not c.element_id is null and not c.element_id like 'JY%'
+        <if test="infectTypeId!=null">
+			and d.infect_type_id=#{infectTypeId}
+		</if>
+        ) t
+		left join gr002_ysgr_mx mx on t.zyid = mx.zyid and t.infect_code = mx.infect_code left join zg005_yygrzd zd on t.infect_code = zd.infect_code
+		left join ac_account ac on ac.username=mx.operator
+		<where>
+			 mx.reg_id=#{regId}
+		</where>
+		order by sjfw, original_content
+	</select>
+	
+	<select id="findGr002_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select <include refid="commCols_oracle"/> from gr002_ysgr_mx
+  		<where> zyid=#{zyid} and infect_code=#{infectCode} and state=#{state} and report_type is null and infect_type_id=#{infectTypeId} and rownum = 1 </where>
+	</select>
+	
+	<select id="findAccordCount_oracle" parameterType="gr002YsgrMx" resultType="treeEntity">
+		select c.dept_id id,c.dept_name || '【' || a.num ||  '】' text,'closed' state,a.num cldCount from (select * from zg002_byks 
+		<where>
+			ifcaseoffice = 1
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+		) c join (select dept_code, count(*) num from (select st3.dept_code,suspected_degree,report_type,state,row_number() over(partition by st3.dept_code, mx.zyid order by nvl(report_type, 0) desc, nvl(suspected_degree, 0) desc) rn
+        from gr002_ysgr_mx mx left join st003_cryxxb st3 on mx.zyid = st3.zyid
+		<where>
+			suspected_degree >= #{qzValue} 
+			<if test="state!=null">
+		    	and mx.state=#{state}
+		    </if>
+			<if test="isInHosp!=null">
+		    	and nvl2(st3.out_at, 2, 1)=#{isInHosp}
+		    </if>
+		    <if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+		    <if test="infectTypeId!=null">
+		    	and mx.infect_type_id=#{infectTypeId}
+		    </if>
+		    <if test="infectCode!=null and infectCode!=''">
+		    	and mx.infect_code in (select infect_code from zg005_yygrzd start with infect_code=#{infectCode} connect by prior infect_code = p_infect_code)
+		    </if>
+		</where>
+		) where rn = 1 group by dept_code) a on a.dept_code = c.dept_id
+ 		order by c.show_order, c.dept_id
+	</select>
+	
+	<select id="findAccordInfection_oracle" parameterType="gr002YsgrMx" resultType="treeEntity">
+		select zyid id,  case when (select count(*) from fo_patient a where a.patient_id = patientId) > 0 then  bed_no || patient_name  || '(' || '已关注' ||  ')'  else  bed_no || patient_name end text, 'open' state,case when sex='男' then 'icon-man-two' else 'icon-woman-two' end iconCls  
+        from (select dept_id,suspected_degree,report_type,state,mx.zyid,case when st3.bed_no is not null then st3.bed_no || '床 ' else '' end bed_no,st3.patient_name,st3.sex,st3.patient_id patientId,
+        row_number() over(partition by st3.dept_code, mx.zyid order by nvl(report_type, 0) desc, nvl(suspected_degree, 0) desc) rn
+        from gr002_ysgr_mx mx left join st003_cryxxb st3 on mx.zyid = st3.zyid 
+        <where>
+			st3.dept_code=#{deptId} and suspected_degree >= #{qzValue} 
+			<if test="state!=null">
+		    	and mx.state=#{state}
+		    </if>
+			<if test="isInHosp!=null">
+		    	and nvl2(st3.out_at, 2, 1)=#{isInHosp}
+		    </if>
+		    <if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+		    <if test="infectTypeId!=null">
+		    	and nvl(mx.infect_type_id,1)=#{infectTypeId}
+		    </if>
+		    <if test="infectCode!=null and infectCode!=''">
+		    	and mx.infect_code in (select infect_code from zg005_yygrzd start with infect_code=#{infectCode} connect by prior infect_code = p_infect_code)
+		    </if>
+		</where>
+		) where rn = 1 
+	</select>
+	
+	<select id="findInAndOutInfectCount_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select t1.inNum, t2.outNum from (select 'join' ss, count(*) inNum from (select * from zg002_byks
+		<where>
+			ifcaseoffice = 1
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+			    and dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+					#{item} 
+				</foreach>
+			</if>
+		</where>
+		) c join (select dept_code, out_at from (select st3.dept_code, st3.out_at, suspected_degree, state,
+		  	row_number() over(partition by st3.dept_code, mx.zyid order by nvl(report_type, 0) desc, nvl(suspected_degree, 0) desc) rn
+		    from gr002_ysgr_mx mx left join st003_cryxxb st3 on mx.zyid = st3.zyid
+		<where>
+			nvl2(st3.out_at, 2, 1)=#{isInHosp} and suspected_degree >= #{qzValue} 
+        	<if test="state!=null">
+		    	and mx.state=#{state}
+		    </if>
+			<if test="infectTypeId!=null">
+		    	and mx.infect_type_id=#{infectTypeId}
+		    </if>
+			<if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+        </where>) where rn = 1) a on a.dept_code = c.dept_id) t1
+		left join (select 'join' ss, count(*) outNum from (select * from zg002_byks where ifcaseoffice = 1 ) c 
+		join (select dept_code, out_at from (select st3.dept_code, st3.out_at, suspected_degree, state,
+			row_number() over(partition by st3.dept_code, mx.zyid order by nvl(report_type, 0) desc, nvl(suspected_degree, 0) desc) rn
+		    from gr002_ysgr_mx mx left join st003_cryxxb st3 on mx.zyid = st3.zyid 
+		<where>
+			nvl2(st3.out_at, 2, 1)=#{isInHosp} and suspected_degree >=  #{qzValue} 
+        	<if test="state!=null">
+		    	and mx.state=#{state}
+		    </if>
+			<if test="infectTypeId!=null">
+		    	and mx.infect_type_id=#{infectTypeId}
+		    </if>
+			<if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+        </where>) where rn = 1) a on a.dept_code = c.dept_id) t2 on t1.ss=t2.ss
+		
+	</select>
+	
+	<select id="findFavoritCount_oracle" parameterType="gr002YsgrMx" resultType="treeEntity">
+		select c.dept_id id,c.dept_name || '【' || a.num ||  '】' text,'closed' state,a.num cldCount from (select * from zg002_byks 
+		<where>
+			ifcaseoffice = 1
+			<if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+		) c join (select st3.dept_code, count(*) as num from st003_cryxxb st3 left join fo_patient f on st3.patient_id = f.patient_id
+		join (select zyid, row_number() over(partition by zyid order by nvl(suspected_degree, 0) desc) rn from gr002_ysgr_mx where infect_type_id=#{infectTypeId} and suspected_degree >= #{qzValue}) mx on mx.zyid = st3.zyid 
+		<where>
+			rn = 1 and f.fo_id is not null
+			<if test="isInHosp!=null">
+		    	and nvl2(st3.out_at, 2, 1)=#{isInHosp}
+		    </if>
+		    <if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+		</where>
+		group by st3.dept_code) a on a.dept_code = c.dept_id 
+ 		order by c.show_order, c.dept_id
+	</select>
+	
+	<select id="findFavorit_oracle" parameterType="gr002YsgrMx" resultType="treeEntity">
+		select st3.zyid id, case when st3.bed_no is not null then st3.bed_no || '床 ' else '' end || patient_name text, 'open' state,case when st3.sex='男' then 'icon-man-two' else 'icon-woman-two' end iconCls
+		from st003_cryxxb st3 left join fo_patient f on st3.patient_id = f.patient_id
+		join (select zyid, row_number() over(partition by zyid order by nvl(suspected_degree, 0) desc) rn from gr002_ysgr_mx where infect_type_id=#{infectTypeId} and suspected_degree >= #{qzValue}) mx on mx.zyid = st3.zyid 
+		<where>
+			rn = 1 and f.fo_id is not null and st3.dept_code=#{deptId}
+			<if test="isInHosp!=null">
+		    	and nvl2(st3.out_at, 2, 1)=#{isInHosp}
+		    </if>
+		    <if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findInAndOutFavoritCount_oracle" parameterType="gr002YsgrMx" resultType="gr002YsgrMx">
+		select t1.inNum,t2.outNum from (select 'join' ss, count(*) inNum
+		    from zg002_byks bk join st003_cryxxb st3 on st3.dept_code=bk.dept_id left join fo_patient f on st3.patient_id = f.patient_id 
+		    join (select zyid, row_number() over(partition by zyid order by nvl(suspected_degree, 0) desc) rn from gr002_ysgr_mx where infect_type_id=#{infectTypeId} and suspected_degree >= #{qzValue}) mx on mx.zyid = st3.zyid 
+        <where>
+        	rn = 1 and f.fo_id is not null and ifcaseoffice = 1 and nvl2(st3.out_at, 2, 1)=#{isInHosp}
+            <if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and bk.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		    <if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+        </where>
+        ) t1
+		left join (select 'join' ss, count(*) outNum
+		    from zg002_byks bk join st003_cryxxb st3 on st3.dept_code=bk.dept_id left join fo_patient f on st3.patient_id = f.patient_id 
+		    join (select zyid, row_number() over(partition by zyid order by nvl(suspected_degree, 0) desc) rn from gr002_ysgr_mx where infect_type_id=#{infectTypeId} and suspected_degree >= #{qzValue}) mx on mx.zyid = st3.zyid 
+        <where>
+        	rn = 1 and f.fo_id is not null and ifcaseoffice = 1 and nvl2(st3.out_at, 2, 1)=#{isInHosp}
+		    <if test="queryStartDate != null">
+				and trunc(st3.out_at) &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and trunc(st3.out_at) &lt;= #{queryEndDate}
+			</if>
+        </where>
+		) t2 on t1.ss=t2.ss
+		<!-- select sum(case when st3.out_at is null then 1 else 0 end) inNum, sum(case when st3.out_at is null then 0 else 1 end) outNum
+		from zg002_byks bk join st003_cryxxb st3 on st3.dept_code=bk.dept_id left join fo_patient f on st3.patient_id = f.patient_id 
+        <where>
+        	f.fo_id is not null and ifcaseoffice = 1
+            <if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and bk.dept_id in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+        </where> -->
+	</select>
+	
+</mapper>

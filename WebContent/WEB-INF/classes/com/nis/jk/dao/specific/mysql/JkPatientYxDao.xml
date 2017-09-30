@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientYxDao">
+
+	<sql id="commCols_mysql">
+		ID id,MZID mzid,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,CHECK_NO checkNo,EXAM_CLASS examClass,CHECK_PART checkPart,DESCRIPTION description,IMPRESSION impression,CLIN_DIAGNOSE clinDiagnose,DEPT_ID deptId,DEPT_NAME deptName,CHECK_DATE checkDate,REPORT_DATE reportDate,REPORT_DOCTOR reportDoctor,CHECK_DOCTOR checkDoctor,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientYx_mysql" parameterType="jkPatientYx" resultType="jkPatientYx">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_YX
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.follow.dao.FoPatientDao">
+
+	<sql id="commCols">
+		FO_ID foId,PATIENT_ID patientId,FOLLOW_NAME followName,FOLLOW_TIME followTime
+	</sql>
+	
+	<sql id="cryxxbCommCols">
+		s.zyid zyid,s.patient_id patientId,s.visit_id visitId,patient_name patientName,age age,age_unit ageUnit,sex sex,dept_code deptCode,dept_name deptName,in_dept_id inDeptId,in_dept_name inDeptName,out_dept_id outDeptId,out_dept_name outDeptName,in_hosp_at inHospAt,out_at outAt,in_days inDays,bed_no bedNo,charge_dr_id chargeDrId,charge_dr_name chargeDrName,cost cost,memo memo,upd_date updDate,bed_no_index bedNoIndex,fx_status fxStatus,fx_date fxDate,GY_STATUS gyStatus,PDCA_STATUS pdcaStatus,hosp_id hospId
+	</sql>
+
+	<insert id="save" parameterType="foPatient"  flushCache="true">
+		 insert into FO_PATIENT(FO_ID,PATIENT_ID,FOLLOW_NAME,FOLLOW_TIME)
+		 values(#{foId},#{patientId},#{followName},#{followTime})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  FO_PATIENT
+		<where>FO_ID=#{foId}</where>
+	</delete>
+	
+	<delete id="deleteByPatientId" flushCache="true">
+		delete from  FO_PATIENT
+		<where>
+		PATIENT_ID=#{patientId}
+		<if test="followName!=null and followName!=''">
+			and FOLLOW_NAME=#{followName}
+		</if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="foPatient" flushCache="true">
+		update FO_PATIENT
+		<set>
+			FO_ID=#{foId},PATIENT_ID=#{patientId},FOLLOW_NAME=#{followName},FOLLOW_TIME=#{followTime}
+		</set>
+		<where>FO_ID=#{foId}</where>
+	</update>
+	
+	<select id="get" resultType="foPatient">
+		select <include refid="commCols"/> from FO_PATIENT
+  		<where>FO_ID=#{foId}</where>
+	</select>
+	
+	
+	<select id="findFoPatientCount" parameterType="foPatient" resultType="int">
+		select count(*) from FO_PATIENT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="foPatient">
+		select <include refid="commCols"/> from FO_PATIENT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByPatientId" resultType="foPatient">
+		select <include refid="commCols"/> from FO_PATIENT
+  		<where>PATIENT_ID=#{patientId}</where>
+	</select>
+	
+	<select id="findByDeptIdDetail" resultType="st003Cryxxb">
+		select <include refid="cryxxbCommCols"/>,s2.diagnosis_name diagnosisName from st003_cryxxb s
+		  left join fo_patient f on s.patient_id = f.patient_id 
+		  left join (select zyid, diagnosis_name from st002_zdxxb where diagnosis_type = '1') s2 on s.zyid = s2.zyid
+		 <where>
+		    f.fo_id is not null
+		    <if test="deptId!=null and deptId!=''">
+		     and s.dept_code=#{deptId}
+		    </if>
+		    <choose>
+		 	 <when test="queryEndDate == null and queryStartDate == null"></when>
+		 	 <otherwise>
+		 	 and ((<if test="queryStartDate != null">
+			  	s.out_at &gt;= #{queryStartDate}
+			  </if>
+			  <if test="queryEndDate != null and queryStartDate != null">
+			  	and s.out_at &lt;= #{queryEndDate}
+			  </if>
+			  <if test="queryEndDate != null and queryStartDate == null">
+			  	 s.out_at &lt;= #{queryEndDate}
+			  </if>
+			    ) or (
+			     <if test="queryEndDate != null">
+			    s.in_hosp_at &lt;= #{queryEndDate}
+			    </if> 
+			    <if test="queryStartDate != null and queryEndDate != null">
+			    and s.in_hosp_at &gt;= #{queryStartDate}
+			     </if>
+			     <if test="queryStartDate != null and queryEndDate == null">
+			     s.in_hosp_at &gt;= #{queryStartDate}
+			     </if>
+			     ))</otherwise>
+		     </choose>
+		  </where>
+	</select>
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+	
+	<!-- 激活自动代理功能 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	
+	<import resource="classpath*:applicationContext-properties.xml"/>
+	<import resource="classpath*:applicationContext-interceptor.xml"/>
+<!-- 	<import resource="classpath*:applicationContext-redis.xml"/> -->
+	<import resource="classpath*:applicationContext-ds.xml"/>
+	<import resource="classpath*:applicationContext-system.xml"/>
+	<import resource="classpath*:applicationContext-intervene.xml"/>
+	<import resource="classpath*:applicationContext-patient.xml"/>
+	<import resource="classpath*:applicationContext-monitor.xml"/>
+	<import resource="classpath*:applicationContext-message.xml"/>
+	<import resource="classpath*:applicationContext-task.xml"/>
+	<import resource="classpath*:applicationContext-quartz.xml"/>
+	<import resource="classpath*:applicationContext-questionnaire.xml"/>
+	<import resource="classpath*:applicationContext-cdc.xml"/>
+	<import resource="classpath*:applicationContext-analysis.xml"/>
+</beans>

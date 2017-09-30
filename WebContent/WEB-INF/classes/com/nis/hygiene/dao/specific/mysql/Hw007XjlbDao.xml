@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw007XjlbDao">
+
+	<sql id="commCols_mysql">
+		patho_id pathoId,patho_name pathoName,bh_code bhCode,sp_code spCode,wb_code wbCode,last_at lastAt,flag flag
+	</sql>
+
+	<select id="findHw007Xjlb_mysql" parameterType="hw007Xjlb" resultType="hw007Xjlb">
+		select <include refid="commCols_mysql"/> from hw007_xjlb
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

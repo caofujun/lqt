@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk002SybkDao">
+
+	<sql id="commCols">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,PATIENT_NAME patientName,AGE age,AGEUNIT ageunit,SEXID sexid,SEXNAME sexname,WOMANTYPEID womantypeid,WOMANTYPENAME womantypename,ID id,BIRTYDAY birtyday,NATIONID nationid,NATIONNAME nationname,MARRIAGEID marriageid,MARRIAGEVALUE marriagevalue,PROFESSIONID professionid,PROFESSIONNAME professionname,EDUCATIONID educationid,EDUCATIONNAME educationname,REGADDRTYPEID regaddrtypeid,REGADDRTYPENAME regaddrtypename,REGISTRATIONADDRCODE registrationaddrcode,REGISTRATIONADDRCODEVALUE registrationaddrcodevalue,REGISTRATIONADDR registrationaddr,NOWADDRTYPEID nowaddrtypeid,NOWADDRTYPENAME nowaddrtypename,NOWADDRCODE nowaddrcode,NOWADDRCODEVALUE nowaddrcodevalue,NOWADDR nowaddr,WORKPLACE workplace,DEADDATE deaddate,DEADZONEID deadzoneid,DEADZONEVALUE deadzonevalue,FOLKNAME folkname,FOLKTEL folktel,FOLKADDR folkaddr,A_CAUSE acause,A_ICD10 aicd10,A_SCOPETIME ascopetime,A_SCOPETIMEUNIT ascopetimeunit,B_CAUSE bcause,B_ICD10 bicd10,B_SCOPETIME bscopetime,B_SCOPETIMEUNIT bscopetimeunit,C_CAUSE ccause,C_ICD10 cicd10,C_SCOPETIME cscopetime,C_SCOPETIMEUNIT cscopetimeunit,D_CAUSE dcause,D_ICD10 dicd10,D_SCOPETIME dscopetime,D_SCOPETIMEUNIT dscopetimeunit,OTHER_CAUSE otherCause,OTHER_ICD10 otherIcd10,BASECAUSE basecause,BSICD10 bsicd10,DORGLEVELID dorglevelid,DORGLEVELVALUE dorglevelvalue,DIAGNOSEBY diagnoseby,DIAGNOSEBYVALUE diagnosebyvalue,DOCTORID doctorid,DOCTORNAME doctorname,OFFICEID officeid,OFFICENAME officename,NOTES notes,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,FILLDATE filldate,DELREASON delreason,FLAG flag,AUDITDATE auditdate,AUDITOR auditor,AuditorName auditorname,IDTYPE idtype,IDTYPEVALUE idtypevalue,LIVING_HISTORY livingHistory,SURVEY_NAME surveyName,RELATION_DEAD relationDead,CONTACTPHONE contactphone,CONTACTADDR contactaddr,VERBAL_AUTOPSY verbalAutopsy,DSURVEY dsurvey,AREA area,ISPRINT isprint,ISEMPTYCARD isemptycard,SERIALNUMBER serialnumber
+	</sql>
+
+	<insert id="save" parameterType="ctgBk002Sybk"  flushCache="true">
+		 insert into CTG_BK002_SYBK(MASTERID,CARDID,PATIENT_ID,ZYID,VISIT_ID,MZID,PATIENT_NAME,AGE,AGEUNIT,SEXID,SEXNAME,WOMANTYPEID,WOMANTYPENAME,ID,BIRTYDAY,NATIONID,NATIONNAME,MARRIAGEID,MARRIAGEVALUE,PROFESSIONID,PROFESSIONNAME,EDUCATIONID,EDUCATIONNAME,REGADDRTYPEID,REGADDRTYPENAME,REGISTRATIONADDRCODE,REGISTRATIONADDRCODEVALUE,REGISTRATIONADDR,NOWADDRTYPEID,NOWADDRTYPENAME,NOWADDRCODE,NOWADDRCODEVALUE,NOWADDR,WORKPLACE,DEADDATE,DEADZONEID,DEADZONEVALUE,FOLKNAME,FOLKTEL,FOLKADDR,A_CAUSE,A_ICD10,A_SCOPETIME,A_SCOPETIMEUNIT,B_CAUSE,B_ICD10,B_SCOPETIME,B_SCOPETIMEUNIT,C_CAUSE,C_ICD10,C_SCOPETIME,C_SCOPETIMEUNIT,D_CAUSE,D_ICD10,D_SCOPETIME,D_SCOPETIMEUNIT,OTHER_CAUSE,OTHER_ICD10,BASECAUSE,BSICD10,DORGLEVELID,DORGLEVELVALUE,DIAGNOSEBY,DIAGNOSEBYVALUE,DOCTORID,DOCTORNAME,OFFICEID,OFFICENAME,NOTES,REPORTDEPTID,REPORTDEPTNAME,REPORTDOCTORID,REPORTDOCTORNAME,FILLDATE,DELREASON,FLAG,AUDITDATE,AUDITOR,IDTYPE,IDTYPEVALUE,LIVING_HISTORY,SURVEY_NAME,RELATION_DEAD,CONTACTPHONE,CONTACTADDR,VERBAL_AUTOPSY,DSURVEY,AREA,ISPRINT,ISEMPTYCARD,AuditorName,SERIALNUMBER)
+		 values(#{masterid},#{cardid},#{patientId},#{zyid},#{visitId},#{mzid},#{patientName},#{age},#{ageunit},#{sexid},#{sexname},#{womantypeid},#{womantypename},#{id},#{birtyday},#{nationid},#{nationname},#{marriageid},#{marriagevalue},#{professionid},#{professionname},#{educationid},#{educationname},#{regaddrtypeid},#{regaddrtypename},#{registrationaddrcode},#{registrationaddrcodevalue},#{registrationaddr},#{nowaddrtypeid},#{nowaddrtypename},#{nowaddrcode},#{nowaddrcodevalue},#{nowaddr},#{workplace},#{deaddate},#{deadzoneid},#{deadzonevalue},#{folkname},#{folktel},#{folkaddr},#{acause},#{aicd10},#{ascopetime},#{ascopetimeunit},#{bcause},#{bicd10},#{bscopetime},#{bscopetimeunit},#{ccause},#{cicd10},#{cscopetime},#{cscopetimeunit},#{dcause},#{dicd10},#{dscopetime},#{dscopetimeunit},#{otherCause},#{otherIcd10},#{basecause},#{bsicd10},#{dorglevelid},#{dorglevelvalue},#{diagnoseby},#{diagnosebyvalue},#{doctorid},#{doctorname},#{officeid},#{officename},#{notes},#{reportdeptid},#{reportdeptname},#{reportdoctorid},#{reportdoctorname},#{filldate},#{delreason},#{flag},#{auditdate},#{auditor},#{idtype},#{idtypevalue},#{livingHistory},#{surveyName},#{relationDead},#{contactphone},#{contactaddr},#{verbalAutopsy},#{dsurvey},#{area},#{isprint},#{isemptycard},#{auditorname},#{serialnumber})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK002_SYBK
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk002Sybk" flushCache="true">
+		update CTG_BK002_SYBK
+		<set>
+			MASTERID=#{masterid},CARDID=#{cardid},PATIENT_ID=#{patientId},ZYID=#{zyid},VISIT_ID=#{visitId},MZID=#{mzid},PATIENT_NAME=#{patientName},AGE=#{age},AGEUNIT=#{ageunit},SEXID=#{sexid},SEXNAME=#{sexname},WOMANTYPEID=#{womantypeid},WOMANTYPENAME=#{womantypename},ID=#{id},BIRTYDAY=#{birtyday},NATIONID=#{nationid},NATIONNAME=#{nationname},MARRIAGEID=#{marriageid},MARRIAGEVALUE=#{marriagevalue},PROFESSIONID=#{professionid},PROFESSIONNAME=#{professionname},EDUCATIONID=#{educationid},EDUCATIONNAME=#{educationname},REGADDRTYPEID=#{regaddrtypeid},REGADDRTYPENAME=#{regaddrtypename},REGISTRATIONADDRCODE=#{registrationaddrcode},REGISTRATIONADDRCODEVALUE=#{registrationaddrcodevalue},REGISTRATIONADDR=#{registrationaddr},NOWADDRTYPEID=#{nowaddrtypeid},NOWADDRTYPENAME=#{nowaddrtypename},NOWADDRCODE=#{nowaddrcode},NOWADDRCODEVALUE=#{nowaddrcodevalue},NOWADDR=#{nowaddr},WORKPLACE=#{workplace},DEADDATE=#{deaddate},DEADZONEID=#{deadzoneid},DEADZONEVALUE=#{deadzonevalue},FOLKNAME=#{folkname},FOLKTEL=#{folktel},FOLKADDR=#{folkaddr},A_CAUSE=#{acause},A_ICD10=#{aicd10},A_SCOPETIME=#{ascopetime},A_SCOPETIMEUNIT=#{ascopetimeunit},B_CAUSE=#{bcause},B_ICD10=#{bicd10},B_SCOPETIME=#{bscopetime},B_SCOPETIMEUNIT=#{bscopetimeunit},C_CAUSE=#{ccause},C_ICD10=#{cicd10},C_SCOPETIME=#{cscopetime},C_SCOPETIMEUNIT=#{cscopetimeunit},D_CAUSE=#{dcause},D_ICD10=#{dicd10},D_SCOPETIME=#{dscopetime},D_SCOPETIMEUNIT=#{dscopetimeunit},OTHER_CAUSE=#{otherCause},OTHER_ICD10=#{otherIcd10},BASECAUSE=#{basecause},BSICD10=#{bsicd10},DORGLEVELID=#{dorglevelid},DORGLEVELVALUE=#{dorglevelvalue},DIAGNOSEBY=#{diagnoseby},DIAGNOSEBYVALUE=#{diagnosebyvalue},DOCTORID=#{doctorid},DOCTORNAME=#{doctorname},OFFICEID=#{officeid},OFFICENAME=#{officename},NOTES=#{notes},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},FILLDATE=#{filldate},DELREASON=#{delreason},FLAG=#{flag},AUDITDATE=#{auditdate},AUDITOR=#{auditor},IDTYPE=#{idtype},IDTYPEVALUE=#{idtypevalue},LIVING_HISTORY=#{livingHistory},SURVEY_NAME=#{surveyName},RELATION_DEAD=#{relationDead},CONTACTPHONE=#{contactphone},CONTACTADDR=#{contactaddr},VERBAL_AUTOPSY=#{verbalAutopsy},DSURVEY=#{dsurvey},AREA=#{area},ISPRINT=#{isprint},ISEMPTYCARD=#{isemptycard}, AUDITORNAME=#{auditorname},SERIALNUMBER=#{serialnumber}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<update id="audit" parameterType="ctgBk002Sybk" flushCache="true">
+		update CTG_BK002_SYBK c set c.flag=1,c.auditdate= #{auditdate}, c.auditor=#{auditor}, c.auditorname=#{auditorname},c.serialnumber=#{serialnumber} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="retreat" parameterType="ctgBk002Sybk" flushCache="true">
+		update CTG_BK002_SYBK c set c.flag=2,c.auditdate= #{auditdate}, c.auditor=#{auditor}, c.DELREASON=#{delreason}, c.auditorname=#{auditorname}, c.serialnumber=#{serialnumber} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="cancel" parameterType="ctgBk002Sybk" flushCache="true">
+		update CTG_BK002_SYBK c set c.flag=0,c.auditdate= #{auditdate}, c.auditor=#{auditor}, c.DELREASON='', c.auditorname=#{auditorname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="remove" parameterType="ctgBk002Sybk" flushCache="true">
+		update CTG_BK002_SYBK c set c.flag=3,c.auditdate= #{auditdate}, c.auditor=#{auditor}, c.DELREASON=#{delreason}, c.auditorname=#{auditorname}, c.serialnumber=#{serialnumber} where c.masterid=#{masterid}
+	</update>
+	
+	<select id="get" resultType="ctgBk002Sybk">
+		select <include refid="commCols"/> from CTG_BK002_SYBK
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk002SybkCount" parameterType="ctgBk002Sybk" resultType="int">
+		select count(*) from CTG_BK002_SYBK
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk002Sybk">
+		select <include refid="commCols"/> from CTG_BK002_SYBK
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findCardsForAdmin" resultType="ctgBk002Sybk" parameterType="ctgBk001Crbmaster">
+		select <include refid="commCols"/>,unReadMsg from
+       		(select m.* , (select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = m.zyid
+		             ) and user_id = #{userid} and is_read = 0) unReadMsg 
+		from CTG_BK002_SYBK m )m
+		<where>
+			1=1
+			<if test="reportdoctorid!=null and reportdoctorid!=''">
+				and m.reportdoctorid in (#{reportdoctorid})
+			</if>
+			<if test="reportdeptid!=null and reportdeptid!=''">
+		        and m.reportdeptid in (#{reportdeptid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+			</if>
+			<if test="dateType==1">
+				and trunc(m.filldate) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+				and trunc(m.auditdate) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="cardStates>=0">
+				and m.flag=#{cardStates}
+			</if>
+			<choose>
+				<when test="isprint==1">
+					and m.isprint = 1
+				</when>
+				<when test="isprint==2">
+					 and ( m.isprint is null or m.isprint !=1 ) 
+				</when>
+			</choose>
+			<if test="unReadMsg==1">
+				and m.unReadMsg>0
+			</if>
+			<choose>
+				<when test="cardStates==1">
+					order by auditdate desc
+				</when>
+				<when test="cardStates!=1">
+					order by filldate desc
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="updateNotes" parameterType="String" flushCache="true">
+		update CTG_BK002_SYBK c set c.notes=#{notes} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="batchAudit" parameterType="ctgBk002Sybk" flushCache="true">
+		update CTG_BK002_SYBK c set c.flag=1,c.auditdate= #{auditdate}, c.auditor=#{auditor}, c.auditorname=#{auditorname} where c.masterid in (${masterid})
+	</update>
+	
+	<update id="updatePrintFlag" parameterType="String">
+		update CTG_BK002_SYBK set isprint=1
+  		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+</mapper>

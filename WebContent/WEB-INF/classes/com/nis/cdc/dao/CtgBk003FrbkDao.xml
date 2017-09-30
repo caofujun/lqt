@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk003FrbkDao">
+
+	<sql id="commCols">
+		NOWADDRTYPENAME nowaddrtypename,NOWADDRCODE nowaddrcode,NOWADDRCODEVALUE nowaddrcodevalue,NOWADDR nowaddr,CARDINALSYMPTOMS cardinalsymptoms,STARTDATE startdate,DIAGNOSEDATE diagnosedate,FIRSTVISIT firstvisit,PRIMARYDIAGNOSIS primarydiagnosis,SAMPLEDATE sampledate,SENDDATE senddate,LISITEMID lisitemid,LISITEMVALUE lisitemvalue,LISTRESULT listresult,DOCTORID doctorid,DOCTORNAME doctorname,OFFICEID officeid,OFFICENAME officename,FLAG flag,FILLDATE filldate,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,DELREASON delreason,AUDITDATE auditdate,AUDITOR auditor,ISPRINT isprint,MASTERID masterid,CARDID cardid,PATIENT_ID patientId,MZID mzid,ZYID zyid,VISIT_ID visitId,PATIENT_NAME patientName,PARENT_NAME parentName,SEXID sexid,SEXNAME sexname,BIRTYDAY birtyday,AGE age,AGEUNIT ageunit,ID id,PROFESSIONID professionid,PROFESSIONNAME professionname,TELP telp,WORKUNIT workunit,NOWADDRTYPEID nowaddrtypeid
+	</sql>
+
+	<insert id="save" parameterType="ctgBk003Frbk"  flushCache="true">
+		 insert into CTG_BK003_FRBK(NOWADDRTYPENAME,NOWADDRCODE,NOWADDRCODEVALUE,NOWADDR,CARDINALSYMPTOMS,STARTDATE,DIAGNOSEDATE,FIRSTVISIT,PRIMARYDIAGNOSIS,SAMPLEDATE,SENDDATE,LISITEMID,LISITEMVALUE,LISTRESULT,DOCTORID,DOCTORNAME,OFFICEID,OFFICENAME,FLAG,FILLDATE,REPORTDEPTID,REPORTDEPTNAME,REPORTDOCTORID,REPORTDOCTORNAME,DELREASON,AUDITDATE,AUDITOR,ISPRINT,MASTERID,CARDID,PATIENT_ID,MZID,ZYID,VISIT_ID,PATIENT_NAME,PARENT_NAME,SEXID,SEXNAME,BIRTYDAY,AGE,AGEUNIT,ID,PROFESSIONID,PROFESSIONNAME,TELP,WORKUNIT,NOWADDRTYPEID)
+		 values(#{nowaddrtypename},#{nowaddrcode},#{nowaddrcodevalue},#{nowaddr},#{cardinalsymptoms},#{startdate},#{diagnosedate},#{firstvisit},#{primarydiagnosis},#{sampledate},#{senddate},#{lisitemid},#{lisitemvalue},#{listresult},#{doctorid},#{doctorname},#{officeid},#{officename},#{flag},#{filldate},#{reportdeptid},#{reportdeptname},#{reportdoctorid},#{reportdoctorname},#{delreason},#{auditdate},#{auditor},#{isprint},#{masterid},#{cardid},#{patientId},#{mzid},#{zyid},#{visitId},#{patientName},#{parentName},#{sexid},#{sexname},#{birtyday},#{age},#{ageunit},#{id},#{professionid},#{professionname},#{telp},#{workunit},#{nowaddrtypeid})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK003_FRBK
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk003Frbk" flushCache="true">
+		update CTG_BK003_FRBK
+		<set>
+			NOWADDRTYPENAME=#{nowaddrtypename},NOWADDRCODE=#{nowaddrcode},NOWADDRCODEVALUE=#{nowaddrcodevalue},NOWADDR=#{nowaddr},CARDINALSYMPTOMS=#{cardinalsymptoms},STARTDATE=#{startdate},DIAGNOSEDATE=#{diagnosedate},FIRSTVISIT=#{firstvisit},PRIMARYDIAGNOSIS=#{primarydiagnosis},SAMPLEDATE=#{sampledate},SENDDATE=#{senddate},LISITEMID=#{lisitemid},LISITEMVALUE=#{lisitemvalue},LISTRESULT=#{listresult},DOCTORID=#{doctorid},DOCTORNAME=#{doctorname},OFFICEID=#{officeid},OFFICENAME=#{officename},FLAG=#{flag},FILLDATE=#{filldate},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},DELREASON=#{delreason},AUDITDATE=#{auditdate},AUDITOR=#{auditor},ISPRINT=#{isprint},MASTERID=#{masterid},CARDID=#{cardid},PATIENT_ID=#{patientId},MZID=#{mzid},ZYID=#{zyid},VISIT_ID=#{visitId},PATIENT_NAME=#{patientName},PARENT_NAME=#{parentName},SEXID=#{sexid},SEXNAME=#{sexname},BIRTYDAY=#{birtyday},AGE=#{age},AGEUNIT=#{ageunit},ID=#{id},PROFESSIONID=#{professionid},PROFESSIONNAME=#{professionname},TELP=#{telp},WORKUNIT=#{workunit},NOWADDRTYPEID=#{nowaddrtypeid}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk003Frbk">
+		select <include refid="commCols"/> from CTG_BK003_FRBK
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk003FrbkCount" parameterType="ctgBk003Frbk" resultType="int">
+		select count(*) from CTG_BK003_FRBK
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk003Frbk">
+		select <include refid="commCols"/> from CTG_BK003_FRBK
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

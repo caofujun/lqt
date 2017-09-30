@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsQuestionnaireDao">
+
+	<sql id="commCols_mysql">
+		QID qid,TITLE title,NOTE note,CAT_ID catId,CAT_NAME catName,STATUS status,END_TIME endTime,START_TIME startTime,CREATE_TIME createTime,UPD_TIME updTime,UPD_USER updUser,DEP_NO depNo,UNIT_ID unitId,Q_IDS qIds,RESULT_OPEN_STATE resultOpenState,CREATE_USER createUser,PUBLISH publish,IS_MOD isMod,IS_EVAL isEval,ANSWER_COUNT answerCount,YJ_COUNT yjCount,TM_COUNT tmCount,IS_ANONYMOUS isAnonymous
+	</sql>
+
+	<select id="findQsQuestionnaire_mysql" parameterType="qsQuestionnaire" resultType="qsQuestionnaire">
+		select <include refid="commCols_mysql"/> from QS_QUESTIONNAIRE
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

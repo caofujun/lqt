@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn006KjywflDao">
+
+	<sql id="commCols">
+		DRUG_TYPE_ID drugTypeId,DRUG_TYPE_NAME drugTypeName,PYCODE pycode,WBCODE wbcode,BHCODE bhcode,LAST_AT lastAt,ISCUSTOM iscustom,FLAG flag
+	</sql>
+
+	<insert id="save" parameterType="xn006Kjywfl"  flushCache="true">
+		 insert into XN006_KJYWFL(DRUG_TYPE_ID,DRUG_TYPE_NAME,PYCODE,WBCODE,BHCODE,LAST_AT,ISCUSTOM,FLAG)
+		 values(#{drugTypeId},#{drugTypeName},#{pycode},#{wbcode},#{bhcode},#{lastAt},#{iscustom},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  XN006_KJYWFL
+		<where>DRUG_TYPE_ID=#{drugTypeId}</where>
+	</delete>
+	
+	<update id="update" parameterType="xn006Kjywfl" flushCache="true">
+		update XN006_KJYWFL
+		<set>
+			DRUG_TYPE_ID=#{drugTypeId},DRUG_TYPE_NAME=#{drugTypeName},PYCODE=#{pycode},WBCODE=#{wbcode},BHCODE=#{bhcode},LAST_AT=#{lastAt},ISCUSTOM=#{iscustom},FLAG=#{flag}
+		</set>
+		<where>DRUG_TYPE_ID=#{drugTypeId}</where>
+	</update>
+	
+	<select id="get" resultType="xn006Kjywfl">
+		select <include refid="commCols"/> from XN006_KJYWFL
+  		<where>DRUG_TYPE_ID=#{drugTypeId}</where>
+	</select>
+	
+	
+	<select id="findXn006KjywflCount" parameterType="xn006Kjywfl" resultType="int">
+		select count(*) from XN006_KJYWFL
+		<where>
+			<if test="searchString!=null and searchString!=''"> and (DRUG_TYPE_ID like CONCAT( CONCAT('%',#{searchString}),'%') or DRUG_TYPE_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or upper(PYCODE) like upper(CONCAT( CONCAT('%',#{searchString}),'%')))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xn006Kjywfl">
+		select <include refid="commCols"/> from XN006_KJYWFL
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

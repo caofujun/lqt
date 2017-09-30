@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.SysJudgeLogDao">
+
+	<sql id="commCols_mysql">
+		ID id,JUDGE_CODE judgeCode,START_TIME startTime,SUCCESS_COUNT successCount,FAIL_COUNT failCount,TOTAL_COUNT totalCount,END_TIME endTime
+	</sql>
+
+	<select id="findSysJudgeLog_mysql" parameterType="sysJudgeLog" resultType="sysJudgeLog">
+		select <include refid="commCols_mysql"/> from SYS_JUDGE_LOG
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

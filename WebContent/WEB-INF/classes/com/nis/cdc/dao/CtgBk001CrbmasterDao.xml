@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk001CrbmasterDao">
+
+	<sql id="commCols">
+		MASTERID masterid,CARDID cardid,PATIENT_ID patientId,ZYID zyid,VISIT_ID visitId,MZID mzid,BED_NO bedNo,PATIENT_NAME patientName,PARENT_NAME parentName,SEXID sexid,SEXNAME sexname,BIRTYDAY birtyday,AGE age,AGEUNIT ageunit,IDCARD idcard,TELP telp,UNIT unit,PROFESSIONID professionid,PROFESSIONNAME professionname,AREATYPEID areatypeid,AREATYPENAME areatypename,ADDRCODE addrcode,ADDRCODEVALUE addrcodevalue,ADDR addr,VILLAGE village,HOUSENUMBER housenumber,DOCTORID doctorid,DOCTORNAME doctorname,OFFICEID officeid,OFFICENAME officename,DEADDATE deaddate,REPORTTYPEID reporttypeid,REPORTTYPENAME reporttypename,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,FILLDATE filldate,ISPRINT isprint,IDTYPE idtype,IDTYPEVALUE idtypevalue,DELREASON delreason,ISEMPTYCARD isemptycard, NIDN nidn,DZBM dzbm
+	</sql>
+	
+
+	<insert id="save" parameterType="ctgBk001Crbmaster"  flushCache="true">
+		 insert into CTG_BK001_CRBMASTER(MASTERID,CARDID,PATIENT_ID,ZYID,VISIT_ID,MZID,BED_NO,PATIENT_NAME,PARENT_NAME,SEXID,SEXNAME,BIRTYDAY,AGE,AGEUNIT,IDCARD,TELP,UNIT,PROFESSIONID,PROFESSIONNAME,AREATYPEID,AREATYPENAME,ADDRCODE,ADDRCODEVALUE,ADDR,VILLAGE,HOUSENUMBER,DOCTORID,DOCTORNAME,OFFICEID,OFFICENAME,DEADDATE,REPORTTYPEID,REPORTTYPENAME,REPORTDOCTORID,REPORTDOCTORNAME,REPORTDEPTID,REPORTDEPTNAME,FILLDATE,ISPRINT,IDTYPE,IDTYPEVALUE,ISEMPTYCARD,NIDN,DZBM)
+		 values(#{masterid},#{cardid},#{patientId},#{zyid},#{visitId},#{mzid},#{bedNo},#{patientName},#{parentName},#{sexid},#{sexname},#{birtyday},#{age},#{ageunit},#{idcard},#{telp},#{unit},#{professionid},#{professionname},#{areatypeid},#{areatypename},#{addrcode},#{addrcodevalue},#{addr},#{village},#{housenumber},#{doctorid},#{doctorname},#{officeid},#{officename},#{deaddate},#{reporttypeid},#{reporttypename},#{reportdoctorid},#{reportdoctorname},#{reportdeptid},#{reportdeptname},#{filldate},#{isprint},#{idtype},#{idtypevalue},#{isemptycard},#{nidn},#{dzbm})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK001_CRBMASTER
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk001Crbmaster" flushCache="true">
+		update CTG_BK001_CRBMASTER
+		<set>
+			MASTERID=#{masterid},CARDID=#{cardid},PATIENT_ID=#{patientId},ZYID=#{zyid},VISIT_ID=#{visitId},MZID=#{mzid},BED_NO=#{bedNo},PATIENT_NAME=#{patientName},PARENT_NAME=#{parentName},SEXID=#{sexid},SEXNAME=#{sexname},BIRTYDAY=#{birtyday},AGE=#{age},AGEUNIT=#{ageunit},IDCARD=#{idcard},TELP=#{telp},UNIT=#{unit},PROFESSIONID=#{professionid},PROFESSIONNAME=#{professionname},AREATYPEID=#{areatypeid},AREATYPENAME=#{areatypename},ADDRCODE=#{addrcode},ADDRCODEVALUE=#{addrcodevalue},ADDR=#{addr},VILLAGE=#{village},HOUSENUMBER=#{housenumber},DOCTORID=#{doctorid},DOCTORNAME=#{doctorname},OFFICEID=#{officeid},OFFICENAME=#{officename},DEADDATE=#{deaddate},REPORTTYPEID=#{reporttypeid},REPORTTYPENAME=#{reporttypename},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},FILLDATE=#{filldate},ISPRINT=#{isprint},IDTYPE=#{idtype},IDTYPEVALUE=#{idtypevalue},ISEMPTYCARD=#{isemptycard},NIDN=#{nidn},DZBM=#{dzbm}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk001Crbmaster">
+		select <include refid="commCols"/> from CTG_BK001_CRBMASTER
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	<select id="getAllBK" resultType="ctgBk001Crbmaster">
+		select d.diseasename diseaseName,
+           '法定传染病报卡' cardType,
+           t.mzid mzid,t.zyid zyid,
+           t.masterid masterid,
+           (case d.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+           t.patient_name patientName,
+           t.sexname sexname,
+           (t.age || t.ageunit) ageunit,
+           t.reportdoctorname reportdoctorname,
+           t.reportdeptname reportdeptname,
+           t.filldate filldate
+      from (SELECT * FROM CTG_BK001_CRBMASTER tt WHERE 
+          <if test="cardType=='mz'">
+		  	 tt.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  tt.zyid=#{id}
+		  </if>
+     	) t , CTG_BK001_CRBDISEASE d
+      WHERE  t.masterid = d.masterid
+
+		 union all
+		 
+		 select null as diseaseName,
+		        '死因报卡' cardType,
+		        s.mzid mzid,s.zyid zyid,
+		        s.masterid masterid,
+		        (case s.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+		        s.patient_name patientName,
+		        s.sexname sexname,
+		        (s.age || s.ageunit) ageunit,
+		        s.reportdoctorname reportdoctorname,
+		        s.reportdeptname reportdeptname,
+		        s.filldate filldate
+		 from Ctg_Bk002_Sybk s
+		 where 
+		 <if test="cardType=='mz'">
+		  	 s.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  s.zyid=#{id}
+		  </if>
+		 
+		 
+		 union all
+		 
+		 select null as diseaseName,
+		        '发热报卡' cardType,
+		        f.mzid mzid,
+		        f.zyid zyid,
+		        f.masterid masterid,
+		        (case f.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+		        f.patient_name patientName,
+		        f.sexname sexname,
+		        (f.age || f.ageunit) ageunit,
+		        f.doctorname reportdoctorname,
+		        f.officename reportdeptname,
+		        f.filldate filldate
+		 from Ctg_Bk003_Frbk f
+		 where 
+		 <if test="cardType=='mz'">
+		  	 f.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  f.zyid=#{id}
+		  </if>
+		 
+		 union all
+		 
+		  select null as diseaseName,
+		        '食源监测报卡' cardType,
+		        syjc.mzid mzid,
+		        syjc.zyid zyid,
+		        syjc.masterid masterid,
+		        (case syjc.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+		        syjc.patient_name patientName,
+		        syjc.sexname sexname,
+		        (syjc.age || syjc.age_unit) ageunit,
+		        syjc.reportdoctorname reportdoctorname,
+		        syjc.reportdeptname reportdeptname,
+		        syjc.reportdt filldate
+		 from Ctg_Bk005_Syjc syjc
+		 where 
+		 <if test="cardType=='mz'">
+		  	 syjc.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  syjc.zyid=#{id}
+		  </if>
+		 
+		 union all
+		  
+		  select null as diseaseName,
+	           '肿瘤病例报卡' cardType,
+	           zl.mzid mzid,
+	           zl.zyid zyid,
+	           zl.masterid masterid,
+	           (case zl.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+	           zl.patient_name patientName,
+	           zl.sex sexname,
+	           (zl.age || zl.age_unit) ageunit,
+	           zl.reportdoctorname reportdoctorname,
+	           zl.reportdeptname reportdeptname,
+	           zl.reportdt filldate
+	    from Ctg_Bk006_Tumour zl 
+	    where 
+		  <if test="cardType=='mz'">
+		  	 zl.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  zl.zyid=#{id}
+		  </if>
+		  
+		union all
+		  
+		  select null as diseaseName,
+	           '食源异常报卡' cardType,
+	           syyc.mzid mzid,
+	           syyc.zyid zyid,
+	           syyc.masterid masterid,
+	           (case syyc.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+	           syyc.patient_name patientName,
+	           syyc.sex sexname,
+	           (syyc.age || syyc.ageunit) ageunit,
+	           syyc.reportdoctorname reportdoctorname,
+	           syyc.reportdeptname reportdeptname,
+	           syyc.reportdt filldate
+	    from ctg_bk004_syycbk syyc 
+	    where 
+		  <if test="cardType=='mz'">
+		  	 syyc.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  syyc.zyid=#{id}
+		  </if>
+		  
+		union all
+		  
+		  select null as diseaseName,
+            '心脑血管报卡' cardType,
+            cc.mzid mzid,cc.zyid zyid,
+            cc.masterid masterid,
+            (case cc.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+            cc.patient_name patientName,
+            cc.sex sexname,
+            (cc.age || cc.age_unit) ageunit,
+            cc.reportdoctorname reportdoctorname,
+            cc.reportdeptname reportdeptname,
+            cc.reportdt filldate
+	     from ctg_bk008_ccvd cc
+	     where 
+	     <if test="cardType=='mz'">
+	         cc.mzid=#{id}
+	      </if>
+	      <if test="cardType!='mz'">
+	        cc.zyid=#{id}
+	      </if>
+	     
+	     union all
+		 
+		  select null as diseaseName,
+		        '高温中暑报卡' cardType,
+		        gwzs.mzid mzid,
+		        gwzs.zyid zyid,
+		        gwzs.masterid masterid,
+		        (case gwzs.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+		        gwzs.patient_name patientName,
+		        gwzs.sex sexname,
+		        (gwzs.age || gwzs.age_unit) ageunit,
+		        gwzs.reportdoctorname reportdoctorname,
+		        gwzs.reportdeptname reportdeptname,
+		        gwzs.reportdt filldate
+		 from Ctg_Bk009_SUNSTROKE gwzs
+		 where 
+		 <if test="cardType=='mz'">
+		  	 gwzs.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  gwzs.zyid=#{id}
+		  </if>
+		  
+		 union all
+		 
+		 select null as diseaseName,
+		        '农药中毒报卡' cardType,
+		        p.mzid mzid,
+		        p.zyid zyid,
+		        p.masterid masterid,
+		        (case p.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+		        p.patient_name patientName,
+		        p.sex sexname,
+		        (p.age || p.age_unit) ageunit,
+		        p.reportdoctorname reportdoctorname,
+		        p.reportdeptname reportdeptname,
+		        p.reportdt filldate
+		 from CTG_BK010_PESTICIDE p
+		 where 
+		 <if test="cardType=='mz'">
+		  	 p.mzid=#{id}
+		  </if>
+		  <if test="cardType!='mz'">
+			  p.zyid=#{id}
+		  </if> 
+		  
+	</select>
+	
+	<update id="updateDelReason" parameterType="ctgBk001Crbmaster">
+		update CTG_BK001_CRBMASTER set DELREASON=#{delreason} where MASTERID=#{masterid}
+	</update>
+	
+	<select id="getZYBK" parameterType="ctgBk001Crbmaster" resultType="ctgBk001Crbmaster">
+		select <include refid="commCols"/> from CTG_BK001_CRBMASTER
+  		<where>
+  			ZYID=#{zyid} and MZID is null
+  			<if test="patientName!=null and patientName!=''">
+  				and PATIENT_NAME like CONCAT(CONCAT('%',#{patientName}),'%') 
+  			</if>
+  			<if test="idcard!=null and idcard!=''">
+  				and IDCARD like CONCAT(CONCAT('%',#{idcard}),'%') 
+  			</if>
+  		</where>
+	</select>
+	
+	<select id="getMZBK" parameterType="ctgBk001Crbmaster" resultType="ctgBk001Crbmaster">
+		select <include refid="commCols"/> from CTG_BK001_CRBMASTER
+  		<where>
+  			MZID=#{mzid} and ZYID is null
+  			<if test="patientName!=null and patientName!=''">
+  				and PATIENT_NAME like CONCAT(CONCAT('%',#{patientName}),'%') 
+  			</if>
+  			<if test="idcard!=null and idcard!=''">
+  				and IDCARD like CONCAT(CONCAT('%',#{idcard}),'%') 
+  			</if>
+  		</where>
+	</select>
+	
+	<select id="findCtgBk001CrbmasterCount" parameterType="ctgBk001Crbmaster" resultType="int">
+		select count(*) from CTG_BK001_CRBMASTER
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk001Crbmaster">
+		select <include refid="commCols"/> from CTG_BK001_CRBMASTER
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findCardsForAdmin" resultType="ctgBk001Crbmaster" parameterType="ctgBk001Crbmaster">
+		select m.MASTERID masterid,m.CARDID cardid,m.PATIENT_ID patientId,m.ZYID zyid,m.VISIT_ID visitId,m.MZID mzid,m.BED_NO bedNo,m.PATIENT_NAME patientName,m.PARENT_NAME parentName,m.SEXID sexid,m.SEXNAME sexname,m.BIRTYDAY birtyday,m.AGE age,m.AGEUNIT ageunit,m.IDCARD idcard,m.TELP telp,m.UNIT unit,m.PROFESSIONID professionid,m.PROFESSIONNAME professionname,m.AREATYPEID areatypeid,m.AREATYPENAME areatypename,m.ADDRCODE addrcode,m.ADDRCODEVALUE addrcodevalue,m.ADDR addr,m.VILLAGE village,m.HOUSENUMBER housenumber,m.DOCTORID doctorid,m.DOCTORNAME doctorname,m.OFFICEID officeid,m.OFFICENAME officename,m.DEADDATE deaddate,m.REPORTTYPEID reporttypeid,m.REPORTTYPENAME reporttypename,m.REPORTDOCTORID reportdoctorid,m.REPORTDOCTORNAME reportdoctorname,m.REPORTDEPTID reportdeptid,m.REPORTDEPTNAME reportdeptname,m.FILLDATE filldate,m.ISPRINT isprint,m.IDTYPE idtype,m.IDTYPEVALUE idtypevalue,m.DELREASON delreason,m.ISEMPTYCARD isemptycard,m.diseaseId diseaseId, m.diseasename diseaseName,m.casetypename casetypename, m.diseasenotes diseasenotes, m.flag cardStates,m.auditor auditor,m.auditorname auditorname,m.auditdate auditdate, m.subid subid , m.zbflag zbflag,unReadMsg from
+       		(select m.* ,d.diseaseId,d.diseasename,d.casetypename, d.diseasenotes, d.flag,d.auditor,d.auditorname,d.auditdate, d.subid,d.zbflag, (select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = m.zyid
+		             ) and user_id = #{userid} and is_read = 0) unReadMsg 
+		from ctg_bk001_crbdisease d left join ctg_bk001_crbmaster m on d.masterid=m.masterid 
+		<if test="diseaseId!=null and diseaseId!=''">
+			where d.diseaseid = #{diseaseId}
+		</if>
+		)m
+		<where>
+			1=1
+			<if test="reportdoctorid!=null and reportdoctorid!=''">
+				and m.reportdoctorid in (#{reportdoctorid})
+			</if>
+			<if test="reportdeptid!=null and reportdeptid!=''">
+		        and m.reportdeptid in (#{reportdeptid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+			</if>
+			<if test="dateType==1">
+				and trunc(m.filldate) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+				and trunc(m.auditdate) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="cardStates>=0">
+				and m.flag=#{cardStates}
+			</if>
+			<choose>
+				<when test="isprint==1">
+					and m.isprint = 1
+				</when>
+				<when test="isprint==2">
+					 and ( m.isprint is null or m.isprint !=1 ) 
+				</when>
+			</choose>
+			<if test="unReadMsg==1">
+				and m.unReadMsg>0
+			</if>
+			
+			<choose>
+				<when test="cardStates==1">
+					order by auditdate desc
+				</when>
+				<when test="cardStates!=1">
+					order by filldate desc
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<select id="findExportCards" resultType="ctgBk001Crbmaster" parameterType="ctgBk001Crbmaster">
+		SELECT m.patient_name patientName,
+		       m.parent_name parentName,
+		       m.idcard idcard,
+		       m.sexid sexid,
+		       m.SEXNAME sexname,
+		       m.birtyday birtyday,
+		       m.age age,
+		       m.ageunit ageunit,
+		       m.unit unit,
+		       m.telp telp,
+		       m.areatypeid areatypeid,
+		       m.AREATYPENAME areatypename,
+		       m.addrcode addrcode,
+		       m.addr addr,
+		       m.professionid professionid,
+		       m.PROFESSIONNAME professionname,
+		       d.subid subid,
+		       d.casetypeid casetypeid,
+		       d.CASETYPENAME casetypeName,
+		       d.casetypeid2 casetypeid2,
+		       d.CASETYPENAME2 casetypename2,
+		       d.startdate startdate,
+		       d.diagnosedate diagnosedate,
+		       m.deaddate deaddate,
+		       d.diseaseid diseaseId,
+		       d.DISEASENAME diseaseName,
+		       d.reportdoctorname reportdoctorname,
+		       d.filldate filldate,
+		       d.LABRESULT labresult,
+		       decode(d.contactflag, '无', '0', '有', '1') contactflag,
+		       h.hbsag hbsAg,
+		       DECODE(h.HBSAG,1,'>6个月',2,'6个 月内由阴性转为阳性',3,'既往未检测或结果不详') hbsAgTimeName,
+		       decode(h.first_year,
+		              null,
+		              null,
+		              h.first_year || '-' || h.first_month || '-01' || ' 00:00:00') hbvDateTime,
+		       h.alt alt,
+		       decode(h.hbc, '阳性', '1', '阴性', '2', '未测', '3') hbc,
+		       h.HBC hbcName,
+		       decode(h.liver_puncture,
+		              '急性病变',
+		              '1',
+		              '慢性病变',
+		              '2',
+		              '未测',
+		              '3') hbv,
+		       h.LIVER_PUNCTURE hbvName,
+		       decode(h.decubation, '是', '1', '否', '2', '未测', '3') hbv_7_code,
+		       h.DECUBATION hbv7CodeName,
+		       s.marriageid marriageid,
+		       s.MARRIAGEVALUE marriageName,
+		       s.nationid nationid,
+		       s.NATIONNAME nationName,
+		       s.educationid educationid,
+		       s.EDUCATIONNAME educationName,
+		       s.regaddrcode regaddrCode,
+		       s.regaddrtypeid regaddrtypeId,
+		       s.regaddr regaddr,
+		       CDC_CONVERT_DICTLIST(s.contacthistoryid) as intouchhis,
+		       s.CONTACTHISTORYNAME intouchhisName,
+		       s.urningcount urningcount,
+		       s.injectcount injectcount,
+		       s.oppositesexcount nonWebCount,
+		       decode(s.business,'是','商业','否','非商业') business,
+		       s.contacthistoryother contacthistoryother,
+		       s.stdhistoryid stdhistoryId,
+		       s.STDHISTORYNAME stdhistoryName,
+		       s.infectionid infectionId,
+		       s.INFECTIONNAME infectionName,
+		       s.infectionother infectionother,
+		       s.samplesourceid samplesourceId,
+		       s.SAMPLESOURCENAME samplesourceName,
+		       s.samplesourceother srcothers,
+		       s.labconclusionid labconclusionId,
+		       s.LABCONCLUSIONNAME labconclusionName,
+		       s.affirmdate affirmdate,
+		       s.affirmunit affirmunit,
+		       s.diagnosedt diagnosedt
+		  FROM CTG_BK001_CRBMASTER m
+		  left join ctg_bk001_crbdisease d
+		    on m.masterid = d.masterid  
+		  left join ctg_bk001_crbhbvcard h
+		    on m.masterid = h.masterid
+		  left join ctg_bk001_crbstdcard s
+		    on m.masterid = s.masterid
+		  <if test="diseaseId!=null and diseaseId!=''">
+			where d.diseaseid = #{diseaseId}
+		  </if>
+			<where>
+				1=1
+				<if test="reportdoctorid!=null and reportdoctorid!=''">
+					and m.reportdoctorid in (#{reportdoctorid})
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and m.reportdeptid in (#{reportdeptid}) 
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and m.filldate between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and d.auditdate between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and d.flag=#{cardStates}
+				</if>
+				<if test="subid!=null and subid!=''">
+					and d.subid in (${subid})
+				</if>
+				<choose>
+					<when test="isprint==1">
+						and m.isprint = 1
+					</when>
+					<when test="isprint==2">
+						 and ( m.isprint is null or m.isprint !=1 ) 
+					</when>
+				</choose>
+				<choose>
+					<when test="cardStates==1">
+						order by d.auditdate desc
+					</when>
+					<when test="cardStates!=1">
+						order by d.filldate desc
+					</when>
+				</choose> 
+			</where>
+	</select>
+	
+	<select id="reportHistoryQueryCount" resultType="int" parameterType="ctgBk001Crbmaster">
+		select count(*) from (
+		<if test="cardType=='crbbk'">
+			select t.diseasename diseaseName,
+	           'crbbk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='crbbk') cardName,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           (case t.flag when 0 then '未审核' when 1 then '已审核' when 2 then '已退卡' when 3 then '已删卡' else '' end) cardStates,
+	           t.patient_name patientName,
+	           t.sexname sexname,
+	           (t.age || t.ageunit) ageunit,
+	           t.telp telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.isemptycard isemptycard,
+	           t.filldate filldate,
+	           t.diseaseid diseaseId,
+	           t.isprint isprint
+	           from
+	           (select t.*,d.diseasename,d.flag,d.diseaseid,d.auditor,d.auditdate,
+	                (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	          from CTG_BK001_CRBMASTER t, CTG_BK001_CRBDISEASE d 
+	          where t.masterid = d.masterid 
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.filldate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(d.auditdate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and d.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='sybk'">
+			select '' diseaseName,
+	           'sybk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='sybk') cardName,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sexname sexname,
+	           (t.age || t.ageunit) ageunit,
+	           '' telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.isemptycard isemptycard,
+	           t.filldate filldate,
+	           '' subid,
+	           unReadMsg unReadMsg,
+	           t.isprint isprint
+	           from (select t.*,
+	           (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	           from CTG_BK002_SYBK t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.filldate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.auditdate) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='syjcbk'">
+			select '' diseaseName,
+             'syjcbk' cardType,
+             (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='syjcbk') cardName,
+             t.mzid mzid,t.zyid zyid,
+             t.masterid masterid,
+             t.flag cardStates,
+             t.patient_name patientName,
+             t.sexname sexname,
+             (t.age || t.age_unit) ageunit,
+             t.telp telp,
+             t.reportdoctorname reportdoctorname,
+             t.reportdeptname reportdeptname,
+             t.reject_reason delreason,
+             t.reportdt filldate,
+             t.isemptycard isemptycard,
+             '' subid,
+             unReadMsg unReadMsg,
+             t.isprint isprint
+             from (select t.*,
+             (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+                         select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+                   ) and user_id=#{userid} and is_read = 0)  unReadMsg
+             from CTG_BK005_SYJC t
+             where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.valid_date) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='zlbk'">
+			select '' diseaseName,
+	           'zlbk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='zlbk') cardName,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sex sexname,
+	           (t.age || t.age_unit) ageunit,
+	           t.tel telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.isemptycard isemptycard,
+	           t.reportDt filldate,
+	           '' subid,
+	           unReadMsg unReadMsg,
+	           t.isprint isprint
+	           from (select t.*,
+	           (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	           from CTG_BK006_Tumour t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='syycbk'">
+			select '' diseaseName,
+             'syycbk' cardType,
+             (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='syycbk') cardName,
+             t.mzid mzid,t.zyid zyid,
+             t.masterid masterid,
+             t.flag cardStates,
+             t.patient_name patientName,
+             t.sex sexname,
+             (t.age || t.ageunit) ageunit,
+             t.mobile_phone telp,
+             t.reportdoctorname reportdoctorname,
+             t.reportdeptname reportdeptname,
+             t.reject_reason delreason,
+             t.reportdt filldate,
+             t.isemptycard isemptycard,
+             '' subid,
+             unReadMsg unReadMsg,
+             t.isprint isprint
+             from (select t.*,
+             (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+                         select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+                   ) and user_id=#{userid} and is_read = 0)  unReadMsg
+             from CTG_BK004_Syycbk t
+             where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='xnxgbk'">
+			select '' diseaseName,
+             'xnxgbk' cardType,
+             (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='xnxgbk') cardName,
+             t.mzid mzid,t.zyid zyid,
+             t.masterid masterid,
+             t.flag cardStates,
+             t.patient_name patientName,
+             t.sex sexname,
+             (t.age || t.age_unit) ageunit,
+             t.tel telp,
+             t.reportdoctorname reportdoctorname,
+             t.reportdeptname reportdeptname,
+             t.delreason delreason,
+             t.isemptycard isemptycard,
+             t.reportDt filldate,
+             '' subid,
+             unReadMsg unReadMsg,
+             t.isprint isprint
+             from (select t.*,
+             (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+                         select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+                   ) and user_id='admin' and is_read = 0)  unReadMsg
+             from CTG_BK008_CCVD t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='gwzsbk'">
+			select '' diseaseName,
+	           'gwzsbk' cardType,
+	           (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='gwzsbk') cardName,
+	           t.mzid mzid,t.zyid zyid,
+	           t.masterid masterid,
+	           t.flag cardStates,
+	           t.patient_name patientName,
+	           t.sex sexname,
+	           (t.age || t.age_unit) ageunit,
+	           '' telp,
+	           t.reportdoctorname reportdoctorname,
+	           t.reportdeptname reportdeptname,
+	           t.delreason delreason,
+	           t.isemptycard isemptycard,
+	           t.reportDt filldate,
+	           '' subid,
+	           unReadMsg unReadMsg,
+	           t.isprint isprint
+	           from (select t.*,
+	           (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+	                       select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+	                 ) and user_id=#{userid} and is_read = 0)  unReadMsg
+	           from CTG_BK009_SUNSTROKE t
+	           where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportDt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      <if test="cardType=='nyzdbk'">
+			select '' diseaseName,
+             'nyzdbk' cardType,
+             (select dict_name from SYS_DICT t where t.dict_type_code='cdc_card_type' and t.dict_code='nyzdbk') cardName,
+             t.mzid mzid,t.zyid zyid,
+             t.masterid masterid,
+             t.flag cardStates,
+             t.patient_name patientName,
+             t.sex sexname,
+             (t.age || t.age_unit) ageunit,
+             t.tel telp,
+             t.reportdoctorname reportdoctorname,
+             t.reportdeptname reportdeptname,
+             t.reject_reason delreason,
+             t.reportdt filldate,
+             t.isemptycard isemptycard,
+             '' subid,
+             unReadMsg unReadMsg,
+             t.isprint isprint
+             from (select t.*,
+             (select count(*) from NY_MESSAGE_USER_DETAIL l where l.theme_id in (
+                         select theme_id from NY_MESSAGE_THEME th where th.zyid = t.zyid
+                   ) and user_id=#{userid} and is_read = 0)  unReadMsg
+             from CTG_BK010_PESTICIDE t
+             where 1=1
+	          <if test="reportdoctorid!=null and reportdoctorid!=''">
+					and t.reportdoctorid = #{reportdoctorid}
+				</if>
+				<if test="reportdeptid!=null and reportdeptid!=''">
+			        and t.reportdeptid = #{reportdeptid}
+				</if>
+				<if test="searchString!=null and searchString!=''">
+					and (t.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or t.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or t.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+				</if>
+				<if test="dateType==1">
+					and trunc(t.reportdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="dateType==2">
+					and trunc(t.validdt) between #{queryStartDate} and #{queryEndDate}
+				</if>
+				<if test="cardStates>=0">
+					and t.flag=#{cardStates}
+				</if>
+	           )t
+		      <where>
+		        1=1
+				<if test="unReadMsg==1">
+					and t.unReadMsg>0
+				</if>
+		      </where>
+	      </if>
+	      )
+	</select>
+	
+	<select id="classesDataForChart" resultType="map" parameterType="String">
+		select '法定传染病报卡' as "name",count(1) as "value" from ctg_bk001_crbdisease t where t.filldate between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd')
+		union all
+		select '居民死因报卡' as "name",count(1) as "value" from ctg_bk002_sybk t1 where t1.filldate between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd')
+		union all
+		select '食源监测报卡' as "name",count(1) as "value" from ctg_bk005_syjc t2 where t2.reportdt between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd')
+		union all
+		select '食源异常报卡' as "name",count(1) as "value" from ctg_bk004_syycbk t2 where t2.reportdt  between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd') 
+		union all
+		select '肿瘤病例报卡' as "name",count(1) as "value" from ctg_bk006_tumour t2 where t2.reportdt  between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd') 
+		union all
+		select '心脑血管报卡' as "name",count(1) as "value" from ctg_bk008_ccvd t8 where t8.reportdt  between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd') 
+	</select>
+	
+	<select id="unAuditCards" resultType="map"> 
+		 select '法定传染病报卡_crbbk' as "name" ,count(*) as "value" from ctg_bk001_crbdisease s where s.flag=0
+		 union all
+		 select '居民死因报卡_sybk' as "name" ,count(*) as "value" from ctg_bk002_sybk y where y.flag=0
+		 union all
+		 select '食源监测报卡_syjcbk' as "name" ,count(*) as "value" from ctg_bk005_syjc c where c.flag=0
+		 union all
+ 		 select '食源异常报卡_syycbk' as "name" ,count(*) as "value" from ctg_bk004_syycbk c where c.flag=0
+ 		 union all
+ 		 select '肿瘤病例报卡_zlbk' as "name" ,count(*) as "value" from ctg_bk006_tumour c where c.flag=0
+		 union all
+		 select '心脑血管报卡_xnxgbk' as "name",count(1) as "value" from ctg_bk008_ccvd t8 where t8.flag=0
+	</select>
+	
+	<select id="curDayYJBL" resultType="map">
+		select '预警病例' as "name",count(1) as "value" from (
+		select y.*,k.flag from ctg_sys009_yj y left join CTG_SYS011_MARK k on y.mzzyid=k.mzzyid and y.yj_code=k.diseaseid
+		) y where trunc(y.yj_dt)=trunc(sysdate) and (y.flag not in (1,2) or y.flag is null)
+		union all
+		select t.diseasename as "name",nvl(y.countNum,0) as "value" from (
+		       select t.diseaseid,t.diseasename from ctg_sys007_dictcontagion t where t.isimportant=1
+		 ) t
+		 left join
+		 (
+		    select y.yj_code,count(1) as countNum from
+		       (select * from ctg_sys009_yj y where trunc(y.yj_dt)=trunc(sysdate) ) y
+		    left join 
+		        CTG_SYS011_MARK k
+		    on y.mzzyid=k.mzzyid and y.yj_code=k.diseaseid
+		    where (k.flag not in (1,2) or k.flag is null)
+		    group by y.yj_code
+		) y 
+		on t.diseaseid=y.yj_code
+	
+	</select>
+	
+	<select id="diseaseTypeDataForChart" resultType="map" parameterType="String">
+		select t.kindname as "name", count(t1.subid) as "value"
+	  from (select distinct a.kindid, a.kindname from ctg_sys007_dictcontagion a) t
+	  left join (select b.*, c.kindid, c.kindname
+	               from ctg_bk001_crbdisease b
+	               left join ctg_sys007_dictcontagion c
+	                 on c.diseaseid = b.diseaseid
+	                 where b.filldate between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd')
+	                 ) t1
+	    on t1.kindid = t.kindid
+	 group by t.kindid, t.kindname
+	</select>
+	
+	<select id="areaDataForChart" resultType="map" parameterType="String">
+		select t.dict_name as "name", count(t1.areatypename) as "value" from (  
+		select t.dict_code,t.dict_name from SYS_DICT t where t.dict_type_code = 'cdc_patient_belong') t
+		left join (
+		     select m.areatypeid,m.areatypename  from ctg_bk001_crbmaster m 
+		     where m.filldate between trunc(date'${currentDate}','mm') and to_date(to_char(last_day(date'${currentDate}'),'yyyy-mm-dd'),'yyyy-mm-dd')
+		) t1 on t.dict_code = t1.areatypeid
+		 group by t.dict_code, t.dict_name
+		  order by t.dict_code
+	</select>
+	
+	<select id="reportDataForChart" resultType="map" parameterType="String">
+		select x.dt as "name",nvl(x2.num,0) as "value" from (
+       		select to_date(to_char(date'${currentDate}', 'yyyy-mm-dd'),'yyyy-mm-dd') - (rownum-1) dt from  dual connect by rownum &lt;= 7
+		) x
+		left join (
+		     select filldate,count(filldate) num from (
+		            select to_date(to_char(filldate, 'yyyy-mm-dd'),'yyyy-mm-dd') filldate from ctg_bk001_crbdisease where filldate between sysdate-7 and sysdate+1
+		            )
+		     group by filldate
+		)x2
+		on x.dt=x2.filldate
+		order by x.dt
+	</select>
+	
+	<select id="yearDataForChart" resultType="map">
+		select to_char(to_date(t.yearmonth||'-01','yyyy-mm-dd'),'mm') as "name", t1.ReportCount as "value"
+		  from (SELECT TO_CHAR(add_months(to_date(#{startMonth},'yyyy-mm'), ROWNUM - 1),
+		                       'YYYY-MM') as yearmonth
+		          FROM DUAL
+		        CONNECT BY ROWNUM &lt;= (select months_between(to_date(#{endMonth},'yyyy-mm'),
+		                                          to_date(#{startMonth},'yyyy-mm')) + 1
+		                      from dual)) t
+		  left join (select to_char(a.filldate, 'yyyy-mm') as ReportMonth,
+		                    count(1) as ReportCount
+		               from ctg_bk001_crbdisease a
+		              where a.flag in (0, 1)
+		              group by to_char(a.filldate, 'yyyy-mm')) t1
+		    on t1.ReportMonth = t.yearmonth
+		 order by t.yearmonth
+	</select>
+	
+	<update id="updatePrintFlag" parameterType="String">
+		update CTG_BK001_CRBMASTER set isprint=1
+  		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+</mapper>

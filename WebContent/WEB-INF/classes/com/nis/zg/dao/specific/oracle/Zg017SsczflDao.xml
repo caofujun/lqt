@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg017SsczflDao">
+
+	<sql id="commCols_oracle">
+		OPEPARTKINDID opepartkindid,PARTKINDNAME partkindname,PARTKINDENNAME partkindenname,REPORTORDER reportorder,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,REMARK remark,FLAG flag,LAST_AT lastAt
+	</sql>
+
+	
+	<select id="findZg017Ssczfl_oracle" parameterType="zg017Ssczfl" resultType="zg017Ssczfl">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ZG017_SSCZFL
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw009KssqDao">
+
+	<sql id="commCols_oracle">
+		user_id userId,dept_id deptId
+	</sql>
+
+	<select id="findHw009Kssq_oracle" parameterType="hw009Kssq" resultType="hw009Kssq">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw009_kssq
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="queryList_oracle" parameterType="hw009Kssq" resultType="hw009Kssq">
+		select * from ( select a.*, rownum rn from (
+		select distinct * from(select h9.dept_id deptId, z2.dept_name deptName from hw009_kssq h9
+		inner join zg002_byks z2 on z2.dept_id=h9.dept_id 
+		<where>
+			h9.user_id=#{userId}
+			<if test="searchString!=null and searchString!=''">
+				and (z2.dept_name like concat(concat('%', #{searchString}), '%') or h9.dept_id like concat(concat('%', #{searchString}), '%')) 
+			</if>
+		</where>
+		union
+        select dept_id deptId, dept_name deptName from zg002_byks 
+        <where>
+        	dept_id=#{deptId}
+        	<if test="searchString!=null and searchString!=''">
+				and (dept_name like concat(concat('%', #{searchString}), '%') or dept_id like concat(concat('%', #{searchString}), '%')) 
+			</if>
+        </where>
+        ) order by <if test="defValue!=null and defValue!=''">case when deptId=#{defValue} then 0 else 1 end,</if> deptId 
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findAccreditDept_oracle" parameterType="hw009Kssq" resultType="hw009Kssq">
+		select zg2.dept_id deptId,zg2.dept_name deptName,hw9.user_id userId 
+		from zg002_byks zg2 left join hw009_kssq hw9 on (zg2.dept_id=hw9.dept_id and hw9.user_id=#{userId})
+		<where> zg2.ifenvoffice = 1 </where>
+		order by hw9.dept_id, zg2.dept_id 
+	</select>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questionnaire.dao.QsSurveyRecordDao">
+
+	<sql id="commCols_mysql">
+		qsr.RID rid,qsr.QID qid,qsr.UNIT_ID unitId,qsr.PATIENT_ID patientId,qsr.PATIENT_NAME patientName,qsr.PATIENT_PHONE patientPhone,qsr.VISIT_ID visitId,qsr.USERNAME username,qsr.SURVEY_TIME surveyTime,qsr.SURVEY_TYPE surveyType,qsr.DEP_TYPE depType,qsr.DEP_NO depNo,qsr.IS_FINISH isFinish,qsr.DT_NUM dtNum,qsr.DT_SCORE dtScore,qsr.STATUS status,qsr.EXT1 ext1,qsr.EXT2 ext2
+	</sql>
+
+	<select id="findQsSurveyRecord_mysql" parameterType="qsSurveyRecord" resultType="qsSurveyRecord">
+		select <include refid="commCols_mysql"/>,qq.TITLE,qq.TM_COUNT tmCount title from QS_SURVEY_RECORD qsr
+		inner join QS_QUESTIONNAIRE qq on (qsr.QID=qq.QID)
+		<where>
+			qsr.UNIT_ID=#{unitId}
+			<if test="qid!=null">and qsr.QID=#{qid}</if>
+			and qsr.STATUS=0
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+	<select id="sumScoreTrendAnalyze_mysql" resultType="map" parameterType="qsSurveyRecord">
+		SELECT CAST(SUBSTRING(SURVEY_TIME, 9) as NUMBER) DAY, SUMSCORE, QID,COUNT FROM (
+			SELECT SUM(DT_SCORE) SUMSCORE,COUNT(1) COUNT,DATE_FORMAT(SURVEY_TIME,'YYYY-MM-DD') SURVEY_TIME,QID FROM QS_SURVEY_RECORD 
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="surveyType != null and surveyType != ''">
+				AND SURVEY_TYPE = #{surveyType}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and queryEndDate != null">
+				AND SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</if>
+			GROUP BY DATE_FORMAT(SURVEY_TIME,'YYYY-MM-DD'),QID  ORDER BY SURVEY_TIME
+		</where>
+		) T
+	</select>
+	
+	
+	<select id="sumScoreAnalyzeGroupDep_mysql" resultType="map" parameterType="qsSurveyRecord">
+		SELECT SUM(DT_SCORE) SUMSCORE,COUNT(1) COUNT,DEP_NO DEPNO,QID FROM QS_SURVEY_RECORD 
+		<where>
+			UNIT_ID = #{unitId}
+			<if test="surveyType != null and surveyType != ''">
+				AND SURVEY_TYPE = #{surveyType}
+			</if>
+			<if test="queryStartDate != null and queryEndDate == null">
+				AND SURVEY_TIME &gt;= #{queryStartDate}
+			</if>
+			<if test="queryStartDate == null and queryEndDate != null">
+				AND SURVEY_TIME &lt;= #{queryEndDate}
+			</if>
+			<if test="queryStartDate != null and queryEndDate != null">
+				AND SURVEY_TIME BETWEEN #{queryStartDate} AND #{queryEndDate}
+			</if>
+			GROUP BY DEP_NO,QID ORDER BY DEP_NO
+		</where>
+		LIMIT #{firstPage}, #{size}
+	</select>
+</mapper>

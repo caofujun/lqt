@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg011SsDao">
+
+	<sql id="commCols">
+		ICD_ID icdId,OPER_ID operId,OPERA_CNNAME operaCnname,OPER_EN_NAME operEnName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,OPESYS_ID opesysId,OPEPART_KINDID opepartKindid,MEMO memo,FLAG flag,LAST_AT lastAt,IMP_OPE_ID impOpeId
+	</sql>
+
+	<insert id="save" parameterType="zg011Ss"  flushCache="true">
+		 insert into ZG011_SS(ICD_ID,OPER_ID,OPERA_CNNAME,OPER_EN_NAME,BH_CODE,SP_CODE,WB_CODE,OPESYS_ID,OPEPART_KINDID,MEMO,FLAG,LAST_AT,IMP_OPE_ID)
+		 values(#{icdId},#{operId},#{operaCnname},#{operEnName},#{bhCode},#{spCode},#{wbCode},#{opesysId},#{opepartKindid},#{memo},#{flag},#{lastAt},#{impOpeId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG011_SS
+		<where>ICD_ID=#{icdId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg011Ss" flushCache="true">
+		update ZG011_SS
+		<set>
+			ICD_ID=#{icdId},OPER_ID=#{operId},OPERA_CNNAME=#{operaCnname},OPER_EN_NAME=#{operEnName},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},OPESYS_ID=#{opesysId},OPEPART_KINDID=#{opepartKindid},MEMO=#{memo},FLAG=#{flag},LAST_AT=#{lastAt},IMP_OPE_ID=#{impOpeId}
+		</set>
+		<where>ICD_ID=#{icdId}</where>
+	</update>
+	
+	<select id="get" resultType="zg011Ss">
+		select <include refid="commCols"/> from ZG011_SS
+  		<where>ICD_ID=#{icdId}</where>
+	</select>
+	
+	<select id="query" resultType="zg011Ss">
+		select <include refid="commCols"/> from ZG011_SS
+  		<where>1=1
+			<if test="searchString!=null and searchString!=''">
+			 and (OPERA_CNNAME like CONCAT( CONCAT('%',#{searchString}),'%') or lower(SP_CODE) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%'))
+			 </if>
+		</where>
+		order by wb_code asc
+	</select>
+	
+	<select id="findZg011SsCount" parameterType="zg011Ss" resultType="int">
+		select count(*) from ZG011_SS
+		<where>
+			1=1
+			<if test="isImp=='1'.toString()"> and IMP_OPE_ID is not null</if>
+			<if test="isImp=='0'.toString()"> and IMP_OPE_ID is null</if>
+			<if test="impOpeId!=null and impOpeId!=''"> and IMP_OPE_ID=#{impOpeId}</if>
+			<if test="searchString!=null and searchString!=''"> and (OPERA_CNNAME like CONCAT( CONCAT('%',#{searchString}),'%') or OPER_ID like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg011Ss">
+		select <include refid="commCols"/> from ZG011_SS
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getOperaInfo"  resultType="zg011Ss">
+		select t.opera_cnname operaCnname,t.opepart_kindid opepartKindid,t.imp_ope_id impOpeId, (select d.dict_name from sys_dict d where d.dict_type_code='operation_point' and d.dict_code=t.imp_ope_id) impOpeName
+ from zg011_ss t 
+		<where>
+			 t.opera_cnname=#{operName}
+		</where>
+	</select>
+	
+</mapper>

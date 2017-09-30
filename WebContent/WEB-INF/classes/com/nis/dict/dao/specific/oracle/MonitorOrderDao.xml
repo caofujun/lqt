@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.MonitorOrderDao">
+
+	<sql id="commCols_oracle">
+		CLASS_CODE classCode,CLASS_NAME className,ORDER_CODE orderCode,ORDER_NAME orderName,ORDER_USE orderUse,
+		ORDER_VISIBLE orderVisible,WB_CODE wbCode,SP_CODE spCode,BH_CODE hbCode,FLAG flag,UPD_TIME updTime
+	</sql>
+
+	
+	<select id="findMonitorOrder_oracle" parameterType="monitorOrder" resultType="monitorOrder">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from JK_DIC_ALL
+		<where>
+			1=1
+			<if test="classCode!=null and classCode!=''">and CLASS_CODE=#{classCode}</if>
+			<if test="searchString!=null and searchString!=''"> and (ORDER_NAME like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+		order by ORDER_NAME
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

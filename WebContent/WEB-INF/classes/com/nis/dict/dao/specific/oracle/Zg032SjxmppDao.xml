@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Zg032SjxmppDao">
+
+	<sql id="commCols_oracle">
+		id id,match_field matchField,match match,match_value matchValue,infect_factor infectFactor,group_code groupCode,sort_no sortNo
+	</sql>
+
+	<select id="findZg032Sjxmpp_oracle" parameterType="zg032Sjxmpp" resultType="zg032Sjxmpp">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>, g.element_name elementName from zg032_sjxmpp s
+		left join zg007_grys g on g.element_id = s.infect_factor 
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

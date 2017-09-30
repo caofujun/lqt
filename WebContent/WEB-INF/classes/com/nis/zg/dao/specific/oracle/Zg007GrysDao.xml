@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg007GrysDao">
+
+	<sql id="commCols_oracle">
+		LAST_AT lastAt,ELEMENT_ID elementId,ELEMENT_NAME elementName,DATA_FROM dataFrom,LIS_ITEM lisItem,SAMPLE_NAME sampleName,ITEM_NAME itemName,VALUE_TYPE valueType,COMP_DATA compData,IF_FOLLOW ifFollow,RELAT_SYMBOLS relatSymbols,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,ENTER_AT enterAt,FLAG flag
+	</sql>
+
+	
+	<select id="findZg007Grys_oracle" parameterType="zg007Grys" resultType="zg007Grys">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ZG007_GRYS
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

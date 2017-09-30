@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.pdca.dao.ZlPdcaFlowDetailDao">
+
+	<sql id="commCols_oracle">
+		SOCCR soccr,CDR cdr,FLAG flag,XH xh,ZL_PDCA_FLOW_DETAIL.F_UID fuid,FD_SUBID fdSubid,PROCESS_NO processNo,PROCESS_NAME processName,PROCESS_CONTENT processContent
+	</sql>
+
+	
+	<select id="findZlPdcaFlowDetail_oracle" parameterType="zlPdcaFlowDetail" resultType="zlPdcaFlowDetail">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>,ZL_PDCA_FLOW.FLow_name flowName from ZL_PDCA_FLOW_DETAIL left join ZL_PDCA_FLOW on ZL_PDCA_FLOW.F_UID=ZL_PDCA_FLOW_DETAIL.F_UID
+		<where>
+			<if test="fuid!=null and fuid!=''">and ZL_PDCA_FLOW_DETAIL.F_UID=#{fuid}</if>
+		</where>
+		order by ZL_PDCA_FLOW_DETAIL.XH asc) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.param.dao.SysParamDao">
+
+	<sql id="commCols_oracle">
+		SYS_PARAM.ID id,PARAM_CODE paramCode,PARAM_NAME paramName,PARAM_TYPE paramType,PARAM_VALUE paramValue,SYS_PARAM.SCOPE_LEVEL scopeLevel,
+		SYS_PARAM.UNIT_ID unitId,SYS_PARAM.DEP_NO depNo,SYS_PARAM.USER_NAME userName,SYS_PARAM.REMARK remark
+	</sql>
+
+	
+	<select id="findSysParam_oracle" parameterType="sysParam" resultType="sysParam">
+<!-- 		select * from ( select a.*, rownum rn from ( -->
+		select <include refid="commCols_oracle"/>,ZG004_YYXX.HOSP_NAME unitName,ZG002_BYKS.DEPT_NAME depName,AC_ACCOUNT.REALNAME realName from SYS_PARAM 
+		left join ZG004_YYXX on ZG004_YYXX.HOSP_ID=SYS_PARAM.UNIT_ID 
+		left join ZG002_BYKS on ZG002_BYKS.DEPT_ID=SYS_PARAM.DEP_NO 
+		left join AC_ACCOUNT on AC_ACCOUNT.USERNAME=SYS_PARAM.USER_NAME
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and (PARAM_CODE like CONCAT( CONCAT('%',#{searchString}),'%')  or PARAM_NAME like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+			<if test="source == 'data_init' "> and param_code in('nis.http.url','nis.system.hospital.license','nis.gk.deptid','nis.hosptal.gbcode','nis.imc.is.show','nis.inspection.result.high','nis.inspection.result.low') </if>
+		</where>
+<!-- 		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum} -->
+	</select>
+	
+	<select id="findByParamCode_oracle" resultType="sysParam">
+		select * from (select <include refid="commCols"/> from SYS_PARAM
+  		<where>
+  			PARAM_CODE=#{paramCode} and (
+  			<choose>
+  				<when test="userName!=null and userName!=''">SCOPE_LEVEL=9 or (SCOPE_LEVEL=6 and UNIT_ID=#{unitId}) or (SCOPE_LEVEL=3 and DEP_NO=#{depNo}) or (SCOPE_LEVEL=0 and USER_NAME=#{userName})</when>
+  				<when test="depNo!=null and depNo!=''">SCOPE_LEVEL=9 or (SCOPE_LEVEL=6 and UNIT_ID=#{unitId}) or (SCOPE_LEVEL=3 and DEP_NO=#{depNo})</when>
+  				<when test="unitId!=null and unitId!=''">SCOPE_LEVEL=9 or (SCOPE_LEVEL=6 and UNIT_ID=#{unitId})</when>
+  				<otherwise>SCOPE_LEVEL=9</otherwise>
+  			</choose>
+  			)
+  		</where>
+  		order by SCOPE_LEVEL asc)
+  		where rownum=1
+	</select>
+</mapper>

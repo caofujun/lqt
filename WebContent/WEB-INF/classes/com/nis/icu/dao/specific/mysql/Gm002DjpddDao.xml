@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm002DjpddDao">
+
+	<sql id="commCols_mysql">
+		DT_YEAR dtYear,DT_MONTH dtMonth,WEEKNUMBER weeknumber,ZYID zyid,GRADEA gradea,GRADEB gradeb,GRADEC gradec,GRADED graded,GRADEE gradee,WEEK1 week1,WEEK2 week2,WEEK3 week3,WEEK4 week4,WEEK5 week5,WEEK6 week6,WEEK7 week7,DEPT_ID deptId
+	</sql>
+
+	<select id="findGm002Djpdd_mysql" parameterType="gm002Djpdd" resultType="gm002Djpdd">
+		select <include refid="commCols_mysql"/> from GM002_DJPDD
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.icu.dao.Gm001DjpdmDao">
+
+	<sql id="commCols_mysql">
+		DT_YEAR dtYear,DT_MONTH dtMonth,WEEKNUMBER weeknumber,STARTDT startdt,ENDDT enddt,EVALUATEDT evaluatedt,ADJUSTERID adjusterid,ADJUSTERNAME adjustername,ACOUNT acount,BCOUNT bcount,CCOUNT ccount,DCOUNT dcount,ECOUNT ecount,AVGSCORE avgscore,DEPT_ID deptId,SUMSCORE sumscore
+	</sql>
+
+	<select id="findGm001Djpdm_mysql" parameterType="gm001Djpdm" resultType="gm001Djpdm">
+		select <include refid="commCols_mysql"/> from GM001_DJPDM
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

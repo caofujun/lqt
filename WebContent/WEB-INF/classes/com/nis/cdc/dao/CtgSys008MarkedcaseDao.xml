@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys008MarkedcaseDao">
+
+	<sql id="commCols">
+		ID id,DATA_TYPEID dataTypeid,REMARK remark,USER_ID userId,USER_NAME userName,REMARK_TIME remarkTime,HOSP_ID hospId
+	</sql>
+
+	<insert id="save" parameterType="ctgSys008Markedcase"  flushCache="true">
+		 insert into CTG_SYS008_MARKEDCASE(ID,DATA_TYPEID,REMARK,USER_ID,USER_NAME,REMARK_TIME,HOSP_ID)
+		 values(#{id},#{dataTypeid},#{remark},#{userId},#{userName},#{remarkTime},#{hospId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS008_MARKEDCASE
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys008Markedcase" flushCache="true">
+		update CTG_SYS008_MARKEDCASE
+		<set>
+			ID=#{id},DATA_TYPEID=#{dataTypeid},REMARK=#{remark},USER_ID=#{userId},USER_NAME=#{userName},REMARK_TIME=#{remarkTime},HOSP_ID=#{hospId}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys008Markedcase">
+		select <include refid="commCols"/> from CTG_SYS008_MARKEDCASE
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findCtgSys008MarkedcaseCount" parameterType="ctgSys008Markedcase" resultType="int">
+		select count(*) from CTG_SYS008_MARKEDCASE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys008Markedcase">
+		select <include refid="commCols"/> from CTG_SYS008_MARKEDCASE
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

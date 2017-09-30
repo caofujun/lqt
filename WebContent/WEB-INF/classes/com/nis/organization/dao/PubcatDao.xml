@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.PubcatDao">
+
+	<sql id="commCols">
+		CATID catid,PARENTID parentid,TYPEID typeid,CATNAME catname,POSITION position,YUYUE_MAX yuyueMax,YUYUE_NUM yuyueNum,LEFT_NUM leftNum,CATDESC catdesc,CITY_ID cityId,CAT_NO catNo,CONTENT content,IMG img
+	</sql>
+
+	<insert id="save" parameterType="pubcat" flushCache="true">
+		 insert into PUBCAT(CATID,PARENTID,TYPEID,CATNAME,POSITION,YUYUE_MAX,YUYUE_NUM,LEFT_NUM,CATDESC,CITY_ID,CAT_NO,CONTENT,IMG)
+		 values(#{catid},#{parentid},#{typeid},#{catname},#{position},#{yuyueMax},#{yuyueNum},#{leftNum},#{catdesc},#{cityId},#{catNo},#{content},#{img})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from PUBCAT
+		<where>CATID=#{catid}</where>
+	</delete>
+	
+	<update id="update" parameterType="pubcat" flushCache="true">
+		update PUBCAT
+		<set>
+			CATID=#{catid},PARENTID=#{parentid},TYPEID=#{typeid},CATNAME=#{catname},POSITION=#{position},YUYUE_MAX=#{yuyueMax},YUYUE_NUM=#{yuyueNum},LEFT_NUM=#{leftNum},CATDESC=#{catdesc},CITY_ID=#{cityId},CAT_NO=#{catNo},CONTENT=#{content},IMG=#{img}
+		</set>
+		<where>CATID=#{catid}</where>
+	</update>
+	
+	<select id="get" resultType="pubcat">
+		select <include refid="commCols"/> from PUBCAT
+  		<where>CATID=#{catid}</where>
+	</select>
+	
+	
+	<select id="findPubcatCount" parameterType="pubcat" resultType="int">
+		select count(*) from PUBCAT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="pubcat">
+		select <include refid="commCols"/> from PUBCAT
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr012YmsyDao">
+
+	<sql id="commCols_mysql">
+		id id,reg_id regId,order_index orderIndex,infect_part_id infectPartId,sample_id sampleId,pathogen_id pathogenId,anti_drug_id antiDrugId,anti_drug_name antiDrugName,mic mic,result result,submi_at submiAt,enter_at enterAt,relid relid,gr12_relid gr12Relid,gr12_test_no gr12TestNo 
+	</sql>
+
+	<select id="findGr012Ymsy_mysql" parameterType="gr012Ymsy" resultType="gr012Ymsy">
+		select <include refid="commCols_mysql"/> from gr012_ymsy
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

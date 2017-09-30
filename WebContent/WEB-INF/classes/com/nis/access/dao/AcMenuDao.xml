@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcMenuDao">
+
+	<sql id="commCols">
+		MENU_ID menuId,UNIT_ID unitId,MENU_NO menuNo,MENU_TYPE
+		menuType,MENU_NAME menuName,PARENT_MENU_NO parentMenuNo,SHOW_ORDER
+		showOrder,DEST_URL destUrl,TARGET target,ISVALID isvalid,MODULE_CODE
+		moduleCode,OWNERSHIP ownership,IMAGE image,REMARK remark,EXT1
+		ext1,EXT2 ext2,ISREPORT isreport,JOIN_REPORT joinReport,MENU_NO id,MENU_NAME text
+	</sql>
+
+	<insert id="save" parameterType="acMenu" flushCache="true">
+		insert into
+		AC_MENU(MENU_ID,UNIT_ID,MENU_NO,MENU_TYPE,MENU_NAME,PARENT_MENU_NO,SHOW_ORDER,DEST_URL,TARGET,ISVALID,MODULE_CODE,OWNERSHIP,IMAGE,REMARK,EXT1,EXT2,ISREPORT,JOIN_REPORT)
+		values(#{menuId},#{unitId},#{menuNo},#{menuType},#{menuName},#{parentMenuNo},#{showOrder},#{destUrl},#{target},#{isvalid},#{moduleCode},#{ownership},#{image},#{remark},#{ext1},#{ext2},#{isreport},#{joinReport})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from AC_MENU
+		<where>MENU_ID=#{menuId} or PARENT_MENU_NO=#{menuNo}</where>
+	</delete>
+
+	<update id="update" parameterType="acMenu" flushCache="true">
+		update AC_MENU
+		<set>
+			MENU_ID=#{menuId},
+			ISREPORT=#{isreport},
+			JOIN_REPORT=#{joinReport}
+			<if test="menuName != null and menuName != '' ">,MENU_NAME=#{menuName}</if>
+			<if test="menuNo != null and menuNo != '' ">,MENU_NO=#{menuNo}</if>
+			<if test="menuType != null and menuType != '' ">,MENU_TYPE=#{menuType}</if>
+			<if test="parentMenuNo != null and parentMenuNo != '' ">,PARENT_MENU_NO=#{parentMenuNo}</if>
+			<if test="showOrder != null">,SHOW_ORDER=#{showOrder}</if>
+			<if test="destUrl != null and destUrl != '' ">,DEST_URL=#{destUrl}</if>
+			<if test="target != null">,TARGET=#{target}</if>
+			<if test="isvalid != null and isvalid != '' ">,ISVALID=#{isvalid}</if>
+			<if test="moduleCode != null and moduleCode != '' ">,MODULE_CODE=#{moduleCode}</if>
+			<if test="ownership != null and ownership != '' ">,OWNERSHIP=#{ownership}</if>
+			<if test="image != null and image != '' ">,IMAGE=#{image}</if>
+			<if test="remark != null and remark != '' ">,REMARK=#{remark}</if>
+			<if test="ext1 != null and ext1 != '' ">,EXT1=#{ext1}</if>
+			<if test="ext2 != null and ext2 != '' ">,EXT2=#{ext2}</if>
+		</set>
+		<where>MENU_ID=#{menuId}</where>
+	</update>
+
+	<select id="get" resultType="acMenu">
+		select
+		<include refid="commCols" />
+		from AC_MENU
+		<where>MENU_ID=#{menuId}</where>
+	</select>
+
+	<select id="getMenuNo" resultType="acMenu">
+		select
+		<include refid="commCols" />
+		from AC_MENU
+		<where>MENU_NO=#{menuNo}</where>
+	</select>
+
+	<select id="checkExtis" parameterType="acMenu" resultType="acMenu">
+		select
+		<include refid="commCols" />
+		from AC_MENU
+		<where>
+			MENU_NO=#{menuNo}
+			<if test="menuId!=null and menuId!=''">and MENU_ID!=#{menuId}</if>
+		</where>
+	</select>
+
+	<select id="findAcMenuCount" parameterType="acMenu" resultType="int">
+		select count(*) from AC_MENU
+		<where>
+		</where>
+	</select>
+
+	<select id="getAll" resultType="acMenu">
+		select
+		<include refid="commCols" />
+		from AC_MENU order by SHOW_ORDER
+	</select>
+
+	<select id="findByOwnership" resultType="acMenu" parameterType="acMenu">
+		select * from (
+		select
+		<include refid="commCols" />
+		from AC_MENU
+		<where>
+			1 = 1
+			<if test="unitId != null "> and UNIT_ID = '0' </if>
+			<if test="ownership!=null and ownership!=''"> and OWNERSHIP =#{ownership}</if>
+			<if test="isvalid != null and isvalid != '' "> and ISVALID = #{isvalid} </if>
+		</where>
+		<if test="unitId != null and unitId != '' ">
+			<!-- 非平台 -->
+			union select
+			<include refid="commCols" />
+			from AC_MENU
+			<where>
+				UNIT_ID = #{unitId}
+				<if test="ownership!=null and ownership!=''"> and OWNERSHIP =#{ownership}</if>
+				<if test="isvalid != null and isvalid != '' "> and ISVALID = #{isvalid} </if>
+			</where>
+		</if>
+		) t
+		
+		ORDER BY t.showOrder
+	</select>
+
+	<select id="getAllPatentMenu" resultType="acMenu">
+		select
+		<include refid="commCols" />
+		from AC_MENU
+		<where>
+			ISVALID = '1'
+			<if test="ownership!=null and ownership!=''"> and OWNERSHIP = #{ownership}</if>
+		</where>
+		ORDER BY SHOW_ORDER
+	</select>
+
+	<select id="getMenuByParentNo" resultType="acMenu">
+		select
+		<include refid="commCols" />
+		from AC_MENU
+		<where>PARENT_MENU_NO=#{parentMenuNo} and menu_type='0' and menu_id in (select access_id from ac_privilege where role_id=#{roleId})</where>
+		ORDER BY SHOW_ORDER asc
+	</select>
+
+	<select id="deleteByMenuNo" flushCache="true">
+		delete from AC_MENU
+		<where>MENU_NO=#{menuNo}</where>
+	</select>
+
+	<select id="getAllMenu" resultType="acMenu" parameterType="acMenu">
+		SELECT
+		<include refid="commCols" />
+		FROM AC_MENU
+		<where>
+			DEST_URL IS NULL and ISVALID = '1'
+			<if test="ownership!=null and ownership!=''"> AND OWNERSHIP = #{ownership}</if>
+			<if test="unitId!=null"> AND UNIT_ID = #{unitId}</if>
+		</where>
+		ORDER BY SHOW_ORDER
+	</select>
+	
+	<select id="getMenuNos" resultType="acMenu">
+		select <include refid="commCols" /> from AC_MENU
+		<where>
+			MENU_NO in
+			<foreach collection="menuNos" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+	  		and menu_id in (select access_id from ac_privilege where role_id=#{roleId})
+		</where>
+	</select>
+	
+	<select id="findMenuNos" resultType="acMenu">
+		select distinct <include refid="commCols" /> from AC_MENU
+		<where>
+			MENU_NO in
+			<foreach collection="menuNos" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+		</where>
+	</select>
+	
+	
+	<select id="getReportMenu" resultType="acMenu">
+		select <include refid="commCols" /> from AC_MENU
+		<where>
+			ISREPORT=1
+		</where>
+	</select>
+	
+	<select id="getReportMenuRoot" resultType="treeEntity">
+		select m.menu_no id, m.menu_name text, '1' isfather, 'close' state
+		  from ac_menu m
+		 where m.menu_no in
+		       (select distinct parent_menu_no from ac_menu m where m.isreport = 1)
+		   and isvalid = 1
+		   and OWNERSHIP = 'hospital'
+		 order by show_order
+	</select>
+	
+	<select id="getReportMenuLeaf" resultType="treeEntity">
+		select menu_id id,menu_name text, decode(operation,1,1,'') checked, havegrant havegrant, a.parent_menu_no "_parentId"
+		  from AC_MENU a
+		 left join
+		 ( select g.access_id,g.operation,g.havegrant from ac_privilege g where g.role_id=#{roleId} ) b
+		 on a.menu_id=b.access_id
+		 WHERE 1 = 1
+		   and a.isreport = 1
+		   and a.PARENT_MENU_NO = #{parentMenuNo}
+		   and a.isvalid = 1
+		   and a.OWNERSHIP = 'hospital'
+		 order by show_order
+	</select>
+	
+	<select id="getMenuRoot"  resultType="acMenu"  parameterType="acMenu" >
+		select distinct <include refid="commCols" />,d.havegrant isHavegrant,d.operation isFungrant from AC_MENU t
+		left join 
+ 		(select ID ,ROLE_ID,HAVEGRANT,OPERATION,ACCESS_TYPE,ACCESS_ID from AC_PRIVILEGE d where d.role_id=#{roleId}) d
+ 		on t.menu_id = d.access_id
+ 		<where>
+	 		 t.parent_menu_no is null
+			 and nvl(t.isreport, 0) = 0
+			 and t.isvalid = 1
+			 <if test="ownership!=null and ownership!=''"> AND t.OWNERSHIP = #{ownership}</if>
+	 		 <if test="unitId!=null"> AND ( t.UNIT_ID = #{unitId} or t.UNIT_ID = '0' )</if>
+ 		</where>
+ 		order by t.show_order
+	</select>
+	
+	<select id="getMenuLeaf"  resultType="acMenu"  parameterType="acMenu">
+		select distinct <include refid="commCols" />,d.havegrant isHavegrant,d.operation isFungrant from AC_MENU t 
+			left join 
+	 		(select ID ,ROLE_ID,HAVEGRANT,OPERATION,ACCESS_TYPE,ACCESS_ID from AC_PRIVILEGE d where d.role_id=#{roleId}) d
+	 		on t.menu_id = d.access_id
+		<where>
+		 	t.parent_menu_no = #{menuNo}
+		 	and nvl(t.isreport,0)=0
+		 	and t.isvalid = 1
+		 	<if test="ownership!=null and ownership!=''"> AND t.OWNERSHIP = #{ownership}</if>
+	 		<if test="unitId!=null"> AND ( t.UNIT_ID = #{unitId} or t.UNIT_ID = '0' )</if>
+		</where>
+		order by t.show_order
+	</select>
+	
+</mapper>

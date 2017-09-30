@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.NyBbDictDao">
+
+	<sql id="commCols_oracle">
+		GRTYPE grtype,ZDYJ zdyj,PCQK pcqk,VCMEMO vcmemo,INFECT_CODE infectCode,INFECT_NAME infectName,ELEMENT_ID elementId,TYPE_ID typeId,BBID bbid,BBMC bbmc,DYBW dybw
+	</sql>
+
+	
+	<select id="findNyBbDict_oracle" parameterType="nyBbDict" resultType="nyBbDict">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from NY_BB_DICT
+		<where>
+			<!-- BBID in (select distinct t.item_code from view_mdr t) -->
+			<if test="searchString!=null and searchString!=''"> and (BBID like CONCAT( CONCAT('%',#{searchString}),'%') or BBMC like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+		order by BBMC asc) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

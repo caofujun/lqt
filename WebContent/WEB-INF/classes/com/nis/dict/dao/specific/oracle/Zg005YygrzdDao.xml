@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Zg005YygrzdDao">
+
+	<sql id="commCols_oracle">
+		INDIAGID indiagid,INFECT_CODE infectCode,INFECT_NAME infectName,P_INFECT_CODE pInfectCode,BH_CODE bhCode,
+		SP_CODE spCode,WB_CODE wbCode,FLAG flag,ORDER_INDEX orderIndex,MEMO memo,LAST_AT lastAt,IS_LAST_LV isLastLv,TYPE type
+	</sql>
+
+	
+	<select id="findZg005Yygrzd_oracle" parameterType="zg005Yygrzd" resultType="zg005Yygrzd">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from ZG005_YYGRZD
+		<where>
+			1=1
+			<if test="pInfectCode!=null and pInfectCode!=''">and P_INFECT_CODE=#{pInfectCode}</if>
+		</where>
+		ORDER BY ORDER_INDEX
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<select id="findNumByInfectCode_oracle" resultType="int">
+		select count(*) from (select infect_code from zg005_yygrzd start with infect_code=#{pInfectCode} connect by prior infect_code = p_infect_code) where infect_code=#{infectCode}
+	</select>
+	
+	<select id="queryTree_oracle" parameterType="zg005Yygrzd" resultType="zg005Yygrzd">
+		select indiagid indiagid,infect_code infectCode,infect_name infectName,p_infect_code pInfectCode,ORDER_INDEX orderIndex,flag flag from zg005_yygrzd 
+		<where>
+			<if test="flag!=null and flag!=''">
+				flag=#{flag}
+			</if>
+		</where>
+		<if test="pInfectCode!=null and pInfectCode!=''">
+			start with p_infect_code=#{pInfectCode} connect by prior infect_code = p_infect_code
+		</if>
+		order by ORDER_INDEX asc
+	</select>
+</mapper>

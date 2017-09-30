@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn011DclymxDao">
+
+	<sql id="commCols_oracle">
+		DT dt,SURVEY_DEPT_ID surveyDeptId,SURVEY_DEPT_NAME surveyDeptName,ORDERNO orderno,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,AGE age,AGE_UNIT ageUnit,INFECT_PART_ID infectPartId,INFECT_PART_NAME infectPartName,INFECT_TYPE_ID infectTypeId,INFECT_TYPE_NAME infectTypeName,TEST_ORDER_NO testOrderNo,ITEM_TYPE itemType,ITEM_TYPE_NAME itemTypeName,ITEM_CODE itemCode,ITEM_NAME itemName,SUBMI_AT submiAt,DEPT_ID deptId,DEPT_NAME deptName,PATHO_CODE pathoCode,PATHO_NAME pathoName,PATHOGEN_SN pathogenSn,RES_PROP resProp,ISYM isym,MANUAL_RES_PROP manualResProp,CHANGE_USERID changeUserid,CHANGE_DT changeDt,AUDITED audited,INTE_FLAG inteFlag,INTE_MODE inteMode,INTE_AT inteAt,NORM_ITEM_ID normItemId,NORM_ORDERNO normOrderno,AFFIRM_DT affirmDt,AFFIRM_USERID affirmUserid,SPEC_DESCRIBES specDescribes,ESBL esbl,VALIDATION_STR validationStr,DRUG_FAST_COUNT drugFastCount,BB_ANAL_TAG bbAnalTag,BB_ANAL_DT bbAnalDt,ID id
+	</sql>
+
+	
+	<select id="findXn011Dclymx_oracle" parameterType="xn011Dclymx" resultType="xn011Dclymx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from XN011_DCLYMX
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{viewMdr} ) where rn &gt;= #{viewMdr}
+	</select>
+	
+	<select id="getQueryMDRo_oracle" resultType="viewMdr">
+		select * from ( select a.SUBMI_AT submiAt,a.FinalResProp resProp, a.LisItem_name lisitemName,a.DT dt,a.LisPatho_code lispathoCode,a.SPEC_DESCRIBES specDescribes,a.LisPatho_name lispathoName,a.PropName resPropName,a.INFECT_TYPE_NAME infectTypeName,(select infect_date from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) grsj,(select infect_diagn_name from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) grbw,
+		(select decode(bk2.auth_status,0,'未审核',1,'已审核',2,'已退卡',3,'已删卡','未上报') from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) as authStatus,(select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) as auth_status,a.TEST_ORDER_NO testOrderNo,a.PATHOGEN_SN pathogenSn,a.ZYID zyid,a.ORDERNO orderno,a.SURVEY_DEPT_ID surveyDeptId,
+         a.NORM_ITEM_ID normItemId,a.INFECT_TYPE_ID  infectTypeId,a.NORM_ORDERNO normOrderno ,a.ESBL esbl
+               from view_mdr a
+		<where>
+			1=1 and nvl(a.FinalResProp, 0)  in (1, 2, 3) and
+            a.isyang = 1 and a.ISYM = 1 and
+            nvl(a.infect_type_id, 0) != 4 
+<!--             and (select bk2.auth_status from bk002_grzd bk2 where bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = a.TEST_ORDER_NO  and bk4.patho_id = a.LisPatho_code and rownum=1)) is null -->
+			<if test="zyid!=null and zyid!=''">
+			 	 and a.zyid = #{zyid} 
+			 </if> 
+			<if test="key=='z'.toString()">
+	          and (
+	        	a.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or a.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(a.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = a.PATHO_CODE and SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1))
+		        )
+			</if>
+			
+		</where>
+		)order by auth_status asc
+	</select>
+	
+	<select id="getIsGl_oracle"  resultType="viewMdr">
+		  select distinct(case
+           when  a.stop_at is null then
+            '正在隔离'
+           else
+            '隔离结束'
+         end) as gl from st004_yzxxb a,view_mdr t 
+         <where> a.order_name like '%隔离%'
+         and a.zyid = #{zyId} and a.patient_id = #{patientId}
+		</where>
+	</select>
+	
+	<select id="findViewMdr_oracle" parameterType="viewMdr" resultType="viewMdr">
+		select mdr.*,(
+		select max(case when s.stop_at is null then 2 else 1 end) as gl from st004_yzxxb s where s.zyid=mdr.zyid
+ and  (s.order_name like (select order_name from jk_dic_all where jk_dic_all.class_code='108'  and order_name like '%a%%' escape 'a')
+ or s.order_name in (select order_name from jk_dic_all where jk_dic_all.class_code='108' and order_name not like '%a%%' escape 'a'))) gl 
+  from (
+  <if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select t.submi_at as submiAt,
+	       t.dt as dt,t.AFFIRM_DT as affirmDt,
+	       decode(g.zyid,null,0,1) isolation,
+		   t.SURVEY_DEPT_ID surveyDeptId,
+	       t.SURVEY_DEPT_NAME surveyDeptName,
+	       t.ORDERNO orderno,
+	       t.ZYID zyid,
+	       t.PATIENT_ID patientId,
+	       t.VISIT_ID visitId,
+	       t.PATIENT_NAME patientName,
+	       t.SEX sex,
+	       t.AGE age,
+	       t.AGE_UNIT ageUnit,
+	       t.INFECT_PART_ID infectPartId,
+	       t.INFECT_PART_NAME infectPartName,
+	       t.INFECT_TYPE_ID infectTypeId,
+	       t.INFECT_TYPE_NAME infectTypeName,
+	       t.TEST_ORDER_NO testOrderNo,
+	       t.ITEM_TYPE itemType,
+	       t.ITEM_TYPE_NAME itemTypeName,
+	       t.item_code itemCode,
+	       t.item_name itemName,
+	       t.LisItem_code lisitemCode,
+	       t.LisItem_name lisitemName,
+	       t.DEPT_ID deptId,
+	       t.DEPT_NAME deptName,
+	       t.PATHO_CODE as pathoCode,
+	       t.PATHO_NAME as pathoName,
+	       t.LisPatho_code lispathoCode,
+	       t.LisPatho_name lispathoName,
+	       t1.bed_no bedNo,
+	       t.PropName resPropName,
+	       t.FinalResProp resProp,
+	       t.pathogen_sn pathogenSn,
+	       t.SPEC_DESCRIBES specDescribes,
+	       t.NORM_ITEM_ID normItemId,
+	       t.NORM_ORDERNO normOrderno,
+	       t.INTE_MODE inteMode,
+	       j.bact_genus_id_name bactGenusIdName,
+	       t.esbl esbl,
+	       nvl(xn11.auth_status,0) authStatusMdr,
+           xn11.auth_user authUser,
+           xn11.auth_date authDate,
+	       case
+	         when t.AUDITED = 0 or t.audited is null then
+	          '未审核'
+	         else
+	          '已审核'
+	       end as isAudited,
+	       (select infect_diagn_name from bk002_grzd bk2 where bk2.auth_status in (0,1) and bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) grbw,
+      		(select infect_date from bk002_grzd bk2 where bk2.auth_status in (0,1) and bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) grsj,
+	       (select decode(bk2.auth_status,0,'未审核',1,'已审核',2,'已退卡',3,'已删卡','未上报') from bk002_grzd bk2 where bk2.auth_status in (0,1) and bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) as authStatus
+		   from view_mdr t
+		  left join xn011_dclymx xn11
+           on xn11.dt = t.DT and xn11.survey_dept_id = t.SURVEY_DEPT_ID and xn11.orderno=t.ORDERNO
+		  left join st010_jcbyt st010
+		    on st010.test_order_no = t.test_order_no
+		   and st010.pathogen_sn = t.pathogen_sn
+		  left join st003_cryxxb t1
+		    on t1.zyid = t.zyid
+		   and t1.patient_id = t.patient_id
+		   and t1.visit_id = t.visit_id
+		  left join gm004_jcmx g on g.creationdate=t.SUBMI_AT and g.zyid=t.zyid and g.typeid='14'
+		  left join xn002_byt t2 on t2.pathogen_id=t.PATHO_CODE
+		  left join xn021_mbxjc z on t.ZYID=z.zyid and t.TEST_ORDER_NO=z.test_order_no and t.item_code=z.item_code and t.PATHO_CODE=z.patho_code
+		   left join XN005_JSZD j on t.bact_genus_id=j.bact_genus_id left join ny_sys_dddd n on n.dict_id='DD0017'
+		 and n.item_id=t.rs_id	 
+		 where t.isym = 1  and t.isyang = 1 
+		  <if test="zyid!=null and zyid!=''">
+		 	 and t.zyid= #{zyid} 
+		 </if>
+		 <if test="dateType=='s'.toString()">
+		  <if test="startDate!=null and startDate!=''">
+		 	 and t.SUBMI_AT &gt;=  to_date(#{startDate},'yyyy-MM-dd') 
+		 </if>
+		 <if test="endDate!=null and endDate!=''">
+		 	and t.SUBMI_AT &lt; to_date(#{endDate},'yyyy-MM-dd')+1 
+		 </if>
+		  </if>
+		  <if test="dateType=='j'.toString()">
+		  <if test="startDate!=null and startDate!=''">
+		 	 and t.DT &gt;=  to_date(#{startDate},'yyyy-MM-dd') 
+		 </if>
+		 <if test="endDate!=null and endDate!=''">
+		 	and t.DT &lt; to_date(#{endDate},'yyyy-MM-dd')+1 
+		 </if>
+		 </if>
+		 <if test="patientState=='z'.toString()">
+		 	and (t1.OUT_AT is null or t1.OUT_AT='')
+		 </if>
+		 <if test="patientState=='c'.toString()">
+		 	and (t1.OUT_AT is not null or t1.OUT_AT&lt;&gt;'')
+		 </if>
+		 <if test="deptId!=null and deptId!=''">
+			 <if test="deptType=='z'.toString()">
+			 	and t.DEPT_ID=#{deptId}
+			 </if>
+			  <if test="deptType=='s'.toString()">
+			 	and t.SURVEY_DEPT_ID=#{deptId}
+			 </if>
+		 </if>
+		 <if test="authStatus=='0'.toString()">
+		 	and xn11.auth_status = '0'  	 	
+		 </if>
+		 <if test="authStatus=='1'.toString()">
+		 	and xn11.auth_status = '1' 	 	 	
+		 </if>
+		 <if test="key=='q'.toString()">
+			<if test="lispathoName!=null and lispathoName!=''">
+		 	and t.LisPatho_name like CONCAT( CONCAT('%',#{lispathoName}),'%') 	 	
+		 	</if>
+		</if>
+		 <if test="key=='z'.toString()">
+	          and (
+	        	t.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or t.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1))
+		        )
+		        
+		     <if test="lispathoName!=null and lispathoName!=''">
+		 	and t.LisPatho_name like CONCAT( CONCAT('%',#{lispathoName}),'%') 	 	
+		 	</if>  
+			<!-- <if test="specDescribesList!=null and specDescribesList!=''">
+		 	and t.SPEC_DESCRIBES in 
+		 	<foreach collection="specDescribesList" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach>
+		 	</if>  -->
+		 	<if test="specDescribes!=null and specDescribes!=''">
+	  		<choose>
+	  		<when test="specDescribes=='ESBLS'.toString()">
+	  		and t.ESBL='+'
+	  		</when>
+	  		<otherwise>
+	  		and t.SPEC_DESCRIBES = #{specDescribes}
+	  		</otherwise>
+	  		</choose> 
+	  		</if> 
+		</if>
+		<if test="key=='f'.toString()">
+			and (
+	        	nvl(t.SPEC_DESCRIBES,' ') not in(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	and nvl(t.PATHO_CODE,' ') not in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        and not EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1))
+		        )
+			<if test="lispathoName!=null and lispathoName!=''">
+		 	and t.LisPatho_name like CONCAT( CONCAT('%',#{lispathoName}),'%') 	 	
+		 	</if>
+		</if>
+		 <if test="isAudited=='w'.toString()">
+		 	and t.AUDITED = 0 or t.audited is null
+		 </if>
+		 <if test="isAudited=='y'.toString()">
+		 	and t.AUDITED = 1
+		 </if>
+		 <if test="resPropList!=null and resPropList!=''">
+		 	and t.RES_PROP in 
+		 	<foreach collection="resPropList" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach> 
+		 </if>
+		 
+		 <if test="searchString!=null and searchString!=''">
+		 	and (t.PATIENT_ID like CONCAT( CONCAT('%',#{searchString}),'%') or t.PATIENT_NAME like CONCAT( CONCAT('%',#{searchString}),'%')  or t.ZYID like CONCAT( CONCAT('%',#{searchString}),'%')  or t.TEST_ORDER_NO = #{searchString} )
+		 </if>
+		 <if test="gl!=null and gl!=''">
+		 	and	g.zyid is not null
+		 </if>
+		 <if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and t.SURVEY_DEPT_ID in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		  </if>
+		 <if test="patientId!=null and patientId!=''">
+		 	and t.PATIENT_ID like CONCAT( CONCAT('%',#{patientId}),'%') 
+		 </if>
+		 <if test="zyid!=null and zyid!=''">
+		 	 and t.zyid!= #{zyid} 
+		 </if>
+		 <if test="patientName!=null and patientName!=''">
+		 	and t.PATIENT_NAME like CONCAT( CONCAT('%',#{patientName}),'%') 
+		 </if>
+		 <if test="infectTypeIdList!=null and infectTypeIdList!=''">
+		 	and t.INFECT_TYPE_ID in 
+		 	<foreach collection="infectTypeIdList" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach>
+		 </if>
+		 <if test="dnlx!=null and dnlx!=''">
+		 	and t.FinalResProp in (${dnlx})
+		 </if>	
+		 <if test="jszd!=null and jszd!=''">
+		 	and j.BACT_GENUS_ID=#{jszd}
+		 </if>
+		 <if test="byt!=null and byt!=''">
+		 	and j.PATHO_CODE=#{byt}
+		 </if>
+		 <if test="rsId=='G+'.toString()">
+		 	and t2.rs_id in ('1','3','5','7')
+		 </if>
+		  <if test="rsId=='G-'.toString()">
+		 	and t2.rs_id in ('2','4','6','8')
+		 </if>
+		 <if test="kjyw!=null and kjyw!=''">
+		  and (t.test_order_no, t.pathogen_sn) in
+       		(select a.test_order_no, a.pathogen_sn
+          from st011_syjgb a
+          left join xn014_liskjyw b
+            on a.anti_code = b.drugid
+         where b.counter_drugid =#{kjyw})
+		 </if>
+		  <if test="qc=='t'.toString()">
+		 	and t.sn=1
+		 </if>
+		<if test="esblList!=null and esblList!=''">
+		 	and t.ESBL in 
+		 	<foreach collection="esblList" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach>
+		 </if>
+		 order by t.dt desc,t.TEST_ORDER_NO desc
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+		) mdr
+	</select>
+	
+	<select id="findViewMdrDay_oracle" parameterType="viewMdr" resultType="viewMdr">
+		select t.submi_at as submiAt,
+	       t.dt as dt,t.AFFIRM_DT as affirmDt,
+		   t.SURVEY_DEPT_ID surveyDeptId,
+	       t.SURVEY_DEPT_NAME surveyDeptName,
+	       t.ORDERNO orderno,
+	       t.ZYID zyid,
+	       t.PATIENT_ID patientId,
+	       t.VISIT_ID visitId,
+	       t.PATIENT_NAME patientName,
+	       t.SEX sex,
+	       t.AGE age,
+	       t.AGE_UNIT ageUnit,
+	       t.INFECT_PART_ID infectPartId,
+	       t.INFECT_PART_NAME infectPartName,
+	       t.INFECT_TYPE_ID infectTypeId,
+	       t.INFECT_TYPE_NAME infectTypeName,
+	       t.TEST_ORDER_NO testOrderNo,
+	       t.ITEM_TYPE itemType,
+	       t.ITEM_TYPE_NAME itemTypeName,
+	       t.item_code itemCode,
+	       t.item_name itemName,
+	       t.LisItem_code lisitemCode,
+	       t.LisItem_name lisitemName,
+	       t.DEPT_ID deptId,
+	       t.DEPT_NAME deptName,
+	       t.PATHO_CODE as pathoCode,
+	       t.PATHO_NAME as pathoName,
+	       t.LisPatho_code lispathoCode,
+	       t.LisPatho_name lispathoName,
+	       t1.bed_no bedNo,
+	       t.PropName resPropName,
+	       t.FinalResProp resProp,
+	       t.pathogen_sn pathogenSn,
+	       t.SPEC_DESCRIBES specDescribes,
+	       t.NORM_ITEM_ID normItemId,
+	       t.NORM_ORDERNO normOrderno,
+	       t.INTE_MODE inteMode,
+	       j.bact_genus_id_name bactGenusIdName,
+	       t.esbl esbl,
+	       nvl(xn11.auth_status,0) authStatusMdr,
+           xn11.auth_user authUser,
+           xn11.auth_date authDate,
+	       (select max(case when a.stop_at is null then 2 else 1 end) as gl from st004_yzxxb a where a.zyid=t.zyid
+			 and  (a.order_name like (select order_name from jk_dic_all where jk_dic_all.class_code='108'  and order_name like '%a%%' escape 'a')
+			 or a.order_name in (select order_name from jk_dic_all where jk_dic_all.class_code='108' and order_name not like '%a%%' escape 'a'))) gl,
+	       case
+	         when t.AUDITED = 0 or t.audited is null then
+	          '未审核'
+	         else
+	          '已审核'
+	       end as isAudited,
+	        (select infect_diagn_name from bk002_grzd bk2 where bk2.auth_status in (0,1) and bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) grbw,
+      		(select infect_date from bk002_grzd bk2 where bk2.auth_status in (0,1) and bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) grsj,
+	       (select decode(bk2.auth_status,0,'未审核',1,'已审核',2,'已退卡',3,'已删卡','未上报') from bk002_grzd bk2 where bk2.auth_status in (0,1) and bk2.relid = (select  refid from BK004_SJBB bk4 where  bk4.test_no = t.TEST_ORDER_NO  and bk4.patho_id = t.LisPatho_code and rownum=1)) authStatus
+	     
+		   from view_mdr t
+		   left join xn011_dclymx xn11
+           on xn11.dt = t.DT and xn11.survey_dept_id = t.SURVEY_DEPT_ID and xn11.orderno=t.ORDERNO
+		  left join st010_jcbyt st010
+		    on st010.test_order_no = t.test_order_no
+		   and st010.pathogen_sn = t.pathogen_sn
+		  left join st003_cryxxb t1
+		    on t1.zyid = t.zyid
+		   and t1.patient_id = t.patient_id
+		   and t1.visit_id = t.visit_id
+		  left join gm004_jcmx g on g.creationdate=t.SUBMI_AT and g.zyid=t.zyid and g.typeid='14'
+		  left join xn021_mbxjc z on t.ZYID=z.zyid and t.TEST_ORDER_NO=z.test_order_no and t.item_code=z.item_code and t.PATHO_CODE=z.patho_code
+		   left join XN005_JSZD j on t.bact_genus_id=j.bact_genus_id left join ny_sys_dddd n on n.dict_id='DD0017'
+		 and n.item_id=t.rs_id
+		 /* left join BK004_SJBB bk4 on bk4.test_no=t.TEST_ORDER_NO and  bk4.patho_id=t.LisPatho_code
+		  left join bk002_grzd bk2 on bk2.relid=bk4.refid */
+		 where t.isym = 1 and t.isyang = 1  /* and nvl(t.infect_type_id, 0) &lt;&gt; 4 */
+		  <if test="specType=='z'.toString()">
+	         and (
+	        	t.SPEC_DESCRIBES in (select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	or t.PATHO_CODE in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        or EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1))
+		        )
+		</if>
+		<if test="specType=='f'.toString()">
+			and (
+	        	nvl(t.SPEC_DESCRIBES,' ') not in(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) 
+	        	and nvl(t.PATHO_CODE,' ') not in (select distinct pathogen_id  from XN017_TSNYZD where SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1) and  (drug_id='无' or drug_id is null))
+		        and not EXISTS (SELECT * from XN017_TSNYZD xn017 where xn017.drug_id is not null and xn017.drug_id &lt;&gt; '无' 
+		        and instr(t.VALIDATION_STR,drug_id||'|'||testResult) > 0 and xn017.pathogen_id = t.PATHO_CODE and SPEC_DESCRIBE in 
+	        	(select dict_code from sys_dict  where dict_type_code = 'spec_describes' and dict_status = 1))
+		       )
+		</if>
+		 <if test="deptIdIn!=null and deptIdIn.size!=0">
+		    	and t.SURVEY_DEPT_ID in 
+				<foreach collection="deptIdIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		  </if>
+		<if test="infectTypeId!=null and infectTypeId!=''">
+			<if test="infectTypeId!=0">
+				and t.INFECT_TYPE_ID=#{infectTypeId}
+			</if>
+			<if test="infectTypeId==0">
+				and t.INFECT_TYPE_ID is null
+			</if>
+		</if>
+		<if test="date!=null and date!=''">
+		 	and t.DT &gt;=  to_date(#{date},'yyyy-MM-dd')  and t.DT &lt; to_date(#{date},'yyyy-MM-dd')+1 
+		</if> 
+		 order by t.dt desc,t.TEST_ORDER_NO desc
+	</select>
+	
+	<select id="findMainMoreResistant_oracle" resultType="map">
+		select a.datetime "datetime", nvl(b.dnrs, 0) "value"
+		  from (select trunc(#{startDate}) +level - 1 as datetime
+		          from dual
+		        connect by level &lt;= (ceil((trunc(#{endDate}) - trunc(#{startDate}) + 1)))) a
+		  left join (select trunc(x11.DT) datetime,
+		                    count(zyid) dnrs
+		               from view_mdr x11
+		              where trunc(x11.DT) between #{startDate} and #{endDate} 
+		               and x11.isyang = 1  and x11.ISYM = 1 
+		                and nvl(x11.manual_res_prop, x11.res_prop) between 1 and 3
+		              group by trunc(x11.DT)) b
+		    on a.datetime = b.datetime
+		 order by a.datetime
+	</select>
+	
+	<select id="getMaxOrderno_oracle" resultType="long">
+		select nvl(max(orderno), 0) from xn011_dclymx${tablename}
+	</select>
+	
+	<insert id="batchInsert_oracle" parameterType="java.util.List" flushCache="true">
+		<foreach collection="dclymxList" item="item" index="index" open="begin" close=";end;" separator=";">
+        	insert into xn011_dclymx${tablename}(dt,survey_dept_id,survey_dept_name,orderno,zyid,patient_id,visit_id,patient_name,sex,age,age_unit,test_order_no,item_type,item_type_name,item_code,item_name,submi_at,dept_id,dept_name,patho_code,patho_name,pathogen_sn,res_prop,isym,norm_item_id,norm_orderno,spec_describes,esbl,validation_str,drug_fast_count,id) 
+        	values(#{item.dt},#{item.surveyDeptId},#{item.surveyDeptName},#{item.orderno},#{item.zyid},#{item.patientId},#{item.visitId},#{item.patientName},#{item.sex},#{item.age},#{item.ageUnit},#{item.testOrderNo},#{item.itemType},#{item.itemTypeName},#{item.itemCode},#{item.itemName},#{item.submiAt},#{item.deptId},#{item.deptName},#{item.pathoCode},#{item.pathoName},#{item.pathogenSn},#{item.resProp},#{item.isym},#{item.normItemId},#{item.normOrderno},#{item.specDescribes},#{item.esbl},#{item.validationStr},#{item.drugFastCount},#{item.id})
+        </foreach>
+	</insert>
+	
+	<select id="get1" resultType="xn011Dclymx">
+		select <include refid="commCols_oracle"/> from xn011_dclymx
+		<where> 
+			test_order_no=#{testOrderNo} and zyid=#{zyid} and item_type=#{itemType} and item_code=#{itemCode} and patho_code=#{pathoCode} and rownum=1
+		</where>
+	</select>
+</mapper>

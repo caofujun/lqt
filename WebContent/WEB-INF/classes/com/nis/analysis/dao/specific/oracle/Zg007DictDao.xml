@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Zg007DictDao">
+
+	<sql id="commCols_oracle">
+		BH_ELEMENT bhElement,KEYID keyid,ELEMENT_ID elementId,ITEM_NAME itemName,ITEM_CLASS itemClass,ELEMENT_TYPE elementType,QY_ELEMENT qyElement,APP_ELEMENT appElement,dict_type dictType,flag flag,IS_MAIN isMain
+	</sql>
+
+	<select id="findZg007Dict_oracle" parameterType="zg007Dict" resultType="zg007Dict">
+		<!-- select * from ( select a.*, rownum rn from ( -->
+		select <include refid="commCols_oracle"/>
+		from ZG007_DICT t
+		<where>
+			1=1
+			<!--<if test="elementId!=null and elementId!=''">
+				and t.element_id =#{elementId}
+			</if> -->
+			<!-- 0 否定词 A9B8E397C091559F ， 3 关键词 52B669C0526DBADC -->
+			<choose>
+				<when test='itemClass=="A9B8E397C091559F"'>
+					and t.item_class = 'A9B8E397C091559F'
+				</when>
+				<when test='itemClass=="52B669C0526DBADC"'>
+					and t.item_class = '52B669C0526DBADC'
+				</when>
+				<otherwise>
+					and (t.item_class = 'A9B8E397C091559F' or t.item_class = '52B669C0526DBADC')
+				</otherwise>
+			</choose>
+			<choose>
+				<!-- 院感 977C5BB729F88946 是否为主要1 86A8433C4635E2ED-->
+				<when test='dictType=="977C5BB729F88946"'>
+					and t.dict_type = '977C5BB729F88946'
+					<if test='itemClass=="52B669C0526DBADC"'>
+						and is_Main = '86A8433C4635E2ED'
+					</if>
+				</when>
+				<!-- 传染病 1544E1B70E4296E8 -->
+				<when test='dictType=="1544E1B70E4296E8"'>
+					and t.dict_type = '1544E1B70E4296E8'
+				</when>
+				<otherwise>
+					
+				</otherwise>
+			</choose>
+<!-- 			<if test="searchString!=null and searchString!=''">
+				and t.item_name like concat(concat('%', #{searchString}), '%') or t.element_id like concat(concat('%', #{searchString}), '%')
+			</if> -->
+		</where>
+		<!-- ) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum} -->
+	</select>
+</mapper>

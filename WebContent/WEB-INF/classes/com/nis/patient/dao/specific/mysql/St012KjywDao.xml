@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St012KjywDao">
+
+	<sql id="commCols_mysql">
+		sy_drug_id syDrugId,id id,drug_id drugId,drug_name drugName,class_id classId,class_name className,pycode pycode,wbcode wbcode,bhcode bhcode,last_at lastAt,upd_date updDate,drug_line drugLine
+	</sql>
+
+	<select id="findSt012Kjyw_mysql" parameterType="st012Kjyw" resultType="st012Kjyw">
+		select <include refid="commCols_mysql"/> from st012_kjyw
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

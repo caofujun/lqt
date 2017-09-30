@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DepDocLinkDao">
+
+	<sql id="commCols_oracle">
+		DEP_DOC_LINK.PERSON_CFGS personCfgs,DEP_DOC_LINK.LINK_ID linkId,DEP_DOC_LINK.DEP_ID depId,DEP_DOC_LINK.DOCTOR_ID doctorId,DEP_DOC_LINK.LEVEL_CODE levelCode,DEP_DOC_LINK.IS_YUYUE isYuyue,DEP_DOC_LINK.IS_FIRST isFirst,DEP_DOC_LINK.UNIT_ID unitId,DEP_DOC_LINK.UPD_USER updUser,DEP_DOC_LINK.UPD_DATE updDate,DEP_DOC_LINK.HIS_GH_DEPID hisGhDepid,DEP_DOC_LINK.HIS_DL_DEPID hisDlDepid,DEP_DOC_LINK.YUYUE_MAX yuyueMax,DEP_DOC_LINK.YUYUE_NUM yuyueNum,DEP_DOC_LINK.LEFT_NUM leftNum,DEP_DOC_LINK.UPD_TIME updTime,DEP_DOC_LINK.CITY_ID cityId,DEP_DOC_LINK.LINK_ACTIVE linkActive,DEP_DOC_LINK.LINK_DELETED linkDeleted,DEP_DOC_LINK.IS_PAIBAN isPaiban,DEP_DOC_LINK.DOCTOR_NAME doctorName,DEP_DOC_LINK.DOC_SPELL docSpell,DEP_DOC_LINK.DEP_NAME depName,DEP_DOC_LINK.DEP_SPELL depSpell,DEP_DOC_LINK.ROOM_ID roomId,DEP_DOC_LINK.GH_ID ghId,DEP_DOC_LINK.DL_ID dlId,DEP_DOC_LINK.HIS_LINK_ID hisLinkId,DEP_DOC_LINK.CONFIG_FLAG configFlag,DEP_DOC_LINK.TOTAL_YUYUE_NUM totalYuyueNum,DEP_DOC_LINK.POSITION position,DEP_DOC_LINK.WORK_AM workAm,DEP_DOC_LINK.WORK_PM workPm,DEP_DOC_LINK.WORK_HOUR workHour,DEP_DOC_LINK.GUAHAO_AM guahaoAm,DEP_DOC_LINK.GUAHAO_PM guahaoPm,DEP_DOC_LINK.GUAHAO_HOUR guahaoHour,DEP_DOC_LINK.DEF_ROOM_ID defRoomId
+	</sql>
+
+	<select id="findDepDocLink_oracle" parameterType="depDocLink" resultType="depDocLink">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>,DOCTOR.DOC_NO docNo,DOCTOR.ZCID zcId,DOCTOR.DOC_SPEC docSpec,DOCTOR.SEX sex from DEP_DOC_LINK left join DOCTOR on DEP_DOC_LINK.DOCTOR_ID=DOCTOR.DOCTOR_ID
+		<where>
+			DEP_DOC_LINK.UNIT_ID=#{unitId} and DEP_DOC_LINK.DEP_ID=#{depId}
+			<if test="searchString!=null and searchString!=''">
+				and (DOCTOR.DOCTOR_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') or DOCTOR.DOC_NO LIKE CONCAT(CONCAT('%', #{searchString}), '%')) 
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

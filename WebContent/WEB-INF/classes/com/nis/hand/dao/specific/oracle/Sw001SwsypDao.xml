@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hand.dao.Sw001SwsypDao">
+
+	<sql id="commCols_oracle">
+		id id,report_date reportDate,report_user_id reportUserId,report_user_name reportUserName,report_dept_id reportDeptId,report_dept_name reportDeptName,(select t.dict_name from sys_dict t where t.dict_type_code='swsType' and t.dict_code=to_char(type)) typeName,specification specification,this_month_used thisMonthUsed,this_month_inventory thisMonthInventory,add_date addDate,last_month_remain lastMonthRemain,this_month_get thisMonthGet
+	</sql>
+
+	<select id="findSw001Swsyp_oracle" parameterType="sw001Swsyp" resultType="sw001Swsyp">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from sw001_swsyp
+		<where>
+			<if test="reportDeptId!=null and reportDeptId!=''">
+				and report_dept_id = #{reportDeptId}
+			</if>
+			<if test="queryStartDate!=null">
+				and report_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and report_date &lt;= #{queryEndDate}
+			</if>
+			<if test="type!=null">
+				and type = #{type}
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

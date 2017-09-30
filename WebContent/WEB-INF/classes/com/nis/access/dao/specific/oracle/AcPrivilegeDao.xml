@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcPrivilegeDao">
+
+	<sql id="commCols_oracle">
+		ID id,ROLE_ID roleId,HAVEGRANT havegrant,OPERATION operation,ACCESS_TYPE accessType,ACCESS_ID accessId,EXT1 ext1,EXT2 ext2
+	</sql>
+
+	<insert id="save_oracle" parameterType="acPrivilege" flushCache="true">
+		insert into AC_PRIVILEGE(ID,ROLE_ID,HAVEGRANT,OPERATION,ACCESS_TYPE,ACCESS_ID,EXT1,EXT2)
+		<foreach collection="acPrivileges" item="item" index="index" separator="union all" > 
+		(select #{item.id},#{item.roleId},#{item.havegrant},#{item.operation},#{item.accessType},#{item.accessId},#{item.ext1},#{item.ext2} from dual)
+	    </foreach>
+	</insert>
+	
+	<select id="findAcPrivilege_oracle" parameterType="acPrivilege" resultType="acPrivilege">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from AC_PRIVILEGE
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

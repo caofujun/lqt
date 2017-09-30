@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientOperationDao">
+
+	<sql id="commCols">
+		ID id,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,OPER_ORDER_NO operOrderNo,OPER_ROOM operRoom,OPER_NAME operName,OPER_ID operId,OPER_AT operAt,OPEDOC_ID opedocId,OPEDOC_NAME opedocName,ANES_DR_NAME anesDrName,OPER_DIAGNOSE operDiagnose,INCISION_GRADE incisionGrade,HEAL heal,ASA asa,URGENT_OPE urgentOpe,NARC_KIND narcKind,OPER_START_TIME operStartTime,OPER_END_TIME operEndTime,OPER_LENG_TIME operLengTime,REPLANT replant,GLASS_OPE glassOpe,WSQYY wsqyy,DEPT_ID deptId,DEPT_NAME deptName,OPEDOC_NAME2 opedocName2,OPEDOC_NAME3 opedocName3,CREATE_AT createAt,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientOperation" flushCache="true">
+		 insert into JK_PATIENT_OPERATION(ID,ZYID,PATIENT_ID,VISIT_ID,PATIENT_NAME,OPER_ORDER_NO,OPER_ROOM,OPER_NAME,OPER_ID,OPER_AT,OPEDOC_ID,OPEDOC_NAME,ANES_DR_NAME,OPER_DIAGNOSE,INCISION_GRADE,HEAL,ASA,URGENT_OPE,NARC_KIND,OPER_START_TIME,OPER_END_TIME,OPER_LENG_TIME,REPLANT,GLASS_OPE,WSQYY,DEPT_ID,DEPT_NAME,OPEDOC_NAME2,OPEDOC_NAME3,CREATE_AT,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{zyid},#{patientId},#{visitId},#{patientName},#{operOrderNo},#{operRoom},#{operName},#{operId},#{operAt},#{opedocId},#{opedocName},#{anesDrName},#{operDiagnose},#{incisionGrade},#{heal},#{asa},#{urgentOpe},#{narcKind},#{operStartTime},#{operEndTime},#{operLengTime},#{replant},#{glassOpe},#{wsqyy},#{deptId},#{deptName},#{opedocName2},#{opedocName3},#{createAt},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_OPERATION
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientOperation" flushCache="true">
+		update JK_PATIENT_OPERATION
+		<set>
+			ID=#{id},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},PATIENT_NAME=#{patientName},OPER_ORDER_NO=#{operOrderNo},OPER_ROOM=#{operRoom},OPER_NAME=#{operName},OPER_ID=#{operId},OPER_AT=#{operAt},OPEDOC_ID=#{opedocId},OPEDOC_NAME=#{opedocName},ANES_DR_NAME=#{anesDrName},OPER_DIAGNOSE=#{operDiagnose},INCISION_GRADE=#{incisionGrade},HEAL=#{heal},ASA=#{asa},URGENT_OPE=#{urgentOpe},NARC_KIND=#{narcKind},OPER_START_TIME=#{operStartTime},OPER_END_TIME=#{operEndTime},OPER_LENG_TIME=#{operLengTime},REPLANT=#{replant},GLASS_OPE=#{glassOpe},WSQYY=#{wsqyy},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},OPEDOC_NAME2=#{opedocName2},OPEDOC_NAME3=#{opedocName3},CREATE_AT=#{createAt},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientOperation" flushCache="true">
+		update JK_PATIENT_OPERATION
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientOperation">
+		select <include refid="commCols"/> from JK_PATIENT_OPERATION
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientOperationCount" parameterType="jkPatientOperation" resultType="int">
+		select count(*) from JK_PATIENT_OPERATION
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientOperation">
+		select <include refid="commCols"/> from JK_PATIENT_OPERATION
+		<where>
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageUserDetailDao">
+
+	<sql id="commCols_mysql">
+		MUD_ID mudId,MID mid,USER_ID userId,USER_NAME userName,IS_READ isRead
+	</sql>
+
+	<select id="findNyMessageUserDetail_mysql" parameterType="nyMessageUserDetail" resultType="nyMessageUserDetail">
+		select <include refid="commCols_mysql"/> from NY_MESSAGE_USER_DETAIL
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

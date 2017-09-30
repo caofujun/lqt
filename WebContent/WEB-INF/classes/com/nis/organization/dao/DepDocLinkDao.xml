@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DepDocLinkDao">
+
+	<sql id="commCols">
+		ID id,DEPT_ID deptId,DOCTOR_ID doctor_id
+	</sql>
+
+	<insert id="save" parameterType="dep" flushCache="true">
+		 insert into ZG003_YYZG_DEPT(ID,DEPT_ID,DOCTOR_ID)
+		 values(#{id},#{deptId},#{doctorId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from ZG003_YYZG_DEPT
+		<where>DOCTOR_ID=#{doctorId}</where>
+	</delete>
+</mapper>

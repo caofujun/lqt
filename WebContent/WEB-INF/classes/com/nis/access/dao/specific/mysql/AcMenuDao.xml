@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcMenuDao">
+
+	<sql id="commCols_mysql">
+		MENU_ID menuId,MENU_NO menuNo,MENU_NAME menuName,PARENT_MENU_NO parentMenuNo,SHOW_ORDER showOrder,DEST_URL destUrl,TARGET target,ISVALID isvalid,MODULE_CODE moduleCode,OWNERSHIP ownership,IMAGE image,REMARK remark,EXT1 ext1,EXT2 ext2
+	</sql>
+
+	<select id="findAcMenu_mysql" parameterType="acMenu" resultType="acMenu">
+		select <include refid="commCols_mysql"/> from AC_MENU
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+		 ORDER BY SHOW_ORDER
+	</select>
+	
+</mapper>

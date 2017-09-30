@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.Zg006ZdmxDao">
+
+	<sql id="commCols">
+		MX_ID mxId,INFECT_CODE infectCode,STANDARD_NO standardNo,NODE_LEVEL nodeLevel,NODE_ID nodeId,NODE_BODY nodeBody,IF_BASE_ELEMENT ifBaseElement,ELEMENT_ID elementId,ELEMENT_NAME elementName,IF_MUST ifMust,LIST_COUNT listCount,NEED_COUNT needCount,WEIGHT_VALUE weightValue,P_NODE_ID pNodeId,WEIGHT_RATIO weightRatio,NODE_TYPE nodeType,NODE_TYPE2 nodeType2
+	</sql>
+
+	<insert id="save" parameterType="zg006Zdmx"  flushCache="true">
+		 insert into ZG006_ZDMX(MX_ID,INFECT_CODE,STANDARD_NO,NODE_LEVEL,NODE_ID,NODE_BODY,IF_BASE_ELEMENT,ELEMENT_ID,ELEMENT_NAME,IF_MUST,LIST_COUNT,NEED_COUNT,WEIGHT_VALUE,P_NODE_ID,WEIGHT_RATIO,NODE_TYPE,NODE_TYPE2)
+		 values(#{mxId},#{infectCode},#{standardNo},#{nodeLevel},#{nodeId},#{nodeBody},#{ifBaseElement},#{elementId},#{elementName},#{ifMust},#{listCount},#{needCount},#{weightValue},#{pNodeId},#{weightRatio},#{nodeType},#{nodeType2})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG006_ZDMX
+		<where>MX_ID=#{mxId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg006Zdmx" flushCache="true">
+		update ZG006_ZDMX
+		<set>
+			MX_ID=#{mxId},INFECT_CODE=#{infectCode},STANDARD_NO=#{standardNo},NODE_LEVEL=#{nodeLevel},NODE_ID=#{nodeId},NODE_BODY=#{nodeBody},IF_BASE_ELEMENT=#{ifBaseElement},ELEMENT_ID=#{elementId},ELEMENT_NAME=#{elementName},IF_MUST=#{ifMust},LIST_COUNT=#{listCount},NEED_COUNT=#{needCount},WEIGHT_VALUE=#{weightValue},P_NODE_ID=#{pNodeId},WEIGHT_RATIO=#{weightRatio},NODE_TYPE=#{nodeType},NODE_TYPE2=#{nodeType2}
+		</set>
+		<where>MX_ID=#{mxId}</where>
+	</update>
+	
+	<select id="get" resultType="zg006Zdmx">
+		select <include refid="commCols"/> from ZG006_ZDMX
+  		<where>MX_ID=#{mxId}</where>
+	</select>
+	
+	
+	<select id="findZg006ZdmxCount" parameterType="zg006Zdmx" resultType="int">
+		select count(*) from ZG006_ZDMX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg006Zdmx">
+		select <include refid="commCols"/> from ZG006_ZDMX
+		<where>
+			1=1
+		</where>
+		order by infect_code,node_id
+	</select>
+	
+	<select id="findByInfectCodeAndNodeId" resultType="zg006Zdmx">
+		select <include refid="commCols"/> from ZG006_ZDMX
+		<where>
+			INFECT_CODE=#{infectCode} and NODE_ID=#{nodeId}
+		</where>
+	</select>
+	
+	<select id="findMustByInfectCodeAndPNodeId" resultType="zg006Zdmx">
+		select <include refid="commCols"/> from ZG006_ZDMX
+		<where>
+			INFECT_CODE=#{infectCode} and P_NODE_ID=#{pNodeId} and IF_MUST='1'
+		</where>
+	</select>
+	
+	<select id="findMustList" resultType="zg006Zdmx">
+		select <include refid="commCols"/> from ZG006_ZDMX
+		<where>
+			 IF_MUST='1'
+		</where>
+	</select>
+	
+	<select id="findNeedCountList" resultType="zg006Zdmx">
+		select <include refid="commCols"/> from ZG006_ZDMX
+		<where>
+			NEED_COUNT!='A9B8E397C091559F' and NEED_COUNT is not null
+		</where>
+	</select>
+	
+	<select id="findbyElementId" resultType="zg006Zdmx">
+		select <include refid="commCols"/> from ZG006_ZDMX
+		<where>
+			ELEMENT_ID=#{elementId}
+		</where>
+	</select>
+</mapper>

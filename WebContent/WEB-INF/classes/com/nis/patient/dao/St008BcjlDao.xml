@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St008BcjlDao">
+
+	<sql id="commCols">
+		anal_at analAt,anal_result analResult,upd_date updDate,id
+		id,zyid zyid,patient_id patientId,visit_id visitId,enter_date
+		enterDate,case_class caseClass,bc_code bcCode,bc_name bcName,create_at
+		createAt,course_content courseContent,content_type contentType,anal_flag analFlag
+	</sql>
+	
+	<sql id="commColsAnal">
+		bc.anal_at analAt,bc.anal_result analResult,bc.upd_date updDate,bc.id
+		id,bc.zyid zyid,bc.patient_id patientId,bc.visit_id visitId,bc.enter_date
+		enterDate,bc.case_class caseClass,bc.bc_code bcCode,bc.bc_name bcName,bc.create_at
+		createAt,bc.course_content courseContent,content_type contentType,bc.anal_flag analFlag
+	</sql>
+	
+	<insert id="save" parameterType="st008Bcjl" flushCache="true">
+		insert into
+		st008_bcjl(anal_at,anal_result,upd_date,id,zyid,patient_id,visit_id,enter_date,case_class,bc_code,bc_name,create_at,course_content,content_type,anal_flag)
+		values(#{analAt},#{analResult},#{updDate},#{id},#{zyid},#{patientId},#{visitId},#{enterDate},#{caseClass},#{bcCode},#{bcName},#{createAt},#{courseContent},#{contentType},#{analFlag})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from st008_bcjl
+		<where>id=#{id}</where>
+	</delete>
+
+	<update id="update" parameterType="st008Bcjl" flushCache="true">
+		update st008_bcjl
+		<set>
+			anal_at=#{analAt},anal_result=#{analResult},upd_date=#{updDate},id=#{id},zyid=#{zyid},patient_id=#{patientId},visit_id=#{visitId},enter_date=#{enterDate},case_class=#{caseClass},bc_code=#{bcCode},bc_name=#{bcName},create_at=#{createAt},course_content=#{courseContent},anal_flag=#{analFlag}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+
+	<update id="updateAnalFlag" flushCache="true">
+		update st008_bcjl
+		<set>
+			anal_flag${tablename}=#{analFlag}
+		</set>
+		<where>zyid=#{zyid}</where>
+	</update>
+	<select id="get" resultType="st008Bcjl">
+		select
+		<include refid="commCols" />
+		from st008_bcjl
+		<where>id=#{id}</where>
+	</select>
+
+	<update id="updateCdcAnalFlag" flushCache="true">
+		update st008_bcjl
+		<set>
+			cdc_anal_flag=#{cdcanalflag},
+			cdc_anal_dt=#{cdcanaldt}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="findSt008BcjlCount" parameterType="st008Bcjl"
+		resultType="int">
+		select count(*) from st008_bcjl
+		<where>
+		</where>
+	</select>
+	
+	<select id="getMonitorPatientBcjlLastAt" resultType="date">
+		select max(enter_date) from st008_bcjl bc
+		join st003_cryxxb cr on bc.zyid=cr.zyid where cr.out_at is null and enter_date&lt;sysdate
+	</select>
+	
+	<select id="getMonitorPatientBcjlLastAt6" resultType="date">
+		select max(to_date(substr(enter_date,1,10),'yyyy-mm-dd')) from st008_bcjl bc
+		join st003_cryxxb cr on bc.zyid=cr.zyid where cr.out_at is null and to_date(substr(enter_date,1,10),'yyyy-mm-dd')&lt;sysdate
+	</select>
+
+	<select id="getAll" resultType="st008Bcjl">
+		select
+		<include refid="commCols" />
+		from st008_bcjl
+		<where>
+		</where>
+	</select>
+	
+	<select id="getBcListByZyid" resultType="st008Bcjl">
+		select <include refid="commColsAnal" />,nvl(cr.out_at,sysdate)+3 outAt from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; #{curr}
+			and bc.zyid in 
+			<foreach collection="zyids" index="index" item="item" open="(" separator="," close=")">
+			#{item} 
+			</foreach>
+		</where>
+	</select>
+	
+	
+	<select id="getBcListByZyidV6" resultType="st008Bcjl">
+		select <include refid="commColsAnal" />,nvl(cr.out_at,sysdate)+3 outAt from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; to_char(#{curr}, 'yyyy-MM-dd hh24:mi:ss') 
+			and bc.zyid in 
+			<foreach collection="zyids" index="index" item="item" open="(" separator="," close=")">
+			#{item} 
+			</foreach>
+		</where>
+	</select>
+	
+	<select id="getBcListTest" resultType="st008Bcjl">
+		select <include refid="commColsAnal" />,nvl(cr.out_at,sysdate)+3 outAt from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null and bc.zyid is not null and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; #{curr} and rownum &lt;#{rownum}
+		</where>
+	</select>
+	
+	
+	<select id="getBcListTestV6" resultType="st008Bcjl">
+		select <include refid="commColsAnal" />,nvl(cr.out_at,sysdate)+3 outAt from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null and bc.zyid is not null and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; to_char(#{curr}, 'yyyy-MM-dd hh24:mi:ss')  and rownum &lt;#{rownum}
+		</where>
+	</select>
+	
+	<select id="getBcZyidList" resultType="String">
+		select distinct bc.zyid from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null and bc.zyid is not null
+			and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; #{curr} and rownum &lt;#{rownum}
+		</where>
+	</select>
+	
+	
+	<select id="getBcZyidListv6" resultType="String">
+		select distinct bc.zyid from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null 
+			--and bc.zyid='00039633361' and bc.id='00039633360001' 
+			and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; to_char(#{curr}, 'yyyy-MM-dd hh24:mi:ss') and rownum &lt;#{rownum}
+		</where>
+	</select>
+	
+	
+	<select id="getBcZyidCount" resultType="int">
+		select count(distinct bc.zyid) from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; #{curr} 
+		</where>
+	</select>
+	
+	
+	<select id="getBcZyidCountv6" resultType="int">
+		select count(distinct bc.zyid) from st008_bcjl bc join st003_cryxxb cr on bc.zyid=cr.zyid 
+		<where>
+			bc.enter_date is not null and NVL(bc.ANAL_FLAG${tablename},0)=0 and bc.enter_date &lt; to_char(#{curr}, 'yyyy-MM-dd hh24:mi:ss') 
+		</where>
+	</select>
+	
+	<update id="updateAnalResultTest" parameterType="st008Bcjl"
+		flushCache="true">
+		update st008_bcjl
+		<set>
+			anal_at${tablename}=#{analAt},anal_result${tablename}=#{analResult},anal_flag${tablename}=#{analFlag}
+		</set>
+		<where>zyid=#{zyid} and id=#{id}</where>
+	</update>
+	<select id="findDisAnalysisList" parameterType="st008Bcjl"
+		resultType="st008Bcjl">
+		select s8.id id,s8.zyid zyid,s8.enter_date enterDate,s8.bc_name
+		bcName, getKeyWodsByid(s8.zyid, s8.id) keyWords
+		from st008_bcjl s8
+		<where>
+			1=1
+			<if test="zyid!=null and zyid!=''">
+					and	s8.zyid=#{zyid}
+			</if>
+			<if test="mzid!=null and mzid!=''">
+					and	s8.mzid=#{mzid}
+			</if>
+			<if test="queryStartDate != null">
+				and s8.enter_date &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate != null">
+				and s8.enter_date &lt;= #{queryEndDate}
+			</if>
+		</where>
+		<if test="orderBy==0">
+		order by s8.enter_date desc
+		</if>
+		<if test="orderBy!=0">
+		order by s8.enter_date asc
+		</if>
+	</select>
+
+	<select id="findPatentBcjlWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST008_BCJL where ZYID ='''||ZYID||'''' sql,
+			'ST008_BCJL表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST008_BCJL t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and enter_date BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<select id="findPatentBcjlWarning6" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST008_BCJL where ZYID ='''||ZYID||'''' sql,
+			'ST008_BCJL表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST008_BCJL t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and to_date(substr(enter_date,1,10),'yyyy-mm-dd') BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<select id="findByZyid" resultType="st008Bcjl">
+		select
+		<include refid="commCols" />
+		from st008_bcjl
+		<where>
+			zyid=#{zyid}
+		</where>
+		order by enter_date
+	</select>
+	
+	<delete id="deleteAnalData" flushCache="true">
+	  ${dealSql}
+    </delete>
+    
+    <select id="getBcListForCDC" resultType="st008Bcjl" >
+    	select * from (
+			select
+			<include refid="commCols" />
+			from st008_bcjl
+			<where>
+				NVL(CDC_ANAL_FLAG,0) !=1 
+			</where>
+			order by enter_date asc
+		) where rownum &lt;=#{rownum}
+    </select>
+</mapper>

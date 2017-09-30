@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg004YyxxDao">
+
+	<sql id="commCols">
+		HOSP_ID hospId,HOSP_NAME hospName,HOSP_LEVEL hospLevel,BEDS beds,HOSP_TYPE hospType,HOSP_NATURE hospNature,IFBRANCH ifbranch,CREATE_AT createAt,BH_CODE bhCode,FLAG flag,LAST_AT lastAt,SP_CODE spCode,SUPPORT support,SUPP_TEL suppTel,LICENCE licence
+	</sql>
+
+	<insert id="save" parameterType="zg004Yyxx"  flushCache="true">
+		 insert into ZG004_YYXX(HOSP_ID,HOSP_NAME,HOSP_LEVEL,BEDS,HOSP_TYPE,HOSP_NATURE,IFBRANCH,CREATE_AT,BH_CODE,FLAG,LAST_AT,SP_CODE,SUPPORT,SUPP_TEL,LICENCE)
+		 values(#{hospId},#{hospName},#{hospLevel},#{beds},#{hospType},#{hospNature},#{ifbranch},#{createAt},#{bhCode},#{flag},#{lastAt},#{spCode},#{support},#{suppTel},#{licence})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG004_YYXX
+		<where>HOSP_ID=#{hospId}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg004Yyxx" flushCache="true">
+		update ZG004_YYXX
+		<set>
+			HOSP_ID=#{hospId},HOSP_NAME=#{hospName},HOSP_LEVEL=#{hospLevel},BEDS=#{beds},HOSP_TYPE=#{hospType},HOSP_NATURE=#{hospNature},IFBRANCH=#{ifbranch},CREATE_AT=#{createAt},BH_CODE=#{bhCode},FLAG=#{flag},LAST_AT=#{lastAt},SP_CODE=#{spCode},SUPPORT=#{support},SUPP_TEL=#{suppTel},LICENCE=#{licence}
+		</set>
+		<where>HOSP_ID=#{hospId}</where>
+	</update>
+	
+	<select id="get" resultType="zg004Yyxx">
+		select <include refid="commCols"/> from ZG004_YYXX
+  		<where>HOSP_ID=#{hospId}</where>
+	</select>
+	
+	
+	<select id="findZg004YyxxCount" parameterType="zg004Yyxx" resultType="int">
+		select count(*) from ZG004_YYXX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg004Yyxx">
+		select <include refid="commCols"/> from ZG004_YYXX
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

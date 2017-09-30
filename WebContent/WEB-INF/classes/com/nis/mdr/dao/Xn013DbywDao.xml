@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn013DbywDao">
+
+	<sql id="commCols">
+		ITEM_ID itemId,ORDERNO orderno,DRUG_TYPE_ID drugTypeId,DRUG_ID drugId,DRUG_NAME drugName
+	</sql>
+
+	<insert id="save" parameterType="xn013Dbyw"  flushCache="true">
+		 insert into XN013_DBYW(ITEM_ID,ORDERNO,DRUG_TYPE_ID,DRUG_ID,DRUG_NAME)
+		 values(#{itemId},#{orderno},#{drugTypeId},#{drugId},#{drugName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  XN013_DBYW
+		<where>ITEM_ID=#{itemId}</where>
+	</delete>
+	
+	<update id="update" parameterType="xn013Dbyw" flushCache="true">
+		update XN013_DBYW
+		<set>
+			ITEM_ID=#{itemId},ORDERNO=#{orderno},DRUG_TYPE_ID=#{drugTypeId},DRUG_ID=#{drugId},DRUG_NAME=#{drugName}
+		</set>
+		<where>ITEM_ID=#{itemId}</where>
+	</update>
+	
+	<select id="get" resultType="xn013Dbyw">
+		select <include refid="commCols"/> from XN013_DBYW
+  		<where>ITEM_ID=#{itemId}</where>
+	</select>
+	
+	
+	<select id="findXn013DbywCount" parameterType="xn013Dbyw" resultType="int">
+		select count(*) from XN013_DBYW
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xn013Dbyw">
+		select <include refid="commCols"/> from XN013_DBYW
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

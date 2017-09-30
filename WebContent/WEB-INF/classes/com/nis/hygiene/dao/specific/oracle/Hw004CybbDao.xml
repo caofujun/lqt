@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw004CybbDao">
+
+	<sql id="commCols_oracle">
+		sample_id sampleId,sample_name sampleName,class_id classId,bh_code bhCode,sp_code spCode,wb_code wbCode,memo memo,last_at lastAt,flag flag
+	</sql>
+
+	<select id="findHw004Cybb_oracle" parameterType="hw004Cybb" resultType="hw004Cybb">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw004_cybb
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="queryList_oracle" parameterType="hw004Cybb" resultType="hw004Cybb">
+		select h4.sample_id sampleId,h4.sample_name sampleName,h4.sp_code spCode,h4.class_id classId,h1.class_name className 
+		from hw004_cybb h4 left join hw001_jcxm h1 on h1.class_id=h4.class_id
+		<where>
+			regexp_like(h4.sample_id,'(^[+-]?\d{0,}\.?\d{0,}$)')
+			<if test="classId!=null and classId!=''">
+				and h4.class_id=#{classId} 
+			</if>
+			<if test="flag!=null">
+				and h4.flag=#{flag} 
+			</if>
+			<if test="searchString != null and searchString !=''">
+			and ( h4.sample_name like CONCAT(CONCAT('%', #{searchString}), '%') or h4.sample_id like CONCAT(CONCAT('%', #{searchString}), '%') or 
+			 lower(h4.SP_CODE) like CONCAT( CONCAT('%',#{searchString}),'%') or upper(h4.SP_CODE) like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+		order by h4.class_id
+	</select>
+	
+	<select id="findList_oracle" parameterType="hw004Cybb" resultType="hw004Cybb">
+		select h4.sample_id sampleId,h4.sample_name sampleName,h4.sp_code spCode,h4.class_id classId,h1.class_name className,h4.flag flag 
+		from hw004_cybb h4 left join hw001_jcxm h1 on h1.class_id=h4.class_id
+		<where>
+			regexp_like(h4.sample_id,'(^[+-]?\d{0,}\.?\d{0,}$)')
+			<if test="classId!=null and classId!=''">
+				and h4.class_id=#{classId} 
+			</if>
+			<if test="flag!=null">
+				and h4.flag=#{flag} 
+			</if>
+		</where>
+		order by h4.class_id
+	</select>
+</mapper>

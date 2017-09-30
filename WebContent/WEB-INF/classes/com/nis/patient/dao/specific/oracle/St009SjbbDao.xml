@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St009SjbbDao">
+
+	<sql id="commCols_oracle">
+		id id,zyid zyid,mzid mzid,patient_id patientId,visit_id visitId,patient_name patientName,test_order_no testOrderNo,sex sex,age age,age_unit ageUnit,item_type itemType,item_type_name itemTypeName,item_code itemCode,item_name itemName,submi_at submiAt,dept_id deptId,dept_name deptName,create_at createAt,upd_date updDate,cgjy_spe_flag cgjySpeFlag,sjbb_anal_flag sjbbAnalFlag,sjbb_anal_dt sjbbAnalDt,cdc_anal_flag cdcanalflag,cdc_anal_dt cdcanaldt,like_flag likeFlag
+	</sql>
+
+	<select id="findSt009Sjbb_oracle" parameterType="st009Sjbb" resultType="st009Sjbb">
+		select * from ( select a.*, rownum rn from (
+		select s9.submi_at submiAt,s9.item_name itemName,s9.item_type itemType,s9.item_type_name itemTypeName,s9.test_order_no testOrderNo,s9.zyid zyid,s9.mzid mzid,
+		(select count(1) from st011_syjgb s11 where s11.zyid=s9.zyid and s11.test_order_no=s9.test_order_no and remark in 
+			<foreach collection="remark" index="index" item="item" open="(" separator="," close=")" >
+		  		#{item} 
+		  	</foreach>
+		) as  isexception,
+		(select decode(count(1),0,0,1) from st011_syjgb s11 where s11.zyid=s9.zyid and s11.test_order_no=s9.test_order_no and remark in 
+			<foreach collection="remark" index="index" item="item" open="(" separator="," close=")" >
+		  		#{item} 
+		  	</foreach>
+		) as  isexceptionTemp,
+		case when s9.item_type = 1 then (select to_char(min(test_date), 'yyyy-MM-dd hh24:mi:ss') from st010_jcbyt where zyid = s9.zyid and test_order_no = s9.test_order_no)
+        else (select min(result_date) from st011_syjgb where zyid = s9.zyid and test_order_no = s9.test_order_no) end checkOutAt,case when exists(select * from st010_jcbyt where zyid = s9.zyid
+       	and test_order_no = s9.test_order_no and isyang=1) then 1 else  0 end isyang,s9.id id 
+		from st009_sjbb s9
+		<where>
+			<if test="zyid!=null and zyid!=''">
+				and s9.zyid=#{zyid}
+			</if>
+			<if test="mzid!=null and mzid!=''">
+				and s9.mzid=#{mzid}
+			</if>
+		</where>
+		<if test="orderBy==0">
+			order by 
+			<if test="id!=null and id!=''">
+				(case when s9.id=#{id} then 0 else 1 end),
+			</if>
+			s9.item_type asc,isyang desc,isexceptionTemp desc,s9.submi_at desc
+		</if>
+		<if test="orderBy!=0">
+			order by 
+			<if test="id!=null and id!=''">
+				(case when s9.id=#{id} then 0 else 1 end),
+			</if>
+			s9.item_type asc,isyang desc,isexceptionTemp desc ,s9.submi_at asc
+		</if>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findSjbbForInfectList_oracle" parameterType="st009Sjbb" resultType="st009Sjbb">
+		select byt.id id,sj.submi_at submiAt,sj.item_code itemCode,sj.item_name itemName,byt.test_date testDate,byt.patho_code pathoCode,byt.pathogen_sn pathogenSn,byt.patho_name pathoName,mx.res_prop resProp,mx.spec_describes specDescribes,bk4.refid refid,sj.test_order_no testOrderNo,mx.orderno orderno,mx.survey_dept_id surveyDeptId,mx.infect_type_id infectTypeId,mx.infect_type_name infectTypeName
+		from st009_sjbb sj join st010_jcbyt byt on sj.test_order_no=byt.test_order_no
+		left join xn011_dclymx mx on byt.test_order_no=mx.test_order_no and mx.pathogen_sn=byt.pathogen_sn
+		left join (select * from bk004_sjbb t where t.refid=#{refid}) bk4 on sj.test_order_no=bk4.test_no and byt.patho_code=bk4.patho_id
+		<where>
+			byt.isyang=1 and sj.zyid=#{zyid} 
+			<if test="testOrderNoList != null ">
+			<foreach collection="testOrderNoList" item="item" index="index" open="" close="" separator="">
+			and sj.test_order_no != #{item} 
+			</foreach>  
+			</if>
+			
+		</where>
+		order by nvl2(bk4.refid, 1, 0) desc, sj.submi_at desc, sj.test_order_no desc
+	</select>
+	
+	<select id="findFocusFactors" resultType="map">
+		select 
+			'xcg' "item",nvl(sum(nvl2(st11.zyid, 1, 0)), 0) || '/' || count(*) "value"
+	    from st009_sjbb st9
+	    left join (
+	    	select * from (
+              select 
+              	zyid, test_order_no, remark,
+                row_number() over(partition by zyid, test_order_no order by nvl(remark, 0) desc) rn
+              from st011_syjgb
+              where instr(#{excStr}, remark) > 0  
+             	and (anti_name like CONCAT('%', CONCAT('白细胞', '%')) or anti_name like CONCAT('%', CONCAT('中性粒细胞百分', '%'))) 
+            )
+            where rn = 1
+        ) st11 on st9.zyid = st11.zyid and st9.test_order_no = st11.test_order_no
+        inner join (
+        	select order_name from jk_dic_all where class_code = '101'
+        ) t on st9.zyid = #{zyid} and st9.item_type_name like t.order_name
+		
+		union
+		
+		select 
+			'cfydb' "item", nvl(sum(nvl2(case when instr(#{excStr}, st11.remark) > 0 then 1 else null end, 1, 0)), 0) || '/' || count(*) "value"
+		from st009_sjbb st9
+		left join (
+			select * from (select zyid, test_order_no, remark , anti_name , row_number() over(partition by zyid, test_order_no order by nvl(remark, 0) desc) rn from st011_syjgb where anti_name like CONCAT('%',CONCAT('C反应蛋白','%'))) where  rn=1
+		) st11 on st9.zyid = st11.zyid and st9.test_order_no = st11.test_order_no
+		inner join (
+		  select order_name from jk_dic_all where class_code = '107'
+		) t on  st9.zyid = #{zyid} and st9.item_type_name like t.order_name
+		inner join (select order_name from jk_dic_all where class_code='106') t2
+		on st9.item_type_name not like t2.order_name	and st11.anti_name not like  t2.order_name
+		  
+		union
+		
+		select 
+			'cmcfydb' "item", nvl(sum(nvl2(case when instr(#{excStr}, st11.remark) > 0 then 1 else null end, 1, 0)), 0) || '/' || count(*) "value"
+		from st009_sjbb st9
+		left join (
+			select * from (select zyid, test_order_no, remark , row_number() over(partition by zyid, test_order_no order by nvl(remark, 0) desc) rn from st011_syjgb where anti_name like CONCAT('%',CONCAT('超敏C反应蛋白','%'))) where  rn=1
+		) st11 on st9.zyid = st11.zyid and st9.test_order_no = st11.test_order_no
+		inner join (
+		  select order_name from jk_dic_all where class_code = '106'
+		) t on  st9.zyid = #{zyid} and st9.item_type_name like t.order_name   
+		   
+		union 
+		
+		select 'xpy' "item", nvl(sum(case when st10.isyang = 1 then 1 else 0 end), 0)  || '/' || count(*) "value"
+		  from st009_sjbb st9
+		  left join (select zyid, test_order_no, isyang , row_number() over(partition by zyid, test_order_no order by nvl(isyang, 0) desc) rn from st010_jcbyt) st10
+		    on st9.zyid = st10.zyid
+		   and st9.test_order_no = st10.test_order_no,
+		 (select order_name from jk_dic_all where class_code = '109') t
+		 where rn = 1 and st9.zyid = #{zyid}
+		   and st9.item_type_name like t.order_name
+		union
+		select 'ncg' "item", nvl(sum(nvl2(case when instr(#{excStr}, st11.remark) > 0 then 1 else null end, 1, 0)), 0)  || '/' || count(*) "value"
+		  from st009_sjbb st9
+		  left join (select zyid, test_order_no, remark , row_number() over(partition by zyid, test_order_no order by nvl(remark, 0) desc) rn from st011_syjgb where (anti_name like CONCAT('%',CONCAT('白细胞','%')) or anti_name like CONCAT('%',CONCAT('亚硝酸盐','%')))) st11
+		    on st9.zyid = st11.zyid
+		   and st9.test_order_no = st11.test_order_no,
+		 (select order_name from jk_dic_all where class_code = '102') t
+		 where rn = 1 and st9.zyid = #{zyid}
+		   and st9.item_type_name like t.order_name
+		union
+		select 'jgsy' "item",
+		       (select count(*)
+		          from st009_sjbb st9
+		          left join (select zyid, test_order_no, remark , row_number() over(partition by zyid, test_order_no order by remark desc) rn from st011_syjgb where remark in
+                   (select t.dict_code from sys_dict t where t.dict_type_code = 'result_high' or t.dict_type_code = 'result_low')) st11
+		            on st9.zyid = st11.zyid
+		           and st9.test_order_no = st11.test_order_no,
+		         (select order_name from jk_dic_all where class_code = '104') t
+		         where rn = 1 and st9.zyid = #{zyid}
+		           and st9.item_type_name like t.order_name
+		           and st11.remark is not null)  || '/' || (select count(*)
+		          from st009_sjbb st9
+		          left join st011_syjgb st11
+		            on st9.zyid = st11.zyid
+		           and st9.test_order_no = st11.test_order_no,
+		         (select order_name from jk_dic_all where class_code = '104') t
+		         where st9.zyid = #{zyid}
+		           and st9.item_type_name like t.order_name) "value"
+		  from dual
+		union
+		select 'hxj' "item", count(*) || '天' "value"
+		  from (select zyid,row_number() over(partition by zyid, to_char(t.creationdate, 'yyyy-MM-dd') order by creationdate desc) rn from gm004_jcmx t where zyid = #{zyid} 
+		  and t.typeid = '06') st4
+		 where rn=1
+		union
+		select 'mndcg' "item", count(*) || '天' "value"
+		  from (select zyid,row_number() over(partition by zyid, to_char(t.creationdate, 'yyyy-MM-dd') order by creationdate desc) rn from gm004_jcmx t where zyid = #{zyid} 
+		  and t.typeid = '04') st4
+		 where rn=1
+		union
+		select 'zyts' "item", count(*) || '天' "value"
+		   from (select zyid,row_number() over(partition by zyid, to_char(t.creationdate, 'yyyy-MM-dd') order by creationdate desc) rn from gm004_jcmx t where zyid = #{zyid} 
+		  and t.typeid = '02') st4
+		 where rn=1
+		union
+		select 'fr' "item", count(*) || '天' "value"
+		  from (select zyid, tw_values , row_number() over(partition by zyid, to_char(RECORDING_AT, 'yyyy-MM-dd') order by nvl(tw_values, 0) desc) rn from st006_twxx where zyid = #{zyid} and tw_values >= 38) st6
+		 where rn=1
+		union
+		select 'jmcg' "item", count(*) || '天' "value"
+		  from (select zyid,row_number() over(partition by zyid, to_char(t.creationdate, 'yyyy-MM-dd') order by creationdate desc) rn from gm004_jcmx t where zyid = #{zyid} 
+		  and t.typeid = '05') st4
+		 where rn=1
+	</select>
+		
+	<select id="findWaitAnalyGerm_oracle" resultType="st009Sjbb">
+		select bb.id id,bb.zyid zyid,bb.test_order_no testOrderNo,bb.item_name itemName,bb.item_code itemCode,bb.submi_at submiAt
+		  from st009_sjbb bb 
+		<where>
+			bb.item_type = '1' and bb.zyid is not null and bb.submi_at &lt; #{curr} and (bb.sjbb_anal_dt&lt;sysdate or bb.sjbb_anal_dt is null)
+			and exists (select 1
+				from st010_jcbyt byt
+				where byt.isym = 1 and byt.isyang = 1 and byt.zyid = bb.zyid and byt.test_order_no = bb.test_order_no)
+			and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+			and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0
+			and rownum &lt;= #{orclEndNum}
+		</where>
+	</select>
+	
+	<select id="findWaitAnalyGermV6_oracle" resultType="st009Sjbb">
+		select bb.id id,bb.zyid zyid,bb.test_order_no testOrderNo,bb.item_name itemName,bb.item_code itemCode,to_date(bb.submi_at, 'yyyy-MM-dd hh24:mi:ss') submiAt
+		  from st009_sjbb bb 
+		<where>
+			bb.item_type = '1' and bb.zyid is not null and to_date(bb.submi_at, 'yyyy-MM-dd hh24:mi:ss') &lt; #{curr}  and (bb.sjbb_anal_dt&lt;sysdate or bb.sjbb_anal_dt is null)
+			and exists (select 1
+				from st010_jcbyt byt
+				where byt.isym = 1 and byt.isyang = 1 and  byt.zyid = bb.zyid and byt.test_order_no = bb.test_order_no)
+			and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+			and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0
+			and rownum &lt;= #{orclEndNum}
+		</where>
+	</select>
+	
+	
+	<select id="findWaitAnalyGermCount_oracle" resultType="int">
+		select count(*) from st009_sjbb bb 
+		<where>
+			bb.item_type = '1' and bb.submi_at &lt; #{curr} and (bb.sjbb_anal_dt&lt;sysdate or bb.sjbb_anal_dt is null)
+			and exists (select 1
+				from st010_jcbyt byt
+				where byt.isym = 1 and byt.isyang = 1 and byt.zyid = bb.zyid and byt.test_order_no = bb.test_order_no)
+			and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+			and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0
+		</where>
+	</select>
+	
+	<select id="findWaitAnalyGermCountV6_oracle" resultType="int">
+		select count(*) from st009_sjbb bb 
+		<where>
+			bb.item_type = '1' and to_date(bb.submi_at, 'yyyy-MM-dd hh24:mi:ss') &lt; #{curr}  and (bb.sjbb_anal_dt&lt;sysdate or bb.sjbb_anal_dt is null)
+			and exists (select 1
+				from st010_jcbyt byt
+				where byt.isym = 1 and byt.isyang = 1 and  byt.zyid = bb.zyid and byt.test_order_no = bb.test_order_no)
+			and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+			and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0
+		</where>
+	</select>
+	
+	<update id="batchUpdAnalFlag_oracle" parameterType="java.util.List" flushCache="true">
+        <foreach collection="st009List" item="item" index="index" open="begin" close=";end;" separator=";">
+        	update st009_sjbb
+			<set>
+				sjbb_anal_flag${fieldname}=#{item.sjbbAnalFlag},sjbb_anal_dt${fieldname}=#{item.sjbbAnalDt},like_flag=#{item.likeFlag}
+			</set>
+			<where>id=#{item.id}</where>
+        </foreach>  
+    </update>
+    
+    <select id="findWaitAnalyComm_oracle" resultType="st009Sjbb">
+    	select bb.id id, bb.zyid zyid, bb.test_order_no testOrderNo, bb.item_type_name itemTypeName, bb.item_code itemCode, bb.item_name itemName, bb.submi_at submiAt
+		  from st009_sjbb bb 
+		<where>
+			bb.item_type = '2' and bb.submi_at &lt;= #{curr}
+			and exists (select 1
+		          from st011_syjgb jg
+		         where jg.test_order_no = bb.test_order_no)
+		    and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+		    and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0 
+			and rownum &lt;= #{orclEndNum}
+		</where>
+    </select>
+    
+    <select id="findWaitAnalyCommV6_oracle" resultType="st009Sjbb">
+    	select bb.id id, bb.zyid zyid, bb.test_order_no testOrderNo, bb.item_type_name itemTypeName, bb.item_code itemCode, bb.item_name itemName, to_date(bb.submi_at, 'yyyy-MM-dd hh24:mi:ss') submiAt
+		  from st009_sjbb bb
+		<where>
+			bb.item_type = '2' and to_date(bb.submi_at, 'yyyy-MM-dd hh24:mi:ss') &lt;= #{curr}
+			and exists (select 1
+		          from st011_syjgb jg
+		         where jg.test_order_no = bb.test_order_no)
+		    and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+		    and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0 
+			and rownum &lt;= #{orclEndNum}
+		</where>
+    </select>
+    
+    
+      <select id="findWaitAnalyCommCount_oracle" resultType="int">
+    	select count(*) from st009_sjbb bb 
+		<where>
+			bb.item_type = '2' and bb.submi_at &lt;= #{curr}
+			and exists (select 1
+		          from st011_syjgb jg
+		         where jg.test_order_no = bb.test_order_no)
+		    and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+		    and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0 
+		</where>
+    </select>
+    
+    <select id="findWaitAnalyCommCountV6_oracle" resultType="int">
+    	select count(*) from st009_sjbb bb
+		<where>
+			bb.item_type = '2' and to_date(bb.submi_at, 'yyyy-MM-dd hh24:mi:ss') &lt;= #{curr}
+			and exists (select 1
+		          from st011_syjgb jg
+		         where jg.test_order_no = bb.test_order_no)
+		    and exists (select 1 from st003_cryxxb cr where cr.zyid = bb.zyid) and bb.test_order_no not like '%$%'
+		    and nvl(bb.sjbb_anal_flag${fieldname}, 0) = 0 
+		</where>
+    </select>
+    
+    <select id="findWaitAnaResis_oracle" resultType="resistantAnalysis">
+    	select t.test_order_no testOrderNo,t1.isym isym,t1.isyang isyang,t.item_type_name itemTypeName,t.item_code itemCode,t.item_name itemName,t.dept_id surveyDeptId,t.dept_name surveyDeptName,t1.patho_code pathoCode,t1.patho_name pathoName,t1.id id,
+    		t1.pathogen_sn pathogenSn,t3.pathogen_id pathogenId,t3.pathogen_name pathogenName,t3.is_fungus isFungus,t4.bact_genus_id bactGenusId,t4.bact_genus_id_name bactGenusIdName,t.submi_at submiAt,t1.test_date testDate,
+    		t.dept_id deptId,t.dept_name deptName,t1.zyid zyid,t5.patient_id patientId,t5.visit_id visitId,t5.patient_name patientName,t5.age age,t5.age_unit ageUnit,t5.sex sex,t5.dept_code deptId,t5.dept_name deptName 
+    		from st010_jcbyt t1 left join st009_sjbb t on t1.test_order_no=t.test_order_no
+			left join xn013_lisbyt t2 on t2.lis_bytid=t1.patho_code
+			left join xn002_byt t3 on t3.pathogen_id=t2.counter_bytid
+			left join xn005_jszd t4 on t4.bact_genus_id=t3.bact_genus_id
+			left join st003_cryxxb t5 on t5.zyid=t1.zyid 
+		<where>
+			t.item_type=1 and nvl(t1.calculate_tag, 0)=0 and (t1.calculate_dt &lt; #{curr} or t1.calculate_dt is null) and t.zyid is not null
+			<if test="testOrderNo!=null and testOrderNo!=''">
+				and t.test_order_no=#{testOrderNo}
+			</if>
+			<if test="startDate != null">
+				and t.submi_at &gt;= #{startDate}
+			</if>
+			<if test="endDate != null">
+				and t.submi_at &lt;= #{endDate}
+			</if>
+			and rownum &lt;= #{orclEndNum}
+		</where>
+		order by t.test_order_no
+    </select>
+    
+    
+     <select id="findWaitAnaResisCount_oracle" resultType="int">
+    	select count(*) from st010_jcbyt t1 left join st009_sjbb t on t1.test_order_no=t.test_order_no
+			left join xn013_lisbyt t2 on t2.lis_bytid=t1.patho_code
+			left join xn002_byt t3 on t3.pathogen_id=t2.counter_bytid
+			left join xn005_jszd t4 on t4.bact_genus_id=t3.bact_genus_id
+			left join st003_cryxxb t5 on t5.zyid=t1.zyid 
+		<where>
+			t.item_type=1 and nvl(t1.calculate_tag, 0)=0 and t.zyid is not null
+		</where>
+    </select>
+    
+    <select id="getTestOderNo_oracle" resultType="map">
+    select  b4.test_no testOrderNo
+	  from bk002_grzd b2
+	 inner join bk004_sjbb b4
+	    on b4.refid = b2.relid
+	 where 
+	    b4.zyid = #{zyid}
+	   and b2.auth_status = '1'
+    </select>
+    
+     <select id="isCheck_oracle" resultType="map">
+    select  b4.test_no testOrderNo
+	  from bk002_grzd b2
+	 inner join bk004_sjbb b4
+	    on b4.refid = b2.relid
+	 where 
+	    b4.refid = #{refid}
+	   and b2.auth_status = '1'
+    </select>
+    
+</mapper>

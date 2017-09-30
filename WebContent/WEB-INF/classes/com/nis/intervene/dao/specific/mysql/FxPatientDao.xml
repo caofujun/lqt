@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxPatientDao">
+
+	<sql id="commCols_mysql">
+		FX_ID fxId,PATIENT_ID patientId,ZY_ID zyId,SCORE score,UP_DATE updateTime
+	</sql>
+
+	<select id="findFxPatient_mysql" parameterType="fxPatient" resultType="fxPatient">
+		select <include refid="commCols_mysql"/> from FX_PATIENT
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

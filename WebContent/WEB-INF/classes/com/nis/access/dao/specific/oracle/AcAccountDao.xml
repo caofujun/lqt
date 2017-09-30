@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcAccountDao">
+
+	<sql id="commCols_oracle">
+		USER_ID userId,USERNAME username,PASSWD passwd,REALNAME realname,NICKNAME nickname,ISVALID isvalid,USER_TYPE userType,
+		PHONE phone,MOBILENUM mobilenum,DEP_NO depNo,LAST_LOGINTIME lastLogintime,LAST_IP lastIp,UPD_TIME updTime,UPD_USER updUser,
+		UNIT_ID unitId,DATA_SCOPE dataScope,EMAIL email,DOCTOR_ID doctorId,DOC_NO docNo,EXT1 ext1,EXT2 ext2,ERROR_TIMES errorTimes,VALID_DATE validDate
+	</sql>
+
+	
+	<select id="findAcAccount_oracle" parameterType="acAccount" resultType="acAccount">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from AC_ACCOUNT
+		<where>
+			AC_TYPE = #{acType}
+			<if test="searchString!=null and searchString!=''">
+				and (USERNAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') or REALNAME LIKE CONCAT(CONCAT('%', #{searchString}), '%')) 
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	
+	<select id="findAcAccountByCondition_oracle" parameterType="acAccount" resultType="acAccount">
+		select * from ( select a.*, rownum rn from (
+		select ac.USER_ID        userId,
+       		   ac.USERNAME       username,
+       		   ac.PASSWD         passwd,
+       		   ac.REALNAME       realname,
+       		   ac.NICKNAME       nickname,
+       		   ac.ISVALID        isvalid,
+       		   ac.USER_TYPE      userType,
+        	   ac.MOBILENUM      mobilenum,
+       	  	   ac.DEP_NO         depNo,
+       		   ac.LAST_LOGINTIME lastLogintime,
+       		   ac.LAST_IP        lastIp,
+       		   ac.UPD_TIME       updTime,
+       		   ac.UPD_USER       updUser,
+       		   ac.UNIT_ID        unitId,
+       		   ac.DATA_SCOPE     dataScope,
+       		   ac.SCOPE_INFO     scopeInfo,
+       		   ac.EMAIL          email,
+       		   ac.DOCTOR_ID      doctorId,
+       		   ac.DOC_NO         docNo,
+       		   ac.EXT1           ext1,
+       		   ac.EXT2           ext2,
+       		   ac.ERROR_TIMES    errorTimes,
+       		   ac.VALID_DATE     validDate,
+       		   ac.PHOTO_PATH     photoPath,
+       		   d.dept_name        depName,
+               ro.name           roleName
+			from AC_ACCOUNT  ac
+			 left join ZG002_BYKS d on (d.dept_id = ac.dep_no  <if test="unitId!=null and unitId!=''"> and d.hosp_id=#{unitId}</if>) 
+			 left join ac_accountrole aro on aro.user_id=ac.user_id
+			 left join ac_role ro on ro.role_id= aro.role_id 
+ 		   <where>
+   		   <choose>
+				<when test="searchString!=null and searchString!=''"> 
+				and (USERNAME LIKE CONCAT(CONCAT('%',#{searchString}), '%') and ac.AC_TYPE = #{acType} 
+				or REALNAME LIKE	CONCAT(CONCAT('%', #{searchString}), '%')) 	and ac.AC_TYPE = #{acType} 
+				or (d.DEPT_NAME LIKE CONCAT(CONCAT('%', #{searchString}),	'%') and ac.AC_TYPE = #{acType} 
+				or d.SP_CODE LIKE		CONCAT(CONCAT('%', Upper(#{searchString})), '%')) and ac.AC_TYPE = #{acType} 
+				or ro.name like concat(concat('%', #{searchString}), '%')	and ac.AC_TYPE = #{acType}
+				</when>
+   		  		<otherwise>and ac.AC_TYPE = #{acType}</otherwise>
+   		  </choose>
+   		   	</where>
+			) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

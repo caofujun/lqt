@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientZkmxDao">
+
+	<sql id="commCols_mysql">
+		ID id,ZYID zyid,IN_DEPT_AT inDeptAt,IN_DEPT_ID inDeptId,OUT_DEP_AT outDepAt,OUT_DEPT_ID outDeptId,BED_NO bedNo,IN_DEPT_DAYS inDeptDays,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientZkmx_mysql" parameterType="jkPatientZkmx" resultType="jkPatientZkmx">
+		select <include refid="commCols_mysql"/> from JK_PATIENT_ZKMX
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

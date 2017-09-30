@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.task.dao.TaskJobLogDao">
+
+	<sql id="commCols_mysql">
+		ID id,JOBID jobid,ADDTIME addtime,STATUS status,LINK link,RESULT result
+	</sql>
+
+	<select id="findTaskJobLog_mysql" parameterType="taskJobLog" resultType="taskJobLog">
+		select <include refid="commCols_mysql"/> from TASK_JOB_LOG
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

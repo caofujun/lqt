@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk001SbkDao">
+
+	<sql id="commCols_mysql">
+		report_dept_name reportDeptName,is_ok isOk,is_lb isLb,is_gr isGr,card_return_cause cardReturnCause,is_del isDel,is_cb isCb,weight weight,bed_no bedNo,report_dr_id reportDrId,jbzd_code jbzdCode,jbzd jbzd,card_source cardSource,del_reason delReason,gd_flag gdFlag,gd_userid gdUserid,gd_at gdAt,bk_type bkType,lastoper_name lastoperName,lastoper_date lastoperDate,bk_typename bkTypename,infect_dept_name_edit infectDeptNameEdit,relid relid,zyid zyid,patient_id patientId,visit_id visitId,report_visit reportVisit,patient_name patientName,in_hosp_at inHospAt,ryzd_code ryzdCode,ryzd ryzd,sex sex,age age,age_unit ageUnit,report_at reportAt,charge_dr_id chargeDrId,report_dr_name reportDrName,report_dept_id reportDeptId
+	</sql>
+
+	<select id="findBk001Sbk_mysql" parameterType="bk001Sbk" resultType="bk001Sbk">
+		select <include refid="commCols_mysql"/> from bk001_sbk
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

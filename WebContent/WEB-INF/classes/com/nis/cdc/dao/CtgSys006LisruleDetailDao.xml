@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgSys006LisruleDetailDao">
+
+	<sql id="commCols">
+		ORDERNO orderno,SUBORDERNO suborderno,RESULTNAMEFIELD resultnamefield,RESULTNAMEOPER resultnameoper,RESULTNAMEVALUE resultnamevalue,MATCHVALUEFIELD matchvaluefield,MATCHVALUEOPER matchvalueoper,MATCHVALUE matchvalue,WEIGHTVALUE weightvalue,ISALLRESULT isallresult
+	</sql>
+
+	<insert id="save" parameterType="ctgSys006LisruleDetail"  flushCache="true">
+		 insert into CTG_SYS006_LISRULEDETAIL(ORDERNO,SUBORDERNO,RESULTNAMEFIELD,RESULTNAMEOPER,RESULTNAMEVALUE,MATCHVALUEFIELD,MATCHVALUEOPER,MATCHVALUE,WEIGHTVALUE,ISALLRESULT)
+		 values(#{orderno},#{suborderno},#{resultnamefield},#{resultnameoper},#{resultnamevalue},#{matchvaluefield},#{matchvalueoper},#{matchvalue},#{weightvalue},#{isallresult})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_SYS006_LISRULEDETAIL
+		<where>ORDERNO=#{orderno}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgSys006LisruleDetail" flushCache="true">
+		update CTG_SYS006_LISRULEDETAIL
+		<set>
+			ORDERNO=#{orderno},SUBORDERNO=#{suborderno},RESULTNAMEFIELD=#{resultnamefield},RESULTNAMEOPER=#{resultnameoper},RESULTNAMEVALUE=#{resultnamevalue},MATCHVALUEFIELD=#{matchvaluefield},MATCHVALUEOPER=#{matchvalueoper},MATCHVALUE=#{matchvalue},WEIGHTVALUE=#{weightvalue},ISALLRESULT=#{isallresult}
+		</set>
+		<where>ORDERNO=#{orderno}</where>
+	</update>
+	
+	<select id="get" resultType="ctgSys006LisruleDetail">
+		select <include refid="commCols"/> from CTG_SYS006_LISRULEDETAIL
+  		<where>ORDERNO=#{orderno}</where>
+	</select>
+	
+	
+	<select id="findCtgYjLisruleDetailCount" parameterType="ctgSys006LisruleDetail" resultType="int">
+		select count(*) from CTG_SYS006_LISRULEDETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgSys006LisruleDetail">
+		select <include refid="commCols"/> from CTG_SYS006_LISRULEDETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByOrderNo"  resultType="ctgSys006LisruleDetail" parameterType="String">
+		select <include refid="commCols"/> from CTG_SYS006_LISRULEDETAIL
+		<where>
+			1=1 and orderNo in (${ons})
+		</where>
+	</select>
+	
+</mapper>

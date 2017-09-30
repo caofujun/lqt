@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk010PesticideDao">
+
+	<sql id="commCols">
+		MASTERID masterid,CARD_ID cardId,PATIENT_ID patientId,ZYID zyid,MZID mzid,VISIT_ID visitId,PATIENT_NAME patientName,ID_NO idNo,SEX sex,BIRTHDAY birthday,AGE age,AGE_UNIT ageUnit,TEL tel,NOWADDRAREACODE nowaddrareacode,NOWADDR nowaddr,NOWADDR_VILLAGE nowaddrVillage,NOWADDR_GROUP nowaddrGroup,POISONING_NUM poisoningNum,PESTICIDE_LIST pesticideList,PESTICIDE_KIND pesticideKind,KIND_OTHER kindOther,POISONING_REASON poisoningReason,TRAIN train,DRUG_WAY drugWay,RISK_BEHAVIOR riskBehavior,OUTCOME outcome,OUTCOME_OTHER outcomeOther,DIAGNOSE_DT diagnoseDt,DEAD_DT deadDt,DIAGNOSE_UNIT diagnoseUnit,UNIT_LEADER unitLeader,REPORTDT reportdt,REPORTDOCTORID reportdoctorid,REPORTDOCTORNAME reportdoctorname,REPORTDEPTID reportdeptid,REPORTDEPTNAME reportdeptname,REPORT_TEL reportTel,FLAG flag,VALIDDT validdt,VALIDPERSONID validpersonid,VALIDPERSONNAME validpersonname,REJECT_REASON rejectReason,isemptycard isemptycard,isprint isprint
+	</sql>
+
+	<insert id="save" parameterType="ctgBk010Pesticide"  flushCache="true">
+		 insert into CTG_BK010_PESTICIDE(MASTERID,CARD_ID,PATIENT_ID,ZYID,MZID,VISIT_ID,PATIENT_NAME,ID_NO,SEX,BIRTHDAY,AGE,AGE_UNIT,TEL,NOWADDRAREACODE,NOWADDR,NOWADDR_VILLAGE,NOWADDR_GROUP,POISONING_NUM,PESTICIDE_LIST,PESTICIDE_KIND,KIND_OTHER,POISONING_REASON,TRAIN,DRUG_WAY,RISK_BEHAVIOR,OUTCOME,OUTCOME_OTHER,DIAGNOSE_DT,DEAD_DT,DIAGNOSE_UNIT,UNIT_LEADER,REPORTDT,REPORTDOCTORID,REPORTDOCTORNAME,REPORTDEPTID,REPORTDEPTNAME,REPORT_TEL,FLAG,VALIDDT,VALIDPERSONID,VALIDPERSONNAME,REJECT_REASON,ISEMPTYCARD ,ISPRINT)
+		 values(#{masterid},#{cardId},#{patientId},#{zyid},#{mzid},#{visitId},#{patientName},#{idNo},#{sex},#{birthday},#{age},#{ageUnit},#{tel},#{nowaddrareacode},#{nowaddr},#{nowaddrVillage},#{nowaddrGroup},#{poisoningNum},#{pesticideList},#{pesticideKind},#{kindOther},#{poisoningReason},#{train},#{drugWay},#{riskBehavior},#{outcome},#{outcomeOther},#{diagnoseDt},#{deadDt},#{diagnoseUnit},#{unitLeader},#{reportdt},#{reportdoctorid},#{reportdoctorname},#{reportdeptid},#{reportdeptname},#{reportTel},#{flag},#{validdt},#{validpersonid},#{validpersonname},#{rejectReason},#{isemptycard},#{isprint})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK010_PESTICIDE
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk010Pesticide" flushCache="true">
+		update CTG_BK010_PESTICIDE
+		<set>
+			MASTERID=#{masterid},CARD_ID=#{cardId},PATIENT_ID=#{patientId},ZYID=#{zyid},MZID=#{mzid},VISIT_ID=#{visitId},PATIENT_NAME=#{patientName},ID_NO=#{idNo},SEX=#{sex},BIRTHDAY=#{birthday},AGE=#{age},AGE_UNIT=#{ageUnit},TEL=#{tel},NOWADDRAREACODE=#{nowaddrareacode},NOWADDR=#{nowaddr},NOWADDR_VILLAGE=#{nowaddrVillage},NOWADDR_GROUP=#{nowaddrGroup},POISONING_NUM=#{poisoningNum},PESTICIDE_LIST=#{pesticideList},PESTICIDE_KIND=#{pesticideKind},KIND_OTHER=#{kindOther},POISONING_REASON=#{poisoningReason},TRAIN=#{train},DRUG_WAY=#{drugWay},RISK_BEHAVIOR=#{riskBehavior},OUTCOME=#{outcome},OUTCOME_OTHER=#{outcomeOther},DIAGNOSE_DT=#{diagnoseDt},DEAD_DT=#{deadDt},DIAGNOSE_UNIT=#{diagnoseUnit},UNIT_LEADER=#{unitLeader},REPORTDT=#{reportdt},REPORTDOCTORID=#{reportdoctorid},REPORTDOCTORNAME=#{reportdoctorname},REPORTDEPTID=#{reportdeptid},REPORTDEPTNAME=#{reportdeptname},REPORT_TEL=#{reportTel},FLAG=#{flag},VALIDDT=#{validdt},VALIDPERSONID=#{validpersonid},VALIDPERSONNAME=#{validpersonname},REJECT_REASON=#{rejectReason},ISEMPTYCARD=#{isemptycard} ,ISPRINT=#{isprint}
+		</set>
+		<where>MASTERID=#{masterid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk010Pesticide">
+		select <include refid="commCols"/> from CTG_BK010_PESTICIDE
+  		<where>MASTERID=#{masterid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk010PesticideCount" parameterType="ctgBk010Pesticide" resultType="int">
+		select count(*) from CTG_BK010_PESTICIDE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk010Pesticide">
+		select <include refid="commCols"/> from CTG_BK010_PESTICIDE
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findCardsForAdmin" resultType="ctgBk010Pesticide" parameterType="ctgBk001Crbmaster">
+		select <include refid="commCols"/>,unReadMsg from
+       		(select m.* , (select count(*) from NY_MESSAGE_USER_DETAIL t where t.theme_id in (
+		                   select theme_id from NY_MESSAGE_THEME th where th.zyid = m.zyid
+		             ) and user_id = #{userid} and is_read = 0) unReadMsg 
+		from CTG_BK010_PESTICIDE m )m
+		<where>
+			1=1
+			<if test="reportdoctorid!=null and reportdoctorid!=''">
+				and m.reportdoctorid in (#{reportdoctorid})
+			</if>
+			<if test="reportdeptid!=null and reportdeptid!=''">
+		        and m.reportdeptid in (#{reportdeptid}) 
+			</if>
+			<if test="searchString!=null and searchString!=''">
+				and (m.patient_name like CONCAT('%',CONCAT(#{searchString},'%')) or m.zyid like CONCAT('%',CONCAT(#{searchString},'%')) or m.mzid like CONCAT('%',CONCAT(#{searchString},'%')) )
+			</if>
+			<if test="dateType==1">
+				and trunc(m.reportdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="dateType==2">
+				and trunc(m.validdt) between #{queryStartDate} and #{queryEndDate}
+			</if>
+			<if test="cardStates>=0">
+				and m.flag=#{cardStates}
+			</if>
+			<choose>
+				<when test="isprint==1">
+					and m.isprint = 1
+				</when>
+				<when test="isprint==2">
+					 and ( m.isprint is null or m.isprint !=1 ) 
+				</when>
+			</choose>
+			<if test="unReadMsg==1">
+				and m.unReadMsg>0
+			</if>
+			<choose>
+				<when test="cardStates==1">
+					order by validdt desc
+				</when>
+				<when test="cardStates!=1">
+					order by reportdt desc
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	<update id="audit" parameterType="ctgBk010Pesticide" flushCache="true">
+		update CTG_BK010_PESTICIDE c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="retreat" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK010_PESTICIDE c set c.flag=2,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.reject_reason=#{rejectReason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="cancel" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK010_PESTICIDE c set c.flag=0,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname},c.reject_reason='' where c.masterid=#{masterid}
+	</update>
+	
+	<update id="remove" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK010_PESTICIDE c set c.flag=3,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname}, c.reject_reason=#{rejectReason} where c.masterid=#{masterid}
+	</update>
+	
+	<update id="batchAudit" parameterType="ctgBk009Sunstroke" flushCache="true">
+		update CTG_BK010_PESTICIDE c set c.flag=1,c.validdt= #{validdt}, c.validpersonid=#{validpersonid}, c.validpersonname=#{validpersonname} where c.masterid in (${masterid})
+	</update>
+	
+	<update id="updatePrintFlag" parameterType="String" flushCache="true">
+		update CTG_BK010_PESTICIDE set isprint=1
+		<where>
+			MASTERID=#{masterid}
+		</where>
+	</update>
+	
+	<update id="updateNotes" parameterType="String" flushCache="true">
+		update CTG_BK010_PESTICIDE c set c.notes=#{notes} where c.masterid=#{masterid}
+	</update>
+	
+</mapper>

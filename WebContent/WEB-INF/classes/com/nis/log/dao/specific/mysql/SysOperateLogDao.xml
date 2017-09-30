@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.log.dao.SysOperateLogDao">
+
+	<sql id="commCols_mysql">
+		ID id,UNIT_ID unitId,USERNAME username,ACTION action,CONTENT content,SQLS sqls,IP ip,OPERATE_TIME operateTime
+	</sql>
+
+	<select id="findSysOperateLog_mysql" parameterType="sysOperateLog" resultType="sysOperateLog">
+		select <include refid="commCols_mysql"/> from SYS_OPERATE_LOG
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

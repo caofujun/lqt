@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.questions.dao.QsRepoTopicDao">
+
+	<sql id="commCols">
+		TID tid,TITLE title,TTYPE ttype,TLEVEL tlevel,ALLOW_NULL allowNull,NOTE note,CAT_ID catId,CAT_NAME catName,UNIT_ID unitId,DEP_NO depNo,DOC_NO docNo,ATTR attr,STATE state,UPD_TIME updTime,UPD_USER updUser,MAX_VALUE maxValue,FEED_TYPE feedType,CREATE_USER createUser
+	</sql>
+
+	<insert id="save" parameterType="qsRepoTopic" flushCache="true">
+		 insert into QS_REPO_TOPIC(TID,TITLE,TTYPE,TLEVEL,ALLOW_NULL,NOTE,CAT_ID,CAT_NAME,UNIT_ID,DEP_NO,DOC_NO,ATTR,STATE,UPD_TIME,UPD_USER,MAX_VALUE,FEED_TYPE,CREATE_USER)
+		 values(#{tid},#{title},#{ttype},#{tlevel},#{allowNull},#{note},#{catId},#{catName},#{unitId},#{depNo},#{docNo},#{attr},#{state},#{updTime},#{updUser},#{maxValue},#{feedType},#{createUser})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from QS_REPO_TOPIC
+		<where>TID=#{tid}</where>
+	</delete>
+	
+	<update id="update" parameterType="qsRepoTopic" flushCache="true">
+		update QS_REPO_TOPIC
+		<set>
+			TITLE=#{title},TTYPE=#{ttype},ALLOW_NULL=#{allowNull},NOTE=#{note},CAT_ID=#{catId},CAT_NAME=#{catName},DOC_NO=#{docNo},ATTR=#{attr},STATE=#{state},UPD_TIME=#{updTime},UPD_USER=#{updUser},MAX_VALUE=#{maxValue},FEED_TYPE=#{feedType}
+		</set>
+		<where>TID=#{tid}</where>
+	</update>
+	
+	<select id="get" resultType="qsRepoTopic">
+		select <include refid="commCols"/> from QS_REPO_TOPIC
+  		<where>TID=#{tid}</where>
+	</select>
+	
+	
+	<select id="findQsRepoTopicCount" parameterType="qsRepoTopic" resultType="int">
+		select count(*) from QS_REPO_TOPIC
+		<where> 1 = 1
+			<if test="title!=null and title!=''">and title LIKE CONCAT(CONCAT('%', #{title}), '%')</if>
+			and state=0
+			<if test="tlevel==9"><!-- 平台级 -->
+			and TLEVEL=#{tlevel}
+			</if>
+			<if test="tlevel==6"><!-- 本院级 -->
+			and ((TLEVEL=#{tlevel} and UNIT_ID=#{unitId}) or TLEVEL=9)
+			</if>
+			<if test="tlevel==3"><!-- 科室级 -->
+			and ((TLEVEL=#{tlevel} and UNIT_ID=#{unitId} and DEP_NO=#{depNo}) or (TLEVEL='6' and UNIT_ID=#{unitId}) or TLEVEL='9')
+			</if>
+			<if test="tlevel==0"><!-- 本人级 -->
+			and ((TLEVEL=#{tlevel} and UNIT_ID=#{unitId} and DEP_NO=#{depNo} and CREATE_USER=#{createUser}) or (TLEVEL='3' and UNIT_ID=#{unitId} and DEP_NO=#{depNo}) or (TLEVEL='6' and UNIT_ID=#{unitId}) or TLEVEL='9')
+			</if>
+		</where>order by upd_time desc
+	</select>
+	
+	<select id="getAll" resultType="qsRepoTopic">
+		select <include refid="commCols"/> from QS_REPO_TOPIC
+		<where>
+		</where>
+	</select>
+</mapper>

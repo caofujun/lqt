@@ -1,0 +1,28 @@
+/* CSS Document */
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, dl, dt, dd, ul, ol, li, pre, form, button, input, textarea, th, td {
+	margin:0;
+	padding:0
+}
+body, button, input, select, textarea {
+	font-family:"Microsoft yahei", "微软雅黑", "宋体", "Tahoma", "Verdana", "Arial", "sans-serif";
+	font-size:14px
+}
+body {
+	line-height:20px
+}
+h1, h2, h3, h4, h5, h6 {
+	font-size:100%
+}
+a{ color:#0094A3;}
+
+.red{ color:#EF0800;}
+.btn_green{ color:#fff; background:#1ABC9C; border-radius:3px; border:1px solid #1ABC9C; padding: 0 15px; line-height:35px;}
+
+.email_wrap{ width:800px; margin:30px auto;}
+.email_title{ font-size:24px; font-weight:bold; padding-left:30px; line-height:55px; background:#1ABC9C; color:#fff;}
+.bottom{ padding:10px; background:bottom; background:#F7F7F7;}
+.email_content{ background:#fff; padding:0 30px;}
+.welcome{ height:70px; line-height:70px; border-bottom:1px dashed #ccc; font-weight:bold; font-size:16px;}
+.email_content_detail{ margin-top:30px; line-height:30px; padding-bottom:20px;}
+
+.btn_setting{ margin:20px 0; cursor:pointer;}

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw102JcdmxDao">
+
+	<sql id="commCols">
+		id id,dj_id djId,report_id reportId,class_id classId,class_name className,place_id placeId,place_name placeName,take_mode_id takeModeId,take_mode_name takeModeName,sample_id sampleId,sample_name sampleName,pos_id posId,pos_name posName,take_by takeBy,take_at takeAt,test_by testBy,test_at testAt,verify_by verifyBy,verify_at verifyAt,report_by reportBy,report_at reportAt,recheck recheck,result_patho_num resultPathoNum,result_flag resultFlag,result result,criterion criterion,memo memo,sample_gg sampleGg,sample_cj sampleCj,sample_ph samplePh,sample_xdrq sampleXdrq,sample_sxrq sampleSxrq,sample_nds sampleNds,sample_zsh sampleZsh,take_type takeType,take_type_name takeTypeName,status status,check_by checkBy,check_name checkName,check_at checkAt,print_by printBy,print_name printName,print_at printAt,is_print isPrint,type type,iftran iftran,ifjctran ifjctran,cy_meno cyMeno
+	</sql>
+
+	<insert id="save" parameterType="hw102Jcdmx" flushCache="true">
+		 insert into hw102_jcdmx(id,dj_id,report_id,class_id,class_name,place_id,place_name,take_mode_id,take_mode_name,sample_id,sample_name,pos_id,pos_name,take_by,take_at,test_by,test_at,verify_by,verify_at,report_by,report_at,recheck,result_patho_num,result_flag,result,criterion,memo,sample_gg,sample_cj,sample_ph,sample_xdrq,sample_sxrq,sample_nds,sample_zsh,take_type,take_type_name,status,check_by,check_name,check_at,print_by,print_name,print_at,is_print,type,iftran,ifjctran,cy_meno)
+		 values(#{id},#{djId},#{reportId},#{classId},#{className},#{placeId},#{placeName},#{takeModeId},#{takeModeName},#{sampleId},#{sampleName},#{posId},#{posName},#{takeBy},#{takeAt},#{testBy},#{testAt},#{verifyBy},#{verifyAt},#{reportBy},#{reportAt},#{recheck},#{resultPathoNum},#{resultFlag},#{result},#{criterion},#{memo},#{sampleGg},#{sampleCj},#{samplePh},#{sampleXdrq},#{sampleSxrq},#{sampleNds},#{sampleZsh},#{takeType},#{takeTypeName},#{status},#{checkBy},#{checkName},#{checkAt},#{printBy},#{printName},#{printAt},#{isPrint},#{type},#{iftran},#{ifjctran},#{cyMeno})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw102_jcdmx
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw102Jcdmx" flushCache="true">
+		update hw102_jcdmx
+		<set>
+			id=#{id},dj_id=#{djId},report_id=#{reportId},class_id=#{classId},class_name=#{className},place_id=#{placeId},place_name=#{placeName},take_mode_id=#{takeModeId},take_mode_name=#{takeModeName},sample_id=#{sampleId},sample_name=#{sampleName},pos_id=#{posId},pos_name=#{posName},take_by=#{takeBy},take_at=#{takeAt},test_by=#{testBy},test_at=#{testAt},verify_by=#{verifyBy},verify_at=#{verifyAt},report_by=#{reportBy},report_at=#{reportAt},recheck=#{recheck},result_patho_num=#{resultPathoNum},result_flag=#{resultFlag},result=#{result},criterion=#{criterion},memo=#{memo},sample_gg=#{sampleGg},sample_cj=#{sampleCj},sample_ph=#{samplePh},sample_xdrq=#{sampleXdrq},sample_sxrq=#{sampleSxrq},sample_nds=#{sampleNds},sample_zsh=#{sampleZsh},take_type=#{takeType},take_type_name=#{takeTypeName},status=#{status},check_by=#{checkBy},check_name=#{checkName},check_at=#{checkAt},print_by=#{printBy},print_name=#{printName},print_at=#{printAt},is_print=#{isPrint},type=#{type},iftran=#{iftran},ifjctran=#{ifjctran},cy_meno=#{cyMeno}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updateSpecified" flushCache="true">
+		update hw102_jcdmx
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='classId'">class_id=#{hw102Jcdmx.classId},</when>
+					<when test="item=='className'">class_name=#{hw102Jcdmx.className},</when>
+					<when test="item=='placeId'">place_id=#{hw102Jcdmx.placeId},</when>
+					<when test="item=='placeName'">place_name=#{hw102Jcdmx.placeName},</when>
+					<when test="item=='takeModeId'">take_mode_id=#{hw102Jcdmx.takeModeId},</when>
+					<when test="item=='takeModeName'">take_mode_name=#{hw102Jcdmx.takeModeName},</when>
+					<when test="item=='sampleId'">sample_id=#{hw102Jcdmx.sampleId},</when>
+					<when test="item=='sampleName'">sample_name=#{hw102Jcdmx.sampleName},</when>
+					<when test="item=='posId'">pos_id=#{hw102Jcdmx.posId},</when>
+					<when test="item=='posName'">pos_name=#{hw102Jcdmx.posName},</when>
+					<when test="item=='takeBy'">take_by=#{hw102Jcdmx.takeBy},</when>
+					<when test="item=='takeAt'">take_at=#{hw102Jcdmx.takeAt},</when>
+					<when test="item=='testBy'">test_by=#{hw102Jcdmx.testBy},</when>
+					<when test="item=='testAt'">test_at=#{hw102Jcdmx.testAt},</when>
+					<when test="item=='verifyBy'">verify_by=#{hw102Jcdmx.verifyBy},</when>
+					<when test="item=='verifyAt'">verify_at=#{hw102Jcdmx.verifyAt},</when>
+					<when test="item=='reportBy'">report_by=#{hw102Jcdmx.reportBy},</when>
+					<when test="item=='reportAt'">report_at=#{hw102Jcdmx.reportAt},</when>
+					<when test="item=='recheck'">recheck=#{hw102Jcdmx.recheck},</when>
+					<when test="item=='resultPathoNum'">result_patho_num=#{hw102Jcdmx.resultPathoNum},</when>
+					<when test="item=='resultFlag'">result_flag=#{hw102Jcdmx.resultFlag},</when>
+					<when test="item=='result'">result=#{hw102Jcdmx.result},</when>
+					<when test="item=='criterion'">criterion=#{hw102Jcdmx.criterion},</when>
+					<when test="item=='memo'">memo=#{hw102Jcdmx.memo},</when>
+					<when test="item=='sampleGg'">sample_gg=#{hw102Jcdmx.sampleGg},</when>
+					<when test="item=='sampleCj'">sample_cj=#{hw102Jcdmx.sampleCj},</when>
+					<when test="item=='samplePh'">sample_ph=#{hw102Jcdmx.samplePh},</when>
+					<when test="item=='sampleXdrq'">sample_xdrq=#{hw102Jcdmx.sampleXdrq},</when>
+					<when test="item=='sampleSxrq'">sample_sxrq=#{hw102Jcdmx.sampleSxrq},</when>
+					<when test="item=='sampleNds'">sample_nds=#{hw102Jcdmx.sampleNds},</when>
+					<when test="item=='sampleZsh'">sample_zsh=#{hw102Jcdmx.sampleZsh},</when>
+					<when test="item=='takeType'">take_type=#{hw102Jcdmx.takeType},</when>
+					<when test="item=='takeTypeName'">take_type_name=#{hw102Jcdmx.takeTypeName},</when>
+					<when test="item=='status'">status=#{hw102Jcdmx.status},</when>
+					<when test="item=='checkBy'">check_by=#{hw102Jcdmx.checkBy},</when>
+					<when test="item=='checkName'">check_name=#{hw102Jcdmx.checkName},</when>
+					<when test="item=='checkAt'">check_at=#{hw102Jcdmx.checkAt},</when>
+					<when test="item=='printBy'">print_by=#{hw102Jcdmx.printBy},</when>
+					<when test="item=='printName'">print_name=#{hw102Jcdmx.printName},</when>
+					<when test="item=='printAt'">print_at=#{hw102Jcdmx.printAt},</when>
+					<when test="item=='isPrint'">is_print=#{hw102Jcdmx.isPrint},</when>
+					<when test="item=='iftran'">iftran=#{hw102Jcdmx.iftran},</when>
+					<when test="item=='ifjctran'">ifjctran=#{hw102Jcdmx.ifjctran},</when>
+					<when test="item=='cyMeno'">cy_meno=#{hw102Jcdmx.cyMeno},</when>
+				</choose>
+			</foreach>
+			id=#{hw102Jcdmx.id}
+		</set>
+		<where>id=#{hw102Jcdmx.id}</where>
+	</update>
+	
+	<update id="updCheckByDjId">
+		update hw102_jcdmx
+		<set>
+			status=#{status},check_by=#{checkBy},check_name=#{checkName},check_at=#{checkAt}
+		</set>
+		<where>dj_id=#{djId}</where>
+	</update>
+	
+	<select id="get" resultType="hw102Jcdmx">
+		select <include refid="commCols"/> from hw102_jcdmx
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findHw102JcdmxCount" parameterType="hw102Jcdmx" resultType="int">
+		select count(*) from hw102_jcdmx
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw102Jcdmx">
+		select <include refid="commCols"/> from hw102_jcdmx
+		<where>
+		</where>
+	</select>
+	
+	<select id="findHw102JcdmxByDjId" parameterType="hw102Jcdmx" resultType="hw102Jcdmx">
+		select distinct hw102.report_id,hw102.class_name className,hw102.result_flag resultFlag,hw102.take_type_name takeTypeName,hw102.place_name placeName,hw102.sample_name sampleName,hw102.pos_name posName,hw102.take_mode_name takeModeName,
+		z1.employee_name takeByName,hw102.take_at takeAt,hw102.test_at testAt,z2.employee_name testByName,hw102.memo memo,hw102.recheck recheck,hw102.dj_id djId,hw102.id id,hw102.status status,hw102.cy_meno cyMeno ,
+		 (select h6.pos_value from hw006_cyds h6 where h6.pos_id=hw102.pos_id) posValue
+		from hw102_jcdmx hw102 inner join (
+		select * from view_xmsq where user_id=#{userId} 
+		and decode(#{deptId}, #{djDeptId}, self_view, 0)=decode(#{deptId}, #{djDeptId}, 1, 0)
+		) h8 on h8.class_id=substr(hw102.class_id, 1, 2)
+		left join (select employee_id, employee_name from zg003_yyzg union select employee_id, employee_name from hw010_zzry) z1 on z1.employee_id = hw102.take_by
+		left join (select employee_id, employee_name from zg003_yyzg union select employee_id, employee_name from hw010_zzry) z2 on z2.employee_id = hw102.test_by 
+		left join hw001_jcxm hw1 on hw102.class_id = hw1.class_id
+		left join hw101_jcdj hw101 on hw101.dj_id = hw102.dj_id
+        left join hw103_jcdjg hw103 on hw103.report_id = hw102.report_id
+		<where>
+			hw102.dj_id=#{djId}
+			<if test="result!=null and result!=''">
+				and hw103.result like CONCAT(CONCAT('%', #{result}), '%')
+			</if>
+			<if test="type!=null and type!=''">
+				and hw1.type=#{type}
+			</if>
+			<if test="status!=null and status!=''">
+				and hw102.status=#{status}
+			</if>
+			<if test="notPass!=null and notPass!=''">
+				and hw102.result_flag='1'
+			</if>
+			
+			<if test="queryStartDate!=null and dateField=='take_at'">
+				and hw102.take_at &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null and dateField=='take_at'">
+				and hw102.take_at &lt;= #{queryEndDate}
+			</if>
+			<if test="placeId!=null and placeId!=''">
+				and hw102.place_id = #{placeId}
+			</if>
+			<if test="classId!=null and classId!=''">
+				and hw102.class_id in (select class_id from hw001_jcxm start with class_id=#{classId} connect by prior class_id = pclass_id)
+			</if>
+			<if test="resultFlag!=null">
+				and hw102.result_flag = #{resultFlag}
+			</if>
+			<if test="recheck!=null and recheck!=''">
+				and hw102.recheck = #{recheck}
+			</if>
+		</where>
+		order by hw102.report_id
+	</select>
+	
+	<select id="findIdByDjId" resultType="string">
+		select id id from hw102_jcdmx
+		<where>
+			dj_id=#{djId}
+		</where>
+	</select>
+	
+	<select id="getShowSample" resultType="hw102Jcdmx">
+		select hw102.test_at testAt,z2.employee_name testByName,hw102.memo memo,hw102.cy_meno cyMeno,hw102.result_patho_num resultPathoNum
+		from hw102_jcdmx hw102 left join (select employee_id, employee_name from zg003_yyzg union select employee_id, employee_name from hw010_zzry) z2 on z2.employee_id = hw102.test_by 
+		<where> hw102.id=#{id} </where>
+	</select>
+	
+	<select id="findHw201ByDjId" resultType="hw201Jcdmb">
+		select class_id classId,place_id placeId,take_mode_id takeModeId,sample_id sampleId,pos_id posId,report_at lastAt,take_type takeType,take_by takeBy,cy_meno cyMeno
+		from hw102_jcdmx
+		<where> dj_id=#{djId} </where>
+	</select>
+	
+	<select id="findJcdmxByDjId" parameterType="hw102Jcdmx" resultType="hw102Jcdmx">
+		select <include refid="commCols"/> from hw102_jcdmx
+		<where>
+			dj_id=#{djId}
+		</where>
+	</select>
+</mapper>

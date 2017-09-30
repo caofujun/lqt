@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.NyUnanalyzeBcDao">
+
+	<sql id="commCols">
+		ID id,BC_CODE bcCode,BC_NAME bcName
+	</sql>
+
+	<insert id="save" parameterType="nyUnanalyzeBc"  flushCache="true">
+		 insert into NY_UNANALYZE_BC(ID,BC_CODE,BC_NAME)
+		 values(#{id},#{bcCode},#{bcName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  NY_UNANALYZE_BC
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyUnanalyzeBc" flushCache="true">
+		update NY_UNANALYZE_BC
+		<set>
+			BC_CODE=#{bcCode},BC_NAME=#{bcName}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="nyUnanalyzeBc">
+		select <include refid="commCols"/> from NY_UNANALYZE_BC
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findNyUnanalyzeBcCount" parameterType="nyUnanalyzeBc" resultType="int">
+		select count(*) from NY_UNANALYZE_BC
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="nyUnanalyzeBc">
+		select <include refid="commCols"/> from NY_UNANALYZE_BC
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageDetailDao">
+
+	<sql id="commCols_oracle">
+		MID mid,THEME_ID themeId,SEND_USER_ID sendUserId,SEND_USER_NAME sendUserName,SEND_DEPT_ID sendDeptId,SEND_DEPT_NAME sendDeptName,SEND_TIME sendTime,CONTENT content,MSG_TYPE msgType,CASE_ID caseId
+	</sql>
+
+	
+	<select id="findNyMessageDetail_oracle" parameterType="nyMessageDetail" resultType="nyMessageDetail">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from NY_MESSAGE_DETAIL
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getPageByUserId_oracle" resultType="nyMessageDetail">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols"/>,NY_MESSAGE_THEME.ZYID zyid from NY_MESSAGE_DETAIL left join NY_MESSAGE_THEME on NY_MESSAGE_THEME.THEME_ID=NY_MESSAGE_DETAIL.THEME_ID left join ny_message_user_detail on NY_MESSAGE_DETAIL.MID=ny_message_user_detail.MID
+			<where> 
+			ny_message_user_detail.user_id=#{userId} 
+			<if test="startDate!=null and startDate!=''">
+				and SEND_TIME &gt;=to_date(#{startDate},'yyyy-MM-dd')
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and SEND_TIME &lt;to_date(#{endDate},'yyyy-MM-dd')+1
+			</if>
+			</where>
+			<choose>
+			<when test="orderType==1 and orderBy!=null">
+				order by SEND_TIME ${orderBy}
+			</when>
+			<otherwise>
+				order by SEND_TIME desc
+			</otherwise>
+			</choose>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="getMsgs_oracle" resultType="nyMessageDetail" >
+		select * from (select t.*,t3.zyid,t3.mzid,t3.theme,rownum rn from (	
+			<if test="isRead==2">
+			select t2.*,t1.is_read isRead from (
+			</if>
+			select <include refid="commCols_oracle"/> from NY_MESSAGE_DETAIL d
+			 where exists
+			 (select 1
+			          from NY_MESSAGE_USER_DETAIL t
+			         where t.theme_id in (select theme_id from NY_MESSAGE_THEME th)
+			           and t.user_id = #{userId}
+			           <if test="isRead==0">
+				           and t.is_read = 0
+				       </if> 
+				       <if test="isRead==1">
+				           and t.is_read = 1
+				       </if> 
+			           and t.mid = d.mid
+			           and t.theme_id = d.theme_id)
+					 /*过滤接口信息和其他不正常信息*/
+					 and MSG_TYPE is not null
+					 <if test="msgType!=7">
+					 	and MSG_TYPE !=7 
+					 </if>
+					 <if test="msgType!='' and msgType!=null">
+				   		and MSG_TYPE = #{msgType}
+				     </if>
+			        order by send_time desc
+			  <if test="isRead==2">
+			  	   ) t2
+				left join
+				(select mid,is_read  from NY_MESSAGE_USER_DETAIL l where l.user_id=#{userId} order by is_read desc) t1
+				on t2.MID = t1.mid   
+				order by t1.is_read , t2.sendtime  desc 
+			  </if>  
+			      
+		 	) t  
+		 	left join ny_message_theme t3
+                 on t.themeid = t3.theme_id
+             where  rownum &lt;= #{orclEndNum}
+ 		) t where rn &gt;= #{orclBegNum}
+		</select>
+</mapper>

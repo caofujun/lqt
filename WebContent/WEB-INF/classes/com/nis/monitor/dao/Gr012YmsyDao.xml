@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Gr012YmsyDao">
+
+	<sql id="commCols">
+		id id,reg_id regId,order_index orderIndex,infect_part_id infectPartId,sample_id sampleId,pathogen_id pathogenId,anti_drug_id antiDrugId,anti_drug_name antiDrugName,mic mic,result result,submi_at submiAt,enter_at enterAt,relid relid,gr12_relid gr12Relid,gr12_test_no gr12TestNo 
+	</sql>
+
+	<insert id="save" parameterType="gr012Ymsy" flushCache="true">
+		 insert into gr012_ymsy(id,reg_id,order_index,infect_part_id,sample_id,pathogen_id,anti_drug_id,anti_drug_name,mic,result,submi_at,enter_at,relid,gr12_relid,gr12_test_no)
+		 values(#{id},#{regId},#{orderIndex},#{infectPartId},#{sampleId},#{pathogenId},#{antiDrugId},#{antiDrugName},#{mic},#{result},#{submiAt},#{enterAt},#{relid},#{gr12Relid},#{gr12TestNo})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from gr012_ymsy
+		<where>id=#{id}</where>
+	</delete>
+	
+	<delete id="deleteByRelid" flushCache="true">
+		delete from gr012_ymsy
+		<where>
+			relid=#{relid}
+			<if test="gr12Relid!=null and gr12Relid!=''">
+		    	and gr12_relid=#{gr12Relid} 
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="gr012Ymsy" flushCache="true">
+		update gr012_ymsy
+		<set>
+			id=#{id},reg_id=#{regId},order_index=#{orderIndex},infect_part_id=#{infectPartId},sample_id=#{sampleId},pathogen_id=#{pathogenId},anti_drug_id=#{antiDrugId},anti_drug_name=#{antiDrugName},mic=#{mic},result=#{result},submi_at=#{submiAt},enter_at=#{enterAt},relid=#{relid},gr12_relid=#{gr12Relid},gr12_test_no=#{gr12TestNo}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="gr012Ymsy">
+		select <include refid="commCols"/> from gr012_ymsy
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findGr012YmsyCount" parameterType="gr012Ymsy" resultType="int">
+		select count(*) from gr012_ymsy
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="gr012Ymsy">
+		select <include refid="commCols"/> from gr012_ymsy
+		<where>
+		</where>
+	</select>
+</mapper>

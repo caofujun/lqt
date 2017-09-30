@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientDiagnoseDao">
+
+	<sql id="commCols">
+		ID id,MZID mzid,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,DIAGNOSIS_TYPE_MAIN diagnosisTypeMain,DIAGNOSIS_TYPE diagnosisType,DIAGNOSIS_TYPE_NAME diagnosisTypeName,DIAGNOSIS_NO diagnosisNo,DIAGNOSIS_NAME diagnosisName,DIAGNOSIS_DATE diagnosisDate,DOC_ID docId,DOC_NAME docName,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkPatientDiagnose" flushCache="true">
+		 insert into JK_PATIENT_DIAGNOSE(ID,MZID,ZYID,PATIENT_ID,VISIT_ID,DIAGNOSIS_TYPE_MAIN,DIAGNOSIS_TYPE,DIAGNOSIS_TYPE_NAME,DIAGNOSIS_NO,DIAGNOSIS_NAME,DIAGNOSIS_DATE,DOC_ID,DOC_NAME,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{mzid},#{zyid},#{patientId},#{visitId},#{diagnosisTypeMain},#{diagnosisType},#{diagnosisTypeName},#{diagnosisNo},#{diagnosisName},#{diagnosisDate},#{docId},#{docName},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_PATIENT_DIAGNOSE
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkPatientDiagnose" flushCache="true">
+		update JK_PATIENT_DIAGNOSE
+		<set>
+			ID=#{id},MZID=#{mzid},ZYID=#{zyid},PATIENT_ID=#{patientId},VISIT_ID=#{visitId},DIAGNOSIS_TYPE_MAIN=#{diagnosisTypeMain},DIAGNOSIS_TYPE=#{diagnosisType},DIAGNOSIS_TYPE_NAME=#{diagnosisTypeName},DIAGNOSIS_NO=#{diagnosisNo},DIAGNOSIS_NAME=#{diagnosisName},DIAGNOSIS_DATE=#{diagnosisDate},DOC_ID=#{docId},DOC_NAME=#{docName},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkPatientDiagnose" flushCache="true">
+		update JK_PATIENT_DIAGNOSE
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkPatientDiagnose">
+		select <include refid="commCols"/> from JK_PATIENT_DIAGNOSE
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkPatientDiagnoseCount" parameterType="jkPatientDiagnose" resultType="int">
+		select count(*) from JK_PATIENT_DIAGNOSE
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkPatientDiagnose">
+		select <include refid="commCols"/> from JK_PATIENT_DIAGNOSE
+		<where>
+		</where>
+	</select>
+</mapper>

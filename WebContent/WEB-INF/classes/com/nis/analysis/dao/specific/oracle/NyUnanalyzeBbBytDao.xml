@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.NyUnanalyzeBbBytDao">
+
+	<sql id="commCols_oracle">
+		bytid bytid,bbid bbid,bbmc bbmc,byt_name bytName
+	</sql>
+
+	<select id="findNyUnanalyzeBbByt_oracle" parameterType="nyUnanalyzeBbByt" resultType="nyUnanalyzeBbByt">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ny_unanalyze_bb_byt
+		<where>1=1
+			<if test="searchString!=null and searchString!=''">
+				and bbid LIKE CONCAT(CONCAT('%', #{searchString}), '%') 
+				or bbmc LIKE CONCAT(CONCAT('%', #{searchString}), '%')
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

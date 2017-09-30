@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl002SjdjDao">
+
+	<sql id="commCols_oracle">
+		PG_KJYJ pgKjyj,SD_DATE sdDate,sjdj.FLAG flag,WEIGHT weight,PG_R pgR,PG_SJ pgSj,REPORT_DATE reportDate,STEP2 step2,STEP3 step3,
+		D_DEPT_ID dDeptId,S_BLQK sjBlqk,sjdj.BL_ID blId,sjdj.SJ_ID sjId,BL_SGRADE blSgrade,BL_GRADE blGrade,D_CARDID djCardid,D_NAME djName,
+		D_SEX djSex,D_AGE djAge,D_GL djGl,D_ZC djZc,D_XL djXl,D_GW djGw,D_DEPT djDept,ENTER_TIME enterTime,ENTER_ADD enterAdd,DJ_MEN djMen,
+		DJ_TIME djTime,IP_TEL ipTel,S_NAME sjName,S_DEPT sjDept,S_PARIANT sjPariant,S_BBTYPE sjBbtype,S_BBPARIANT sjBbpariant,S_BBNAME sjBbname,
+		PG_TIME pgTime,PG_MEN pgMen,SJ_STATE sjState,PG_MS pgMs,PG_JY pgJy,PG_YYNAME1 pgYyname1,PG_YYJL1 pgYyjl1,PG_YYSTIME1 pgYystime1,
+		PG_YYETIME1 pgYyetime1,PG_YYNAME2 pgYyname2,PG_YYJL2 pgYyjl2,PG_YYSTIME2 pgYystime2,PG_YYETIME2 pgYyetime2,SF_MEN sfMen,BL_JL blJl,
+		BL_JL_MEN blJlMen,SJ_TEL sjTel,CHECK_MEN checkMen,CHECK_TIME checkTime,CHECK_BZ checkBz,S_MEMO sjMemo,PG_YYNAME3 pgYyname3,
+		PG_YYJL3 pgYyjl3,PG_YYSTIME3 pgYystime3,PG_YYETIME3 pgYyetime3,PG_YYNAME4 pgYyname4,PG_YYJL4 pgYyjl4,PG_YYSTIME4 pgYystime4,
+		PG_YYETIME4 pgYyetime4,PG_YYNAME5 pgYyname5,PG_YYJL5 pgYyjl5,PG_YYSTIME5 pgYystime5,PG_YYETIME5 pgYyetime5,FC_TIME fcTime,
+		FC_ZT fcZt,DJ_ID djId,BL_STEP blStep,ZJCLYJ zjclYj,XLZXSYJ xlzxsYj
+	</sql>
+
+	
+	<select id="findBl002Sjdj_oracle" parameterType="bl002Sjdj" resultType="bl002Sjdj">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select  <include refid="commCols_oracle"/>, 
+			(select o.csd_name from BL004_CS_DETAILINFO o where o.csm_id='002' and o.csd_id=sjdj.ENTER_ADD) enterAddName,
+			wm_concat(case when wtjg.st_id='34' then wtjg.sh_text end) wtjg34,
+			(select o.csd_name from BL004_CS_DETAILINFO o
+                                left join bl005_wtjg bl5
+                                on o.csd_id=bl5.sh_text 
+                        where o.csm_id='019' and bl5.bl_id = sjdj.bl_id and bl5.st_id='185' ) wtjg185
+			from BL002_SJDJ sjdj left join bl005_wtjg wtjg on wtjg.bl_id=sjdj.bl_id /*and wtjg.st_id=34*/ and wtjg.sh_type=1
+		<where>
+			1=1
+			<if test="dateType == 1">
+			    <if test="queryStartDate != null">
+					and sjdj.DJ_TIME &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate != null">
+					and sjdj.DJ_TIME &lt;= #{queryEndDate}+1
+				</if>
+			</if>
+			<if test="dateType == 2">
+			    <if test="queryStartDate != null">
+					and sjdj.ENTER_TIME &gt;= #{queryStartDate}
+				</if>
+				<if test="queryEndDate != null">
+					and sjdj.ENTER_TIME &lt;= #{queryEndDate}+1
+				</if>
+			</if>
+			<if test="djCardid!=null and djCardid!=''"> and sjdj.d_cardid=#{djCardid}</if>
+			<if test="djMen!=null and djMen!=''"> and sjdj.dj_men=#{djMen}</if>
+			<if test="djDept!=null and djDept!=''"> and sjdj.D_DEPT = #{djDept}</if>
+			<if test="djGw!=null and djGw!=''">and sjdj.d_gw = #{djGw}</if>
+			<if test="searchString != null and searchString !=''"> and ( sjdj.D_CARDID like CONCAT(CONCAT('%', #{searchString}), '%') or sjdj.D_NAME like CONCAT(CONCAT('%', #{searchString}), '%'))</if>
+			<if test="blGrade!=null and blGrade!=''"> and ( wtjg.st_id = '185' and wtjg.sh_text = #{blGrade} ) </if>
+			<if test="blSgrade!=null and blSgrade!=''"> and sjdj.BL_Sgrade = #{blSgrade} </if>
+			<if test="blJl!=null and blJl!=''"> and sjdj.BL_JL = #{blJl}</if>
+			<if test="sjState!=null and sjState!=''"> and sjdj.SJ_STATE in (${sjState})</if>
+			<if test="sjState==null or sjState==''">and sjdj.SJ_STATE != '10'</if>
+			<if test="sjBlqk!=null and sjBlqk!=''"> and sjdj.S_BLQK = #{sjBlqk}</if>
+			<if test="enterAdd!=null and enterAdd!=''"> and sjdj.ENTER_ADD = #{enterAdd}</if>
+			<if test="wtjg34!=null and wtjg34!=''"> and wtjg.sh_text=#{wtjg34} and wtjg.sh_type=1</if>
+		</where>
+			group by PG_KJYJ,
+                          SD_DATE,
+                          sjdj.FLAG,
+                          WEIGHT,
+                          PG_R,
+                          PG_SJ,
+                          REPORT_DATE,
+                          STEP2,
+                          STEP3,
+                          D_DEPT_ID,
+                          S_BLQK,
+                          sjdj.BL_ID,
+                          sjdj.SJ_ID,
+                          BL_SGRADE,
+                          BL_GRADE,
+                          D_CARDID ,
+                          D_NAME,
+                          D_SEX,
+                          D_AGE,
+                          D_GL,
+                          D_ZC,
+                          D_XL,
+                          D_GW,
+                          D_DEPT,
+                          ENTER_TIME,
+                          ENTER_ADD,
+                          DJ_MEN,
+                          DJ_TIME,
+                          IP_TEL,
+                          S_NAME,
+                          S_DEPT,
+                          S_PARIANT,
+                          S_BBTYPE,
+                          S_BBPARIANT,
+                          S_BBNAME,
+                          PG_TIME,
+                          PG_MEN,
+                          SJ_STATE,
+                          PG_MS,
+                          PG_JY,
+                          PG_YYNAME1,
+                          PG_YYJL1,
+                          PG_YYSTIME1,
+                          PG_YYETIME1 ,
+                          PG_YYNAME2  ,
+                          PG_YYJL2    ,
+                          PG_YYSTIME2 ,
+                          PG_YYETIME2 ,
+                          SF_MEN      ,
+                          BL_JL       ,
+                          BL_JL_MEN ,
+                          SJ_TEL,
+                          CHECK_MEN,
+                          CHECK_TIME,
+                          CHECK_BZ,
+                          S_MEMO,
+                          PG_YYNAME3,
+                          PG_YYJL3,
+                          PG_YYSTIME3,
+                          PG_YYETIME3,
+                          PG_YYNAME4,
+                          PG_YYJL4,
+                          PG_YYSTIME4,
+                          PG_YYETIME4,
+                          PG_YYNAME5,
+                          PG_YYJL5,
+                          PG_YYSTIME5,
+                          PG_YYETIME5,
+                          FC_TIME,
+                          FC_ZT,
+                          DJ_ID,
+                          BL_STEP,
+                          ZJCLYJ,
+                          XLZXSYJ
+			<if test="dateType == 2">
+				order by sjdj.ENTER_TIME desc
+			</if>
+			<if test="dateType != 2">
+				order by sjdj.DJ_TIME desc
+			</if>
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<select id="getMaxBlId_oracle" parameterType="bl002Sjdj" resultType="bl002Sjdj">
+		select <include refid="commCols_oracle"/> from BL002_SJDJ  sjdj
+		where sjdj.bl_id like CONCAT(CONCAT('%','ZYBL'),'%') and rownum &lt;= 1 order by sjdj.bl_id desc
+	</select>
+	
+	<select id="findMainExposure_oracle" resultType="map">
+      /* select * from ( */
+      select tt.*,s.dict_code "code" from (
+		select * from (select name "name", count(d_name) "value"
+		  from (select nvl((select  csd_name dict_name from bl004_cs_detailinfo t where t.csm_id='001' and t.csd_id=bl.d_gw), '其他') as name, d_name
+		          from bl002_sjdj bl
+		         where sj_state > 0 and sj_state != '10'
+		           and enter_time between #{startDate} and #{endDate})
+		 group by name order by count(d_name) desc) where rownum &lt;= 4
+		union select '总计' "name", count(*) "value"
+              from bl002_sjdj
+             where sj_state > 0 and sj_state != '10'
+               and enter_time between #{startDate} and #{endDate}
+       ) tt 
+      left join (select csd_id dict_code,csd_name dict_name from bl004_cs_detailinfo t where t.csm_id='001') s
+       on tt."name"=s.dict_name
+       order by "value"
+	</select>
+</mapper>

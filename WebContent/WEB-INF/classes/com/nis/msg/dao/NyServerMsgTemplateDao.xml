@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyServerMsgTemplateDao">
+
+	<sql id="commCols">
+		ID id,TITLE title,SP_CODE spCode,CONTENT content,CREATE_AT createAt,CREATE_OPER createOper
+	</sql>
+
+	<insert id="save" parameterType="nyServerMsgTemplate"  flushCache="true">
+		 insert into NY_SERVER_MSG_TEMPLATE(ID,TITLE,SP_CODE,CONTENT,CREATE_AT,CREATE_OPER)
+		 values(#{id},#{title},#{spCode},#{content},#{createAt},#{createOper})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  NY_SERVER_MSG_TEMPLATE
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyServerMsgTemplate" flushCache="true">
+		update NY_SERVER_MSG_TEMPLATE
+		<set>
+			ID=#{id},TITLE=#{title},SP_CODE=#{spCode},CONTENT=#{content},CREATE_AT=#{createAt},CREATE_OPER=#{createOper}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="nyServerMsgTemplate">
+		select <include refid="commCols"/> from NY_SERVER_MSG_TEMPLATE
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findNyServerMsgTemplateCount" parameterType="nyServerMsgTemplate" resultType="int">
+		select count(*) from NY_SERVER_MSG_TEMPLATE
+		<where>
+			1=1
+			<if test="searchString!=null and searchString!=''"> and ( NY_SERVER_MSG_TEMPLATE.title like CONCAT(CONCAT('%', #{searchString}), '%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="nyServerMsgTemplate">
+		select <include refid="commCols"/> from NY_SERVER_MSG_TEMPLATE
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw003CycsDao">
+
+	<sql id="commCols">
+		place_id placeId,place_name placeName,bh_code bhCode,sp_code spCode,wb_code wbCode,last_at lastAt,flag flag
+	</sql>
+
+	<insert id="save" parameterType="hw003Cycs" flushCache="true">
+		 insert into hw003_cycs(place_id,place_name,bh_code,sp_code,wb_code,last_at,flag)
+		 values(#{placeId},#{placeName},#{bhCode},#{spCode},#{wbCode},#{lastAt},#{flag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw003_cycs
+		<where>place_id=#{placeId}</where>
+	</delete>
+	
+	<update id="update" parameterType="hw003Cycs" flushCache="true">
+		update hw003_cycs
+		<set>
+			place_id=#{placeId},place_name=#{placeName},bh_code=#{bhCode},sp_code=#{spCode},wb_code=#{wbCode},last_at=#{lastAt},flag=#{flag}
+		</set>
+		<where>place_id=#{placeId}</where>
+	</update>
+	
+	<update id="updFlag" parameterType="hw003Cycs" flushCache="true">
+		update hw003_cycs
+		<set>
+			last_at=#{lastAt},flag=#{flag}
+		</set>
+		<where>place_id=#{placeId}</where>
+	</update>
+	
+	<select id="get" resultType="hw003Cycs">
+		select <include refid="commCols"/> from hw003_cycs
+  		<where>place_id=#{placeId}</where>
+	</select>
+	
+	<select id="isExist" resultType="hw003Cycs">
+		select <include refid="commCols"/> from hw003_cycs
+  		<where>place_id=#{placeId} or place_name=#{placeId} and rownum=1</where>
+	</select>
+	
+	<select id="findHw003CycsCount" parameterType="hw003Cycs" resultType="int">
+		select count(*) from hw003_cycs
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw003Cycs">
+		select <include refid="commCols"/> from hw003_cycs
+		<where>
+		</where>
+	</select>
+	
+	<select id="findMaxPlaceId" resultType="string">
+		select max(to_number(place_id)) placeId from hw003_cycs  where trim(translate(nvl(place_id,'x'),'0123456789',' ')) is NULL
+	</select>
+</mapper>

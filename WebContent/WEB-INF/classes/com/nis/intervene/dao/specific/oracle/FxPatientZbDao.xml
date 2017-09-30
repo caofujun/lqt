@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.intervene.dao.FxPatientZbDao">
+
+	<sql id="commCols_oracle">
+		UP_DATE updateTime,PZ_ID pzId,PATIENT_ID patientId,ZY_ID zyId,FX_PATIENT_ZB.ZB_ID zbId,FX_PATIENT_ZB.ZB_SCORE zbScore,START_DATE startDate,END_DATE endDate,FX_PATIENT_ZB.ZB_NAME zbName,PZ_STATUS pzStatus,CASE_ID caseId
+	</sql>
+
+	
+	<select id="findFxPatientZb_oracle" parameterType="fxPatientZb" resultType="fxPatientZb">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from FX_PATIENT_ZB
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

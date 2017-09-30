@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.organization.dao.DepDocLinkDao">
+
+	<sql id="commCols_mysql">
+		PERSON_CFGS personCfgs,LINK_ID linkId,DEP_ID depId,DOCTOR_ID doctorId,LEVEL_CODE levelCode,IS_YUYUE isYuyue,IS_FIRST isFirst,UNIT_ID unitId,UPD_USER updUser,UPD_DATE updDate,HIS_GH_DEPID hisGhDepid,HIS_DL_DEPID hisDlDepid,YUYUE_MAX yuyueMax,YUYUE_NUM yuyueNum,LEFT_NUM leftNum,UPD_TIME updTime,CITY_ID cityId,LINK_ACTIVE linkActive,LINK_DELETED linkDeleted,IS_PAIBAN isPaiban,DOCTOR_NAME doctorName,DOC_SPELL docSpell,DEP_NAME depName,DEP_SPELL depSpell,ROOM_ID roomId,GH_ID ghId,DL_ID dlId,HIS_LINK_ID hisLinkId,CONFIG_FLAG configFlag,TOTAL_YUYUE_NUM totalYuyueNum,POSITION position,WORK_AM workAm,WORK_PM workPm,WORK_HOUR workHour,GUAHAO_AM guahaoAm,GUAHAO_PM guahaoPm,GUAHAO_HOUR guahaoHour,DEF_ROOM_ID defRoomId
+	</sql>
+
+	<select id="findDepDocLink_mysql" parameterType="depDocLink" resultType="depDocLink">
+		select <include refid="commCols_mysql"/> from DEP_DOC_LINK
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

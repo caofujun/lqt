@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw003CycsDao">
+
+	<sql id="commCols_mysql">
+		place_id placeId,place_name placeName,bh_code bhCode,sp_code spCode,wb_code wbCode,last_at lastAt,flag flag
+	</sql>
+
+	<select id="findHw003Cycs_mysql" parameterType="hw003Cycs" resultType="hw003Cycs">
+		select <include refid="commCols_mysql"/> from hw003_cycs
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

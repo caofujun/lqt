@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkNisDicAllDao">
+
+	<sql id="commCols">
+		ID id,CLASS_ID classId,CLASS_NAME className,ITEM_ID itemId,ITEM_NAME itemName,IS_USE isUse,IS_VISIBLE isVisible,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkNisDicAll" flushCache="true">
+		 insert into JK_DIC_ALL(ID,CLASS_ID,CLASS_NAME,ITEM_ID,ITEM_NAME,IS_USE,IS_VISIBLE,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{classId},#{className},#{itemId},#{itemName},#{isUse},#{isVisible},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_DIC_ALL
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkNisDicAll" flushCache="true">
+		update JK_DIC_ALL
+		<set>
+			ID=#{id},CLASS_ID=#{classId},CLASS_NAME=#{className},ITEM_ID=#{itemId},ITEM_NAME=#{itemName},IS_USE=#{isUse},IS_VISIBLE=#{isVisible},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkNisDicAll">
+		select <include refid="commCols"/> from JK_DIC_ALL
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkNisDicAllCount" parameterType="jkNisDicAll" resultType="int">
+		select count(*) from JK_DIC_ALL
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkNisDicAll">
+		select <include refid="commCols"/> from JK_DIC_ALL
+		<where>
+		</where>
+	</select>
+</mapper>

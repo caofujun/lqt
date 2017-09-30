@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkDicOfficeDao">
+
+	<sql id="commCols">
+		ID id,DEPT_ID deptId,DEPT_NAME deptName,DEP_TYPE depType,DEP_TYPE_NAME depTypeName,DEP_STATUS depStatus,PARENT_DEP_ID parentDepId,PARENT_DEP_NAME parentDepName,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<insert id="save" parameterType="jkDicOffice" flushCache="true">
+		 insert into JK_DIC_OFFICE(ID,DEPT_ID,DEPT_NAME,DEP_TYPE,DEP_TYPE_NAME,DEP_STATUS,PARENT_DEP_ID,PARENT_DEP_NAME,UPD_TIME,UPD_FLAG)
+		 values(#{id},#{deptId},#{deptName},#{depType},#{depTypeName},#{depStatus},#{parentDepId},#{parentDepName},#{updTime},#{updFlag})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from JK_DIC_OFFICE
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="jkDicOffice" flushCache="true">
+		update JK_DIC_OFFICE
+		<set>
+			ID=#{id},DEPT_ID=#{deptId},DEPT_NAME=#{deptName},DEP_TYPE=#{depType},DEP_TYPE_NAME=#{depTypeName},DEP_STATUS=#{depStatus},PARENT_DEP_ID=#{parentDepId},PARENT_DEP_NAME=#{parentDepName},UPD_TIME=#{updTime},UPD_FLAG=#{updFlag}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<update id="updateFlag" parameterType="jkDicOffice" flushCache="true">
+		update JK_DIC_OFFICE
+		<set>
+			UPD_FLAG=#{updFlag},UPD_TIME=#{updTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="jkDicOffice">
+		select <include refid="commCols"/> from JK_DIC_OFFICE
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findJkDicOfficeCount" parameterType="jkDicOffice" resultType="int">
+		select count(*) from JK_DIC_OFFICE
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG = #{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="jkDicOffice">
+		select <include refid="commCols"/> from JK_DIC_OFFICE
+		<where>
+		</where>
+	</select>
+</mapper>

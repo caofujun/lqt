@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.AcRoleDao">
+
+	<sql id="commCols_mysql">
+		ROLE_ID roleId,NAME name,REMARK remark,CREATE_TIME createTime,CREATE_USER createUser,DEP_NO depNo,UNIT_ID unitId
+	</sql>
+
+	<select id="findAcRole_mysql" parameterType="acRole" resultType="acRole">
+		select <include refid="commCols_mysql"/> from AC_ROLE
+		<where>
+			ROLE_TYPE = #{roleType}
+			<if test="name!=null and name!=''"> and name LIKE CONCAT(CONCAT('%', #{name}), '%')</if>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

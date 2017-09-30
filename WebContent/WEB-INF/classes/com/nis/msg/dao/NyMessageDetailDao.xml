@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageDetailDao">
+
+	<sql id="commCols">
+		NY_MESSAGE_DETAIL.MID mid,NY_MESSAGE_DETAIL.THEME_ID themeId,SEND_USER_ID sendUserId,SEND_USER_NAME sendUserName,
+		SEND_DEPT_ID sendDeptId,SEND_DEPT_NAME sendDeptName,SEND_TIME sendTime,NY_MESSAGE_DETAIL.CONTENT content,
+		MSG_TYPE msgType,URL url,CASE_ID caseId
+	</sql>
+
+	<insert id="save" parameterType="nyMessageDetail"  flushCache="true">
+		 insert into NY_MESSAGE_DETAIL(MID,THEME_ID,SEND_USER_ID,SEND_USER_NAME,SEND_DEPT_ID,SEND_DEPT_NAME,SEND_TIME,CONTENT,MSG_TYPE,URL,CASE_ID)
+		 values(#{mid},#{themeId},#{sendUserId},#{sendUserName},#{sendDeptId},#{sendDeptName},#{sendTime},#{content},#{msgType},#{url},#{caseId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  NY_MESSAGE_DETAIL
+		<where>MID=#{mid}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyMessageDetail" flushCache="true">
+		update NY_MESSAGE_DETAIL
+		<set>
+			MID=#{mid},THEME_ID=#{themeId},SEND_USER_ID=#{sendUserId},SEND_USER_NAME=#{sendUserName},SEND_DEPT_ID=#{sendDeptId},SEND_DEPT_NAME=#{sendDeptName},SEND_TIME=#{sendTime},CONTENT=#{content},MSG_TYPE=#{msgType},URL=#{url},CASE_ID=#{caseId}
+		</set>
+		<where>MID=#{mid}</where>
+	</update>
+	
+	<select id="get" resultType="nyMessageDetail">
+		select <include refid="commCols"/> from NY_MESSAGE_DETAIL
+  		<where>MID=#{mid}</where>
+	</select>
+	
+	
+	<select id="findNyMessageDetailCount" parameterType="nyMessageDetail" resultType="int">
+		select count(*) from NY_MESSAGE_DETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="nyMessageDetail">
+		select <include refid="commCols"/> from NY_MESSAGE_DETAIL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getbyThemeId"  resultType="nyMessageDetail">
+		select ny_message_detail.mid mid,ny_message_detail.theme_id themeId,ny_message_detail.send_user_id sendUserId,ny_message_detail.send_user_name sendUserName,ny_message_detail.send_time sendTime,ny_message_detail.msg_type msgType,ny_message_detail.content content,sum(case when Ny_Message_User_Detail.is_read='0' then 1 else 0 end) wdCount, count(Ny_Message_User_Detail.Mud_Id) qbCount from ny_message_detail left join Ny_Message_User_Detail on ny_message_detail.mid=Ny_Message_User_Detail.mid 
+		<where>
+			ny_message_detail.THEME_ID=#{themeId}
+		</where>
+		group by ny_message_detail.mid,ny_message_detail.theme_id,ny_message_detail.send_user_id,ny_message_detail.send_user_name,ny_message_detail.send_time,ny_message_detail.msg_type,ny_message_detail.content  order by ny_message_detail.SEND_TIME asc
+	</select>
+	
+	<select id="getByUserId"  resultType="nyMessageDetail">
+		select <include refid="commCols"/>,NY_MESSAGE_THEME.ZYID zyid from NY_MESSAGE_DETAIL left join NY_MESSAGE_THEME on NY_MESSAGE_THEME.THEME_ID=NY_MESSAGE_DETAIL.THEME_ID left join ny_message_user_detail on NY_MESSAGE_DETAIL.MID=ny_message_user_detail.MID
+		where ny_message_user_detail.is_read=0 and ny_message_user_detail.user_id=#{userId} and rownum &lt;= 200
+	</select>
+	
+	<select id="findListByCaseId"  resultType="nyMessageDetail">
+		select <include refid="commCols"/>
+		,ny_message_user_detail.is_read isRead ,ny_message_user_detail.USER_ID userId,ny_message_user_detail.MUD_ID mudId 
+		from NY_MESSAGE_DETAIL 
+		left join NY_MESSAGE_THEME on NY_MESSAGE_THEME.THEME_ID=NY_MESSAGE_DETAIL.THEME_ID 
+		left join ny_message_user_detail on NY_MESSAGE_DETAIL.MID=ny_message_user_detail.MID
+		WHERE NY_MESSAGE_DETAIL.CASE_ID=#{caseId}
+		ORDER BY ny_message_user_detail.USER_ID,NY_MESSAGE_DETAIL.SEND_TIME DESC
+	</select>
+	
+	<select id="getPageByUserIdCount"  resultType="int">
+			select count(*) from NY_MESSAGE_DETAIL left join NY_MESSAGE_THEME on NY_MESSAGE_THEME.THEME_ID=NY_MESSAGE_DETAIL.THEME_ID left join ny_message_user_detail on NY_MESSAGE_DETAIL.MID=ny_message_user_detail.MID
+			<where> 
+			ny_message_user_detail.user_id=#{userId} 
+			<if test="startDate!=null and startDate!=''">
+				and SEND_TIME &gt;=to_date(#{startDate},'yyyy-MM-dd')
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and SEND_TIME &lt;to_date(#{endDate},'yyyy-MM-dd')+1
+			</if>
+			</where>
+	</select>
+	
+		<select id="findByCaseId"  resultType="nyMessageDetail">
+			select <include refid="commCols"/> from NY_MESSAGE_DETAIL
+			<where>
+				CASE_ID=#{caseId}
+			</where>
+		</select>
+		
+		<select id="getMsgsCount" resultType="int">
+			<choose>
+				<when test="isRead==2">
+					select count(*) from 
+					(select MID            mid,
+					       THEME_ID       themeId,
+					       SEND_USER_ID   sendUserId,
+					       SEND_USER_NAME sendUserName,
+					       SEND_DEPT_ID   sendDeptId,
+					       SEND_DEPT_NAME sendDeptName,
+					       SEND_TIME      sendTime,
+					       CONTENT        content,
+					       MSG_TYPE       msgType,
+					       CASE_ID        caseId
+					  from
+				</when>
+				<otherwise>
+					select count(*) from 
+				</otherwise>
+			</choose>
+			NY_MESSAGE_DETAIL d
+			 where exists
+			 (select 1
+			          from NY_MESSAGE_USER_DETAIL t
+			         where t.theme_id in (select theme_id from NY_MESSAGE_THEME th)
+			           and t.user_id = #{userId}
+			         <if test="isRead==0">
+			           and t.is_read = 0
+			         </if>  
+			           and t.mid = d.mid
+			           and t.theme_id = d.theme_id)
+			     /*过滤接口信息和其他不正常信息*/
+				 and MSG_TYPE is not null
+				 <if test="msgType!=7">
+				 	and MSG_TYPE !=7 
+				 </if>
+				 <if test="msgType!='' and msgType!=null">
+			   		and MSG_TYPE = #{msgType}
+			     </if>
+		      <if test="isRead==2">
+		  	    ) t2
+				left join
+				(select mid,is_read  from NY_MESSAGE_USER_DETAIL l where l.user_id=#{userId} order by is_read desc) t1
+				on t2.MID = t1.mid   
+				order by t1.is_read , t2.sendtime  desc 
+			  </if>  
+		</select>
+		
+		<select id="getUnreadMsgsCountForInterFace" resultType="int"  parameterType="nyMessageDetail">
+			select count(*) from (
+				select * from (
+				  select mid mid1 from Ny_Message_User_Detail ud
+				   where
+				   <choose>
+					    <when test="sendDeptId!='' and sendDeptId!=null">
+						    ud.user_id in (
+						    		select g.employee_id from zg003_yyzg g where g.dept_id like CONCAT('%',CONCAT(#{sendDeptId},'%'))
+						    		union
+                					select id from zg031_sqks s where s.autho_dept_id = #{sendDeptId}  
+						    )
+					    </when>
+				   		<when test="userId!='' and userId!=null">
+							ud.user_id = #{userId}
+				   		</when>
+				   		<otherwise> 1=1 </otherwise>
+				   </choose>
+				   and nvl(is_read, 0) = 0
+				   group by mid
+				) d left join NY_MESSAGE_DETAIL l
+				on d.mid1 = l.mid
+				
+				left join  NY_MESSAGE_USER_DETAIL tl
+       				on tl.mid=l.mid and tl.theme_id=l.theme_id
+				
+				where 1=1  and MSG_TYPE is not null
+				   and MSG_TYPE != 7
+				   order by send_time desc
+			)
+		</select>
+		
+		<select id="getUnreadMsgsForInterFace" parameterType="nyMessageDetail" resultType="nyMessageDetail">
+			select * from ( 
+				select a.*, rownum rn from (
+				select * from (
+					select * from (select <include refid="commCols"/>, th.zyid zyid,th.mzid mzid,th.theme theme,tl.is_read isRead,tl.user_id acceptUserId ,(select g.employee_name from zg003_yyzg g where g.employee_id=tl.user_id)  acceptUserName, (select g.dept_name  from zg002_byks g where g.dept_id = #{sendDeptId}) acceptDeptName from (
+					  select mid mid1 from Ny_Message_User_Detail ud
+					   where
+					   <choose>
+						    <when test="sendDeptId!='' and sendDeptId!=null">
+							    ud.user_id in (
+							    		select g.employee_id from zg003_yyzg g where g.dept_id like CONCAT('%',CONCAT(#{sendDeptId},'%'))
+							    		union
+	                					select id from zg031_sqks s where s.autho_dept_id = #{sendDeptId}   
+							    )
+					    	</when>
+				   		<when test="userId!='' and userId!=null">
+							ud.user_id = #{userId}
+				   		</when>
+				   		<otherwise>
+				   			1=1
+				   		</otherwise>
+				   </choose>
+				   and nvl(is_read, 0) = 0
+				   group by mid
+				) d left join NY_MESSAGE_DETAIL
+				on d.mid1 = NY_MESSAGE_DETAIL.mid
+				
+				left join  NY_MESSAGE_USER_DETAIL tl
+       				on tl.mid=NY_MESSAGE_DETAIL.mid and tl.theme_id=NY_MESSAGE_DETAIL.theme_id
+       			
+       			left join NY_MESSAGE_THEME th
+    				on th.theme_id = NY_MESSAGE_DETAIL.theme_id
+       				
+				where 1=1  
+					and MSG_TYPE is not null
+				   	and MSG_TYPE != 7
+				   <if test="queryStartDate!='' and queryStartDate!=null">
+				   	 and send_time between #{queryStartDate} and #{queryEndDate}
+				   </if>
+			) where 1=1
+				<if test="searchString!='' and searchString!=null">
+			   	  and ( content like CONCAT('%',CONCAT(#{searchString},'%')) or acceptUserName like CONCAT('%',CONCAT(#{searchString},'%')) or sendUserName like CONCAT('%',CONCAT(#{searchString},'%')) 
+			    </if>
+			)
+			   order by sendTime desc, acceptuserId asc
+			) a  where   rownum &lt;= #{orclEndNum} 
+		) where rn &gt;= #{orclBegNum}
+		</select>
+</mapper>

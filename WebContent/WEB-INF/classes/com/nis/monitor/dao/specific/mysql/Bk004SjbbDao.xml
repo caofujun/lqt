@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk004SjbbDao">
+
+	<sql id="commCols_mysql">
+		id id,card_relid cardRelid,refid refid,sn sn,patient_id patientId,zyid zyid,visit_id visitId,patient_name patientName,sex sex,age age,test_no testNo,test_type_id testTypeId,test_type_name testTypeName,submi_at submiAt,sample_id sampleId,sample_name sampleName,patho_id pathoId,patho_name pathoName,memo memo,create_date createDate,is_select isSelect,submi_dept_id submiDeptId,oper_id operId,pathogen_sn pathogenSn
+	</sql>
+
+	<select id="findBk004Sjbb_mysql" parameterType="bk004Sjbb" resultType="bk004Sjbb">
+		select <include refid="commCols_mysql"/> from bk004_sjbb
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

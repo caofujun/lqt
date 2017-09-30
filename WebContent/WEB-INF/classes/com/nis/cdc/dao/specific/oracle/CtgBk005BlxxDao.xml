@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk005BlxxDao">
+
+	<sql id="commCols_oracle">
+		SUBID subid,MASTERID masterid,ORDERNO orderno,FOODNAME foodname,FOODCLASS foodclass,PACKINGWAY packingway,FOODBRAND foodbrand,MANUFACTURER manufacturer,PURCHASEPLACE purchaseplace,EATINGPLACES eatingplaces,PLACETYPE placetype,EATINGTIME eatingtime,NUMBEROFEATING numberofeating,OTHERPEOPLE otherpeople,ISSAMPLING issampling, PURC_PLACE_CODE purcplacecode, EAT_PLACE_CODE eatplacecode
+	</sql>
+
+	
+	<select id="findCtgBk005Blxx_oracle" parameterType="ctgBk005Blxx" resultType="ctgBk005Blxx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from CTG_BK005_BLXX
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

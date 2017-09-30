@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.St004BkCgxxDao">
+
+	<sql id="commCols">
+		RELID relid,REFID refid,CREATE_DATE createDate,  YZ_ID yzId
+	</sql>
+
+	<insert id="save" parameterType="st004BkCgxx"  flushCache="true">
+		 insert into ST004_BK_CGXX(RELID,REFID,CREATE_DATE,YZ_ID)
+		 values(#{relid},#{refid},#{createDate},#{yzId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ST004_BK_CGXX
+		<where>RELID=#{relid}</where>
+	</delete>
+	
+	<delete id="deleteByRefid" flushCache="true">
+		delete from  ST004_BK_CGXX
+		<where>REFID=#{refid}</where>
+	</delete>
+	
+	<update id="update" parameterType="st004BkCgxx" flushCache="true">
+		update ST004_BK_CGXX
+		<set>
+			RELID=#{relid},REFID=#{refid},CREATE_DATE=#{createDate},YZ_ID=#{yzId}
+		</set>
+		<where>RELID=#{relid}</where>
+	</update>
+	
+	<select id="get" resultType="st004BkCgxx">
+		select <include refid="commCols"/> from ST004_BK_CGXX
+  		<where>RELID=#{relid}</where>
+	</select>
+	
+	<select id="query" resultType="st004BkCgxx">
+		select <include refid="commCols"/> from ST004_BK_CGXX
+  		<where>REFID=#{refid}</where>
+  		order by CREATE_DATE desc
+	</select>
+	
+	<select id="findGr016BkKjywCount" parameterType="st004BkCgxx" resultType="int">
+		select count(*) from ST004_BK_CGXX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="st004BkCgxx">
+		select <include refid="commCols"/> from ST004_BK_CGXX
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

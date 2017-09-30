@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.log.dao.SysLogDao">
+
+	<sql id="commCols_mysql">
+		ID id,UNIT_ID unitId,USER_NAME userName,LOG_AREA logArea,LOG_FUN logFun,LOG_TYPE logType,BUSINESS_ID businessId,CREATE_TIME createTime,LOG_CONTENT logContent
+	</sql>
+
+	<select id="findSysLog_mysql" parameterType="sysLog" resultType="sysLog">
+		select <include refid="commCols_mysql"/> from SYS_LOG
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

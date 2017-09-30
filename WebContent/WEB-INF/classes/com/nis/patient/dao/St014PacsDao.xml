@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St014PacsDao">
+
+	<sql id="commCols">
+		id id,zyid zyid,mzid mzid,check_no checkNo,device
+		device,item_id itemId,item_name itemName,check_at checkAt,report_at
+		reportAt,cli_diagnose cliDiagnose,check_desc checkDesc,check_impr
+		checkImpr,check_dr checkDr,report_dr reportDr,dept_id deptId,dept_name
+		deptName,create_at createAt,anal_flag analFlag,anal_at
+		analAt,anal_result analResult,patient_id patientId,upd_date updDate,cdc_anal_flag cdcanalflag, cdc_anal_dt cdcanaldt
+	</sql>
+
+	<insert id="save" parameterType="st014Pacs" flushCache="true">
+		insert into
+		st014_pacs(id,zyid,mzid,check_no,device,item_id,item_name,check_at,report_at,cli_diagnose,check_desc,check_impr,check_dr,report_dr,dept_id,dept_name,create_at,anal_flag,anal_at,anal_result,patient_id,upd_date,cdc_anal_flag, cdc_anal_dt)
+		values(#{id},#{zyid},#{mzid},#{checkNo},#{device},#{itemId},#{itemName},#{checkAt},#{reportAt},#{cliDiagnose},#{checkDesc},#{checkImpr},#{checkDr},#{reportDr},#{deptId},#{deptName},#{createAt},#{analFlag},#{analAt},#{analResult},#{patientId},#{updDate},#{cdcanalflag},#{cdcanaldt})
+	</insert>
+
+	<delete id="delete" flushCache="true">
+		delete from st014_pacs
+		<where>id=#{id}</where>
+	</delete>
+	
+	<select id="getMonitorPatientZkxxLastAt" resultType="date">
+		 select max(CHECK_AT) from st014_pacs p 
+		  join st003_cryxxb cr on p.zyid=cr.zyid
+		  where cr.out_at is null and p.check_at&lt;sysdate
+	</select>
+	
+	<select id="getMonitorPatientZkxxsLastAt" resultType="date">
+		  select max(report_at) from st014_pacs p 
+			 join st003_cryxxb cr on p.zyid=cr.zyid
+			where cr.out_at is null and p.report_at&lt;sysdate;
+	</select>
+
+	<update id="update" parameterType="st014Pacs" flushCache="true">
+		update st014_pacs
+		<set>
+			id=#{id},zyid=#{zyid},mzid=#{mzid},check_no=#{checkNo},device=#{device},item_id=#{itemId},item_name=#{itemName},check_at=#{checkAt},report_at=#{reportAt},cli_diagnose=#{cliDiagnose},check_desc=#{checkDesc},check_impr=#{checkImpr},check_dr=#{checkDr},report_dr=#{reportDr},dept_id=#{deptId},dept_name=#{deptName},create_at=#{createAt},anal_flag=#{analFlag},anal_at=#{analAt},anal_result=#{analResult},patient_id=#{patientId},upd_date=#{updDate},cdc_anal_flag=#{cdcanalflag},cdc_anal_dt=#{cdcanaldt}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	<update id="updateAnalFlag" parameterType="st014Pacs"
+		flushCache="true">
+		update st014_pacs
+		<set>
+			anal_flag=#{analFlag}
+		</set>
+		<where>zyid=#{zyid}</where>
+	</update>
+	<update id="updateAnalFlagAndDate" parameterType="st014Pacs"
+		flushCache="true">
+		update st014_pacs
+		<set>
+			cdc_anal_flag=#{cdcanalflag},
+			cdc_anal_dt=#{cdcanaldt}
+		</set>
+		<where>
+			1=1
+			<if test="zyid!=null and zyid!=''">
+				and	zyid=#{zyid}
+			</if>
+			<if test="mzid!=null and mzid!=''">
+				and mzid=#{mzid}
+			</if>
+		</where>
+	</update>
+	<select id="get" resultType="st014Pacs">
+		select
+		<include refid="commCols" />
+		from st014_pacs
+		<where>id=#{id}</where>
+	</select>
+
+
+	<select id="findSt014PacsCount" parameterType="st014Pacs"
+		resultType="int">
+		select count(*) from st014_pacs
+		<where>
+		</where>
+	</select>
+	
+	<select id="getMonitorPatientPacsLastAt" resultType="date">
+		 select max(report_at) from st014_pacs p 
+		 join st003_cryxxb cr on p.zyid=cr.zyid
+		 where cr.out_at is null and p.report_at&lt;sysdate
+	</select>
+
+	<select id="getAll" resultType="st014Pacs">
+		select
+		<include refid="commCols" />
+		from st014_pacs
+		<where>
+		</where>
+	</select>
+
+	<select id="findImageResultsList" parameterType="st014Pacs"
+		resultType="st014Pacs">
+		select s14.id,s14.check_no checkNo,s14.check_at checkAt,s14.report_at
+		reportAt,s14.item_name itemName,s14.check_desc checkDesc,
+		s14.check_impr checkImpr,s14.check_dr checkDr,s14.report_dr
+		reportDr,s14.dept_id deptId,s14.dept_name
+		deptName,WMSYS.WM_CONCAT(g18.element_name) elementName
+		from st014_pacs
+		s14 left join gr018_ysgrys g18 on trunc(s14.report_at)=g18.data_date
+		and g18.data_form = '影像' and s14.zyid=g18.zyid
+		<where>
+			1=1
+			<if test="zyid!=null and zyid!=''">
+				and	s14.zyid=#{zyid}
+			</if>
+			<if test="mzid!=null and mzid!=''">
+				and	s14.mzid=#{mzid}
+			</if>
+		</where>
+		group by
+		s14.id,s14.check_no,s14.check_at,s14.report_at,s14.item_name,s14.check_desc,s14.check_impr,s14.check_dr,s14.report_dr,s14.dept_id,s14.dept_name
+		order by s14.check_at
+	</select>
+	
+	
+	<select id="getPacsTestList" resultType="st014Pacs">
+		select
+		<include refid="commCols" />
+		from st014_pacs
+		<where>
+			 check_at is not null and zyid is not null and NVL(ANAL_FLAG${tablename},0)=0 and rownum &lt;#{rownum}
+		</where>
+	</select>
+	
+	<select id="getPacsCount" resultType="int">
+		select count(*) from st014_pacs
+		<where>
+			 check_at is not null and zyid is not null and NVL(ANAL_FLAG${tablename},0)=0
+		</where>
+	</select>
+	
+	<select id="getPacsListForCDC" resultType="st014Pacs">
+		select * from (
+			select
+			<include refid="commCols" />
+			from st014_pacs
+			<where>
+				NVL(CDC_ANAL_FLAG,0) !=1  
+			</where>
+			order by report_at asc
+		) where rownum &lt;=#{rownum}
+	</select>
+	
+	
+	<update id="updateAnalResultTest" parameterType="st014Pacs"
+		flushCache="true">
+		update st014_pacs
+		<set>
+			anal_at${tablename}=#{analAt},anal_result${tablename}=#{analResult},anal_flag${tablename}=#{analFlag}
+		</set>
+		<where>zyid=#{zyid} and id=#{id}</where>
+	</update>
+</mapper>

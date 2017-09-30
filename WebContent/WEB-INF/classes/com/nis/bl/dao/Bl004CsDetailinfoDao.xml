@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.bl.dao.Bl004CsDetailinfoDao">
+
+	<sql id="commCols">
+		bl004_cs_detailinfo.CSM_ID csmId,bl004_cs_detailinfo.CSD_ID csdId,bl004_cs_detailinfo.CSD_NAME csdName,bl004_cs_detailinfo.FLAG flag,bl004_cs_detailinfo.CREATE_MEN createMen,bl004_cs_detailinfo.LAST_AT lastAt,bl004_cs_detailinfo.SP_CODE spCode,bl004_cs_detailinfo.WB_CODE wbCode,bl004_cs_detailinfo.BZ bz
+	</sql>
+
+	<insert id="save" parameterType="bl004CsDetailinfo"  flushCache="true">
+		 insert into BL004_CS_DETAILINFO(CSM_ID,CSD_ID,CSD_NAME,FLAG,CREATE_MEN,LAST_AT,SP_CODE,WB_CODE,BZ)
+		 values(#{csmId},#{csdId},#{csdName},#{flag},#{createMen},#{lastAt},#{spCode},#{wbCode},#{bz})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  BL004_CS_DETAILINFO
+		<where>CSM_ID=#{csmId} and CSD_ID=#{csdId}</where>
+	</delete>
+	
+	<update id="update" parameterType="bl004CsDetailinfo" flushCache="true">
+		update BL004_CS_DETAILINFO
+		<set>
+			CSM_ID=#{csmId},CSD_ID=#{csdId},CSD_NAME=#{csdName},FLAG=#{flag},CREATE_MEN=#{createMen},LAST_AT=#{lastAt},SP_CODE=#{spCode},WB_CODE=#{wbCode},BZ=#{bz}
+		</set>
+		<where>CSM_ID=#{csmId} and CSD_ID=#{csdId}</where>
+	</update>
+	
+	<select id="get" resultType="bl004CsDetailinfo">
+		select <include refid="commCols"/> from BL004_CS_DETAILINFO
+  		<where>CSM_ID=#{csmId} and CSD_ID=#{csdId}</where>
+	</select>
+	
+	
+	<select id="findBl004CsDetailinfoCount" parameterType="bl004CsDetailinfo" resultType="int">
+		select count(*) from BL004_CS_DETAILINFO
+		<where>
+			1=1
+			<if test="csmId!=null and csmId!=''">and CSM_ID=#{csmId}</if>
+			<if test="searchString!=null and searchString!=''"> and (CSD_ID like CONCAT( CONCAT('%',#{searchString}),'%') or CSD_NAME like CONCAT( CONCAT('%',#{searchString}),'%'))</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="bl004CsDetailinfo">
+		select <include refid="commCols"/> from BL004_CS_DETAILINFO
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="findBycsmId"  resultType="bl004CsDetailinfo">	
+		select <include refid="commCols"/>, ny_sys_dddd.item_name itemName
+		  from bl004_cs_detailinfo
+		  left join ny_sys_dddd
+		    on bl004_cs_detailinfo.csm_id = ny_sys_dddd.item_id
+		 where csm_id in
+		 	<foreach collection="csmId" index="index" item="item" open="(" separator="," close=")" >
+	  			#{item} 
+	  		</foreach>
+	  		
+	  		order by csm_id asc 
+	</select>
+	
+	<select id="findByItemName"  resultType="bl004CsDetailinfo">	
+		select <include refid="commCols"/>, ny_sys_dddd.item_name itemName
+			from bl004_cs_detailinfo 
+			join  ny_sys_dddd  on bl004_cs_detailinfo.csm_id=ny_sys_dddd.item_id and ny_sys_dddd.dict_id='DD0019'
+			where ny_sys_dddd.item_name = #{itemName}
+			order by csm_id,csd_id
+	</select>
+	
+	<select id="findDetailBycsmId"  resultType="bl004CsDetailinfo">	
+		select <include refid="commCols"/> from bl004_cs_detailinfo
+		 where csm_id =#{csmId}
+	  		and flag=1
+	  		order by csm_id asc 
+	</select>
+	
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.pdca.dao.ZlPdcaFlowDao">
+
+	<sql id="commCols_mysql">
+		F_UID fUid,FLOW_NO flowNo,FLOW_NAME flowName,FLOW_STEPS flowSteps,FLOW_CREATETIME flowCreatetime,STATUS status
+	</sql>
+
+	<select id="findZlPdcaFlow_mysql" parameterType="zlPdcaFlow" resultType="zlPdcaFlow">
+		select <include refid="commCols_mysql"/> from ZL_PDCA_FLOW
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

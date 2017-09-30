@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg024ImpOpeDao">
+
+	<sql id="commCols_mysql">
+		IMP_OPE_ID impOpeId,IMP_OPE_NAME impOpeName,IMP_OPE_KEY impOpeKey,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,MEMO memo,FLAG flag,LAST_AT lastAt
+	</sql>
+
+	<select id="findZg024ImpOpe_mysql" parameterType="zg024ImpOpe" resultType="zg024ImpOpe">
+		select <include refid="commCols_mysql"/> from ZG024_IMP_OPE
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

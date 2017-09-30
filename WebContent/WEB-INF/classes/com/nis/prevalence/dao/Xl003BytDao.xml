@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl003BytDao">
+
+	<sql id="commCols">
+		bytid bytid,brid brid,grid grid,infect_patho_id infectPathoId,infect_patho_name infectPathoName,last_at lastAt,pathoresult pathoresult,sample sample
+	</sql>
+
+	<insert id="save" parameterType="xl003Byt" flushCache="true">
+		 insert into xl003_byt(bytid,brid,grid,infect_patho_id,infect_patho_name,last_at,pathoresult,sample)
+		 values(#{bytid},#{brid},#{grid},#{infectPathoId},#{infectPathoName},#{lastAt},#{pathoresult},#{sample})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from xl003_byt
+		<where>bytid=#{bytid}</where>
+	</delete>
+	
+	<delete id="deleteByBrid" flushCache="true">
+		delete from xl003_byt
+		<where>brid=#{brid}</where>
+	</delete>
+	
+	<delete id="delXl003Byt" flushCache="true">
+		delete from xl003_byt
+		<where>
+			brid=#{brid}
+			<if test="bytidNotIn!=null and bytidNotIn.size!=0">
+		    	and bytid not in 
+				<foreach collection="bytidNotIn" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="xl003Byt" flushCache="true">
+		update xl003_byt
+		<set>
+			bytid=#{bytid},brid=#{brid},grid=#{grid},infect_patho_id=#{infectPathoId},infect_patho_name=#{infectPathoName},last_at=#{lastAt},pathoresult=#{pathoresult},sample=#{sample}
+		</set>
+		<where>bytid=#{bytid}</where>
+	</update>
+	
+	<select id="get" resultType="xl003Byt">
+		select <include refid="commCols"/> from xl003_byt
+  		<where>bytid=#{bytid}</where>
+	</select>
+	
+	
+	<select id="findXl003BytCount" parameterType="xl003Byt" resultType="int">
+		select count(*) from xl003_byt
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="xl003Byt">
+		select <include refid="commCols"/> from xl003_byt
+		<where>
+		</where>
+	</select>
+</mapper>

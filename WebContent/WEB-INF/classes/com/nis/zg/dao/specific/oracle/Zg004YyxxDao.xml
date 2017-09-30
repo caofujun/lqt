@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg004YyxxDao">
+
+	<sql id="commCols_oracle">
+		HOSP_ID hospId,HOSP_NAME hospName,HOSP_LEVEL hospLevel,BEDS beds,HOSP_TYPE hospType,HOSP_NATURE hospNature,IFBRANCH ifbranch,CREATE_AT createAt,BH_CODE bhCode,FLAG flag,LAST_AT lastAt,SP_CODE spCode,SUPPORT support,SUPP_TEL suppTel,LICENCE licence
+	</sql>
+
+	
+	<select id="findZg004Yyxx_oracle" parameterType="zg004Yyxx" resultType="zg004Yyxx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from ZG004_YYXX
+		<where>
+			1=1
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

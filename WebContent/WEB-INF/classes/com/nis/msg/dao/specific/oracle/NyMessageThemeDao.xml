@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.msg.dao.NyMessageThemeDao">
+
+	<sql id="commCols_oracle">
+		NY_MESSAGE_THEME.THEME_ID themeId,THEME theme,NY_MESSAGE_THEME.CREATE_USER createUser,NY_MESSAGE_THEME.CREATE_TIME createTime,NY_MESSAGE_THEME.ZYID zyid,LAST_MID lastMid,NY_MESSAGE_THEME.MZID mzid
+	</sql>
+
+	
+	<select id="findNyMessageTheme_oracle" parameterType="nyMessageTheme" resultType="nyMessageTheme">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/>
+		,st003_cryxxb.patient_id||st020_clinic_patients.patient_id patientId,st003_cryxxb.patient_name||st020_clinic_patients.patient_name patientName,st003_cryxxb.dept_name||st020_clinic_patients.dept_name deptName,
+		NY_MESSAGE_DETAIL.SEND_USER_Id lastSendUserId,NY_MESSAGE_DETAIL.SEND_USER_NAME lastSendUser,NY_MESSAGE_DETAIL.SEND_TIME lastSendTime,NY_MESSAGE_DETAIL.CONTENT lastContent 
+		from NY_MESSAGE_THEME 
+		left join NY_MESSAGE_DETAIL on NY_MESSAGE_DETAIL.MID=NY_MESSAGE_THEME.LAST_MID 
+		left join st003_cryxxb on NY_MESSAGE_THEME.zyid = st003_cryxxb.zyid
+		left join st020_clinic_patients on st020_clinic_patients.mzid=NY_MESSAGE_THEME.mzid
+		<where>
+			NY_MESSAGE_DETAIL.MID is not null
+			<if test="startDate!=null and startDate!=''">
+				<![CDATA[and NY_MESSAGE_DETAIL.SEND_TIME >= to_date(#{startDate},'yyyy-MM-dd hh24:mi:ss')]]>
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				<![CDATA[and NY_MESSAGE_DETAIL.SEND_TIME < to_date(#{endDate},'yyyy-MM-dd hh24:mi:ss')+1]]>
+			</if>
+			<if test="searchString!=null and searchString!=''"> 
+				and ( NY_MESSAGE_THEME.THEME like CONCAT(CONCAT('%', #{searchString}), '%')
+				or NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_DETAIL WHERE NY_MESSAGE_DETAIL.SEND_USER_NAME like CONCAT(CONCAT('%', #{searchString}), '%'))
+				or NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_DETAIL WHERE NY_MESSAGE_DETAIL.CONTENT like CONCAT(CONCAT('%', #{searchString}), '%'))
+				or NY_MESSAGE_THEME.ZYID IN (SELECT ZYID FROM ST003_CRYXXB WHERE ST003_CRYXXB.PATIENT_NAME like CONCAT(CONCAT('%', #{searchString}), '%')))
+			</if>
+			<if test="userId!=null and userId!=''">
+				and NY_MESSAGE_THEME.THEME_ID IN(SELECT THEME_ID FROM NY_MESSAGE_USER_DETAIL WHERE USER_ID = #{userId} and is_read=#{isRead})
+			</if>
+			<if test="uid!=null and uid!=''">
+				and (NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_USER_DETAIL WHERE USER_ID = #{uid})
+				or	NY_MESSAGE_THEME.THEME_ID IN (SELECT THEME_ID FROM NY_MESSAGE_DETAIL WHERE SEND_USER_ID = #{uid}))
+			</if>
+		</where>
+		order by NY_MESSAGE_DETAIL.SEND_TIME desc) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

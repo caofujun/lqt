@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.SysActionDao">
+
+	<sql id="commCols_mysql">
+		ID id,SOURCE_HOSPITAL sourceHospital,SOURCE_DEPNO sourceDepno,SOURCE_USER sourceUser,FUNC_TYPE funcType,FUNC_NO funcNo,CONTENT content,ADD_TIME addTime,UPDATE_TIME updateTime,REMARK remark,EXT_1 ext1
+	</sql>
+
+	<select id="findAcAccount_mysql" parameterType="sysAction" resultType="sysAction">
+		select <include refid="commCols_mysql"/> from SYS_ACTION
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

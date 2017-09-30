@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg017SsczflDao">
+
+	<sql id="commCols">
+		OPEPARTKINDID opepartkindid,PARTKINDNAME partkindname,PARTKINDENNAME partkindenname,REPORTORDER reportorder,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,REMARK remark,FLAG flag,LAST_AT lastAt
+	</sql>
+
+	<insert id="save" parameterType="zg017Ssczfl"  flushCache="true">
+		 insert into ZG017_SSCZFL(OPEPARTKINDID,PARTKINDNAME,PARTKINDENNAME,REPORTORDER,BH_CODE,SP_CODE,WB_CODE,REMARK,FLAG,LAST_AT)
+		 values(#{opepartkindid},#{partkindname},#{partkindenname},#{reportorder},#{bhCode},#{spCode},#{wbCode},#{remark},#{flag},#{lastAt})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG017_SSCZFL
+		<where>OPEPARTKINDID=#{opepartkindid}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg017Ssczfl" flushCache="true">
+		update ZG017_SSCZFL
+		<set>
+			OPEPARTKINDID=#{opepartkindid},PARTKINDNAME=#{partkindname},PARTKINDENNAME=#{partkindenname},REPORTORDER=#{reportorder},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},REMARK=#{remark},FLAG=#{flag},LAST_AT=#{lastAt}
+		</set>
+		<where>OPEPARTKINDID=#{opepartkindid}</where>
+	</update>
+	
+	<select id="get" resultType="zg017Ssczfl">
+		select <include refid="commCols"/> from ZG017_SSCZFL
+  		<where>OPEPARTKINDID=#{opepartkindid}</where>
+	</select>
+	
+	
+	<select id="findZg017SsczflCount" parameterType="zg017Ssczfl" resultType="int">
+		select count(*) from ZG017_SSCZFL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg017Ssczfl">
+		select <include refid="commCols"/> from ZG017_SSCZFL
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.mdr.dao.Xn017TsnyzdDao">
+
+	<sql id="commCols">
+		TESTRESULT testresult,FLAG flag,PATHOGEN_ID pathogenId,PATHOGEN_NAME pathogenName,DRUG_ID drugId,DRUG_NAME drugName,IS_HIGH_TONE isHighTone,OPERATOR_TAG operatorTag,HIDDEN_RATING hiddenRating,SPEC_DESCRIBE specDescribe
+	</sql>
+
+	<insert id="save" parameterType="xn017Tsnyzd"  flushCache="true">
+		 insert into XN017_TSNYZD(TESTRESULT,FLAG,PATHOGEN_ID,PATHOGEN_NAME,DRUG_ID,DRUG_NAME,IS_HIGH_TONE,OPERATOR_TAG,HIDDEN_RATING,SPEC_DESCRIBE)
+		 values(#{testresult},#{flag},#{pathogenId},#{pathogenName},#{drugId},#{drugName},#{isHighTone},#{operatorTag},#{hiddenRating},#{specDescribe})
+	</insert>
+	
+	<insert id="save2" parameterType="xn017Tsnyzd"  flushCache="true">
+		 insert into XN017_TSNYZD(TESTRESULT,FLAG,PATHOGEN_ID,PATHOGEN_NAME,DRUG_ID,DRUG_NAME,SPEC_DESCRIBE)
+		 values(#{testresult},#{flag},#{pathogenId},#{pathogenName},#{drugId},#{drugName},#{specDescribe})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  XN017_TSNYZD
+		<where>
+			1=1
+			and PATHOGEN_ID =#{pathogenId}
+			and DRUG_ID =#{drugId}
+			and SPEC_DESCRIBE =#{specDescribe}
+			and TESTRESULT =#{testresult}
+		</where>
+	</delete>
+	
+	<delete id="deleteBySpecDescribe" >
+		delete from XN017_TSNYZD where spec_describe =#{specDescribe}
+	</delete>
+	
+	<update id="update" parameterType="xn017Tsnyzd" flushCache="true">
+		update XN017_TSNYZD
+		<set>
+			TESTRESULT=#{testresult},FLAG=#{flag},PATHOGEN_ID=#{pathogenId},PATHOGEN_NAME=#{pathogenName},DRUG_ID=#{drugId},DRUG_NAME=#{drugName},IS_HIGH_TONE=#{isHighTone},OPERATOR_TAG=#{operatorTag},HIDDEN_RATING=#{hiddenRating},SPEC_DESCRIBE=#{specDescribe}
+		</set>
+		<where>
+			1=1
+			and PATHOGEN_ID =#{pathogenId2}
+			and DRUG_ID =#{drugId2}
+			and SPEC_DESCRIBE =#{specDescribe}
+			and TESTRESULT =#{testresult2}
+		</where>
+	</update>
+		
+	<select id="get" resultType="xn017Tsnyzd">
+		select <include refid="commCols"/> from XN017_TSNYZD
+  		<where>PATHOGEN_ID=#{pathogenId}</where>
+	</select>
+	
+	<select id="getByPathogenIdDrugIdSpecDescribe" resultType="xn017Tsnyzd">
+		select <include refid="commCols"/> from XN017_TSNYZD where 
+		PATHOGEN_ID =#{pathogenId}
+		and DRUG_ID =#{drugId}
+		and SPEC_DESCRIBE =#{specDescribe}
+		and TESTRESULT=#{testresult}
+	</select>
+	
+	
+	<select id="findXn017TsnyzdCount" parameterType="xn017Tsnyzd" resultType="int">
+		select count(*) from XN017_TSNYZD
+		<where>
+			1=1
+			<if test="specDescribe!=null and specDescribe!=''">
+				and spec_describe = #{specDescribe}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="xn017Tsnyzd">
+		select <include refid="commCols"/> from XN017_TSNYZD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getKvEntity"  resultType="xn017Tsnyzd">
+		select distinct t.spec_describe key,t.spec_describe value from XN017_TSNYZD t
+	</select>
+	
+	<select id="findTsnyToAna" resultType="xn017Tsnyzd">
+		select pathogen_id pathogenId,drug_id drugId,spec_describe specDescribe,testresult testresult from xn017_tsnyzd
+		<where>
+			drug_id is not null and drug_id != '无' and flag=1
+		</where>
+	</select>
+</mapper>

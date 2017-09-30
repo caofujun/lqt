@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl001BrxxDao">
+
+	<sql id="commCols_oracle">
+		sqyykjyw sqyykjyw,sqjy sqjy,fszl fszl,hxzl hxzl,xytx xytx,myyzj myyzj,tpzjs tpzjs,djmcg djmcg,mndcg mndcg,syhxj syhxj,qgcg qgcg,
+		qgqk qgqk,ywmndcg ywmndcg,ywdjmcg ywdjmcg,ywqgqqg ywqgqqg,ywsyychxj ywsyychxj,state state,spyshkjyw spyshkjyw,kjywmc1 kjywmc1,
+		kjywmc2 kjywmc2,kjywmc3 kjywmc3,kjywmc4 kjywmc4,aiz aiz,tyb tyb,xyjb xyjb,yybl yybl,dlsykjyw dlsykjyw,brid brid,year year,month month,
+		zyid zyid,patient_id patientId,patient_name patientName,visit_id visitId,dept_id deptId,dept_name deptName,bed_no bedNo,reg_id regId,sex sex,
+		age age,age_unit ageUnit,diagnose_id diagnoseId,diagnose diagnose,is_oper isOper,is_grade1 isGrade1,is_grade2 isGrade2,is_grade3 isGrade3,
+		is_grade4 isGrade4,is_infect isInfect,is_ca isCa,is_ha isHa,pop pop,sykjyw sykjyw,yymd yymd,lhyy lhyy,zlyyspy zlyyspy,voteid voteid,
+		votename votename,votedate votedate,last_at lastAt,is_edit isEdit,syrsnj syrsnj,qtqxxcc qtqxxcc,wj wj,cj cj,xzj xzj,hj hj,sezcj sezcj,oper_name1 operName1,oper_name2 operName2,grade_type2 gradeType2
+	</sql>
+
+	<select id="findXl001Brxx_oracle" parameterType="xl001Brxx" resultType="xl001Brxx">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from xl001_brxx
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="pageFindList_oracle" parameterType="xl001Brxx" resultType="xl001Brxx">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select xl1.brid brid,xl1.zyid zyid,xl1.patient_id patientId,xl1.patient_name patientName,xl1.dept_name deptName,xl1.sex sex,xl1.bed_no bedNo,
+		xl1.age age,xl1.age_unit ageUnit,xl1.diagnose diagnose,xl1.is_oper isOper,xl1.state state,xl1.votename votename,xl1.votedate votedate,
+		xl1.last_at lastAt,
+		decode(is_grade1, 1, 'Ⅰ类', '') || decode(is_grade2, 1, 'Ⅱ类', '') || decode(is_grade3, 1, 'Ⅲ类', '') || decode(is_grade4, 1, 'Ⅳ类', '') incisionType,
+		(select to_char(wm_concat(drug_name || '(' || status || ')')) drugResults from xl004_kjyw where brid=xl1.brid) drugResults,(select wm_concat(x2.infect_name) from xl002_grxx x2 where x2.brid=xl1.brid) infectName,xl1.is_ca isCa,xl1.is_ha isHa
+		from xl001_brxx xl1
+		<where>
+			<if test="brid!=null and brid!=''">
+				and xl1.brid=#{brid}
+			</if>
+			<if test="searchString!=null and searchString!=''">
+		    	and (xl1.zyid like concat(concat('%',#{searchString}), '%') or xl1.patient_id like concat(concat('%',#{searchString}), '%') or xl1.patient_name like concat(concat('%',#{searchString}), '%')) 
+		    </if>
+		    <if test="queryStartDate!=null">
+				and xl1.votedate &gt;= #{queryStartDate}
+			</if>
+			<if test="queryEndDate!=null">
+				and xl1.votedate &lt;= #{queryEndDate}
+			</if>
+			<if test="deptId!=null and deptId!=''">
+				and xl1.dept_id = #{deptId}
+			</if>
+			<if test="state!=null">
+				and xl1.state = #{state}
+			</if>
+			<if test="isCa!=null">
+				and xl1.is_ca = #{isCa}
+			</if>
+			<if test="isHa!=null">
+				and xl1.is_ha = #{isHa}
+			</if>
+		</where>
+		order by xl1.votedate desc ,xl1.state,xl1.dept_id ,xl1.bed_no 
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+	
+	<select id="findWaitRegister_oracle" parameterType="xl001Brxx" resultType="xl001Brxx">
+		select * from ( select a.*, rownum rn from (
+		select brid brid,patient_id patientId,zyid zyid,patient_name patientName from xl001_brxx
+		<where>
+			state=0
+			<if test="deptId!=null and deptId!=''">
+				and dept_id = #{deptId}
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findVoteDateList_oracle" resultType="xl001Brxx">
+		select distinct xl001.votedate from xl001_brxx xl001 order by xl001.votedate desc
+	</select>
+</mapper>

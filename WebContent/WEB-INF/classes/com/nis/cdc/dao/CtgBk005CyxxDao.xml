@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.cdc.dao.CtgBk005CyxxDao">
+
+	<sql id="commCols">
+		SUBID subid,MASTERID masterid,ORDERNO orderno,SPECIMENNUMBER specimennumber,SPECIMENTYPE specimentype,SPECIMENCOUNT specimencount,NUMBEROFUNITS numberofunits,SAMPLINGDATE samplingdate,NOTE note
+	</sql>
+
+	<insert id="save" parameterType="ctgBk005Cyxx"  flushCache="true">
+		 insert into CTG_BK005_CYXX(SUBID,MASTERID,ORDERNO,SPECIMENNUMBER,SPECIMENTYPE,SPECIMENCOUNT,NUMBEROFUNITS,SAMPLINGDATE,NOTE)
+		 values(#{subid},#{masterid},#{orderno},#{specimennumber},#{specimentype},#{specimencount},#{numberofunits},#{samplingdate},#{note})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  CTG_BK005_CYXX
+		<where>SUBID=#{subid}</where>
+	</delete>
+	
+	<delete id="deleteByMasterid" flushCache="true">
+		delete from  CTG_BK005_CYXX
+		<where>MASTERID=#{masterid}</where>
+	</delete>
+	
+	<update id="update" parameterType="ctgBk005Cyxx" flushCache="true">
+		update CTG_BK005_CYXX
+		<set>
+			SUBID=#{subid},MASTERID=#{masterid},ORDERNO=#{orderno},SPECIMENNUMBER=#{specimennumber},SPECIMENTYPE=#{specimentype},SPECIMENCOUNT=#{specimencount},NUMBEROFUNITS=#{numberofunits},SAMPLINGDATE=#{samplingdate},NOTE=#{note}
+		</set>
+		<where>SUBID=#{subid}</where>
+	</update>
+	
+	<select id="get" resultType="ctgBk005Cyxx">
+		select <include refid="commCols"/> from CTG_BK005_CYXX
+  		<where>SUBID=#{subid}</where>
+	</select>
+	
+	
+	<select id="findCtgBk005CyxxCount" parameterType="ctgBk005Cyxx" resultType="int">
+		select count(*) from CTG_BK005_CYXX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="ctgBk005Cyxx">
+		select <include refid="commCols"/> from CTG_BK005_CYXX
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByMastertid" parameterType="String" resultType="ctgBk005Cyxx">
+		select <include refid="commCols"/> from CTG_BK005_CYXX
+		<where>
+			MASTERID = #{masterid}
+		</where>
+	</select>
+</mapper>

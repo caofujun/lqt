@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg003YyzgDao">
+
+	<sql id="commCols">
+		ID id,HOSP_ID hospId,EMPLOYEE_ID employeeId,EMPLOYEE_NAME employeeName,DEPT_ID deptId,ZJ_CODE zjCode,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,FLAG flag,OPER_DOC operDoc,DR_LINETYPE drLinetype,LAST_AT lastAt,IN_TEL inTel,PHONE_NO phoneNo,EMAIL email,IN_GROUP_NO inGroupNo,AUTH_MODE authMode,AUTH_CODE authCode,CLASS cclass,STATE state,ROLE_ID roleId
+	</sql>
+
+	<insert id="save" parameterType="zg003Yyzg"  flushCache="true">
+		 insert into ZG003_YYZG(ID,HOSP_ID,EMPLOYEE_ID,EMPLOYEE_NAME,DEPT_ID,ZJ_CODE,BH_CODE,SP_CODE,WB_CODE,FLAG,OPER_DOC,DR_LINETYPE,LAST_AT,IN_TEL,PHONE_NO,EMAIL,IN_GROUP_NO,AUTH_MODE,AUTH_CODE,CLASS,STATE,ROLE_ID)
+		 values(#{id},#{hospId},#{employeeId},#{employeeName},#{deptId},#{zjCode},#{bhCode},#{spCode},#{wbCode},#{flag},#{operDoc},#{drLinetype},#{lastAt},#{inTel},#{phoneNo},#{email},#{inGroupNo},#{authMode},#{authCode},#{cclass},#{state},#{roleId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG003_YYZG
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg003Yyzg" flushCache="true">
+		update ZG003_YYZG
+		<set>
+			ID=#{id},HOSP_ID=#{hospId},EMPLOYEE_ID=#{employeeId},EMPLOYEE_NAME=#{employeeName},DEPT_ID=#{deptId},ZJ_CODE=#{zjCode},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode},FLAG=#{flag},OPER_DOC=#{operDoc},DR_LINETYPE=#{drLinetype},LAST_AT=#{lastAt},IN_TEL=#{inTel},PHONE_NO=#{phoneNo},EMAIL=#{email},IN_GROUP_NO=#{inGroupNo},AUTH_MODE=#{authMode},AUTH_CODE=#{authCode},CLASS=#{cclass},STATE=#{state},ROLE_ID=#{roleId}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="zg003Yyzg">
+		select <include refid="commCols"/> from ZG003_YYZG
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findZg003YyzgCount" parameterType="zg003Yyzg" resultType="int">
+		select count(*) from ZG003_YYZG
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg003Yyzg">
+		select <include refid="commCols"/> from ZG003_YYZG
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getByName"  resultType="zg003Yyzg">
+		select <include refid="commCols"/> from ZG003_YYZG
+		<where>
+			EMPLOYEE_NAME=#{employeeName}  
+			<if test="deptId!=null and deptId!=''"> and  DEPT_ID like CONCAT(CONCAT('%', #{deptId}), '%')</if>		
+		</where>
+	</select>
+</mapper>

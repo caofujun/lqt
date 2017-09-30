@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.prevalence.dao.Xl019XjnyqkDao">
+
+	<sql id="commCols_mysql">
+		id id,brid brid,byt byt,kjyw kjyw,jg jg
+	</sql>
+
+	<select id="findXl019Xjnyqk_mysql" parameterType="xl019Xjnyqk" resultType="xl019Xjnyqk">
+		select <include refid="commCols_mysql"/> from xl019_xjnyqk
+		<where>
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw018RoleUserDao">
+
+	<sql id="commCols_oracle">
+		dept_id deptId,user_id userId,role_id roleId
+	</sql>
+
+	<select id="findHw018RoleUser_oracle" parameterType="hw018RoleUser" resultType="hw018RoleUser">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from hw018_role_user
+		<where>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+</mapper>

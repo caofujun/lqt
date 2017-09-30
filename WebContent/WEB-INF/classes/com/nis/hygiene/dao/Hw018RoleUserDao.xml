@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.hygiene.dao.Hw018RoleUserDao">
+
+	<sql id="commCols">
+		dept_id deptId,user_id userId,role_id roleId
+	</sql>
+
+	<insert id="save" parameterType="hw018RoleUser" flushCache="true">
+		 insert into hw018_role_user(dept_id,user_id,role_id)
+		 values(#{deptId},#{userId},#{roleId})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from hw018_role_user
+		<where>user_id=#{userId} and role_id=#{roleId}</where>
+	</delete>
+	
+	<delete id="delByUserIdAndDeptId" flushCache="true">
+		delete from hw018_role_user
+		<where>user_id=#{userId} </where>
+	</delete>
+	
+	<delete id="delByRoleId" flushCache="true">
+		delete from hw018_role_user
+		<where> role_id=#{roleId} </where>
+	</delete>
+	
+	<delete id="delHw018RoleUserNotIn" flushCache="true">
+		delete from hw018_role_user
+		<where> 
+			user_id=#{userId}
+			<if test="roleIdList!=null and roleIdList.size!=0">
+		    	and role_id not in 
+				<foreach collection="roleIdList" index="index" item="item" open="(" separator="," close=")" >
+		  			#{item} 
+		  		</foreach>
+		    </if>
+		</where>
+	</delete>
+	
+	<update id="update" parameterType="hw018RoleUser" flushCache="true">
+		update hw018_role_user
+		<set>
+			dept_id=#{deptId},user_id=#{userId},role_id=#{roleId}
+		</set>
+		<where>user_id=#{userId} and role_id=#{roleId}</where>
+	</update>
+	
+	<select id="get" resultType="hw018RoleUser">
+		select <include refid="commCols"/> from hw018_role_user
+  		<where>user_id=#{userId} and role_id=#{roleId}</where>
+	</select>
+	
+	
+	<select id="findHw018RoleUserCount" parameterType="hw018RoleUser" resultType="int">
+		select count(*) from hw018_role_user
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="hw018RoleUser">
+		select <include refid="commCols"/> from hw018_role_user
+		<where>
+		</where>
+	</select>
+</mapper>

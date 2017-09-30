@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.patient.dao.St010JcbytDao">
+
+	<sql id="commCols">
+		id id,zyid zyid,patient_id patientId,visit_id visitId,test_order_no testOrderNo,test_date testDate,isyang isyang,patho_code pathoCode,patho_name pathoName,isym isym,yaomin_no yaominNo,pathogen_sn pathogenSn,memo memo,create_at createAt,upd_date updDate,calculate_tag calculateTag,calculate_dt calculateDt,bacteria_amount bacteriaAmount
+	</sql>
+
+	<insert id="save" parameterType="st010Jcbyt" flushCache="true">
+		 insert into st010_jcbyt(id,zyid,patient_id,visit_id,test_order_no,test_date,isyang,patho_code,patho_name,isym,yaomin_no,pathogen_sn,memo,create_at,upd_date,calculate_tag,calculate_dt,bacteria_amount)
+		 values(#{id},#{zyid},#{patientId},#{visitId},#{testOrderNo},#{testDate},#{isyang},#{pathoCode},#{pathoName},#{isym},#{yaominNo},#{pathogenSn},#{memo},#{createAt},#{updDate},#{calculateTag},#{calculateDt},#{bacteriaAmount})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from st010_jcbyt
+		<where>id=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="st010Jcbyt" flushCache="true">
+		update st010_jcbyt
+		<set>
+			id=#{id},zyid=#{zyid},patient_id=#{patientId},visit_id=#{visitId},test_order_no=#{testOrderNo},test_date=#{testDate},isyang=#{isyang},patho_code=#{pathoCode},patho_name=#{pathoName},isym=#{isym},yaomin_no=#{yaominNo},pathogen_sn=#{pathogenSn},memo=#{memo},create_at=#{createAt},upd_date=#{updDate},calculate_tag=#{calculateTag},calculate_dt=#{calculateDt},bacteria_amount=#{bacteriaAmount}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updAnalFlag" parameterType="st010Jcbyt" flushCache="true">
+		update st010_jcbyt
+		<set>
+			calculate_tag=#{calculateTag},calculate_dt=#{calculateDt}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<update id="updAnalDt" parameterType="st010Jcbyt" flushCache="true">
+		update st010_jcbyt
+		<set>
+			calculate_dt=#{calculateDt}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="st010Jcbyt">
+		select <include refid="commCols"/> from st010_jcbyt
+  		<where>id=#{id}</where>
+	</select>
+	
+	
+	<select id="findSt010JcbytCount" parameterType="st010Jcbyt" resultType="int">
+		select count(*) from st010_jcbyt
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="st010Jcbyt">
+		select <include refid="commCols"/> from st010_jcbyt
+		<where>
+		</where>
+	</select>
+	
+	<select id="findSt010JcbytList" parameterType="st010Jcbyt" resultType="st010Jcbyt">
+		select s10.patho_name pathoName,s10.patho_code pathoCode,s10.pathogen_sn pathogenSn,s10.test_order_no testOrderNo,s10.bacteria_amount bacteriaAmount,x11.res_prop resProp,x11.spec_describes specDescribes,x11.esbl esbl
+		from st010_jcbyt s10 left join xn011_dclymx x11 on s10.zyid = x11.zyid and s10.test_order_no = x11.test_order_no and s10.patho_code = x11.patho_code
+		<where>
+			1=1
+			<if test="zyid!=null and zyid!='' and zyid!='null'"> and s10.zyid=#{zyid}</if>
+			<if test="mzid!=null and mzid!='' and mzid!='null'"> and s10.mzid=#{mzid}</if>
+			<if test="testOrderNo!=null and testOrderNo!=''"> and s10.test_order_no=#{testOrderNo}</if>
+			<if test="testDate!=null and testDate!='' and zyid!=null and zyid!=''">
+			 and s10.test_order_no in(select test_order_no from st009_sjbb where zyid=#{zyid} and (SUBMI_AT &gt;= #{testDate} or SUBMI_AT &lt;= #{testDate}+1))
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryForYJ" parameterType="String" resultType="st010Jcbyt">
+		select <include refid="commCols"/> from st010_jcbyt 
+		<where>
+			test_order_no in (#{testOrderNo})
+			<if test="sql!=null and sql!=''">
+				and ( ${sql} )
+			</if>
+		</where>
+	</select>
+
+	<select id="queryForYJByZyid" parameterType="String" resultType="st010Jcbyt">
+		select <include refid="commCols"/> from st010_jcbyt 
+		<where>
+			zyid = #{zyid}
+			<if test="sql!=null and sql!=''">
+				and ( ${sql} )
+			</if>
+		</where>
+	</select>
+
+	<select id="queryForYJByMzid" parameterType="String" resultType="st010Jcbyt">
+		select <include refid="commCols"/> from st010_jcbyt 
+		<where>
+			mzid = #{mzid}
+			<if test="sql!=null and sql!=''">
+				and ( ${sql} )
+			</if>
+		</where>
+	</select>
+
+
+	<select id="findPatentJcbytWarning" resultType="dataWarning">
+	<![CDATA[
+		select tt.* from(
+			select distinct 'select * from ST010_JCBYT where ZYID ='''||ZYID||'''' sql,
+			'ST010_JCBYT表中患者住院ID（'||ZYID||'）在ST003_CRYXXB表中未找到！' as warning from ST010_JCBYT t
+			where t.ZYID not in(select ZYID from ST003_CRYXXB )
+			and TEST_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST010_JCBYT where MZID ='''||MZID||'''' sql,
+			'ST010_JCBYT表中患者门诊ID（'||MZID||'）在ST020_CLINIC_PATIENTS表中未找到！' as warning from ST010_JCBYT t
+			where t.MZID not in(select MZID from ST020_CLINIC_PATIENTS )
+			and TEST_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from ST010_JCBYT where TEST_ORDER_NO ='''||TEST_ORDER_NO||'''' sql,
+			'ST010_JCBYT表中送检编号（'||TEST_ORDER_NO||'）在ST009_SJBB表中未找到！' as warning from ST010_JCBYT t
+			where t.TEST_ORDER_NO not in(select MZID from ST009_SJBB )
+			and TEST_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+		union
+		select tt.* from(
+			select distinct 'select * from st010_jcbyt where TEST_ORDER_NO ='''||TEST_ORDER_NO||'''' sql,
+			'st010_jcbyt表中送检单号（'||TEST_ORDER_NO||'）在ST009_SJBB表中未找到！' as warning from st010_jcbyt t
+			where t.TEST_ORDER_NO not in(select test_order_no from ST009_SJBB a WHERE a.item_type=1) 
+			and UPD_DATE BETWEEN #{queryStartDate} AND #{queryEndDate}
+	    ) tt
+		where rownum <= 100
+	]]>
+	</select>
+	
+	<select id="findByZyidTestNo" resultType="st010Jcbyt">
+		select patho_code pathoCode,patho_name pathoName,pathogen_sn pathogenSn,isyang isyang 
+		from st010_jcbyt 
+		<where>
+			zyid=#{zyid} and test_order_no=#{testOrderNo} and isym = 1 and isyang = 1
+		</where>
+	</select>
+	
+</mapper>

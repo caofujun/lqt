@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.docsearch.dao.DocDocumentDownloadDao">
+
+	<sql id="commCols">
+		ID id,DOC_ID docId,DOC_SCORE docScore,CREATE_USERID createUserid,CREATE_USERNAME createUsername,CREATE_TIME createTime
+	</sql>
+
+	<insert id="save" parameterType="docDocumentDownload"  flushCache="true">
+		 insert into DOC_DOCUMENT_DOWNLOAD(ID,DOC_ID,DOC_SCORE,CREATE_USERID,CREATE_USERNAME,CREATE_TIME)
+		 values(#{id},#{docId},#{docScore},#{createUserid},#{createUsername},#{createTime})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  DOC_DOCUMENT_DOWNLOAD
+		<where>ID=#{id}</where>
+	</delete>
+	
+	<update id="update" parameterType="docDocumentDownload" flushCache="true">
+		update DOC_DOCUMENT_DOWNLOAD
+		<set>
+			ID=#{id},DOC_ID=#{docId},DOC_SCORE=#{docScore},CREATE_USERID=#{createUserid},CREATE_USERNAME=#{createUsername},CREATE_TIME=#{createTime}
+		</set>
+		<where>ID=#{id}</where>
+	</update>
+	
+	<select id="get" resultType="docDocumentDownload">
+		select <include refid="commCols"/> from DOC_DOCUMENT_DOWNLOAD
+  		<where>ID=#{id}</where>
+	</select>
+	
+	
+	<select id="findDocDocumentDownloadCount" parameterType="docDocumentDownload" resultType="int">
+		select count(*) from DOC_DOCUMENT_DOWNLOAD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="docDocumentDownload">
+		select <include refid="commCols"/> from DOC_DOCUMENT_DOWNLOAD
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	
+	<select id="findDocDocumentCountGroupByAccountId" parameterType="docDocumentDownload" resultType="int">
+		select count(DISTINCT(CREATE_USERID)) from DOC_DOCUMENT_DOWNLOAD 
+		<where>
+			1=1
+			and 
+			DOC_ID=#{docId}
+		</where>
+	</select>
+	
+	
+	
+	
+	
+</mapper>

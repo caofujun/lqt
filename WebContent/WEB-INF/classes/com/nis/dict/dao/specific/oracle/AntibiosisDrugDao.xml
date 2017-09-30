@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.AntibiosisDrugDao">
+
+	<sql id="commCols_oracle">
+		WB_CODE wbCode,IF_COMMON ifCommon,ZG010_KJYW.FLAG flag,IF_REPORT ifReport,ZJ_CODE zjCode,ZG010_KJYW.LAST_AT lastAt,DRUG_ID drugId,
+		DRUG_NAME drugName,DRUG_ENNAME drugEnname,DRUG_TYPEID drugTypeid,BH_CODE bhCode,SP_CODE spCode
+	</sql>
+
+	<select id="findKjywyl_oracle" parameterType="antibiosisDrug" resultType="java.util.HashMap">
+		select x7.subclass_id subclassId,x7.subclass_name subclassName,x7.pycode,x7.wbcode from xn007_kjywyl x7
+		 where x7.drug_type_id = #{drugTypeid}
+	</select>
+	
+	<select id="findAntibiosisDrug_oracle" parameterType="antibiosisDrug" resultType="antibiosisDrug">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select WB_CODE                     wbCode,
+           IF_COMMON                   ifCommon,
+           xn003_kjyw.FLAG             flag,
+           IF_REPORT                   ifReport,
+           ZJ_CODE                     zjCode,
+           xn003_kjyw.LAST_AT          lastAt,
+           DRUG_ID                     drugId,
+           DRUG_NAME                   drugName,
+           DRUG_ENNAME                 drugEnname,
+           xn003_kjyw.DRUG_TYPE_ID                 drugTypeid,
+           BH_CODE                     bhCode,
+           SP_CODE                     spCode,
+           xn006_kjywfl.DRUG_TYPE_NAME drugTypeName,
+            x7.subclass_name            subclassName    
+      from xn003_kjyw left join xn006_kjywfl on xn003_kjyw.DRUG_TYPE_ID=xn006_kjywfl.DRUG_TYPE_ID 
+       left join xn007_kjywyl x7  on x7.subclass_id = xn003_kjyw.subclass_id
+		<where>
+			1=1
+			<if test="drugTypeid!=null and drugTypeid!=''">and xn003_kjyw.DRUG_TYPE_ID=#{drugTypeid}</if>
+			<if test="searchString!=null and searchString!=''"> 
+			and (DRUG_ID like CONCAT( CONCAT('%',#{searchString}),'%') or DRUG_NAME like CONCAT( CONCAT('%',#{searchString}),'%') or DRUG_ENNAME like CONCAT( CONCAT('%',#{searchString}),'%'))
+			or lower(sp_code) LIKE CONCAT(CONCAT('%', lower(#{searchString})),'%') 
+			</if>
+		</where>
+		order by DRUG_ID
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

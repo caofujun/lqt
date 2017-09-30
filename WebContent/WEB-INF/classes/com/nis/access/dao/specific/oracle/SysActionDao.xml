@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.access.dao.SysActionDao">
+
+	<sql id="commCols_oracle">
+		ID id,SOURCE_HOSPITAL sourceHospital,SOURCE_DEPNO sourceDepno,SOURCE_USER sourceUser,FUNC_TYPE funcType,FUNC_NO funcNo,CONTENT content,ADD_TIME addTime,UPDATE_TIME updateTime,REMARK remark,EXT_1 ext1
+	</sql>
+
+	
+	<select id="findAcAccount_oracle" parameterType="sysAction" resultType="sysAction">
+		select * from ( select a.*, rownum rn from (
+		select <include refid="commCols_oracle"/> from SYS_ACTION
+		<where>
+			ID = #{id}
+			<if test="searchString!=null and searchString!=''">
+				and (FUNC_NO LIKE CONCAT(CONCAT('%', #{searchString}), '%') or FUNC_NO LIKE CONCAT(CONCAT('%', #{searchString}), '%')) 
+			</if>
+		</where>
+		) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	
+	<select id="findAcAccountByCondition_oracle" parameterType="sysAction" resultType="sysAction">
+		select * from ( select a.*, rownum rn from (
+		select ac.ID        id,
+       		   ac.SOURCE_HOSPITAL       sourceHospital,
+       		   ac.SOURCE_DEPNO       	sourceDepno,
+       		   ac.SOURCE_USER       	sourceUser,
+       		   ac.FUNC_TYPE       		funcType,
+       		   ac.FUNC_NO       		funcNo,
+       		   ac.CONTENT       		content,
+       		   ac.ADD_TIME        		addTime,
+       		   ac.UPDATE_TIME        	updateTime,
+       		   ac.REMARK        		remark,
+       		   ac.EXT_1      			ext1
+			from SYS_ACTION  ac
+			) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}
+	</select>
+	
+	<select id="findByParamCode_oracle" resultType="sysAction">
+		select * from (select <include refid="commCols_oracle"/> from SYS_ACTION
+  		<where>
+  			FUNC_TYPE=#{funcType} and (
+  			<choose>
+  				<when test="sourceUser!=null and sourceUser!=''">FUNC_NO=9 or (FUNC_NO=6 and SOURCE_HOSPITAL =#{sourceHospital}) or (FUNC_NO=3 and SOURCE_DEPNO=#{sourceDepno}) or (FUNC_NO=0 and SOURCE_USER=#{sourceUser})</when>
+  				<when test="sourceDepno!=null and sourceDepno!=''">FUNC_NO=9 or (FUNC_NO=6 and SOURCE_HOSPITAL=#{sourceHospital}) or (FUNC_NO=3 and SOURCE_DEPNO=#{sourceDepno})</when>
+  				<when test="sourceHospital!=null and sourceHospital!=0">FUNC_NO=9 or (FUNC_NO=6 and SOURCE_HOSPITAL=#{sourceHospital})</when>
+  				<otherwise>FUNC_NO=9</otherwise>
+  			</choose>
+  			)
+  		</where>
+  		order by FUNC_NO asc)
+  		where rownum=1
+	</select>
+</mapper>

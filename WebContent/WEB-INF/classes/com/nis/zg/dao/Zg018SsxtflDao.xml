@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.zg.dao.Zg018SsxtflDao">
+
+	<sql id="commCols">
+		OPESYSID opesysid,OPESYSTEM opesystem,ICDBOUND icdbound,REPORTORDER reportorder,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode
+	</sql>
+
+	<insert id="save" parameterType="zg018Ssxtfl"  flushCache="true">
+		 insert into ZG018_SSXTFL(OPESYSID,OPESYSTEM,ICDBOUND,REPORTORDER,BH_CODE,SP_CODE,WB_CODE)
+		 values(#{opesysid},#{opesystem},#{icdbound},#{reportorder},#{bhCode},#{spCode},#{wbCode})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  ZG018_SSXTFL
+		<where>OPESYSID=#{opesysid}</where>
+	</delete>
+	
+	<update id="update" parameterType="zg018Ssxtfl" flushCache="true">
+		update ZG018_SSXTFL
+		<set>
+			OPESYSID=#{opesysid},OPESYSTEM=#{opesystem},ICDBOUND=#{icdbound},REPORTORDER=#{reportorder},BH_CODE=#{bhCode},SP_CODE=#{spCode},WB_CODE=#{wbCode}
+		</set>
+		<where>OPESYSID=#{opesysid}</where>
+	</update>
+	
+	<select id="get" resultType="zg018Ssxtfl">
+		select <include refid="commCols"/> from ZG018_SSXTFL
+  		<where>OPESYSID=#{opesysid}</where>
+	</select>
+	
+	
+	<select id="findZg018SsxtflCount" parameterType="zg018Ssxtfl" resultType="int">
+		select count(*) from ZG018_SSXTFL
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="zg018Ssxtfl">
+		select <include refid="commCols"/> from ZG018_SSXTFL
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

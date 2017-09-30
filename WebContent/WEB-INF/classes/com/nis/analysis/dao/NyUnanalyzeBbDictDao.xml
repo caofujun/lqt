@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.NyUnanalyzeBbDictDao">
+
+	<sql id="commCols">
+		NO_DICT_NAME noDictName
+	</sql>
+
+	<insert id="save" parameterType="nyUnanalyzeBbDict" flushCache="true">
+		 insert into NY_UNANALYZE_BB_DICT(NO_DICT_NAME)
+		 values(#{noDictName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from NY_UNANALYZE_BB_DICT
+		<where>NO_DICT_NAME=#{noDictName}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyUnanalyzeBbDict" flushCache="true">
+		update NY_UNANALYZE_BB_DICT
+		<set>
+			NO_DICT_NAME=#{noDictName}
+		</set>
+		<where>NO_DICT_NAME=#{noDictName2}</where>
+	</update>
+	
+	<select id="get" resultType="nyUnanalyzeBbDict">
+		select <include refid="commCols"/> from NY_UNANALYZE_BB_DICT
+  		<where>NO_DICT_NAME=#{noDictName}</where>
+	</select>
+	
+	
+	<select id="findNyUnanalyzeBbDictCount" parameterType="nyUnanalyzeBbDict" resultType="int">
+		select count(*) from NY_UNANALYZE_BB_DICT
+		<where>1=1
+			<if test="searchString!=null and searchString!=''">
+				and NO_DICT_NAME LIKE CONCAT(CONCAT('%', #{searchString}), '%') 
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="nyUnanalyzeBbDict">
+		select <include refid="commCols"/> from NY_UNANALYZE_BB_DICT
+		<where>
+		</where>
+	</select>
+</mapper>

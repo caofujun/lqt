@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.dict.dao.Icd10Dao">
+
+	<sql id="commCols_mysql">
+		ICD_ID icdId,ICD_CODE icdCode,ICD_NAME icdName,BH_CODE bhCode,SP_CODE spCode,WB_CODE wbCode,FLAG flag,
+		ZJ_CODE zjCode,LAST_AT lastAt,SCODE scode
+	</sql>
+
+	<select id="findIcd10_mysql" parameterType="icd10" resultType="icd10">
+		select <include refid="commCols_mysql"/> from ZG012_ICD10
+		<where>
+			1=1
+		</where>
+  		LIMIT #{firstPage}, #{size}
+	</select>
+	
+</mapper>

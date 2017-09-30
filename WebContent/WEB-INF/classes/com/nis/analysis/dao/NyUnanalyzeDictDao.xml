@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.analysis.dao.NyUnanalyzeDictDao">
+
+	<sql id="commCols">
+		DC_NAME dcName
+	</sql>
+
+	<insert id="save" parameterType="nyUnanalyzeDict"  flushCache="true">
+		 insert into NY_UNANALYZE_DICT(DC_NAME)
+		 values(#{dcName})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from  NY_UNANALYZE_DICT
+		<where>dcName=#{dcname}</where>
+	</delete>
+	
+	<update id="update" parameterType="nyUnanalyzeDict" flushCache="true">
+		update NY_UNANALYZE_DICT
+		<set>
+			DC_NAME=#{dcName}
+		</set>
+		<where>dcName=#{dcname}</where>
+	</update>
+	
+	<select id="get" resultType="nyUnanalyzeDict">
+		select <include refid="commCols"/> from NY_UNANALYZE_DICT
+  		<where>dcName=#{dcname}</where>
+	</select>
+	
+	
+	<select id="findNyUnanalyzeDictCount" parameterType="nyUnanalyzeDict" resultType="int">
+		select count(*) from NY_UNANALYZE_DICT
+		<where>
+			1=1
+		</where>
+	</select>
+	
+	<select id="getAll"  resultType="nyUnanalyzeDict">
+		select <include refid="commCols"/> from NY_UNANALYZE_DICT
+		<where>
+			1=1
+		</where>
+	</select>
+</mapper>

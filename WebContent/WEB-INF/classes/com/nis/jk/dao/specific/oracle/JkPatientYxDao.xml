@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.jk.dao.JkPatientYxDao">
+
+	<sql id="commCols_oracle">
+		ID id,MZID mzid,ZYID zyid,PATIENT_ID patientId,VISIT_ID visitId,PATIENT_NAME patientName,SEX sex,CHECK_NO checkNo,
+		EXAM_CLASS examClass,CHECK_PART checkPart,DESCRIPTION description,IMPRESSION impression,CLIN_DIAGNOSE clinDiagnose,
+		DEPT_ID deptId,DEPT_NAME deptName,CHECK_DATE checkDate,REPORT_DATE reportDate,REPORT_DOCTOR reportDoctor,
+		CHECK_DOCTOR checkDoctor,UPD_TIME updTime,UPD_FLAG updFlag
+	</sql>
+
+	<select id="findJkPatientYx_oracle" parameterType="jkPatientYx" resultType="jkPatientYx">
+		<if test="orclEndNum!=null">select * from ( select a.*, rownum rn from (</if>
+		select <include refid="commCols_oracle"/> from JK_PATIENT_YX
+		<where>
+			<if test="updFlag!=null">and UPD_FLAG=#{updFlag}</if>
+			<if test="updTime!=null">and UPD_TIME &gt;= #{updTime}</if>
+		</where>
+		order by UPD_TIME desc
+		<if test="orclEndNum!=null">) a where rownum &lt;= #{orclEndNum} ) where rn &gt;= #{orclBegNum}</if>
+	</select>
+</mapper>

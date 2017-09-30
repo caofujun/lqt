@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.monitor.dao.Bk002GrzdDao">
+
+	<sql id="commCols">
+		infect_category infectCategory,auth_at authAt,auth_userid authUserid,auth_username authUsername,infect_kind infectKind,return_reason returnReason,del_reason delReason,auth_status authStatus,relid relid,refid refid,sn sn,diagnose_id diagnoseId,infect_diagn_id infectDiagnId,infect_diagn_name infectDiagnName,infect_date infectDate,infect_dept_id infectDeptId,infect_nexus infectNexus,infect_dept_name infectDeptName,sub_id subId,incision_grade incisionGrade,wound_healing woundHealing,oper_id operId,isselect isselect,infect_type infectType,deleted deleted,confirm_dt confirmDt,ope_relid opeRelid,ope_name opeName,custom_diagn_id customDiagnId,custom_diagn_name customDiagnName,memo memo,bk_type bkType,lastoper_name lastoperName,lastoper_date lastoperDate,bk_typename bkTypename,incision_type incisionType,infect_dept_name_edit infectDeptNameEdit,zdyj2 zdyj2,dgxggr_id dgxggrId,relation relation,jbzg jbzg,infect_relation infectRelation,jbzg_date jbzgDate,is_print isPrint 
+	</sql>
+
+	<insert id="save" parameterType="bk002Grzd" flushCache="true">
+		 insert into bk002_grzd(infect_category,auth_at,auth_userid,auth_username,infect_kind,return_reason,del_reason,auth_status,relid,refid,sn,diagnose_id,infect_diagn_id,infect_diagn_name,infect_date,infect_dept_id,infect_nexus,infect_dept_name,sub_id,incision_grade,wound_healing,oper_id,isselect,infect_type,deleted,confirm_dt,ope_relid,ope_name,custom_diagn_id,custom_diagn_name,memo,bk_type,lastoper_name,lastoper_date,bk_typename,incision_type,infect_dept_name_edit,zdyj2,dgxggr_id,relation,jbzg,infect_relation,jbzg_date)
+		 values(#{infectCategory},#{authAt},#{authUserid},#{authUsername},#{infectKind},#{returnReason},#{delReason},#{authStatus},#{relid},#{refid},#{sn},#{diagnoseId},#{infectDiagnId},#{infectDiagnName},#{infectDate},#{infectDeptId},#{infectNexus},#{infectDeptName},#{subId},#{incisionGrade},#{woundHealing},#{operId},#{isselect},#{infectType},#{deleted},#{confirmDt},#{opeRelid},#{opeName},#{customDiagnId},#{customDiagnName},#{memo},#{bkType},#{lastoperName},#{lastoperDate},#{bkTypename},#{incisionType},#{infectDeptNameEdit},#{zdyj2},#{dgxggrId},#{relation},#{jbzg},#{infectRelation},#{jbzgDate})
+	</insert>
+	
+	<delete id="delete" flushCache="true">
+		delete from bk002_grzd
+		<where>relid=#{relid}</where>
+	</delete>
+	
+	<delete id="updStatusByRefid" flushCache="true">
+		update bk002_grzd
+		<set>
+			auth_at=#{authAt},auth_userid=#{authUserid},auth_username=#{authUsername},del_reason=#{delReason},auth_status=#{authStatus}
+		</set>
+		<where>refid=#{refid}</where>
+	</delete>
+	
+	<delete id="updateOutcome" flushCache="true">
+		update bk002_grzd
+		<set>
+			jbzg=#{jbzg},JBZG_DATE=#{jbzgDate}
+		</set>
+		<where>relid=#{relid}</where>
+	</delete>
+	
+	<update id="update" parameterType="bk002Grzd" flushCache="true">
+		update bk002_grzd
+		<set>
+			infect_category=#{infectCategory},auth_at=#{authAt},auth_userid=#{authUserid},auth_username=#{authUsername},infect_kind=#{infectKind},return_reason=#{returnReason},del_reason=#{delReason},auth_status=#{authStatus},relid=#{relid},refid=#{refid},sn=#{sn},diagnose_id=#{diagnoseId},infect_diagn_id=#{infectDiagnId},infect_diagn_name=#{infectDiagnName},infect_date=#{infectDate},infect_dept_id=#{infectDeptId},infect_nexus=#{infectNexus},infect_dept_name=#{infectDeptName},sub_id=#{subId},incision_grade=#{incisionGrade},wound_healing=#{woundHealing},oper_id=#{operId},isselect=#{isselect},infect_type=#{infectType},deleted=#{deleted},confirm_dt=#{confirmDt},ope_relid=#{opeRelid},ope_name=#{opeName},custom_diagn_id=#{customDiagnId},custom_diagn_name=#{customDiagnName},memo=#{memo},bk_type=#{bkType},lastoper_name=#{lastoperName},lastoper_date=#{lastoperDate},bk_typename=#{bkTypename},incision_type=#{incisionType},infect_dept_name_edit=#{infectDeptNameEdit},zdyj2=#{zdyj2},dgxggr_id=#{dgxggrId},relation=#{relation},jbzg=#{jbzg},infect_relation=#{infectRelation},jbzg_date=#{jbzgDate},is_print=#{isPrint}
+		</set>
+		<where>relid=#{relid}</where>
+	</update>
+	
+	<select id="getLastReport" resultType="bk002Grzd">
+		select bk2.refid refid from bk002_grzd bk2 left join bk001_sbk bk1
+	    on bk1.relid = bk2.refid
+	 	<where>bk1.zyid=#{zyid} order by bk1.lastoper_date desc </where>
+	</select>
+	
+	<update id="updateSpecified" flushCache="true">
+		update bk002_grzd
+		<set>
+			<foreach collection="updateAttrs" item="item">
+				<choose>
+					<when test="item=='infectCategory'">infect_category=#{bk002Grzd.infectCategory},</when>
+					<when test="item=='authAt'">auth_at=#{bk002Grzd.authAt},</when>
+					<when test="item=='authUserid'">auth_userid=#{bk002Grzd.authUserid},</when>
+					<when test="item=='authUsername'">auth_username=#{bk002Grzd.authUsername},</when>
+					<when test="item=='infectKind'">infect_kind=#{bk002Grzd.infectKind},</when>
+					<when test="item=='returnReason'">return_reason=#{bk002Grzd.returnReason},</when>
+					<when test="item=='delReason'">del_reason=#{bk002Grzd.delReason},</when>
+					<when test="item=='authStatus'">auth_status=#{bk002Grzd.authStatus},</when>
+					<when test="item=='refid'">refid=#{bk002Grzd.refid},</when>
+					<when test="item=='sn'">sn=#{bk002Grzd.sn},</when>
+					<when test="item=='diagnoseId'">diagnose_id=#{bk002Grzd.diagnoseId},</when>
+					<when test="item=='infectDiagnId'">infect_diagn_id=#{bk002Grzd.infectDiagnId},</when>
+					<when test="item=='infectDiagnName'">infect_diagn_name=#{bk002Grzd.infectDiagnName},</when>
+					<when test="item=='infectDate'">infect_date=#{bk002Grzd.infectDate},</when>
+					<when test="item=='infectDeptId'">infect_dept_id=#{bk002Grzd.infectDeptId},</when>
+					<when test="item=='infectNexus'">infect_nexus=#{bk002Grzd.infectNexus},</when>
+					<when test="item=='infectDeptName'">infect_dept_name=#{bk002Grzd.infectDeptName},</when>
+					<when test="item=='subId'">sub_id=#{bk002Grzd.subId},</when>
+					<when test="item=='incisionGrade'">incision_grade=#{bk002Grzd.incisionGrade},</when>
+					<when test="item=='woundHealing'">wound_healing=#{bk002Grzd.woundHealing},</when>
+					<when test="item=='operId'">oper_id=#{bk002Grzd.operId},</when>
+					<when test="item=='isselect'">isselect=#{bk002Grzd.isselect},</when>
+					<when test="item=='infectType'">infect_type=#{bk002Grzd.infectType},</when>
+					<when test="item=='deleted'">deleted=#{bk002Grzd.deleted},</when>
+					<when test="item=='confirmDt'">confirm_dt=#{bk002Grzd.confirmDt},</when>
+					<when test="item=='opeRelid'">ope_relid=#{bk002Grzd.opeRelid},</when>
+					<when test="item=='opeName'">ope_name=#{bk002Grzd.opeName},</when>
+					<when test="item=='customDiagnId'">custom_diagn_id=#{bk002Grzd.customDiagnId},</when>
+					<when test="item=='customDiagnName'">custom_diagn_name=#{bk002Grzd.customDiagnName},</when>
+					<when test="item=='memo'">memo=#{bk002Grzd.memo},</when>
+					<when test="item=='bkType'">bk_type=#{bk002Grzd.bkType},</when>
+					<when test="item=='lastoperName'">lastoper_name=#{bk002Grzd.lastoperName},</when>
+					<when test="item=='lastoperDate'">lastoper_date=#{bk002Grzd.lastoperDate},</when>
+					<when test="item=='bkTypename'">bk_typename=#{bk002Grzd.bkTypename},</when>
+					<when test="item=='incisionType'">incision_type=#{bk002Grzd.incisionType},</when>
+					<when test="item=='infectDeptNameEdit'">infect_dept_name_edit=#{bk002Grzd.infectDeptNameEdit},</when>
+					<when test="item=='zdyj2'">zdyj2=#{bk002Grzd.zdyj2},</when>
+					<when test="item=='dgxggrId'">dgxggr_id=#{bk002Grzd.dgxggrId},</when>
+					<when test="item=='relation'">relation=#{bk002Grzd.relation},</when>
+					<when test="item=='jbzg'">jbzg=#{bk002Grzd.jbzg},</when>
+					<when test="item=='infectRelation'">infect_relation=#{bk002Grzd.infectRelation},</when>
+					<when test="item=='jbzgDate'">jbzg_date=#{bk002Grzd.jbzgDate},</when>
+					<when test="item=='isPrint'">is_print=#{bk002Grzd.isPrint},</when>
+				</choose>
+			</foreach>
+			relid=#{bk002Grzd.relid}
+		</set>
+		<where>relid=#{bk002Grzd.relid}</where>
+	</update>
+	
+	<update id="updBkType" flushCache="true">
+		update bk002_grzd
+		<set>
+			bk_type=#{bkType},
+			lastoper_date=#{lastoperDate},
+			lastoper_name=#{lastoperName}
+		</set>
+		<where>
+			refid=#{refid} and (bk_type is null or bk_type=0)
+		</where>
+	</update>
+	
+	<select id="get" resultType="bk002Grzd">
+		select <include refid="commCols"/> from bk002_grzd
+  		<where>relid=#{relid}</where>
+	</select>
+	
+	
+	<select id="findBk002GrzdCount" parameterType="bk002Grzd" resultType="int">
+		select count(*) from bk002_grzd
+		<where>
+		</where>
+	</select>
+	
+	<select id="getAll" resultType="bk002Grzd">
+		select <include refid="commCols"/> from bk002_grzd
+		<where>
+		</where>
+	</select>
+	
+	<select id="getReportInfect" resultType="bk002Grzd">
+		select infect_diagn_id infectDiagnId, infect_diagn_name infectDiagnName, infect_dept_id infectDeptId, relid relid from bk002_grzd  
+		<where>
+			refid=#{refid} 
+			<if test="authStatus!=null and authStatus!=''">
+				and auth_status=#{authStatus}
+			</if>
+		</where>
+		order by infect_date, confirm_dt
+	</select>
+	
+	<select id="getInfectInfo" resultType="bk002Grzd">
+		select zd.infect_date infectDate, zd.infect_diagn_id infectDiagnId, zd.infect_diagn_name infectDiagnName,zd.is_print isPrint,zd.infect_dept_id infectDeptId,ks.dept_name infectDeptName, zd.relation relation, 
+		c.realname confirmDrName, zd.confirm_dt confirmDt,zd.oper_id operId,zd.ope_relid opeRelid,zd.ope_name opeName, zd.memo memo, zd.infect_type infectType, zd.relid relid,
+		zd.refid refid,zd.bk_type bkType,zd.infect_category infectCategory,zd.incision_type incisionType,zd.auth_username authUsername,zd.auth_status authStatus,zd.jbzg jbzg,zd.jbzg_date jbzgDate 
+		from bk002_grzd zd left join ac_account c on zd.auth_userid = c.username left join zg002_byks ks on zd.infect_dept_id = ks.dept_id 
+		<where>
+			zd.relid=#{relid}
+		</where>
+	</select>
+	
+	<select id="findStatusByRefid" resultType="int">
+		select auth_status from bk002_grzd 
+		<where>
+			refid=#{refid} 
+		</where>
+		group by auth_status
+	</select>
+	
+	<select id="findUnAuditCount" resultType="int">
+		select count(*) from bk002_grzd
+		<where>
+			refid=#{refid} and auth_status=0
+		</where>
+	</select>
+		
+	<select id="getbyOperRelid" resultType="bk002Grzd">
+		select <include refid="commCols"/> from bk002_grzd
+		<where>
+			ope_relid=#{operRelid}
+		</where>
+	</select>
+	
+	<select id="findqrxczxgxgrlcs" resultType="map">
+		select * from (select a.dept_id DEPT_ID,
+	       a.dept_name DEPT_NAME,
+	       nvl(b.lcs, 0) dnglcs,
+	       nvl(c.lcs, 0) zxjmlcs,
+	       nvl(d.lcs, 0) hxjlcs
+	  from zg002_byks a 
+	  left join (select b2.infect_dept_id dept_id, count(*) lcs
+	               from bk002_grzd b2
+	              WHERE trunc(b2.infect_date) BETWEEN
+	                    to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')
+                        <if test="ificu=='1,'">
+				 		 	and b2.infect_dept_id  in (select dept_id from zg002_byks where ificu='1') 
+						 </if>
+						 <if test="ificu=='0,'">
+						 	and b2.infect_dept_id  in (select dept_id from zg002_byks where ificu='0') 
+						 </if>  
+	                and b2.infect_diagn_id in
+	                    (select infect_code
+	                       from zg005_yygrzd
+	                     connect by p_infect_code = prior infect_code
+	                      start with infect_code = 'UTI')
+	                and b2.relation = '导尿管插管'
+	                and b2.infect_type = 1
+	                and b2.auth_status = 1
+	              group by b2.infect_dept_id) b
+	                  on a.dept_id = b.dept_id
+	                left join (select b2.infect_dept_id dept_id, count(*) lcs
+	               from bk002_grzd b2
+	              WHERE trunc(b2.infect_date) BETWEEN
+	                    to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')
+                         <if test="ificu=='1,'">
+				 		 	and b2.infect_dept_id  in (select dept_id from zg002_byks where ificu='1') 
+						 </if>
+						 <if test="ificu=='0,'">
+						 	and b2.infect_dept_id  in (select dept_id from zg002_byks where ificu='0') 
+						 </if>  
+	                and b2.infect_diagn_id in
+	                    (select infect_code
+	                       from zg005_yygrzd
+	                     connect by p_infect_code = prior infect_code
+	                      start with infect_code = 'BSI')
+	                and b2.relation = '中心静脉插管'
+	                and b2.infect_type = 1
+	                and b2.auth_status = 1
+	              group by b2.infect_dept_id) c
+	    on a.dept_id = c.dept_id
+	     left join (select b2.infect_dept_id dept_id, count(*) lcs
+	               from bk002_grzd b2
+	              WHERE trunc(b2.infect_date) BETWEEN
+	                    to_date(#{startDate},'yyyy-MM-dd') and
+                        to_date(#{endDate},'yyyy-MM-dd')
+                    <if test="ificu=='1,'">
+			 		 	and b2.infect_dept_id  in (select dept_id from zg002_byks where ificu='1') 
+					 </if>
+					 <if test="ificu=='0,'">
+					 	and b2.infect_dept_id  in (select dept_id from zg002_byks where ificu='0') 
+					 </if>  
+	                and b2.infect_diagn_id in
+	                    (select infect_code
+	                       from zg005_yygrzd
+	                     connect by p_infect_code = prior infect_code
+	                      start with infect_code = 'PNEU')
+	                and b2.relation = '呼吸机'
+	                and b2.infect_type = 1
+	                and b2.auth_status = 1
+	              group by b2.infect_dept_id) d
+	    on a.dept_id = d.dept_id
+	 where a.ifcaseoffice = 1 order by dnglcs,zxjmlcs,hxjlcs desc )  where rownum &lt;=5 
+	</select>
+	
+	<update id="returnCard" parameterType="bk002Grzd" >
+		update bk002_grzd set lastoper_date=#{lastoperDate},lastoper_name=#{lastoperName},auth_status=0, auth_at='',auth_userid='',auth_username='', return_reason='' where refid=#{refid}
+	</update>
+	
+</mapper>
