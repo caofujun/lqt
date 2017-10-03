@@ -11,7 +11,6 @@ import com.nis.analysis.service.NyUnanalyzeBcService;
 import com.nis.analysis.service.NyUnanalyzeDictService;
 import com.nis.analysis.service.SysJudgeLogService;
 import com.nis.analysis.service.Zg007DictService;
-import com.nis.analysis.service.impl.AnalysisBcServiceImpl.1;
 import com.nis.comm.enums.Param;
 import com.nis.comm.enums.ah;
 import com.nis.comm.utils.ab;
@@ -28,6 +27,7 @@ import com.nis.patient.service.St008BcjlService;
 import com.nis.patient.service.St014PacsService;
 import com.nis.task.entity.TaskJob;
 import com.nis.task.service.TaskJobService;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,10 +39,37 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+
+class AnalysisBcServiceImpl$1
+implements Runnable
+{
+	AnalysisBcServiceImpl bc;
+	List aX;
+	Date aY;
+	String aZ;
+	SysJudgeLog bd;
+	
+	AnalysisBcServiceImpl$1(AnalysisBcServiceImpl paramAnalysisBcServiceImpl, List paramList, Date paramDate, String paramString, SysJudgeLog paramSysJudgeLog) {
+		this.bc = paramAnalysisBcServiceImpl;
+		this.aX = paramList;
+		this.aY = paramDate;
+		this.aZ = paramString;
+		this.bd = paramSysJudgeLog;
+	}
+	
+	public void run()
+	{
+	  this.bc.a(this.aX, this.aY, this.aZ, this.bd);
+	}
+}
+
+
 
 @Component
 public class AnalysisBcServiceImpl implements AnalysisBcService {
@@ -202,7 +229,7 @@ public class AnalysisBcServiceImpl implements AnalysisBcService {
 
             for(int e = 0; e < result.size(); ++e) {
                List zyidList = (List)result.get(e);
-               fixedThreadPool.execute(new 1(this, zyidList, curr, version, sysJudgeLog));
+               fixedThreadPool.execute(new AnalysisBcServiceImpl$1(this, zyidList, curr, version, sysJudgeLog));
             }
 
             fixedThreadPool.shutdown();

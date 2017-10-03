@@ -1,27 +1,53 @@
 package com.nis.analysis.service.impl;
 
-import com.nis.analysis.dao.Zg007DictDao;
-import com.nis.analysis.entity.Zg007Dict;
-import com.nis.analysis.entity.Zg007DictEn;
-import com.nis.analysis.service.Zg007DictEnService;
-import com.nis.analysis.service.Zg007DictService;
-import com.nis.analysis.service.impl.Zg007DictServiceImpl.1;
-import com.nis.analysis.service.impl.Zg007DictServiceImpl.2;
-import com.nis.comm.entity.MyPage;
-import com.nis.comm.utils.EncryptUtils;
-import com.nis.comm.utils.ab;
-import com.nis.comm.utils.af;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.nis.analysis.dao.Zg007DictDao;
+import com.nis.analysis.entity.Zg007Dict;
+import com.nis.analysis.entity.Zg007DictEn;
+import com.nis.analysis.service.Zg007DictEnService;
+import com.nis.analysis.service.Zg007DictService;
+import com.nis.comm.entity.MyPage;
+import com.nis.comm.utils.EncryptUtils;
+import com.nis.comm.utils.ab;
+import com.nis.comm.utils.af;
+
+
+class Zg007DictServiceImpl$1
+implements Comparator<Zg007Dict>
+{
+Zg007DictServiceImpl$1(Zg007DictServiceImpl paramZg007DictServiceImpl) {}
+
+public int compare(Zg007Dict o1, Zg007Dict o2)
+{
+  return o2.getItemName().compareTo(o1.getItemName());
+}
+}
+
+
+class Zg007DictServiceImpl$2
+implements Comparator<Zg007Dict>
+{
+Zg007DictServiceImpl$2(Zg007DictServiceImpl paramZg007DictServiceImpl) {}
+
+public int compare(Zg007Dict d1, Zg007Dict d2)
+{
+  return d1.getItemName().compareTo(d2.getItemName());
+}
+}
+
 
 @Component
 public class Zg007DictServiceImpl implements Zg007DictService {
@@ -77,7 +103,7 @@ public class Zg007DictServiceImpl implements Zg007DictService {
          total = data.size();
       }
 
-      Collections.sort(data, new 1(this));
+      Collections.sort(data, new Zg007DictServiceImpl$1(this));
       return new MyPage(1, total, total, data);
    }
 
@@ -164,7 +190,7 @@ public class Zg007DictServiceImpl implements Zg007DictService {
 
 	public List<Zg007Dict> g(List<Zg007Dict> list) {
       if(list != null) {
-         Collections.sort(list, new 2(this));
+         Collections.sort(list, new Zg007DictServiceImpl$2(this));
       }
 
       return list;

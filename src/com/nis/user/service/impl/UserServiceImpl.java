@@ -1,5 +1,14 @@
 package com.nis.user.service.impl;
 
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.nis.access.entity.AcAccount;
 import com.nis.access.entity.AcAccountAndUnit;
 import com.nis.access.entity.AcRole;
@@ -14,7 +23,6 @@ import com.nis.comm.enums.af;
 import com.nis.comm.enums.ag;
 import com.nis.comm.enums.ah;
 import com.nis.comm.enums.d;
-import com.nis.comm.enums.h;
 import com.nis.comm.utils.ab;
 import com.nis.comm.utils.t;
 import com.nis.log.service.SysLogService;
@@ -24,15 +32,31 @@ import com.nis.organization.service.DoctorService;
 import com.nis.organization.service.UnitService;
 import com.nis.param.service.SysParamService;
 import com.nis.user.service.UserService;
-import com.nis.user.service.impl.UserServiceImpl.AsyncLogin;
 import com.nis.zg.service.Zg003YyzgService;
-import java.util.Date;
-import java.util.List;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+
+class AsyncLogin
+extends Thread
+{
+AcAccount xY = null;
+UserServiceImpl ins;
+
+public AsyncLogin(UserServiceImpl paramUserServiceImpl, AcAccount account)
+{
+  this.xY = account;
+  this.ins = paramUserServiceImpl;
+}
+
+public void run()
+{
+	ins.getuJ().updateLoginInfo(this.xY.getUserId(), Long.valueOf(0L));
+  
+	ins.getaV().a(this.xY.getUnitId(), this.xY.getUsername(), 
+		  ah.iC, af.iv, ag.ix, this.xY.getUserId(), new Object[] { this.xY });
+}
+}
+
+
+
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -55,6 +79,17 @@ public class UserServiceImpl implements UserService {
 	private SysLogService aV;
 	@Autowired
 	private Zg003YyzgService yb;
+	
+	
+	
+
+	public SysLogService getaV() {
+		return aV;
+	}
+
+	public AcAccountService getuJ() {
+		return uJ;
+	}
 
 	public Result<AcAccount> a(String username, String password, boolean md5) {
 		return this.a(username, password, md5, (String) null);
@@ -68,7 +103,7 @@ public class UserServiceImpl implements UserService {
 				result.setResult("error");
 				result.setMsg("帐号不存在!");
 				return result;
-			} else if (ac.getIsvalid().intValue() == h.fQ.getCode().intValue()) {
+			} else if (ac.getIsvalid().intValue() == com.nis.comm.enums.h.fQ.getCode().intValue()) {
 				result.setResult("error");
 				result.setMsg("您的账号未激活，请联系管理员!");
 				return result;
@@ -196,7 +231,7 @@ public class UserServiceImpl implements UserService {
 			ac.setPasswd(DigestUtils.md5Hex(acAccountAndUnit.getPasswd().trim()));
 			ac.setEmail(acAccountAndUnit.getEmail().trim());
 			ac.setMobilenum(acAccountAndUnit.getMobilenum());
-			ac.setIsvalid(Long.valueOf(h.fQ.getCode().longValue()));
+			ac.setIsvalid(Long.valueOf(com.nis.comm.enums.h.fQ.getCode().longValue()));
 			ac.setUserType(Long.valueOf(a.fr.getValue().longValue()));
 			this.uJ.a(ac);
 		}
@@ -229,7 +264,7 @@ public class UserServiceImpl implements UserService {
 			logger.info("登录：帐号不存在!");
 			result.setResult("error");
 			result.setMsg("用户名或密码错误!");
-		} else if (account.getIsvalid().intValue() == h.fQ.getCode().intValue()) {
+		} else if (account.getIsvalid().intValue() == com.nis.comm.enums.h.fQ.getCode().intValue()) {
 			logger.info("登录：您的账号未激活，请联系管理员!");
 			result.setResult("error_p");
 			result.setMsg("您的账号未激活，请联系管理员!");
@@ -293,7 +328,7 @@ public class UserServiceImpl implements UserService {
 			logger.info("登录：帐号不存在!");
 			result.setResult("error");
 			result.setMsg("用户名或密码错误!");
-		} else if (account.getIsvalid() != null && account.getIsvalid().intValue() == h.fQ.getCode().intValue()) {
+		} else if (account.getIsvalid() != null && account.getIsvalid().intValue() == com.nis.comm.enums.h.fQ.getCode().intValue()) {
 			logger.info("登录：您的账号未激活，请联系管理员!");
 			result.setResult("error_p");
 			result.setMsg("您的账号未激活，请联系管理员!");

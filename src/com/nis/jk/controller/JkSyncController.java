@@ -1,29 +1,77 @@
 package com.nis.jk.controller;
 
-import com.nis.comm.annotation.SqlLog;
-import com.nis.comm.controller.BaseController;
-import com.nis.comm.entity.MyPage;
-import com.nis.comm.entity.Result;
-import com.nis.comm.enums.ab;
-import com.nis.comm.utils.f;
-import com.nis.jk.controller.JkSyncController.1;
-import com.nis.jk.controller.JkSyncController.2;
-import com.nis.jk.entity.JkMessage;
-import com.nis.jk.entity.JkSyncLog;
-import com.nis.jk.service.JkMessageService;
-import com.nis.jk.service.JkSyncService;
-import com.nis.jk.utils.a;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.nis.comm.annotation.SqlLog;
+import com.nis.comm.controller.BaseController;
+import com.nis.comm.entity.MyPage;
+import com.nis.comm.entity.Result;
+import com.nis.comm.enums.ab;
+import com.nis.comm.utils.f;
+import com.nis.jk.entity.JkMessage;
+import com.nis.jk.entity.JkSyncLog;
+import com.nis.jk.service.JkMessageService;
+import com.nis.jk.service.JkSyncService;
+import com.nis.jk.utils.a;
+
+class JkSyncController$1
+implements
+Runnable
+{
+	private static final Logger logger = Logger.getLogger(JkSyncController$1.class);
+	JkSyncController ins;
+	String sS;
+JkSyncController$1(JkSyncController paramJkSyncController, String paramString) {
+	ins = paramJkSyncController;
+	sS = paramString;
+}
+
+public void run()
+{
+  try
+  {
+	  ins.getsP().bx(this.sS);
+	  logger.info("患者中间库导入业务库结束!【结果】success");
+  }
+  catch (Exception e)
+  {
+	  logger.error("患者中间库导入业务库异常!【异常信息】" + e.getMessage());
+    e.printStackTrace();
+  }
+}
+}
+
+
+
+class JkSyncController$2
+implements Runnable
+{
+	JkSyncController ins;
+	String sS;
+JkSyncController$2(JkSyncController paramJkSyncController, String paramString) {
+	ins = paramJkSyncController;
+	sS = paramString;
+}
+
+public void run()
+{
+	ins.getsP().bx(this.sS);
+}
+}
+
+
 
 @Controller
 public class JkSyncController extends BaseController {
@@ -32,6 +80,12 @@ public class JkSyncController extends BaseController {
 	private JkSyncService sP;
 	@Autowired
 	private JkMessageService sQ;
+	
+	
+
+	public JkSyncService getsP() {
+		return sP;
+	}
 
 	@RequestMapping({"/f_task/jk/syncJkData"})
    public void L(HttpServletRequest request, HttpServletResponse response, String tables) {
@@ -39,7 +93,7 @@ public class JkSyncController extends BaseController {
       logger.info("患者就诊信息中间库导入业务库开始!请求时间：" + f.f(new Date()) + ";请求ip:" + request.getRemoteAddr());
       String tabless = ab.getString();
       this.sP.by(tabless);
-      (new Thread(new 1(this, tables))).start();
+      (new Thread(new JkSyncController$1(this, tables))).start();
       this.a(response, result);
    }
 
@@ -86,7 +140,7 @@ public class JkSyncController extends BaseController {
 	@RequestMapping({"/jk/f_json/syncJkData"})
    public void N(HttpServletRequest request, HttpServletResponse response, String tables) {
       Result result = new Result();
-      (new Thread(new 2(this, tables))).start();
+      (new Thread(new JkSyncController$2(this, tables))).start();
       this.a(response, result);
    }
 

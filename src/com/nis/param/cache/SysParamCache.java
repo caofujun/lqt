@@ -26,7 +26,7 @@ public class SysParamCache {
 		}
 
 		((Set) set).add(d.a(bg.mq, paramCode + unitId + depNo + userName));
-		qt.put(paramCode, set);
+		qt.put(paramCode, (Set<String>)set);
 	}
 
 	private String r(String paramCode, String unitId, String depNo, String userName) {

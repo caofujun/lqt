@@ -1,8 +1,5 @@
 package com.nis.comm.utils;
 
-import com.nis.comm.utils.ab;
-import com.nis.comm.utils.i.1;
-import com.nis.comm.utils.i.2;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,12 +14,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.GZIPInputStream;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -32,6 +39,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
@@ -41,7 +49,68 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
+
+
+
+class i$1
+implements HttpRequestInterceptor
+{
+public void process(HttpRequest request, HttpContext context)
+  throws HttpException, IOException
+{
+  if (!request.containsHeader("Accept-Encoding")) {
+    request.addHeader("Accept-Encoding", "gzip");
+  }
+}
+}
+
+
+class i$2
+implements HttpResponseInterceptor
+{
+public void process(HttpResponse response, HttpContext context)
+  throws HttpException, IOException
+{
+  HttpEntity entity = response.getEntity();
+  Header ceheader = entity.getContentEncoding();
+  if (ceheader != null)
+  {
+    HeaderElement[] codecs = ceheader.getElements();
+    for (int i = 0; i < codecs.length; i++) {
+      if (codecs[i].getName().equalsIgnoreCase("gzip"))
+      {
+        response.setEntity(new i$a(response.getEntity()));
+        return;
+      }
+    }
+  }
+}
+}
+
+
+class i$a
+extends HttpEntityWrapper
+{
+public i$a(HttpEntity entity)
+{
+  super(entity);
+}
+
+public InputStream getContent()
+  throws IOException
+{
+  InputStream wrappedin = this.wrappedEntity.getContent();
+  return new GZIPInputStream(wrappedin);
+}
+
+public long getContentLength()
+{
+  return -1L;
+}
+}
+
 
 public final class i {
 	private static final Logger logger = Logger.getLogger(i.class);
@@ -57,8 +126,8 @@ public final class i {
       HttpConnectionParams.setConnectionTimeout(params, 30000);
       HttpConnectionParams.setSoTimeout(params, 30000);
       DefaultHttpClient httpclient = new DefaultHttpClient(params);
-      httpclient.addRequestInterceptor(new 1());
-      httpclient.addResponseInterceptor(new 2());
+      httpclient.addRequestInterceptor(new i$1());
+      httpclient.addResponseInterceptor(new i$2());
       return httpclient;
    }
 

@@ -1,5 +1,17 @@
 package com.nis.docsearch.service.impl;
 
+import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
 import com.nis.access.entity.AcAccount;
 import com.nis.comm.entity.MyPage;
 import com.nis.comm.enums.Param;
@@ -13,18 +25,44 @@ import com.nis.docsearch.dao.DocDocumentDownloadDao;
 import com.nis.docsearch.entity.DocDocument;
 import com.nis.docsearch.entity.DocDocumentDownload;
 import com.nis.docsearch.service.DocDocumentService;
-import com.nis.docsearch.service.impl.DocDocumentServiceImpl.1;
 import com.nis.param.service.SysParamService;
-import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+
+
+
+class DocDocumentServiceImpl$1
+  implements Runnable
+{
+	DocDocumentServiceImpl qT;
+	DocDocument qU;
+	AcAccount qV;
+	
+  DocDocumentServiceImpl$1(DocDocumentServiceImpl paramDocDocumentServiceImpl, DocDocument paramDocDocument, AcAccount paramAcAccount) {
+	  this.qT = paramDocDocumentServiceImpl;
+	  this.qU = paramDocDocument;
+	  this.qV = paramAcAccount;
+  }
+  
+  public void run()
+  {
+    boolean opreateArray = false;
+    this.qU.setCreateUserid(this.qV.getUserId());
+    this.qU.setCreateUsername(this.qV.getRealname());
+    this.qU.setCreateTime(com.nis.comm.utils.f.getCurDate());
+    this.qU.setUpdateUserid(this.qV.getUserId());
+    this.qU.setUpdateUsername(this.qV.getRealname());
+    this.qU.setUpdateTime(com.nis.comm.utils.f.getCurDate());
+    this.qU.setDocLook(Long.valueOf(0L));
+    this.qU.setDocDownload(Long.valueOf(0L));
+    this.qU.setDocFlag("1");
+    if (opreateArray) {
+      this.qU.setDocPreview("1");
+    } else {
+      this.qU.setDocPreview("2");
+    }
+    this.qT.a(this.qU);
+  }
+}
 
 @Component
 public class DocDocumentServiceImpl implements DocDocumentService {
@@ -140,7 +178,7 @@ public class DocDocumentServiceImpl implements DocDocumentService {
 	}
 
 	public void a(DocDocument docDocument, AcAccount acAccount) throws Exception {
-      (new Thread(new 1(this, docDocument, acAccount))).start();
+      (new Thread(new DocDocumentServiceImpl$1(this, docDocument, acAccount))).start();
    }
 
 	public List<DocDocument> findDocDocumentNOPrivilege(DocDocument docDocument) {

@@ -60,7 +60,7 @@ public class l {
 				ObjectMapper e = getMapperInstance();
 				e.configure(org.codehaus.jackson.map.SerializationConfig.Feature.INDENT_OUTPUT,
 						Boolean.TRUE.booleanValue());
-				return e.readValue(string, cls);
+				return (T)e.readValue(string, cls);
 			}
 		} catch (IOException arg2) {
 			c.error(arg2.getMessage());

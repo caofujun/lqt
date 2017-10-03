@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 public class a implements Comparator<JkSyncLog> {
-	public int a(JkSyncLog o1, JkSyncLog o2) {
+	public int compare(JkSyncLog o1, JkSyncLog o2) {
 		return o1 == null && o2 == null
 				? 0
 				: (o2 == null

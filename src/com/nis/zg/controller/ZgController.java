@@ -1,5 +1,16 @@
 package com.nis.zg.controller;
 
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.nis.analysis.entity.SysJudgeLog;
 import com.nis.analysis.service.AnalysisBcService;
 import com.nis.analysis.service.AnalysisCheckoutService;
@@ -17,15 +28,7 @@ import com.nis.comm.enums.bg;
 import com.nis.comm.utils.z;
 import com.nis.icu.service.Gm004JcmxService;
 import com.nis.param.service.SysParamService;
-import com.nis.zg.controller.ZgController.1;
-import java.util.Date;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 
 @Controller
 public class ZgController extends BaseController {
@@ -76,7 +79,7 @@ public class ZgController extends BaseController {
       sysJudgeLog.setStatus("0");
       this.J.save(sysJudgeLog);
       result.setData(id);
-      (new Thread(new 1(this, tables, id))).start();
+      //TODO: (new Thread(new 1(this, tables, id))).start();
       result.setResult("success");
       this.a(response, result);
    }

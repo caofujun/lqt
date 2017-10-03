@@ -1,14 +1,12 @@
 package com.nis.mybatis.plugin;
 
-import com.nis.mybatis.plugin.Dialect;
-import com.nis.mybatis.plugin.PropertiesHelper;
-import com.nis.mybatis.plugin.OffsetLimitInterceptor.BoundSqlSqlSource;
 import java.util.Properties;
+
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.mapping.MappedStatement.Builder;
+import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
@@ -16,6 +14,25 @@ import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
+
+
+class BoundSqlSqlSource
+implements SqlSource
+{
+BoundSql boundSql;
+
+public BoundSqlSqlSource(BoundSql boundSql)
+{
+  this.boundSql = boundSql;
+}
+
+public BoundSql getBoundSql(Object parameterObject)
+{
+  return this.boundSql;
+}
+}
+
+
 
 @Intercepts({@Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class,
 		RowBounds.class, ResultHandler.class})})

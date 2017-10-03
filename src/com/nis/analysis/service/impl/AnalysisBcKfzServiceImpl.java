@@ -13,7 +13,6 @@ import com.nis.analysis.service.Gr018BcgrysService;
 import com.nis.analysis.service.NyUnanalyzeBcService;
 import com.nis.analysis.service.SysJudgeLogService;
 import com.nis.analysis.service.Zg007DictService;
-import com.nis.analysis.service.impl.AnalysisBcKfzServiceImpl.1;
 import com.nis.comm.enums.Param;
 import com.nis.comm.enums.ah;
 import com.nis.comm.utils.f;
@@ -45,6 +44,28 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+
+class AnalysisBcKfzServiceImpl$1 implements Runnable {
+	AnalysisBcKfzServiceImpl aW;
+	List aX;
+	Date aY;
+	String aZ;
+	
+	AnalysisBcKfzServiceImpl$1(AnalysisBcKfzServiceImpl paramAnalysisBcKfzServiceImpl, List paramList, Date paramDate, String paramString) {
+		this.aW = paramAnalysisBcKfzServiceImpl;
+		this.aX = paramList;
+		this.aY = paramDate;
+		this.aZ = paramString;
+		
+		
+	}
+	
+	public void run()
+	{
+	  this.aW.a(this.aX, this.aY, this.aZ);
+	}
+}
 
 @Component
 public class AnalysisBcKfzServiceImpl implements AnalysisBcKfzService {
@@ -155,7 +176,7 @@ public class AnalysisBcKfzServiceImpl implements AnalysisBcKfzService {
 
          for(int e = 0; e < result.size(); ++e) {
             List zyidList = (List)result.get(e);
-            fixedThreadPool.execute(new 1(this, zyidList, curr, version));
+            fixedThreadPool.execute(new AnalysisBcKfzServiceImpl$1(this, zyidList, curr, version));
          }
 
          fixedThreadPool.shutdown();

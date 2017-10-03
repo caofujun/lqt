@@ -1,8 +1,32 @@
 package com.nis.icu.controller;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.nis.access.entity.AcAccount;
 import com.nis.access.entity.AcMenu;
 import com.nis.access.entity.AcRole;
+import com.nis.analysis.entity.SysJudgeLog;
 import com.nis.analysis.service.SysJudgeLogService;
 import com.nis.comm.annotation.SqlLog;
 import com.nis.comm.controller.BaseController;
@@ -14,7 +38,6 @@ import com.nis.comm.enums.Param;
 import com.nis.comm.utils.ab;
 import com.nis.comm.utils.f;
 import com.nis.dict.service.SysDictService;
-import com.nis.icu.controller.Gm004JcmxController.1;
 import com.nis.icu.entity.By001Bfgz;
 import com.nis.icu.entity.CgPg;
 import com.nis.icu.entity.Gm004Jcmx;
@@ -26,26 +49,32 @@ import com.nis.organization.service.DepService;
 import com.nis.param.service.SysParamService;
 import com.nis.patient.entity.St003Cryxxb;
 import com.nis.patient.service.St003CryxxbService;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+
+class Gm004JcmxController$1
+implements Runnable
+{
+	Gm004JcmxController ins;
+	String sg;
+Gm004JcmxController$1(Gm004JcmxController paramGm004JcmxController, String paramString1, String paramString2) {
+	ins = paramGm004JcmxController;
+}
+
+public void run()
+{
+  String id = com.nis.comm.utils.z.a(com.nis.comm.enums.bg.my);
+  SysJudgeLog sysJudgeLog = new SysJudgeLog();
+  sysJudgeLog.setId(id);
+  sysJudgeLog.setStartTime(new Date());
+  sysJudgeLog.setJudgeCode(com.nis.comm.enums.ae.is.getCode());
+  sysJudgeLog.setStatus("0");
+  ins.getJ().save(sysJudgeLog);
+  //TODO:
+//  Gm004JcmxController.b(this.sg).o(this.sh, this.si, id);
+//  
+//  ins.b
+}
+}
+
 
 @Controller
 public class Gm004JcmxController extends BaseController {
@@ -64,6 +93,12 @@ public class Gm004JcmxController extends BaseController {
 	private SysDictService p;
 	@Autowired
 	private SysJudgeLogService J;
+	
+	
+
+	public SysJudgeLogService getJ() {
+		return J;
+	}
 
 	@RequestMapping({"/gm004Jcmx/f_view/index"})
 	public String a(HttpServletRequest request, ModelMap modelMap, String bizType, String unitId, String deptid,
@@ -630,7 +665,7 @@ public class Gm004JcmxController extends BaseController {
    public void F(HttpServletRequest request, HttpServletResponse response, String startDate, String endDate) {
       Result result = new Result();
       result.setResult("success");
-      (new Thread(new 1(this, startDate, endDate))).start();
+      (new Thread(new Gm004JcmxController$1(this, startDate, endDate))).start();
       this.a(response, result);
    }
 }

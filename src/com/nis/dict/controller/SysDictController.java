@@ -199,7 +199,7 @@ public class SysDictController extends BaseController {
 		try {
 			result = new Result();
 			sysDict = this.p.get(sysDict.getId());
-			sysDict.setDictStatus(p.gy.getValue());
+			sysDict.setDictStatus(com.nis.comm.enums.p.gy.getValue());
 			this.p.update(sysDict);
 			result.setResult("success");
 		} catch (Exception arg5) {
@@ -245,7 +245,7 @@ public class SysDictController extends BaseController {
 		try {
 			result = new Result();
 			sysDict = this.p.get(sysDict.getId());
-			sysDict.setDictStatus(p.gz.getValue());
+			sysDict.setDictStatus(com.nis.comm.enums.p.gz.getValue());
 			this.p.update(sysDict);
 			result.setResult("success");
 		} catch (Exception arg5) {
@@ -276,7 +276,7 @@ public class SysDictController extends BaseController {
 				sysDict.setScopeLevel(n.gk.getValue().toString());
 			}
 
-			sysDict.setDictStatus(p.gy.getValue());
+			sysDict.setDictStatus(com.nis.comm.enums.p.gy.getValue());
 			if (StringUtils.isBlank(sysDict.getId())) {
 				this.p.save(sysDict);
 			} else {

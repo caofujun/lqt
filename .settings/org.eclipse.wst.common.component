@@ -2,6 +2,8 @@
     <wb-module deploy-name="lqt">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/WebContent/WEB-INF/config"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/WebContent/mapper"/>
         <property name="context-root" value="lqt"/>
         <property name="java-output-path" value="/lqt/build/classes"/>
     </wb-module>

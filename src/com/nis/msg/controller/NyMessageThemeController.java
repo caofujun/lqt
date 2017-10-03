@@ -255,8 +255,8 @@ public class NyMessageThemeController extends BaseController {
 	@RequestMapping({"/nyMessageTheme/f_view/index"})
 	public String o(HttpServletRequest request, ModelMap modelMap, String startDate, String endDate) {
 		if (ab.isEmpty(startDate)) {
-			startDate = f.formatDate(f.a(new Date(), -30));
-			endDate = f.formatDate(new Date());
+			startDate = com.nis.comm.utils.f.formatDate(com.nis.comm.utils.f.a(new Date(), -30));
+			endDate = com.nis.comm.utils.f.formatDate(new Date());
 		}
 
 		AcAccount acc = (AcAccount) this.b(request);

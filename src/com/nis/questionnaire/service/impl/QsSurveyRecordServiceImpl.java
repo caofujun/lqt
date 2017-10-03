@@ -371,7 +371,7 @@ public class QsSurveyRecordServiceImpl implements QsSurveyRecordService {
 
 	private HSSFCellStyle c(HSSFWorkbook wb) {
 		HSSFFont boldFont = wb.createFont();
-		boldFont.setFontHeight(200);
+		boldFont.setFontHeight((short)200);
 		HSSFCellStyle style = wb.createCellStyle();
 		style.setFont(boldFont);
 		style.setDataFormat(HSSFDataFormat.getBuiltinFormat("###,##0.00"));

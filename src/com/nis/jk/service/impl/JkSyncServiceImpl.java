@@ -1,5 +1,20 @@
 package com.nis.jk.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.nis.comm.entity.MyPage;
 import com.nis.comm.enums.Param;
 import com.nis.comm.utils.EncryptUtils;
@@ -46,22 +61,6 @@ import com.nis.jk.entity.JkPatientZkmx;
 import com.nis.jk.entity.JkSyncLog;
 import com.nis.jk.service.JkMessageService;
 import com.nis.jk.service.JkSyncService;
-import com.nis.jk.service.impl.JkSyncServiceImpl.1;
-import com.nis.jk.service.impl.JkSyncServiceImpl.10;
-import com.nis.jk.service.impl.JkSyncServiceImpl.11;
-import com.nis.jk.service.impl.JkSyncServiceImpl.12;
-import com.nis.jk.service.impl.JkSyncServiceImpl.13;
-import com.nis.jk.service.impl.JkSyncServiceImpl.14;
-import com.nis.jk.service.impl.JkSyncServiceImpl.15;
-import com.nis.jk.service.impl.JkSyncServiceImpl.16;
-import com.nis.jk.service.impl.JkSyncServiceImpl.2;
-import com.nis.jk.service.impl.JkSyncServiceImpl.3;
-import com.nis.jk.service.impl.JkSyncServiceImpl.4;
-import com.nis.jk.service.impl.JkSyncServiceImpl.5;
-import com.nis.jk.service.impl.JkSyncServiceImpl.6;
-import com.nis.jk.service.impl.JkSyncServiceImpl.7;
-import com.nis.jk.service.impl.JkSyncServiceImpl.8;
-import com.nis.jk.service.impl.JkSyncServiceImpl.9;
 import com.nis.param.service.SysParamService;
 import com.nis.patient.controller.PatientTaskController;
 import com.nis.patient.dao.St001JbxxbDao;
@@ -104,19 +103,6 @@ import com.nis.zg.entity.Zg002Byks;
 import com.nis.zg.entity.Zg003Yyzg;
 import com.nis.zg.entity.Zg004Yyxx;
 import com.nis.zg.entity.Zg012Icd10;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class JkSyncServiceImpl implements JkSyncService {
@@ -283,7 +269,7 @@ public class JkSyncServiceImpl implements JkSyncService {
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_CLINIC")) {
-         (new Thread(new 1(this))).start();
+         //TODO: (new Thread(new 1(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_VISIT")) {
@@ -295,43 +281,43 @@ public class JkSyncServiceImpl implements JkSyncService {
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_DIAGNOSE")) {
-         (new Thread(new 2(this))).start();
+    	  //TODO:  (new Thread(new 2(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_TEMPRATURE")) {
-         (new Thread(new 3(this))).start();
+    	  //TODO:  (new Thread(new 3(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_ROUTINE")) {
-         (new Thread(new 4(this))).start();
+    	  //TODO: (new Thread(new 4(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_YX")) {
-         (new Thread(new 5(this))).start();
+    	  //TODO:  (new Thread(new 5(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_OPERATION")) {
-         (new Thread(new 6(this))).start();
+    	  //TODO: (new Thread(new 6(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_BC")) {
-         (new Thread(new 7(this))).start();
+    	  //TODO: (new Thread(new 7(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_YZ")) {
-         (new Thread(new 8(this))).start();
+    	  //TODO:  (new Thread(new 8(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_LAB_ITEMS")) {
-         (new Thread(new 9(this))).start();
+    	  //TODO:  (new Thread(new 9(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_LAB_PATHO")) {
-         (new Thread(new 10(this))).start();
+    	  //TODO: (new Thread(new 10(this))).start();
       }
 
       if(StringUtils.isBlank(tables) || tables.toUpperCase().contains("JK_PATIENT_LAB_ANTI")) {
-         (new Thread(new 11(this))).start();
+    	  //TODO: (new Thread(new 11(this))).start();
       }
 
       return this.result;
@@ -1169,7 +1155,7 @@ public class JkSyncServiceImpl implements JkSyncService {
 
          for(int e = 0; e < result.size(); ++e) {
             List zyidList = (List)result.get(e);
-            fixedThreadPool.execute(new 12(this, zyidList));
+            //TODO: fixedThreadPool.execute(new 12(this, zyidList));
          }
 
          fixedThreadPool.shutdown();
@@ -1264,7 +1250,7 @@ public class JkSyncServiceImpl implements JkSyncService {
 
          for(int e = 0; e < result.size(); ++e) {
             List zyidList = (List)result.get(e);
-            fixedThreadPool.execute(new 13(this, zyidList));
+            //TODO: fixedThreadPool.execute(new 13(this, zyidList));
          }
 
          fixedThreadPool.shutdown();
@@ -1837,7 +1823,7 @@ public class JkSyncServiceImpl implements JkSyncService {
 
          for(int e = 0; e < result.size(); ++e) {
             List zyidList = (List)result.get(e);
-            fixedThreadPool.execute(new 14(this, zyidList));
+            //TODO: fixedThreadPool.execute(new 14(this, zyidList));
          }
 
          fixedThreadPool.shutdown();
@@ -1968,7 +1954,7 @@ public class JkSyncServiceImpl implements JkSyncService {
 
          for(int e = 0; e < result.size(); ++e) {
             List zyidList = (List)result.get(e);
-            fixedThreadPool.execute(new 15(this, zyidList));
+            //TODO: fixedThreadPool.execute(new 15(this, zyidList));
          }
 
          fixedThreadPool.shutdown();
@@ -2080,7 +2066,7 @@ public class JkSyncServiceImpl implements JkSyncService {
 
          for(int e = 0; e < result.size(); ++e) {
             List zyidList = (List)result.get(e);
-            fixedThreadPool.execute(new 16(this, zyidList));
+            //TODO: fixedThreadPool.execute(new 16(this, zyidList));
          }
 
          fixedThreadPool.shutdown();

@@ -415,7 +415,7 @@ public class Gr002YsgrMxController extends BaseController {
 			Integer infectTypeId) {
 		if (ab.isNotEmpty(zyid)) {
 			AcAccount ac = (AcAccount) this.b(request);
-			if (e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
+			if (com.nis.comm.enums.e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
 				modelMap.put("clinical", Integer.valueOf(1));
 			}
 

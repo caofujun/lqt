@@ -252,7 +252,7 @@ public class St005SsxxbServiceImpl implements St005SsxxbService {
 			workbook = new HSSFWorkbook();
 			HSSFSheet e = workbook.createSheet((new SimpleDateFormat("yyyy-MM-dd")).format(new Date()));
 			HSSFPrintSetup hps = e.getPrintSetup();
-			hps.setPaperSize(9);
+			hps.setPaperSize((short)9);
 			hps.setLandscape(true);
 			e.setHorizontallyCenter(true);
 			HSSFCellStyle style = g.c(workbook);

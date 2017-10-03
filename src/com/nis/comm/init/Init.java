@@ -1,5 +1,13 @@
 package com.nis.comm.init;
 
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+
 import com.nis.analysis.service.SysJudgeLogService;
 import com.nis.comm.constants.b;
 import com.nis.comm.enums.Param;
@@ -15,12 +23,6 @@ import com.nis.organization.entity.Dep;
 import com.nis.organization.service.DepService;
 import com.nis.organization.service.UnitService;
 import com.nis.param.service.SysParamService;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 
 public class Init extends HttpServlet {
 	private static final long serialVersionUID = -2274726206362496315L;

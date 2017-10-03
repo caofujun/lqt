@@ -1,5 +1,24 @@
 package com.nis.analysis.service.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.nis.analysis.cache.Zg006ZdmxCache;
 import com.nis.analysis.entity.Gr019Ysgrmx;
 import com.nis.analysis.entity.Gr019YsgrmxWeight;
@@ -13,8 +32,6 @@ import com.nis.analysis.service.Gr019YsgrmxService;
 import com.nis.analysis.service.Gr019YsgrmxWeightService;
 import com.nis.analysis.service.SysJudgeLogService;
 import com.nis.analysis.service.Zg006ZdmxService;
-import com.nis.analysis.service.impl.JudgeCode;
-
 import com.nis.comm.enums.Param;
 import com.nis.comm.enums.ah;
 import com.nis.comm.utils.EncryptUtils;
@@ -40,22 +57,96 @@ import com.nis.task.service.TaskJobService;
 import com.nis.zg.entity.Zg006ZdmxFa;
 import com.nis.zg.service.Zg006ZdmxFaService;
 import com.nis.zg.service.Zg007GrysService;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+
+
+
+class AnalysisModelServiceImpl$1
+  implements Comparator<Gr018Ysgrys>
+{
+  AnalysisModelServiceImpl$1(AnalysisModelServiceImpl paramAnalysisModelServiceImpl) {}
+  
+  public int compare(Gr018Ysgrys d1, Gr018Ysgrys d2)
+  {
+    return d1.getDataDate().compareTo(d2.getDataDate());
+  }
+  
+}
+
+
+class AnalysisModelServiceImpl$2
+implements Comparator<Zg006Zdmx>
+{
+AnalysisModelServiceImpl$2(AnalysisModelServiceImpl paramAnalysisModelServiceImpl) {}
+
+public int compare(Zg006Zdmx d1, Zg006Zdmx d2)
+{
+  return d1.getInfectCode().compareTo(d2.getInfectCode());
+}
+}
+
+
+class AnalysisModelServiceImpl$3
+implements Comparator<Zg006Zdmx>
+{
+AnalysisModelServiceImpl$3(AnalysisModelServiceImpl paramAnalysisModelServiceImpl) {}
+
+public int compare(Zg006Zdmx d1, Zg006Zdmx d2)
+{
+  return d1.getNodeLevel().compareTo(d2.getNodeLevel());
+}
+}
+
+
+class AnalysisModelServiceImpl$4
+implements Comparator<Zg006Zdmx>
+{
+AnalysisModelServiceImpl$4(AnalysisModelServiceImpl paramAnalysisModelServiceImpl) {}
+
+public int compare(Zg006Zdmx d1, Zg006Zdmx d2)
+{
+  return d1.getDataDate().compareTo(d2.getDataDate());
+}
+}
+
+
+
+
+class AnalysisModelServiceImpl$5
+  implements Comparator<Zg006Zdmx>
+{
+  AnalysisModelServiceImpl$5(AnalysisModelServiceImpl paramAnalysisModelServiceImpl) {}
+  
+  public int compare(Zg006Zdmx d1, Zg006Zdmx d2)
+  {
+    return d1.getDataDate().compareTo(d2.getDataDate());
+  }
+}
+
+
+class AnalysisModelServiceImpl$6
+implements Runnable
+{
+	AnalysisModelServiceImpl cc;
+	SysJudgeLog bd;
+	String cd;
+	AnalysisModelServiceImpl$6(AnalysisModelServiceImpl paramAnalysisModelServiceImpl, String paramString, SysJudgeLog paramSysJudgeLog) {
+		this.cc = paramAnalysisModelServiceImpl;
+		this.bd = paramSysJudgeLog;
+		this.cd = paramString;
+		
+		
+	}
+	
+	public void run()
+	{
+		//TODO:
+//	  List<Gr018Ysgrys> gr018List = this.cc.getbO().findListByZyid(this.cd);
+//	  this.cc.a(gr018List, this.bd);
+	}
+}
+
+
+
 
 @Component
 public class AnalysisModelServiceImpl implements AnalysisModelService {
@@ -98,6 +189,12 @@ public class AnalysisModelServiceImpl implements AnalysisModelService {
 	private TaskJobService aU;
 	@Autowired
 	private SysJudgeLogService J;
+	
+	
+
+	public St005SsxxbService getbO() {
+		return bO;
+	}
 
 	public a a(List<Gr018Ysgrys> gr018List, SysJudgeLog sysJudgeLog) {
 		int sucnum = sysJudgeLog.getSuccessCount().intValue();
@@ -486,7 +583,7 @@ public class AnalysisModelServiceImpl implements AnalysisModelService {
             Zg006Zdmx zg006 = (Zg006Zdmx)ssgr.clone();
             List ysgrysList = this.d(gr018List, zg006.getElementId());
             if(ysgrysList.size() > 0) {
-               Collections.sort(ysgrysList, new 1(this));
+               Collections.sort(ysgrysList, new AnalysisModelServiceImpl$1(this));
                zg006.setDataDate(((Gr018Ysgrys)ysgrysList.get(0)).getDataDate());
                zg006.setLastDate(((Gr018Ysgrys)ysgrysList.get(ysgrysList.size() - 1)).getDataDate());
             }
@@ -895,7 +992,7 @@ public class AnalysisModelServiceImpl implements AnalysisModelService {
 
 	public List<Zg006Zdmx> j(List<Zg006Zdmx> list) {
       if(list != null) {
-         Collections.sort(list, new 2(this));
+         Collections.sort(list, new AnalysisModelServiceImpl$2(this));
       }
 
       return list;
@@ -903,7 +1000,7 @@ public class AnalysisModelServiceImpl implements AnalysisModelService {
 
 	public List<Zg006Zdmx> k(List<Zg006Zdmx> list) {
       if(list != null) {
-         Collections.sort(list, new 3(this));
+         Collections.sort(list, new AnalysisModelServiceImpl$3(this));
       }
 
       return list;
@@ -967,7 +1064,7 @@ public class AnalysisModelServiceImpl implements AnalysisModelService {
             do {
                if(!arg4.hasNext()) {
                   if(tyxJbList != null && tyxJbList.size() > 0) {
-                     Collections.sort(tyxJbList, new 4(this));
+                     Collections.sort(tyxJbList, new AnalysisModelServiceImpl$4(this));
                      dataAt = ((Zg006Zdmx)tyxJbList.get(0)).getDataDate();
                   }
 
@@ -1001,7 +1098,7 @@ public class AnalysisModelServiceImpl implements AnalysisModelService {
 	public Date c(List<Zg006Zdmx> zg006ZdmxList, String minOrMax) {
       Date dataAt = null;
       if(zg006ZdmxList != null && zg006ZdmxList.size() > 0) {
-         Collections.sort(zg006ZdmxList, new 5(this));
+         Collections.sort(zg006ZdmxList, new AnalysisModelServiceImpl$5(this));
          if("min".equals(minOrMax)) {
             dataAt = ((Zg006Zdmx)zg006ZdmxList.get(0)).getDataDate();
          } else if("max".equals(minOrMax)) {
@@ -1209,7 +1306,7 @@ public class AnalysisModelServiceImpl implements AnalysisModelService {
 
             for(int e = 0; e < zyids.size(); ++e) {
                String zyid = (String)zyids.get(e);
-               fixedThreadPool.execute(new 6(this, zyid, sysJudgeLog));
+               fixedThreadPool.execute(new AnalysisModelServiceImpl$6(this, zyid, sysJudgeLog));
             }
 
             fixedThreadPool.shutdown();

@@ -1,30 +1,38 @@
 package com.nis.task.controller;
 
-import com.nis.comm.annotation.SqlLog;
-import com.nis.comm.controller.BaseController;
-import com.nis.comm.entity.LoginUser;
-import com.nis.comm.entity.MyPage;
-import com.nis.comm.entity.Result;
-import com.nis.comm.enums.ad;
-import com.nis.comm.enums.ae;
-import com.nis.comm.utils.ab;
-import com.nis.comm.utils.f;
-import com.nis.param.service.SysParamService;
-import com.nis.task.controller.TaskJobController.1;
-import com.nis.task.entity.TaskJob;
-import com.nis.task.entity.TaskProject;
-import com.nis.task.service.TaskJobLogService;
-import com.nis.task.service.TaskJobService;
-import com.nis.task.service.TaskProjectService;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.nis.comm.annotation.SqlLog;
+import com.nis.comm.controller.BaseController;
+import com.nis.comm.entity.LoginUser;
+import com.nis.comm.entity.MyPage;
+import com.nis.comm.entity.Result;
+import com.nis.comm.enums.Param;
+import com.nis.comm.enums.ad;
+import com.nis.comm.enums.ae;
+import com.nis.comm.utils.ab;
+import com.nis.comm.utils.f;
+import com.nis.param.service.SysParamService;
+import com.nis.task.entity.TaskJob;
+import com.nis.task.entity.TaskJobLog;
+import com.nis.task.entity.TaskProject;
+import com.nis.task.service.TaskJobLogService;
+import com.nis.task.service.TaskJobService;
+import com.nis.task.service.TaskProjectService;
+
+
 
 @Controller
 public class TaskJobController extends BaseController {
@@ -142,7 +150,7 @@ public class TaskJobController extends BaseController {
          String modelMap = f.c(new Date(), "yyyy-MM-dd HH:mm:ss");
          TaskJob taskJob = this.aU.get(id);
          TaskProject taskProject = this.xH.get(taskJob.getProjectid());
-         (new Thread(new 1(this, taskJob, taskProject, modelMap))).start();
+         //TODO: (new Thread(new 1(this, taskJob, taskProject, modelMap))).start();
          result = "success";
       } catch (Exception arg6) {
          logger.error("修改任务状态异常: " + arg6.getMessage(), arg6);

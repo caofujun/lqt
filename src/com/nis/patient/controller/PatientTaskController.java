@@ -1,12 +1,25 @@
 package com.nis.patient.controller;
 
+import java.util.ArrayList;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.nis.comm.annotation.SqlLog;
 import com.nis.comm.controller.BaseController;
 import com.nis.comm.entity.Result;
 import com.nis.comm.utils.f;
 import com.nis.log.service.SysLogService;
 import com.nis.param.service.SysParamService;
-import com.nis.patient.controller.PatientTaskController.1;
 import com.nis.patient.service.InterfaceMonitorMsgService;
 import com.nis.patient.service.InterfaceMonitorService;
 import com.nis.patient.service.St002ZdxxbService;
@@ -19,17 +32,6 @@ import com.nis.patient.service.St009SjbbService;
 import com.nis.patient.service.St010JcbytService;
 import com.nis.patient.service.St011SyjgbService;
 import com.nis.patient.service.St020ClinicPatientsService;
-import java.util.ArrayList;
-import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class PatientTaskController extends BaseController {
@@ -118,7 +120,7 @@ public class PatientTaskController extends BaseController {
    public void S(HttpServletRequest request, HttpServletResponse response) {
       Result result = new Result();
       logger.info("患者数据接口监控开始!请求时间：" + f.f(new Date()) + ";请求ip:" + request.getRemoteAddr());
-      (new Thread(new 1(this))).start();
+      //TODO: (new Thread(new 1(this))).start();
       this.a(response, result);
    }
 }

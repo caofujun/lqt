@@ -57,7 +57,7 @@ public class Bk001SbkServiceImpl implements Bk001SbkService {
 	private St005SsxxbService bO;
 
 	public void save(Bk001Sbk bk001Sbk) {
-		bk001Sbk.setRelid(z.a(bg.mT));
+		bk001Sbk.setRelid(z.a(com.nis.comm.enums.bg.mT));
 		this.uC.save(bk001Sbk);
 	}
 

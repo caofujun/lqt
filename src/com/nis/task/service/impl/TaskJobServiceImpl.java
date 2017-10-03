@@ -24,7 +24,7 @@ public class TaskJobServiceImpl implements TaskJobService {
 	private JobService xO;
 
 	public void save(TaskJob taskJob) {
-      if(taskJob.getStatus().intValue() != ad.if.getCode().intValue()) {
+      if(taskJob.getStatus().intValue() != com.nis.comm.enums.ad.iff.getCode().intValue()) {
          taskJob.setStatus(ad.ig.getCode());
       }
 
@@ -58,7 +58,7 @@ public class TaskJobServiceImpl implements TaskJobService {
 	}
 
 	public void update(TaskJob taskJob) throws SchedulerException {
-      if(taskJob.getStatus().intValue() == ad.if.getCode().intValue()) {
+      if(taskJob.getStatus().intValue() == com.nis.comm.enums.ad.iff.getCode().intValue()) {
          this.xO.cD(taskJob.getId().toString());
       } else {
          taskJob.setStatus(ad.ig.getCode());
@@ -93,7 +93,7 @@ public class TaskJobServiceImpl implements TaskJobService {
 	}
 
 	public void r(Integer status) {
-      this.xV.updateWait(ad.if.getCode(), status);
+      this.xV.updateWait(com.nis.comm.enums.ad.iff.getCode(), status);
    }
 
 	public List<TaskJob> findByStatus(Integer status) {

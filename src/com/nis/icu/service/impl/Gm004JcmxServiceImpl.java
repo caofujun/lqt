@@ -163,15 +163,15 @@ public class Gm004JcmxServiceImpl implements Gm004JcmxService {
 			}
 
 			HSSFRow arg14 = e.createRow(0);
-			e.addMergedRegion(new Region(0, 0, 1, 0));
+			e.addMergedRegion(new Region((short)0, (short)0, (short)1, (short)0));
 			g.a(arg14, 0, style, 1, "日期");
-			e.addMergedRegion(new Region(0, 1, 0, 4));
+			e.addMergedRegion(new Region((short)0, (short)1,(short) 0, (short)4));
 			g.a(arg14, 1, style, 1, "BW<=1000g");
-			e.addMergedRegion(new Region(0, 5, 0, 8));
+			e.addMergedRegion(new Region((short)0, (short)5, (short)0, (short)8));
 			g.a(arg14, 5, style, 1, "BW1001g~1500g");
-			e.addMergedRegion(new Region(0, 9, 0, 12));
+			e.addMergedRegion(new Region((short)0, (short)9, (short)0, (short)12));
 			g.a(arg14, 9, style, 1, "BW1501g~2500g");
-			e.addMergedRegion(new Region(0, 13, 0, 16));
+			e.addMergedRegion(new Region((short)0, (short)13, (short)0, (short)16));
 			g.a(arg14, 13, style, 1, "BW>2500g");
 			HSSFRow rowTitle2 = e.createRow(1);
 			g.a(rowTitle2, 1, style, 1, "新入新生儿数");

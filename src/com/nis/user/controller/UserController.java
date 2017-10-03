@@ -103,7 +103,7 @@ public class UserController extends BaseController {
 		a logCore = new a();
 		String ip = x.l(request);
 		Result result = null;
-		if (!i.i(request).booleanValue()) {
+		if (!com.nis.comm.utils.i.i(request).booleanValue()) {
 			result = new Result("error", "非浏览器请求!");
 			result.setExpandValue("5");
 			this.a(response, result);
@@ -223,7 +223,7 @@ public class UserController extends BaseController {
 					this.a(request, ac);
 					this.a(request, "user_json", l.toString(com.nis.user.utils.a.d(ac)));
 					menus = this.i.findMenuByRoleid(ac.getRoleCur().getRoleId(), ac.getUserId());
-					if (e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
+					if (com.nis.comm.enums.e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
 						ArrayList arg28 = new ArrayList();
 						sysLoginLog1 = menus.iterator();
 
@@ -475,8 +475,8 @@ public class UserController extends BaseController {
 		SysHpStyle sysHpStyle = this.ri.a(loginUser.getDataScope().intValue(), (String) null, loginUser.getDepNo(),
 				loginUser.getUsername());
 		modelMap.put("sysHpStyle", sysHpStyle);
-		modelMap.put("curMonthFirst", f.q(f.g(false)));
-		modelMap.put("curMonthLast", f.p(f.h(false)));
+		modelMap.put("curMonthFirst", com.nis.comm.utils.f.q(com.nis.comm.utils.f.g(false)));
+		modelMap.put("curMonthLast", com.nis.comm.utils.f.p(com.nis.comm.utils.f.h(false)));
 		if ("true".equals(isHttps)) {
 			request.getSession().setAttribute("isHttps", "true");
 		} else {
@@ -536,7 +536,7 @@ public class UserController extends BaseController {
 			Date applyTime = null;
 
 			try {
-				applyTime = f.l(applyTimeString, "yyyy-MM-dd HH:mm:ss");
+				applyTime = com.nis.comm.utils.f.l(applyTimeString, "yyyy-MM-dd HH:mm:ss");
 			} catch (Exception arg18) {
 				modelMap.put("msg", "页面找不到");
 				return "redirect:/404.jsp";
@@ -746,7 +746,7 @@ public class UserController extends BaseController {
 	public void d(HttpServletRequest request, HttpServletResponse response, String unitId, String username,
 			String password, String nusername, String kaptcha) {
 		Result result = null;
-		if (!i.i(request).booleanValue()) {
+		if (!com.nis.comm.utils.i.i(request).booleanValue()) {
 			result = new Result("error", "非浏览器请求!");
 			result.setExpandValue("5");
 			this.a(response, result);
@@ -823,12 +823,12 @@ public class UserController extends BaseController {
 			this.a(response, result);
 		}
 	}
-
+	
 	@RequestMapping({"/user/json/check"})
 	@ResponseBody
 	public void aL(HttpServletRequest request, HttpServletResponse response, String username) {
 		Result result = null;
-		if (!i.i(request).booleanValue()) {
+		if (!com.nis.comm.utils.i.i(request).booleanValue()) {
 			result = new Result("error", "非浏览器请求!");
 			result.setExpandValue("5");
 			this.a(response, result);

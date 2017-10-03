@@ -219,7 +219,7 @@ public class Hw101JcdjController extends BaseController {
 			result = new Result();
 			if ("edit".equals(action)) {
 				AcAccount e = (AcAccount) this.b(request);
-				if (e.fE.getValue().equals(e.getRoleCur().getRoleType())) {
+				if (com.nis.comm.enums.e.fE.getValue().equals(e.getRoleCur().getRoleType())) {
 					hw102Jcdmx.setClinical("1");
 				}
 

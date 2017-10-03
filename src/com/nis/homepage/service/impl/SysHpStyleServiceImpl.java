@@ -1,11 +1,25 @@
 package com.nis.homepage.service.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
+
 import com.nis.comm.entity.LoginUser;
 import com.nis.comm.entity.MyPage;
 import com.nis.comm.enums.bg;
 import com.nis.comm.enums.n;
 import com.nis.comm.utils.ab;
 import com.nis.comm.utils.b;
+import com.nis.comm.utils.u;
 import com.nis.comm.utils.z;
 import com.nis.homepage.dao.SysHpStyleDao;
 import com.nis.homepage.entity.SysHpComponent;
@@ -14,20 +28,29 @@ import com.nis.homepage.entity.SysHpStyle;
 import com.nis.homepage.service.SysHpComponentService;
 import com.nis.homepage.service.SysHpLayoutService;
 import com.nis.homepage.service.SysHpStyleService;
-import com.nis.homepage.service.impl.SysHpStyleServiceImpl.1;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
+
+
+class SysHpStyleServiceImpl$1
+implements u<Map<String, Object>>
+{
+SysHpStyleServiceImpl$1(SysHpStyleServiceImpl paramSysHpStyleServiceImpl) {}
+
+public Map<String, Object> a(Collection<Map<String, Object>> cols, Object obj)
+{
+  for (Map<String, Object> map : cols) {
+    if (ab.g(map.get("menuNo")).equalsIgnoreCase(ab.g(obj))) {
+      return map;
+    }
+  }
+  return null;
+}
+
+}
+
 
 @Component
 public class SysHpStyleServiceImpl implements SysHpStyleService {
@@ -145,7 +168,7 @@ public class SysHpStyleServiceImpl implements SysHpStyleService {
                   SysHpComponent component = this.rh.getComponentCode(componentCode);
                   if(component != null) {
                      if(ab.isNotEmpty(component.getMenuCode())) {
-                        Map compMap = (Map)b.a(component.getMenuCode(), menus, new 1(this));
+                        Map compMap = (Map)b.a(component.getMenuCode(), menus, new SysHpStyleServiceImpl$1(this));
                         if(compMap == null) {
                            continue;
                         }

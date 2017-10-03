@@ -13,6 +13,9 @@ public class AppContextUtil implements ApplicationContextAware {
 	private BeanFactory pq;
 	private static AppContextUtil pr;
 
+	public AppContextUtil() {
+		pr = this;
+	}
 	public static AppContextUtil getInstance() {
 		return pr;
 	}

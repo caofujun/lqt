@@ -67,7 +67,7 @@ public class NyMessageDetailServiceImpl implements NyMessageDetailService {
 	private SendDD uZ;
 
 	public void save(NyMessageDetail nyMessageDetail) {
-		nyMessageDetail.setMid(z.a(bg.nl));
+		nyMessageDetail.setMid(z.a(com.nis.comm.enums.bg.nl));
 		this.uW.save(nyMessageDetail);
 	}
 
@@ -215,7 +215,7 @@ public class NyMessageDetailServiceImpl implements NyMessageDetailService {
 				for (userDetail = 0; userDetail < arg24; ++userDetail) {
 					arg38 = arg25[userDetail];
 					NyMessageUserDetail doctors = new NyMessageUserDetail();
-					doctors.setMudId(z.a(bg.nn));
+					doctors.setMudId(z.a(com.nis.comm.enums.bg.nn));
 					doctors.setMid(nyMessageDetail.getMid());
 					doctors.setUserId(arg38);
 					doctors.setIsRead(aa.hG.getValue());
@@ -252,7 +252,7 @@ public class NyMessageDetailServiceImpl implements NyMessageDetailService {
 					while (arg46.hasNext()) {
 						Doctor arg44 = (Doctor) arg46.next();
 						NyMessageUserDetail userDetail1 = new NyMessageUserDetail();
-						userDetail1.setMudId(z.a(bg.nn));
+						userDetail1.setMudId(z.a(com.nis.comm.enums.bg.nn));
 						userDetail1.setMid(nyMessageDetail.getMid());
 						userDetail1.setUserId(arg44.getEmployeeId());
 						userDetail1.setIsRead(aa.hG.getValue());

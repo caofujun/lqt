@@ -136,7 +136,7 @@ public class Bk001SbkController extends BaseController {
 			arg9.printStackTrace();
 		}
 
-		if (e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
+		if (com.nis.comm.enums.e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
 			modelMap.put("clinical", "1");
 			modelMap.put("reportDeptId", this.b(request, "zg_dept"));
 		}
@@ -171,7 +171,7 @@ public class Bk001SbkController extends BaseController {
 		}
 
 		AcAccount ac = (AcAccount) this.b(request);
-		if (e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
+		if (com.nis.comm.enums.e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
 			if (dataField.equals("2")) {
 				bk001Sbk.setInfectDeptId("" + this.b(request, "zg_dept"));
 			} else {
@@ -229,7 +229,7 @@ public class Bk001SbkController extends BaseController {
 			modelMap.put("gr002YsgrMx", gr002YsgrMx);
 		}
 
-		modelMap.put("relid", z.a(bg.mU));
+		modelMap.put("relid", z.a(com.nis.comm.enums.bg.mU));
 		return "monitor/sqgrCard";
 	}
 
@@ -270,16 +270,16 @@ public class Bk001SbkController extends BaseController {
 			modelMap.put("infectList", infectList);
 			int num = this.us.findUnAuditCount(relid);
 			modelMap.put("canAudit",
-					Boolean.valueOf(num > 0 && e.fD.getValue().equals(account.getRoleCur().getRoleType())));
+					Boolean.valueOf(num > 0 && com.nis.comm.enums.e.fD.getValue().equals(account.getRoleCur().getRoleType())));
 			int num1 = this.us.getReportInfect(relid, "1").size();
 			modelMap.put("canDelete",
-					Boolean.valueOf(num1 > 0 && e.fD.getValue().equals(account.getRoleCur().getRoleType())));
+					Boolean.valueOf(num1 > 0 && com.nis.comm.enums.e.fD.getValue().equals(account.getRoleCur().getRoleType())));
 			boolean canEdit = bk001Sbk.getIsOk() == com.nis.comm.enums.z.hA.getValue()
-					&& e.fD.getValue().equals(account.getRoleCur().getRoleType())
+					&& com.nis.comm.enums.e.fD.getValue().equals(account.getRoleCur().getRoleType())
 					|| bk001Sbk.getIsOk() == com.nis.comm.enums.z.hz.getValue();
 			modelMap.put("canEdit", Boolean.valueOf(canEdit));
 			AcAccount ac = (AcAccount) this.b(request);
-			if (e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
+			if (com.nis.comm.enums.e.fE.getValue().equals(ac.getRoleCur().getRoleType())) {
 				modelMap.put("clinical", "1");
 			}
 
@@ -315,7 +315,7 @@ public class Bk001SbkController extends BaseController {
 			modelMap.put("infectList", infectList);
 			int num = this.us.findUnAuditCount(relid);
 			modelMap.put("canAudit",
-					Boolean.valueOf(num > 0 && e.fD.getValue().equals(nbisr.getRoleCur().getRoleType())));
+					Boolean.valueOf(num > 0 && com.nis.comm.enums.e.fD.getValue().equals(nbisr.getRoleCur().getRoleType())));
 			int num1 = this.us.getReportInfect(relid, "1").size();
 			modelMap.put("canDelete", Boolean.valueOf(num1 > 0));
 			Bk002Grzd bk002Grzd = this.us.getOneInfectByRefid(relid);
@@ -683,7 +683,7 @@ public class Bk001SbkController extends BaseController {
 				modelMap.put("infectList", st003Cryxxb1);
 				map = this.us.findUnAuditCount(yymdList31);
 				modelMap.put("canAudit",
-						Boolean.valueOf(map > 0 && e.fD.getValue().equals(list31.getRoleCur().getRoleType())));
+						Boolean.valueOf(map > 0 && com.nis.comm.enums.e.fD.getValue().equals(list31.getRoleCur().getRoleType())));
 				int dep = this.us.getReportInfect(yymdList31, "1").size();
 				modelMap.put("canDelete", Boolean.valueOf(dep > 0));
 				Bk002Grzd bk002Grzd = this.us.getOneInfectByRefid(yymdList31);
@@ -778,7 +778,7 @@ public class Bk001SbkController extends BaseController {
 			modelMap.put("incisionGrade", URLDecoder.decode(incisionGrade, "utf-8"));
 		}
 
-		modelMap.put("relid", z.a(bg.mU));
+		modelMap.put("relid", z.a(com.nis.comm.enums.bg.mU));
 		String isSb2 = this.j.findByParamCode(Param.NIS_BK_GRZDSB);
 		modelMap.put("isSb", isSb2);
 		List list32 = this.p.u("medication_purpose", (String) null);

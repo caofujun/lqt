@@ -12,9 +12,65 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
+import java.beans.PropertyEditorSupport;
+
+class MyCustomDateEditor
+extends PropertyEditorSupport
+{
+private final DateFormat[] fn;
+private final boolean fo;
+private final int fp;
+
+public MyCustomDateEditor(DateFormat[] dateFormats, boolean allowEmpty)
+{
+  this.fn = dateFormats;
+  this.fo = allowEmpty;
+  this.fp = -1;
+}
+
+public void setAsText(String text)
+  throws IllegalArgumentException
+{
+  if ((this.fo) && (!StringUtils.hasText(text)))
+  {
+    setValue(null);
+  }
+  else
+  {
+    if ((text != null) && (this.fp >= 0) && 
+      (text.length() != this.fp)) {
+      throw new IllegalArgumentException(
+        "Could not parse date: it is not exactly" + 
+        this.fp + "characters long");
+    }
+    for (DateFormat dateFormat : this.fn) {
+      try
+      {
+        setValue(dateFormat.parse(text));
+        return;
+      }
+      catch (Exception localException) {}
+    }
+  }
+}
+
+public String getAsText()
+{
+  Date value = (Date)getValue();
+  for (DateFormat dateFormat : this.fn) {
+    try
+    {
+      return value != null ? dateFormat.format(value) : "";
+    }
+    catch (Exception localException) {}
+  }
+  return "";
+}
+}
 
 public class BaseController {
 	private static final Logger logger = Logger.getLogger(BaseController.class);
@@ -37,7 +93,7 @@ public class BaseController {
 		SimpleDateFormat yhmHmFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		binder.registerCustomEditor(Date.class,
-				new MyCustomDateEditor(this, new DateFormat[]{dateTimeFormat, yhmHmFormat, dateFormat}, true));
+				new MyCustomDateEditor(new DateFormat[]{dateTimeFormat, yhmHmFormat, dateFormat}, true));
 	}
 
 	public boolean y(String ownership) {

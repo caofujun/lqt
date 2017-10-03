@@ -63,7 +63,7 @@ public class FxPatientServiceImpl implements FxPatientService {
 			fp.setScore(fxPatient.getScore());
 			this.sH.update(fp);
 		} else {
-			fxPatient.setFxId(z.a(bg.no));
+			fxPatient.setFxId(z.a(com.nis.comm.enums.bg.no));
 			this.sH.save(fxPatient);
 		}
 
@@ -258,7 +258,7 @@ public class FxPatientServiceImpl implements FxPatientService {
 
 	private HSSFCellStyle c(HSSFWorkbook wb) {
 		HSSFFont boldFont = wb.createFont();
-		boldFont.setFontHeight(200);
+		boldFont.setFontHeight((short)200);
 		HSSFCellStyle style = wb.createCellStyle();
 		style.setFont(boldFont);
 		style.setDataFormat(HSSFDataFormat.getBuiltinFormat("###,##0.00"));

@@ -1,29 +1,5 @@
 package com.nis.patient.controller;
 
-import com.nis.access.entity.AcAccount;
-import com.nis.comm.annotation.SqlLog;
-import com.nis.comm.controller.BaseController;
-import com.nis.comm.entity.LoginUser;
-import com.nis.comm.entity.MyPage;
-import com.nis.comm.entity.Result;
-import com.nis.comm.enums.Param;
-import com.nis.comm.enums.bg;
-import com.nis.comm.enums.e;
-import com.nis.comm.utils.ab;
-import com.nis.comm.utils.f;
-import com.nis.comm.utils.l;
-import com.nis.comm.utils.r;
-import com.nis.comm.utils.z;
-import com.nis.dict.entity.SysDict;
-import com.nis.dict.service.SysDictService;
-import com.nis.param.service.SysParamService;
-import com.nis.patient.controller.St005SsxxbController.1;
-import com.nis.patient.entity.St003Cryxxb;
-import com.nis.patient.entity.St005Ssxxb;
-import com.nis.patient.service.St003CryxxbService;
-import com.nis.patient.service.St005SsxxbService;
-import com.nis.zg.entity.Zg011Ss;
-import com.nis.zg.service.Zg011SsService;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
@@ -34,9 +10,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +22,29 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.nis.access.entity.AcAccount;
+import com.nis.comm.annotation.SqlLog;
+import com.nis.comm.controller.BaseController;
+import com.nis.comm.entity.LoginUser;
+import com.nis.comm.entity.MyPage;
+import com.nis.comm.entity.Result;
+import com.nis.comm.enums.Param;
+import com.nis.comm.enums.e;
+import com.nis.comm.utils.ab;
+import com.nis.comm.utils.f;
+import com.nis.comm.utils.l;
+import com.nis.comm.utils.r;
+import com.nis.comm.utils.z;
+import com.nis.dict.entity.SysDict;
+import com.nis.dict.service.SysDictService;
+import com.nis.param.service.SysParamService;
+import com.nis.patient.entity.St003Cryxxb;
+import com.nis.patient.entity.St005Ssxxb;
+import com.nis.patient.service.St003CryxxbService;
+import com.nis.patient.service.St005SsxxbService;
+import com.nis.zg.entity.Zg011Ss;
+import com.nis.zg.service.Zg011SsService;
 
 @Controller
 public class St005SsxxbController extends BaseController {
@@ -67,7 +68,7 @@ public class St005SsxxbController extends BaseController {
 	@RequestMapping({"/f_task/ssxxb/resetNNIS"})
    public void V(HttpServletRequest request, HttpServletResponse response, String archived, String nnis) {
       Result result = new Result();
-      (new Thread(new 1(this, archived, nnis))).start();
+      //TODO: (new Thread(new 1(this, archived, nnis))).start();
       this.a(response, result);
    }
 
@@ -545,7 +546,7 @@ public class St005SsxxbController extends BaseController {
 
 		try {
 			result = new Result();
-			st005Ssxxb.setId(z.a(bg.mS));
+			st005Ssxxb.setId(z.a(com.nis.comm.enums.bg.mS));
 			st005Ssxxb.setRelid(st005Ssxxb.getId());
 			if ("4".equals("" + st005Ssxxb.getStatus())) {
 				AcAccount e = (AcAccount) this.b(request);
@@ -571,7 +572,7 @@ public class St005SsxxbController extends BaseController {
 
 		try {
 			result = new Result();
-			st005Ssxxb.setId(z.a(bg.mS));
+			st005Ssxxb.setId(z.a(com.nis.comm.enums.bg.mS));
 			st005Ssxxb.setRelid(st005Ssxxb.getId());
 			st005Ssxxb.setStatus(Integer.valueOf(4));
 			St003Cryxxb e = this.bg.get(st005Ssxxb.getZyid());

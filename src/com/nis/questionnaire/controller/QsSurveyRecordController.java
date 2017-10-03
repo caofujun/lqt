@@ -1,20 +1,39 @@
 package com.nis.questionnaire.controller;
 
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.nis.access.entity.AcAccount;
 import com.nis.comm.annotation.SqlLog;
 import com.nis.comm.controller.BaseController;
 import com.nis.comm.entity.MyPage;
 import com.nis.comm.entity.Result;
 import com.nis.comm.utils.ab;
-import com.nis.comm.utils.b;
 import com.nis.comm.utils.f;
+import com.nis.comm.utils.u;
 import com.nis.organization.entity.Dep;
 import com.nis.organization.service.DepService;
 import com.nis.patient.entity.St001Jbxxb;
 import com.nis.patient.entity.St003Cryxxb;
 import com.nis.patient.service.St001JbxxbService;
 import com.nis.patient.service.St003CryxxbService;
-import com.nis.questionnaire.controller.QsSurveyRecordController.1;
 import com.nis.questionnaire.entity.QsQuestionnaire;
 import com.nis.questionnaire.entity.QsReportTopic;
 import com.nis.questionnaire.entity.QsSurveyRecord;
@@ -22,22 +41,24 @@ import com.nis.questionnaire.entity.QsSurveyRecordList;
 import com.nis.questionnaire.entity.QsSurveyResult;
 import com.nis.questionnaire.service.QsQuestionnaireService;
 import com.nis.questionnaire.service.QsSurveyRecordService;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+
+
+class QsSurveyRecordController$1
+implements u<Map<String, Object>>
+{
+QsSurveyRecordController$1(QsSurveyRecordController paramQsSurveyRecordController) {}
+
+public Map<String, Object> a(Collection<Map<String, Object>> cols, Object obj)
+{
+  for (Map<String, Object> map : cols) {
+    if (String.valueOf(obj).equalsIgnoreCase(String.valueOf(map.get("DAY")))) {
+      return map;
+    }
+  }
+  return null;
+}
+}
+
 
 @Controller
 public class QsSurveyRecordController extends BaseController {
@@ -431,7 +452,7 @@ public class QsSurveyRecordController extends BaseController {
 
          for(int arg8 = 0; arg8 < arg9; ++arg8) {
             String day = arg10[arg8];
-            Map map = (Map)b.a(day, e, new 1(this));
+            Map map = (Map)com.nis.comm.utils.b.a(day, e, new QsSurveyRecordController$1(this));
             HashMap result_map = new HashMap();
             result_map.put("DAY", day);
             result_map.put("MYD", map == null?Integer.valueOf(0):map.get("MYD"));

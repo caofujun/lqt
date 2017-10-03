@@ -1,8 +1,7 @@
 package com.nis.comm.utils;
 
-import com.nis.comm.utils.ac.1;
-import com.nis.comm.utils.ac.2;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
@@ -11,6 +10,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -20,7 +29,52 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
+
+
+
+class ac$1
+implements HttpRequestInterceptor
+{
+ac$1(ac paramac) {}
+
+public void process(HttpRequest request, HttpContext context)
+  throws HttpException, IOException
+{
+  if (!request.containsHeader("Accept-Encoding")) {
+    request.addHeader("Accept-Encoding", "gzip");
+  }
+}
+
+}
+
+
+class ac$2
+implements HttpResponseInterceptor
+{
+ac$2(ac paramac) {}
+
+public void process(HttpResponse response, HttpContext context)
+  throws HttpException, IOException
+{
+  HttpEntity entity = response.getEntity();
+  Header ceheader = entity.getContentEncoding();
+  if (ceheader != null)
+  {
+    HeaderElement[] codecs = ceheader.getElements();
+    for (int i = 0; i < codecs.length; i++) {
+      if (codecs[i].getName().equalsIgnoreCase("gzip"))
+      {
+        response.setEntity(new GzipDecompressingEntity(response.getEntity()));
+        return;
+      }
+    }
+  }
+}
+}
+
+
 
 public class ac implements Serializable {
 	private static final Logger c = Logger.getLogger(ac.class);
@@ -90,8 +144,8 @@ public class ac implements Serializable {
       HttpConnectionParams.setConnectionTimeout(params, 120000);
       HttpConnectionParams.setSoTimeout(params, 120000);
       DefaultHttpClient httpclient = new DefaultHttpClient(params);
-      httpclient.addRequestInterceptor(new 1(this));
-      httpclient.addResponseInterceptor(new 2(this));
+      httpclient.addRequestInterceptor(new ac$1(this));
+      httpclient.addResponseInterceptor(new ac$2(this));
       return httpclient;
    }
 }
